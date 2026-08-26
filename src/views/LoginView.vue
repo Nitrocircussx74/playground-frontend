@@ -1,57 +1,77 @@
 <template>
-  <div class="login-wrapper">
-    <div class="glass-card login-card">
-      <div class="login-header">
-        <h2>Sign In</h2>
-        <p>Enter your email to test JWT + HTTP-Only Cookie Login</p>
-      </div>
+  <div class="flex items-center justify-center min-h-[75vh] px-4 py-8">
+    <Card class="w-full max-w-md border-slate-800/80 bg-slate-900/70 backdrop-blur-xl shadow-2xl shadow-purple-950/20">
+      <CardHeader class="space-y-2 text-center pb-6">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 mx-auto mb-2 shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <CardTitle class="text-2xl font-bold tracking-tight text-white">Sign In to Portal</CardTitle>
+        <CardDescription class="text-slate-400 text-sm">
+          Enter credentials to authenticate with JWT & HTTP-Only Cookie
+        </CardDescription>
+      </CardHeader>
 
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            class="input-field"
-            placeholder="developer@example.com"
-            required
+      <CardContent>
+        <form @submit.prevent="handleLogin" class="space-y-4">
+          <div class="space-y-1.5">
+            <label for="email" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Email Address</label>
+            <Input
+              id="email"
+              v-model="email"
+              type="email"
+              placeholder="developer@example.com"
+              required
+              :disabled="authStore.loading"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="password" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Password</label>
+            <Input
+              id="password"
+              v-model="password"
+              type="password"
+              placeholder="••••••••"
+              required
+              :disabled="authStore.loading"
+            />
+          </div>
+
+          <div v-if="errorMessage" class="p-3.5 text-xs text-rose-300 bg-rose-950/40 border border-rose-800/50 rounded-lg text-center font-medium animate-fade-in">
+            {{ errorMessage }}
+          </div>
+
+          <Button
+            type="submit"
+            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold shadow-lg shadow-purple-600/25 h-10 mt-2 transition-all duration-200"
             :disabled="authStore.loading"
-          />
+          >
+            <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Authenticating...
+            </span>
+            <span v-else>Sign In</span>
+          </Button>
+        </form>
+      </CardContent>
+
+      <CardFooter>
+        <div class="w-full p-3.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-xs space-y-2">
+          <div class="flex items-center gap-1.5 text-purple-400 font-semibold">
+            <span>💡 Demo Credentials & Security</span>
+          </div>
+          <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+            <li><strong>Access Token:</strong> Saved strictly in Pinia State (Memory ONLY)</li>
+            <li><strong>Refresh Token:</strong> Set as HTTP-Only Cookie by Backend</li>
+          </ul>
         </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="input-field"
-            placeholder="••••••••"
-            required
-            :disabled="authStore.loading"
-          />
-        </div>
-
-        <div v-if="errorMessage" class="error-alert">
-          {{ errorMessage }}
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" :disabled="authStore.loading">
-          <span v-if="authStore.loading">Signing In...</span>
-          <span v-else>Sign In</span>
-        </button>
-      </form>
-
-      <div class="demo-box">
-        <h4>💡 Demo Credentials / Security Note:</h4>
-        <p>Enter email and password (min 6 chars) to authenticate with backend.</p>
-        <ul>
-          <li><strong>Access Token:</strong> Returned in response body & saved to Pinia State (Memory ONLY)</li>
-          <li><strong>Refresh Token:</strong> Set by Node.js server as HTTP-Only Cookie</li>
-        </ul>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
@@ -59,6 +79,16 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter
+} from '@/components/ui/card';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -80,86 +110,3 @@ const handleLogin = async () => {
   }
 };
 </script>
-
-<style scoped>
-.login-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 440px;
-  padding: 40px;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-.login-header h2 {
-  font-size: 1.8rem;
-  margin-bottom: 8px;
-}
-
-.login-header p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.btn-block {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.error-alert {
-  padding: 12px;
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: #fda4af;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.demo-box {
-  margin-top: 30px;
-  padding: 16px;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px dashed var(--border-color);
-  border-radius: 10px;
-  font-size: 0.85rem;
-}
-
-.demo-box h4 {
-  margin-bottom: 8px;
-  color: var(--accent-purple);
-}
-
-.demo-box ul {
-  margin-top: 8px;
-  padding-left: 20px;
-  color: var(--text-muted);
-}
-</style>

@@ -1,66 +1,108 @@
 <template>
-  <div class="dashboard">
-    <div class="header-section">
-      <h1>Protected API Dashboard</h1>
-      <p>Test JWT authorization headers & silent refresh interceptor</p>
+  <div class="space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-white">API Dashboard</h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Test JWT authorization headers & silent refresh interceptor
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Backend API Online
+        </span>
+      </div>
     </div>
 
-    <div class="grid">
-      <!-- Status Card -->
-      <div class="glass-card card">
-        <h3>🔑 Auth Status (Memory State)</h3>
-        <div class="status-list">
-          <div class="status-item">
-            <span>Access Token Status:</span>
-            <span class="badge badge-success" v-if="authStore.accessToken">
+    <!-- Grid Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Auth Status Card -->
+      <Card class="border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
+        <CardHeader>
+          <CardTitle class="text-lg font-semibold flex items-center gap-2 text-white">
+            <span>🔑 Auth Status (Memory State)</span>
+          </CardTitle>
+          <CardDescription>Real-time security tokens state in Pinia store</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="flex justify-between items-center text-sm py-2 border-b border-slate-800/60">
+            <span class="text-slate-400">Access Token Status</span>
+            <span v-if="authStore.accessToken" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               Active in Pinia State
             </span>
-            <span class="badge badge-warning" v-else>Missing</span>
+            <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              Missing
+            </span>
           </div>
 
-          <div class="status-item">
-            <span>Refresh Token Storage:</span>
-            <span class="badge badge-success">HTTP-Only Cookie (Browser Managed)</span>
+          <div class="flex justify-between items-center text-sm py-2 border-b border-slate-800/60">
+            <span class="text-slate-400">Refresh Token Storage</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              HTTP-Only Cookie
+            </span>
           </div>
 
-          <div class="status-item">
-            <span>User ID:</span>
-            <code>{{ authStore.currentUser?.id || 'N/A' }}</code>
+          <div class="flex justify-between items-center text-sm py-2 border-b border-slate-800/60">
+            <span class="text-slate-400">User ID</span>
+            <code class="px-2 py-1 rounded bg-slate-950 font-mono text-xs text-purple-400 border border-slate-800">
+              {{ authStore.currentUser?.id || 'N/A' }}
+            </code>
           </div>
-        </div>
 
-        <div class="token-preview" v-if="authStore.accessToken">
-          <label>Access Token Preview (Truncated):</label>
-          <code>{{ truncatedToken }}</code>
-        </div>
-      </div>
-
-      <!-- Action Card -->
-      <div class="glass-card card">
-        <h3>🚀 Test Protected Endpoints</h3>
-        <p class="card-desc">Execute API calls to backend requiring <code>Authorization: Bearer</code> header</p>
-
-        <div class="btn-group">
-          <button @click="fetchApiOverview" class="btn btn-primary" :disabled="loading">
-            GET /api (Overview)
-          </button>
-          <button @click="triggerManualRefresh" class="btn btn-secondary" :disabled="loading">
-            Silent Refresh Token
-          </button>
-        </div>
-
-        <div v-if="apiResponse" class="response-box">
-          <div class="response-header">
-            <span>API Response Output</span>
-            <span class="badge badge-success">HTTP 200 OK</span>
+          <div v-if="authStore.accessToken" class="space-y-1.5 pt-2">
+            <span class="text-xs font-medium text-slate-400">Access Token Preview (Truncated):</span>
+            <div class="p-2.5 rounded-lg bg-slate-950 font-mono text-xs text-purple-300 border border-slate-800/80 break-all">
+              {{ truncatedToken }}
+            </div>
           </div>
-          <pre>{{ JSON.stringify(apiResponse, null, 2) }}</pre>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div v-if="apiError" class="error-alert">
-          {{ apiError }}
-        </div>
-      </div>
+      <!-- Action & Test Card -->
+      <Card class="border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
+        <CardHeader>
+          <CardTitle class="text-lg font-semibold flex items-center gap-2 text-white">
+            <span>🚀 Test Protected Endpoints</span>
+          </CardTitle>
+          <CardDescription>Execute API calls to backend requiring Authorization header</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="flex flex-wrap gap-3">
+            <Button
+              @click="fetchApiOverview"
+              class="bg-purple-600 hover:bg-purple-500 text-white font-medium shadow-md shadow-purple-600/20"
+              :disabled="loading"
+            >
+              GET /api (Overview)
+            </Button>
+            <Button
+              @click="triggerManualRefresh"
+              variant="outline"
+              class="border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-200"
+              :disabled="loading"
+            >
+              Silent Refresh Token
+            </Button>
+          </div>
+
+          <div v-if="apiResponse" class="rounded-xl border border-slate-800 bg-slate-950/80 overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-slate-800 text-xs font-medium text-slate-300">
+              <span>API Response Output</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400">
+                HTTP 200 OK
+              </span>
+            </div>
+            <pre class="p-4 text-xs font-mono text-emerald-400 overflow-x-auto">{{ JSON.stringify(apiResponse, null, 2) }}</pre>
+          </div>
+
+          <div v-if="apiError" class="p-3.5 text-xs text-rose-300 bg-rose-950/40 border border-rose-800/50 rounded-lg text-center">
+            {{ apiError }}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
@@ -69,6 +111,14 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/utils/api';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent
+} from '@/components/ui/card';
 
 const authStore = useAuthStore();
 const loading = ref(false);
@@ -109,118 +159,3 @@ const triggerManualRefresh = async () => {
   }
 };
 </script>
-
-<style scoped>
-.header-section {
-  margin-bottom: 30px;
-}
-
-.header-section h1 {
-  font-size: 2rem;
-  margin-bottom: 6px;
-}
-
-.header-section p {
-  color: var(--text-muted);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 24px;
-}
-
-.card {
-  padding: 28px;
-}
-
-.card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-}
-
-.card-desc {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-}
-
-.status-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-}
-
-.token-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-color);
-  font-size: 0.85rem;
-}
-
-.token-preview label {
-  color: var(--text-muted);
-}
-
-code {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 0.8rem;
-  color: var(--accent-purple);
-  word-break: break-all;
-}
-
-.btn-group {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.response-box {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.response-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-pre {
-  padding: 16px;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #6ee7b7;
-  overflow-x: auto;
-}
-
-.error-alert {
-  padding: 12px;
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: #fda4af;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-</style>

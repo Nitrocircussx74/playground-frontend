@@ -1,43 +1,72 @@
 <template>
-  <div class="profile-page">
-    <div class="glass-card profile-card">
-      <div class="avatar-section">
-        <div class="avatar">
+  <div class="flex justify-center py-6">
+    <Card class="w-full max-w-lg border-slate-800/80 bg-slate-900/60 backdrop-blur-xl shadow-xl">
+      <CardHeader class="flex flex-col items-center text-center pb-6">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-2xl font-bold text-white mb-4 shadow-lg shadow-purple-600/30 ring-4 ring-purple-500/10">
           {{ userInitials }}
         </div>
-        <h2>User Profile</h2>
-        <p class="role-tag">Authenticated Account</p>
-      </div>
+        <CardTitle class="text-2xl font-bold text-white">User Profile</CardTitle>
+        <CardDescription class="text-purple-400 font-medium text-xs">
+          Authenticated Session (JWT Dual Tokens)
+        </CardDescription>
+      </CardHeader>
 
-      <div class="profile-details">
-        <div class="detail-row">
-          <span class="detail-label">Email Address</span>
-          <span class="detail-value">{{ authStore.currentUser?.email || 'N/A' }}</span>
+      <CardContent class="space-y-4">
+        <div class="space-y-3 p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm">
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60">
+            <span class="text-slate-400">Email Address</span>
+            <span class="font-semibold text-slate-100">{{ authStore.currentUser?.email || 'N/A' }}</span>
+          </div>
+
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60">
+            <span class="text-slate-400">User ID</span>
+            <code class="px-2 py-0.5 rounded bg-slate-900 font-mono text-xs text-purple-400 border border-slate-800">
+              {{ authStore.currentUser?.id || 'N/A' }}
+            </code>
+          </div>
+
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-800/60">
+            <span class="text-slate-400">Role</span>
+            <span class="uppercase tracking-wider text-xs font-bold text-indigo-400">
+              {{ authStore.currentUser?.role || 'user' }}
+            </span>
+          </div>
+
+          <div class="flex justify-between items-center py-1.5">
+            <span class="text-slate-400">Auth Security</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              HTTP-Only Cookie Protected
+            </span>
+          </div>
         </div>
+      </CardContent>
 
-        <div class="detail-row">
-          <span class="detail-label">User ID</span>
-          <span class="detail-value"><code>{{ authStore.currentUser?.id || 'N/A' }}</code></span>
-        </div>
-
-        <div class="detail-row">
-          <span class="detail-label">Auth Provider</span>
-          <span class="detail-value badge badge-success">Local / JWT Cookie</span>
-        </div>
-      </div>
-
-      <div class="action-footer">
-        <button @click="refreshProfile" class="btn btn-secondary" :disabled="loading">
+      <CardFooter class="flex justify-center pt-2">
+        <Button
+          @click="refreshProfile"
+          variant="outline"
+          class="w-full border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-200"
+          :disabled="loading"
+        >
           Reload Profile (GET /auth/me)
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter
+} from '@/components/ui/card';
 
 const authStore = useAuthStore();
 const loading = ref(false);
@@ -56,80 +85,3 @@ const refreshProfile = async () => {
   }
 };
 </script>
-
-<style scoped>
-.profile-page {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.profile-card {
-  width: 100%;
-  max-width: 500px;
-  padding: 36px;
-}
-
-.avatar-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-}
-
-.avatar-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 4px;
-}
-
-.role-tag {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-.profile-details {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 28px;
-  background: rgba(15, 23, 42, 0.4);
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-}
-
-.detail-label {
-  color: var(--text-muted);
-}
-
-.detail-value {
-  font-weight: 600;
-}
-
-.action-footer {
-  display: flex;
-  justify-content: center;
-}
-</style>
