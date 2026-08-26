@@ -54,7 +54,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-  // LIFF App Nested Router Layout with LiffLayout.vue App Shell
+  // LIFF App Nested Router Layout (แยกส่วนอย่างสมบูรณ์จากระบบหลังบ้าน Admin)
   {
     path: '/liff',
     component: () => import('@/layouts/LiffLayout.vue'),
@@ -119,14 +119,18 @@ const router = createRouter({
   routes
 });
 
-// Navigation Guard (router.beforeEach)
+// Navigation Guard (router.beforeEach) - แยกสิทธิ์ LIFF ลูกบ้าน และ Admin หลังบ้านอย่างเด็ดขาด
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  if (!authStore.isInitialized && !authStore.isAuthenticated) {
-    await authStore.silentRefresh();
+  // หากเป็นเส้นทางของ LIFF Portal (/liff/*) ข้ามการยืนยันตัวตน Cookie หลังบ้านของ Admin
+  if (!to.path.startsWith('/liff')) {
+    if (!authStore.isInitialized && !authStore.isAuthenticated) {
+      await authStore.silentRefresh();
+    }
   }
 
+  // ป้องกันการแอบเข้าถึงหน้าหลังบ้าน Admin หากไม่ได้ Login
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ path: '/login', query: { redirect: to.fullPath } });
   }
