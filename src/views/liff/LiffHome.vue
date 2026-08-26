@@ -1,10 +1,26 @@
 <template>
   <div class="space-y-4">
+    <!-- Dev Banner กรณีเปิดผ่าน Browser ทั่วไปแบบยังไม่ได้ต่อ LIFF ID จริง -->
+    <div v-if="!liffStore.isLoggedIn" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-2">
+      <div class="flex items-center justify-between text-amber-800 font-bold">
+        <span>⚡ Mock Mode (สำหรับทดสอบนอกแอป LINE)</span>
+      </div>
+      <p class="text-amber-700 leading-relaxed">
+        ขณะนี้เปิดผ่านเว็บเบราว์เซอร์ทั่วไป คุณสามารถกดปุ่มจำลองล็อกอินเพื่อทดสอบ UI และ Flow การทำงานของผู้เช่าได้ทันที
+      </p>
+      <button
+        @click="simulateMockLogin"
+        class="w-full py-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-bold text-xs rounded-lg shadow-sm transition-all"
+      >
+        🟢 โหลดข้อมูลผู้เช่าจำลอง (Somchai ห้อง 101)
+      </button>
+    </div>
+
     <!-- Card แสดงข้อมูล LINE Profile ของผู้เช่า -->
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 text-center space-y-3">
       <div v-if="liffStore.isLoggedIn" class="space-y-3">
         <img
-          :src="liffStore.pictureUrl || 'https://via.placeholder.com/100'"
+          :src="liffStore.pictureUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Somchai'"
           alt="LINE Profile"
           class="w-20 h-20 rounded-full mx-auto shadow-md ring-4 ring-[#06C755]/20 object-cover"
         />
@@ -13,27 +29,19 @@
           <p class="text-xs text-slate-500 font-mono mt-0.5">LINE ID: {{ liffStore.lineUserId }}</p>
         </div>
         <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-semibold">
-          <span>✓ LINE Verified Tenant</span>
+          <span>✓ LINE Verified Tenant (ห้อง 101)</span>
         </div>
       </div>
 
       <!-- Loading State ขณะรอนิชิเอต LIFF -->
-      <div v-else-if="loading" class="py-8 space-y-2">
+      <div v-else-if="loading" class="py-6 space-y-2">
         <div class="animate-spin w-8 h-8 border-4 border-[#06C755] border-t-transparent rounded-full mx-auto"></div>
-        <p class="text-xs text-slate-500 font-medium">กำลังเชื่อมต่อ LINE LIFF SDK...</p>
+        <p class="text-xs text-slate-500 font-medium">กำลังตรวจสอบการเชื่อมต่อ LINE LIFF SDK...</p>
       </div>
 
-      <!-- Demo / Mock State กรณีทดสอบนอกแอป LINE -->
-      <div v-else class="py-4 space-y-3">
-        <p class="text-xs text-slate-500">
-          {{ liffStore.liffError || 'เปิดอยู่นอกแอป LINE (Mock Data สำหรับการทดสอบ)' }}
-        </p>
-        <button
-          @click="simulateMockLogin"
-          class="w-full py-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-bold text-xs rounded-xl shadow-md transition-colors"
-        >
-          จำลองการล็อกอินผ่าน LINE
-        </button>
+      <!-- State ยังไม่ได้กดจำลอง -->
+      <div v-else class="py-2 text-xs text-slate-400">
+        รอการเชื่อมต่อกับ LINE Profile...
       </div>
     </div>
 
@@ -62,26 +70,26 @@ const loading = ref(true);
 
 onMounted(async () => {
   try {
-    // 1. เรียกใช้ liff.init() เมื่อ Component ถือกำเนิด
-    // ใส่ LIFF ID ที่รับได้จาก LINE Developers Console (ตัวอย่าง: MY_LIFF_ID)
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || '1234567890-XXXXXXXX';
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID;
     
-    await liff.init({ liffId });
-    liffStore.setInitialized(true);
+    // หากมี LIFF ID จริงใน .env ค่อยเรียก liff.init()
+    if (liffId && liffId !== 'MY_LIFF_ID') {
+      await liff.init({ liffId });
+      liffStore.setInitialized(true);
 
-    // 2. หากผู้ใช้อยู่ในแอป LINE และล็อกอินอยู่ ให้ดึงข้อมูล Profile
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      liffStore.setLineProfile(profile);
-    } else {
-      // หากยังไม่ได้ล็อกอิน ให้สั่งเปิดหน้า Login ของ LINE (กรณีเปิดผ่าน External Browser)
-      if (liff.isInClient()) {
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        liffStore.setLineProfile(profile);
+      } else if (liff.isInClient()) {
         liff.login();
       }
+    } else {
+      // หากยังไม่มี LIFF ID ในโหมดพัฒนา ให้ใช้อัตโนมัติในโหมด Mock
+      simulateMockLogin();
     }
   } catch (error) {
-    console.warn('LIFF Initialization Error:', error);
-    liffStore.setError(error.message || 'ไม่สามารถเปิดผ่าน LIFF SDK ได้');
+    console.warn('LIFF Initialization Error (Using Mock Fallback):', error);
+    simulateMockLogin();
   } finally {
     loading.value = false;
   }
