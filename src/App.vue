@@ -1,26 +1,24 @@
 <template>
-  <!-- กรณีเป็น Route ของ Admin (/admin) หรือ LIFF (/liff) ให้ Layout ของแต่ละส่วนบริหารจัดการ Viewport 100% -->
   <div v-if="isCustomLayout" class="min-h-screen bg-slate-100 font-sans selection:bg-purple-600 selection:text-white">
     <router-view />
   </div>
 
-  <!-- กรณีเป็น Standalone View ทั่วไป (เช่น /login, /dashboard, /profile) -->
-  <div v-else class="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white flex flex-col">
+  <div v-else class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-600 selection:text-white flex flex-col">
     <!-- Ambient Background Accents -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/2 -right-40 w-96 h-96 bg-indigo-200/40 rounded-full blur-3xl"></div>
+      <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 -right-40 w-96 h-96 bg-indigo-900/20 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Light Navigation Bar -->
-    <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-sm">
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md shadow-sm">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <router-link to="/" class="flex items-center gap-2.5 group text-decoration-none">
           <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-600/30 group-hover:scale-105 transition-transform duration-200">
-            ⚡
+            🏢
           </div>
-          <span class="font-bold text-base sm:text-lg tracking-tight text-slate-900">
-            Vue3 Auth Portal
+          <span class="font-bold text-base sm:text-lg tracking-tight text-slate-100">
+            Dormitory Portal
           </span>
         </router-link>
 
@@ -28,27 +26,48 @@
           <router-link
             to="/dashboard"
             class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/dashboard' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'text-slate-600 hover:text-slate-900'"
+            :class="route.path === '/dashboard' ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-slate-100'"
           >
             Dashboard
           </router-link>
           <router-link
+            to="/rooms"
+            class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+            :class="route.path === '/rooms' ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-slate-100'"
+          >
+            Rooms
+          </router-link>
+          <router-link
+            to="/meter-readings"
+            class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+            :class="route.path === '/meter-readings' ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-slate-100'"
+          >
+            Meters
+          </router-link>
+          <router-link
+            to="/invoices"
+            class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+            :class="route.path === '/invoices' ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-slate-100'"
+          >
+            Invoices
+          </router-link>
+          <router-link
             to="/profile"
             class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/profile' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'text-slate-600 hover:text-slate-900'"
+            :class="route.path === '/profile' ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-400 hover:text-slate-100'"
           >
             Profile
           </router-link>
 
-          <div class="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3 border-l border-slate-200">
-            <span class="text-xs text-slate-600 hidden md:inline-block font-mono font-medium">
+          <div class="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3 border-l border-slate-800">
+            <span class="text-xs text-slate-400 hidden md:inline-block font-mono font-medium">
               {{ authStore.currentUser?.email }}
             </span>
             <Button
               @click="handleLogout"
               variant="destructive"
               size="sm"
-              class="h-8 px-2.5 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold"
+              class="h-8 px-2.5 text-xs bg-rose-900/30 text-rose-300 hover:bg-rose-900/50 border border-rose-700/40 font-semibold"
               :disabled="authStore.loading"
             >
               Logout
@@ -72,9 +91,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 bg-white/60 py-6 relative z-10">
+    <footer class="border-t border-slate-800 bg-slate-900/40 py-6 relative z-10">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
-        <p>Vue 3 + Vite + Tailwind CSS + Shadcn Vue + Pinia + Axios (HTTP-Only Cookie Auth)</p>
+        <p>Dormitory Management System — Node.js (Express + Prisma) + Vue 3 (Pinia + Tailwind CSS)</p>
       </div>
     </footer>
   </div>
