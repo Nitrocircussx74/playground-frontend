@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
+    "tunnel": "cloudflared tunnel --url http://localhost:5173",
+    "dev:tunnel": "concurrently -n \"FE,TUNNEL\" -c \"green,cyan\" \"vite --port 5173\" \"cloudflared tunnel --url http://localhost:5173\"",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
     "autoprefixer": "^10.5.4",
+    "concurrently": "^10.0.5",
     "postcss": "^8.5.26",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
