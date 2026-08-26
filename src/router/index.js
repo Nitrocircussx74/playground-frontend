@@ -42,6 +42,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/announcements',
+    name: 'Announcements',
+    component: () => import('@/views/AnnouncementsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/liff/pay/:invoiceId',
     name: 'LiffPayment',
     component: () => import('@/views/LiffPaymentView.vue')
@@ -50,6 +56,11 @@ const routes = [
     path: '/liff/register',
     name: 'LiffRegister',
     component: () => import('@/views/LiffRegisterView.vue')
+  },
+  {
+    path: '/liff/announcements',
+    name: 'LiffAnnouncements',
+    component: () => import('@/views/LiffAnnouncementsView.vue')
   },
   {
     path: '/profile',
