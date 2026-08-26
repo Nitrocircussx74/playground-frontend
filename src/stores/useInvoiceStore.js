@@ -65,6 +65,25 @@ export const useInvoiceStore = defineStore('invoice', {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    async exportPdf(invoiceId, invoiceNumber) {
+      this.isLoading = true;
+      try {
+        const blob = await invoiceService.exportPdf(invoiceId);
+        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Invoice-${invoiceNumber}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to export PDF';
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 });

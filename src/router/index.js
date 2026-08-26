@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAdminAuthStore } from '@/stores/adminAuth';
 import { useAuthStore } from '@/stores/auth';
 
 const routes = [
@@ -34,6 +33,12 @@ const routes = [
     path: '/invoices',
     name: 'Invoices',
     component: () => import('@/views/InvoicesView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/maintenance',
+    name: 'Maintenance',
+    component: () => import('@/views/MaintenanceView.vue'),
     meta: { requiresAuth: true }
   },
   {

@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Invoice Management</h1>
-        <p class="text-sm text-slate-500">Generate monthly invoices and verify tenant payment slips</p>
+        <p class="text-sm text-slate-500">Generate monthly invoices, export PDFs, and verify payment slips</p>
       </div>
     </div>
 
@@ -27,21 +27,15 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Billing Cycle</label>
-          <input
-            v-model="genForm.billingCycle"
-            type="text"
-            placeholder="08-2026"
-            required
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-          />
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Billing Cycle (เลือกเดือน/ปี)</label>
+          <BillingDatePicker v-model="genForm.billingCycle" />
         </div>
 
         <div class="flex items-end">
           <button
             type="submit"
             :disabled="invoiceStore.isLoading"
-            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 disabled:opacity-50"
+            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-xs shadow-emerald-600/20 disabled:opacity-50"
           >
             {{ invoiceStore.isLoading ? 'Generating...' : 'Generate Invoice' }}
           </button>
@@ -68,6 +62,7 @@
               <th class="p-3.5">Water</th>
               <th class="p-3.5">Electric</th>
               <th class="p-3.5">Total</th>
+              <th class="p-3.5">Slip</th>
               <th class="p-3.5">Status</th>
               <th class="p-3.5 text-right">Actions</th>
             </tr>
@@ -85,6 +80,18 @@
               <td class="p-3.5 font-mono text-xs">฿{{ inv.electricTotal }}</td>
               <td class="p-3.5 font-mono font-bold text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
               <td class="p-3.5">
+                <div v-if="inv.slipUrl" class="flex items-center gap-1.5">
+                  <a :href="inv.slipUrl" target="_blank" class="text-xs text-indigo-600 font-semibold hover:underline">View Slip</a>
+                </div>
+                <div v-else-if="inv.status !== 'paid'" class="flex items-center">
+                  <label class="cursor-pointer text-xs text-slate-500 hover:text-indigo-600 font-medium">
+                    <span>+ Upload Slip</span>
+                    <input type="file" class="hidden" accept="image/*" @change="(e) => handleUploadSlip(inv.id, e)" />
+                  </label>
+                </div>
+                <span v-else class="text-xs text-slate-400">-</span>
+              </td>
+              <td class="p-3.5">
                 <span
                   class="text-xs font-semibold px-2.5 py-1 rounded-full border"
                   :class="{
@@ -97,17 +104,25 @@
                 </span>
               </td>
               <td class="p-3.5 text-right space-x-2">
+                <!-- PDF Export Button -->
+                <button
+                  @click="invoiceStore.exportPdf(inv.id, inv.invoiceNumber)"
+                  class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold shadow-xs"
+                >
+                  📄 Export PDF
+                </button>
+
                 <button
                   v-if="inv.status !== 'paid'"
                   @click="handleApprove(inv.id)"
                   class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-xs"
                 >
-                  Approve Paid
+                  Approve
                 </button>
               </td>
             </tr>
             <tr v-if="invoiceStore.invoices.length === 0">
-              <td colspan="10" class="p-6 text-center text-slate-400">No invoices generated yet</td>
+              <td colspan="11" class="p-6 text-center text-slate-400">No invoices generated yet</td>
             </tr>
           </tbody>
         </table>
@@ -120,6 +135,8 @@
 import { reactive, onMounted } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
+import uploadService from '@/services/uploadService';
+import BillingDatePicker from '@/components/BillingDatePicker.vue';
 
 const roomStore = useRoomStore();
 const invoiceStore = useInvoiceStore();
@@ -140,6 +157,19 @@ const handleGenerate = async () => {
     alert('Invoice generated successfully!');
   } catch (error) {
     alert(error.response?.data?.message || 'Error generating invoice');
+  }
+};
+
+const handleUploadSlip = async (invoiceId, event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const uploadRes = await uploadService.uploadFile(file);
+    await invoiceStore.uploadSlip(invoiceId, uploadRes.data.url);
+    alert('Slip uploaded successfully!');
+  } catch (error) {
+    alert(error.response?.data?.message || 'Failed to upload slip');
   }
 };
 

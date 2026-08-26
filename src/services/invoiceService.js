@@ -19,5 +19,12 @@ export default {
   async updateInvoiceStatus(invoiceId, payload) {
     const response = await api.patch(`/api/v1/invoices/${invoiceId}/status`, payload);
     return response.data;
+  },
+
+  async exportPdf(invoiceId) {
+    const response = await api.get(`/api/v1/invoices/${invoiceId}/export`, {
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };

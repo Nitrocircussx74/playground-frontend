@@ -22,44 +22,44 @@
           </span>
         </router-link>
 
-        <nav class="flex items-center gap-1.5 sm:gap-3" v-if="authStore.isAuthenticated">
+        <nav class="flex items-center gap-1.5 sm:gap-2.5" v-if="authStore.isAuthenticated">
           <router-link
             to="/dashboard"
-            class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/dashboard' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Dashboard
           </router-link>
           <router-link
             to="/rooms"
-            class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/rooms' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Rooms
           </router-link>
           <router-link
             to="/meter-readings"
-            class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/meter-readings' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Meters
           </router-link>
           <router-link
             to="/invoices"
-            class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/invoices' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Invoices
           </router-link>
           <router-link
-            to="/profile"
-            class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/profile' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            to="/maintenance"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+            :class="route.path === '/maintenance' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
-            Profile
+            Maintenance
           </router-link>
 
-          <div class="flex items-center gap-2 sm:gap-3 pl-3 border-l border-slate-200">
+          <div class="flex items-center gap-2 sm:gap-3 pl-2.5 border-l border-slate-200">
             <span class="text-xs text-slate-500 hidden md:inline-block font-mono font-medium">
               {{ authStore.currentUser?.email }}
             </span>
@@ -67,7 +67,7 @@
               @click="handleLogout"
               variant="destructive"
               size="sm"
-              class="h-8 px-3 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold shadow-xs"
+              class="h-8 px-2.5 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold shadow-xs"
               :disabled="authStore.loading"
             >
               Logout
@@ -93,7 +93,7 @@
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white/60 py-6 relative z-10">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
-        <p>Dormitory Management System — Light Theme Edition</p>
+        <p>Dormitory Management System — Maintenance & PDF Export Enabled</p>
       </div>
     </footer>
   </div>
