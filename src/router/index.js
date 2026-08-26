@@ -53,36 +53,55 @@ const routes = [
     component: () => import('@/views/FeatureSettingsView.vue'),
     meta: { requiresAuth: true }
   },
+
+  // LIFF App Nested Router Layout with LiffLayout.vue App Shell
   {
-    path: '/liff/pay/:invoiceId',
-    name: 'LiffPayment',
-    component: () => import('@/views/LiffPaymentView.vue')
+    path: '/liff',
+    component: () => import('@/layouts/LiffLayout.vue'),
+    children: [
+      {
+        path: '',
+        redirect: '/liff/profile'
+      },
+      {
+        path: 'profile',
+        name: 'LiffProfile',
+        component: () => import('@/views/LiffProfileView.vue'),
+        meta: { title: 'ศูนย์กลางลูกบ้าน (Tenant Hub)' }
+      },
+      {
+        path: 'pay/:invoiceId',
+        name: 'LiffPayment',
+        component: () => import('@/views/LiffPaymentView.vue'),
+        meta: { title: 'ชำระเงินบิลค่าเช่า' }
+      },
+      {
+        path: 'register',
+        name: 'LiffRegister',
+        component: () => import('@/views/LiffRegisterView.vue'),
+        meta: { title: 'ลงทะเบียนลูกบ้าน' }
+      },
+      {
+        path: 'announcements',
+        name: 'LiffAnnouncements',
+        component: () => import('@/views/LiffAnnouncementsView.vue'),
+        meta: { title: 'ข่าวสาร & ประกาศหอพัก' }
+      },
+      {
+        path: 'maintenance',
+        name: 'LiffMaintenance',
+        component: () => import('@/views/LiffMaintenanceView.vue'),
+        meta: { title: 'แจ้งซ่อม & ติดตามสถานะ' }
+      },
+      {
+        path: 'receipts',
+        name: 'LiffReceiptHistory',
+        component: () => import('@/views/LiffReceiptHistoryView.vue'),
+        meta: { title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
+      }
+    ]
   },
-  {
-    path: '/liff/register',
-    name: 'LiffRegister',
-    component: () => import('@/views/LiffRegisterView.vue')
-  },
-  {
-    path: '/liff/announcements',
-    name: 'LiffAnnouncements',
-    component: () => import('@/views/LiffAnnouncementsView.vue')
-  },
-  {
-    path: '/liff/maintenance',
-    name: 'LiffMaintenance',
-    component: () => import('@/views/LiffMaintenanceView.vue')
-  },
-  {
-    path: '/liff/receipts',
-    name: 'LiffReceiptHistory',
-    component: () => import('@/views/LiffReceiptHistoryView.vue')
-  },
-  {
-    path: '/liff/profile',
-    name: 'LiffProfile',
-    component: () => import('@/views/LiffProfileView.vue')
-  },
+
   {
     path: '/profile',
     name: 'Profile',
