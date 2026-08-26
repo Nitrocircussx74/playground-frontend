@@ -199,7 +199,7 @@ const quickActionsConfig = [
     icon: CreditCard,
     bgClass: 'bg-indigo-50',
     iconClass: 'text-indigo-600',
-    route: '/invoices',
+    route: '/liff/invoices', // 📌 ลิงก์ตรงไปยังรายการบิลลูกบ้านฝั่ง LIFF Portal
     featureKey: 'ENABLE_LINE_PAYMENT'
   },
   {
