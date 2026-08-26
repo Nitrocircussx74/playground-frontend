@@ -34,6 +34,21 @@ export const useRoomStore = defineStore('room', {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    async createRoom(payload) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      try {
+        const response = await roomService.createRoom(payload);
+        await this.fetchRooms();
+        return response;
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to create room';
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 });
