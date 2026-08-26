@@ -63,6 +63,16 @@ const routes = [
     component: () => import('@/views/LiffAnnouncementsView.vue')
   },
   {
+    path: '/liff/maintenance',
+    name: 'LiffMaintenance',
+    component: () => import('@/views/LiffMaintenanceView.vue')
+  },
+  {
+    path: '/liff/receipts',
+    name: 'LiffReceiptHistory',
+    component: () => import('@/views/LiffReceiptHistoryView.vue')
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
