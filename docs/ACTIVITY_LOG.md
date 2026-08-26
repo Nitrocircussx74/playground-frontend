@@ -24,9 +24,11 @@
    - สร้าง `LoginView.vue`, `DashboardView.vue`, `ProfileView.vue`, `App.vue`, `main.css`
 7. **Git Repository Setup**:
    - สร้าง Git Repository `https://github.com/Nitrocircussx74/playground-frontend` และ Push ขึ้น Remote `main` branch เรียบร้อย
-9. **Docker & Containerization Setup**:
-   - สร้าง `Dockerfile` (Multi-stage build: Node 20 Builder -> Nginx Alpine Web Server)
-   - สร้าง `nginx.conf` (SPA Fallback + Reverse Proxy `/auth/` และ `/api/` ไปยัง Backend Container)
-   - สร้าง `.dockerignore` และแมพบริการเข้าร่วมกับ Root `docker-compose.yml`
+10. **Tailwind CSS & Shadcn Vue Integration**:
+    - ติดตั้ง `tailwindcss`, `postcss`, `autoprefixer`, `radix-vue`, `clsx`, `tailwind-merge`, `class-variance-authority`, `tailwindcss-animate`
+    - สร้าง `tailwind.config.js`, `postcss.config.js`, `jsconfig.json`, `components.json`, และ `src/lib/utils.js` (`cn` helper)
+    - สร้าง Shadcn Components: `Button`, `Card`, `Input` ใน `src/components/ui/`
+11. **Light Mode UI Redesign**:
+    - ปรับธีมการออกแบบ UI เป็นโทนสีสว่าง (Light Mode) ด้วยการ์ดกระจกสีขาว สะอาดตา อ่านง่าย อ่านข้อมูลชัดเจน
 
 ### STATUS: 🟢 COMPLETE & PRODUCTION READY
