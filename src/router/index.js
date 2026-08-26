@@ -42,6 +42,11 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/liff/pay/:invoiceId',
+    name: 'LiffPayment',
+    component: () => import('@/views/LiffPaymentView.vue')
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
