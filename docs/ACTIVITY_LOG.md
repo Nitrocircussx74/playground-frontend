@@ -28,7 +28,11 @@
     - ติดตั้ง `tailwindcss`, `postcss`, `autoprefixer`, `radix-vue`, `clsx`, `tailwind-merge`, `class-variance-authority`, `tailwindcss-animate`
     - สร้าง `tailwind.config.js`, `postcss.config.js`, `jsconfig.json`, `components.json`, และ `src/lib/utils.js` (`cn` helper)
     - สร้าง Shadcn Components: `Button`, `Card`, `Input` ใน `src/components/ui/`
-11. **Light Mode UI Redesign**:
-    - ปรับธีมการออกแบบ UI เป็นโทนสีสว่าง (Light Mode) ด้วยการ์ดกระจกสีขาว สะอาดตา อ่านง่าย อ่านข้อมูลชัดเจน
+12. **Multi-System Architecture (Admin Portal & LINE LIFF Tenant App)**:
+    - ติดตั้ง `@line/liff` SDK ด้วย Yarn (`yarn add @line/liff`)
+    - สร้าง `AdminLayout.vue` (Sidebar/Navbar สำหรับจัดการหอพัก) และ `LiffLayout.vue` (Blank Mobile Layout สำหรับแอป LINE)
+    - สร้าง `adminAuth.js` Store (จัดการ JWT Admin) และ `liffAuth.js` Store (จัดการ LINE User Profile)
+    - ตั้งค่า Vue Router Nested Routes แยกกิ่ง `/admin` (JWT Guard) และ `/liff` (LIFF SDK Auth)
+    - สร้าง `LiffHome.vue` พร้อมระบบ `liff.init()` & `liff.getProfile()`
 
 ### STATUS: 🟢 COMPLETE & PRODUCTION READY
