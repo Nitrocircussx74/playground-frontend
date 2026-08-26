@@ -4,7 +4,6 @@
       v-model="selectedDate"
       month-picker
       auto-apply
-      locale="th"
       :format="formatMonthYear"
       class="custom-datepicker"
     />
@@ -27,7 +26,10 @@ const emit = defineEmits(['update:modelValue']);
 
 // แปลงค่าเริ่มต้น '08-2026' เป็น Object { month: 7, year: 2026 }
 const parseCycle = (cycleStr) => {
-  if (!cycleStr || !cycleStr.includes('-')) return { month: new Date().getMonth(), year: new Date().getFullYear() };
+  if (!cycleStr || typeof cycleStr !== 'string' || !cycleStr.includes('-')) {
+    const d = new Date();
+    return { month: d.getMonth(), year: d.getFullYear() };
+  }
   const [m, y] = cycleStr.split('-');
   return { month: Number(m) - 1, year: Number(y) };
 };
@@ -40,13 +42,23 @@ const formatMonthYear = (date) => {
     'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
     'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
   ];
-  const mIndex = date.month != null ? date.month : new Date().getMonth();
-  const year = date.year || new Date().getFullYear();
+
+  let mIndex = 0;
+  let year = new Date().getFullYear();
+
+  if (typeof date.month === 'number') {
+    mIndex = date.month;
+    year = date.year;
+  } else if (date instanceof Date) {
+    mIndex = date.getMonth();
+    year = date.getFullYear();
+  }
+
   return `${thaiMonths[mIndex]} ${year + 543}`;
 };
 
 watch(selectedDate, (newVal) => {
-  if (newVal && newVal.month != null && newVal.year != null) {
+  if (newVal && typeof newVal.month === 'number' && typeof newVal.year === 'number') {
     const formattedMonth = String(newVal.month + 1).padStart(2, '0');
     const cycle = `${formattedMonth}-${newVal.year}`;
     emit('update:modelValue', cycle);
