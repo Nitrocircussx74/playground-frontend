@@ -24,7 +24,9 @@
    - สร้าง `LoginView.vue`, `DashboardView.vue`, `ProfileView.vue`, `App.vue`, `main.css`
 7. **Git Repository Setup**:
    - สร้าง Git Repository `https://github.com/Nitrocircussx74/playground-frontend` และ Push ขึ้น Remote `main` branch เรียบร้อย
-8. **AI Agents Guidelines Setup**:
-   - สร้าง `AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `README.md` และ `docs/ACTIVITY_LOG.md`
+9. **Docker & Containerization Setup**:
+   - สร้าง `Dockerfile` (Multi-stage build: Node 20 Builder -> Nginx Alpine Web Server)
+   - สร้าง `nginx.conf` (SPA Fallback + Reverse Proxy `/auth/` และ `/api/` ไปยัง Backend Container)
+   - สร้าง `.dockerignore` และแมพบริการเข้าร่วมกับ Root `docker-compose.yml`
 
 ### STATUS: 🟢 COMPLETE & PRODUCTION READY
