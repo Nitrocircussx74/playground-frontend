@@ -32,10 +32,10 @@ export const useAuthStore = defineStore('auth', {
     /**
      * Action สำหรับเข้าสู่ระบบ
      */
-    async login(email) {
+    async login(email, password = 'password123') {
       this.loading = true;
       try {
-        const data = await authService.login({ email });
+        const data = await authService.login({ email, password });
         this.setAccessToken(data.accessToken);
         this.setUser(data.user);
         return data;

@@ -20,6 +20,19 @@
           />
         </div>
 
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            class="input-field"
+            placeholder="••••••••"
+            required
+            :disabled="authStore.loading"
+          />
+        </div>
+
         <div v-if="errorMessage" class="error-alert">
           {{ errorMessage }}
         </div>
@@ -32,7 +45,7 @@
 
       <div class="demo-box">
         <h4>💡 Demo Credentials / Security Note:</h4>
-        <p>Enter any valid email address to authenticate with backend.</p>
+        <p>Enter email and password (min 6 chars) to authenticate with backend.</p>
         <ul>
           <li><strong>Access Token:</strong> Returned in response body & saved to Pinia State (Memory ONLY)</li>
           <li><strong>Refresh Token:</strong> Set by Node.js server as HTTP-Only Cookie</li>
@@ -52,12 +65,13 @@ const router = useRouter();
 const route = useRoute();
 
 const email = ref('developer@example.com');
+const password = ref('password123');
 const errorMessage = ref('');
 
 const handleLogin = async () => {
   errorMessage.value = '';
   try {
-    await authStore.login(email.value);
+    await authStore.login(email.value, password.value);
     const redirectPath = route.query.redirect || '/dashboard';
     router.push(redirectPath);
   } catch (error) {
