@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-slate-100/90 pb-12 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
-    <!-- Ambient Accent Blurs -->
+    <!-- Ambient Glassmorphism Soft Accent Blurs -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
       <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-200/50 rounded-full blur-3xl"></div>
       <div class="absolute top-1/3 -right-24 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl"></div>
@@ -13,7 +13,7 @@
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
         <div class="flex items-center gap-4">
-          <!-- Avatar -->
+          <!-- Avatar จาก LINE Profile -->
           <div class="relative">
             <img
               :src="tenantProfile.avatarUrl || defaultAvatar"
@@ -23,7 +23,7 @@
             <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-400 border-2 border-white rounded-full"></span>
           </div>
 
-          <!-- Name & Room Info -->
+          <!-- ข้อมูลชื่อ และ Badge หมายเลขห้องพัก -->
           <div class="space-y-1 flex-1 min-w-0">
             <div class="flex items-center gap-2">
               <h1 class="font-extrabold text-lg sm:text-xl truncate text-white">
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <!-- Digital ID QR Code Trigger Button -->
+        <!-- ปุ่มกดเปิด Modal QR Code สำหรับยืนยันตัวตนกับ รปภ. -->
         <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between">
           <span class="text-xs text-indigo-100 font-medium">Digital ID สำหรับยืนยันตัวตนกับ รปภ.</span>
           <button
@@ -50,136 +50,68 @@
         </div>
       </div>
 
-      <!-- 2. Quick Actions Grid (2x2 Grid เมนูด่วนใช้งานบ่อย) -->
-      <div class="space-y-2">
-        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">เมนูด่วน (Quick Actions)</h2>
+      <!-- 2. Dynamic Quick Actions Grid (เมนูด่วนใช้งานบ่อย 2x2 Grid) -->
+      <div class="space-y-2" v-if="availableQuickActions.length > 0">
+        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
+          เมนูด่วน (Quick Actions - Dynamic Enabled)
+        </h2>
 
         <div class="grid grid-cols-2 gap-3.5">
-          <!-- Quick Action 1: Invoices -->
           <button
-            @click="router.push('/invoices')"
-            class="p-4 bg-white hover:bg-indigo-50/50 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
+            v-for="menu in availableQuickActions"
+            :key="menu.id"
+            @click="handleMenuClick(menu)"
+            class="p-4 bg-white hover:bg-slate-50/80 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
           >
-            <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <CreditCard class="w-5 h-5" />
+            <div
+              class="w-10 h-10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"
+              :class="menu.bgClass"
+            >
+              <component :is="menu.icon" class="w-5 h-5" :class="menu.iconClass" />
             </div>
             <div>
-              <div class="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">บิลค่าเช่า</div>
-              <div class="text-[11px] text-slate-500 font-medium">ชำระเงิน & ดูยอดเงิน</div>
-            </div>
-          </button>
-
-          <!-- Quick Action 2: Maintenance -->
-          <button
-            @click="router.push('/liff/maintenance')"
-            class="p-4 bg-white hover:bg-amber-50/50 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
-          >
-            <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Wrench class="w-5 h-5" />
-            </div>
-            <div>
-              <div class="font-bold text-sm text-slate-900 group-hover:text-amber-600 transition-colors">แจ้งซ่อม</div>
-              <div class="text-[11px] text-slate-500 font-medium">ส่งเรื่อง & ติดตามสถานะ</div>
-            </div>
-          </button>
-
-          <!-- Quick Action 3: Parcels (Controlled by ENABLE_PARCEL_NOTIFY) -->
-          <button
-            v-if="featureStore.isEnabled('ENABLE_PARCEL_NOTIFY')"
-            @click="alert('ระบบพัสดุ: มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ')"
-            class="p-4 bg-white hover:bg-emerald-50/50 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
-          >
-            <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Package class="w-5 h-5" />
-            </div>
-            <div>
-              <div class="font-bold text-sm text-slate-900 group-hover:text-emerald-600 transition-colors">พัสดุของฉัน</div>
-              <div class="text-[11px] text-slate-500 font-medium">ตรวจสอบรายการพัสดุ</div>
-            </div>
-          </button>
-
-          <!-- Quick Action 4: Announcements -->
-          <button
-            @click="router.push('/liff/announcements')"
-            class="p-4 bg-white hover:bg-rose-50/50 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
-          >
-            <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Megaphone class="w-5 h-5" />
-            </div>
-            <div>
-              <div class="font-bold text-sm text-slate-900 group-hover:text-rose-600 transition-colors">ข่าวสารหอพัก</div>
-              <div class="text-[11px] text-slate-500 font-medium">อ่านประกาศย้อนหลัง</div>
+              <div class="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">
+                {{ menu.title }}
+              </div>
+              <div class="text-[11px] text-slate-500 font-medium truncate">{{ menu.subtitle }}</div>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- 3. General Menus (iOS Settings Style List) -->
-      <div class="space-y-2">
-        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">เมนูทั่วไป (General Settings)</h2>
+      <!-- 3. Dynamic General Menus (List แนวตั้ง สไตล์ iOS Settings) -->
+      <div class="space-y-2" v-if="availableGeneralMenus.length > 0">
+        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
+          เมนูทั่วไป (General Settings)
+        </h2>
 
         <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100">
-          <!-- Menu Item 1: Personal Profile Edit -->
           <button
-            @click="router.push('/profile')"
+            v-for="menu in availableGeneralMenus"
+            :key="menu.id"
+            @click="handleMenuClick(menu)"
             class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group"
+            :class="menu.isDanger ? 'text-rose-600' : 'text-slate-800'"
           >
             <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                <User class="w-4 h-4" />
+              <div
+                class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+                :class="menu.isDanger ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-600'"
+              >
+                <component :is="menu.icon" class="w-4 h-4" />
               </div>
-              <span class="text-sm font-semibold text-slate-800">จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)</span>
+              <span class="text-sm font-semibold">{{ menu.title }}</span>
             </div>
-            <ChevronRight class="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-
-          <!-- Menu Item 2: My Vehicles (Controlled by ENABLE_VEHICLE_MANAGEMENT) -->
-          <button
-            v-if="featureStore.isEnabled('ENABLE_VEHICLE_MANAGEMENT')"
-            @click="alert('ยานพาหนะ: รถทะเบียน 1กข-9999 กทม')"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                <Car class="w-4 h-4" />
-              </div>
-              <span class="text-sm font-semibold text-slate-800">ยานพาหนะของฉัน (ป้ายทะเบียนรถ)</span>
-            </div>
-            <ChevronRight class="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-
-          <!-- Menu Item 3: Receipts History -->
-          <button
-            @click="router.push('/liff/receipts')"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                <Receipt class="w-4 h-4" />
-              </div>
-              <span class="text-sm font-semibold text-slate-800">ประวัติใบเสร็จรับเงิน (E-Receipt)</span>
-            </div>
-            <ChevronRight class="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-
-          <!-- Menu Item 4: Move-out Request -->
-          <button
-            @click="alert('กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก')"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group text-rose-600"
-          >
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                <LogOut class="w-4 h-4" />
-              </div>
-              <span class="text-sm font-semibold">แจ้งย้ายออกล่วงหน้า</span>
-            </div>
-            <ChevronRight class="w-4 h-4 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight
+              class="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+              :class="menu.isDanger ? 'text-rose-400' : 'text-slate-400'"
+            />
           </button>
         </div>
       </div>
     </div>
 
-    <!-- 4. Digital ID QR Code Modal -->
+    <!-- 4. Digital ID QR Code Modal Pop-up -->
     <div v-if="showQrModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 text-center relative">
         <button @click="showQrModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
@@ -212,7 +144,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import liff from '@line/liff';
 import QRCode from 'qrcode';
@@ -249,8 +181,124 @@ const tenantProfile = reactive({
   avatarUrl: ''
 });
 
+/**
+ * ----------------------------------------------------------------------
+ * 📌 Dynamic Menu Configuration (การตั้งค่าเมนูแบบยืดหยุ่น)
+ * ----------------------------------------------------------------------
+ * `featureKey`:
+ *   - กำหนดชื่อคีย์ Feature Toggle หากฟีเจอร์นี้เปิด/ปิดได้ (เช่น 'ENABLE_PARCEL_NOTIFY')
+ *   - กำหนดเป็น null/undefined หากเป็นฟีเจอร์หลักของระบบที่ห้ามปิด
+ */
+
+// 1. เมนูด่วน (Quick Actions Grid)
+const quickActionsConfig = [
+  {
+    id: 'invoices',
+    title: 'บิลค่าเช่า',
+    subtitle: 'ชำระเงิน & ดูยอดเงิน',
+    icon: CreditCard,
+    bgClass: 'bg-indigo-50',
+    iconClass: 'text-indigo-600',
+    route: '/invoices',
+    featureKey: 'ENABLE_LINE_PAYMENT'
+  },
+  {
+    id: 'maintenance',
+    title: 'แจ้งซ่อม',
+    subtitle: 'ส่งเรื่อง & ติดตามสถานะ',
+    icon: Wrench,
+    bgClass: 'bg-amber-50',
+    iconClass: 'text-amber-600',
+    route: '/liff/maintenance',
+    featureKey: 'ENABLE_MAINTENANCE_REQUEST'
+  },
+  {
+    id: 'parcels',
+    title: 'พัสดุของฉัน',
+    subtitle: 'ตรวจสอบรายการพัสดุ',
+    icon: Package,
+    bgClass: 'bg-emerald-50',
+    iconClass: 'text-emerald-600',
+    action: () => alert('ระบบพัสดุ: มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ'),
+    featureKey: 'ENABLE_PARCEL_NOTIFY' // ✅ ปิดได้โดย Admin
+  },
+  {
+    id: 'announcements',
+    title: 'ข่าวสารหอพัก',
+    subtitle: 'อ่านประกาศย้อนหลัง',
+    icon: Megaphone,
+    bgClass: 'bg-rose-50',
+    iconClass: 'text-rose-600',
+    route: '/liff/announcements',
+    featureKey: null // 🔒 ฟีเจอร์หลัก (ไม่สามารถปิดได้)
+  }
+];
+
+// 2. เมนูทั่วไป (General Settings List)
+const generalMenusConfig = [
+  {
+    id: 'profile',
+    title: 'จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)',
+    icon: User,
+    route: '/profile',
+    featureKey: null // 🔒 ฟีเจอร์หลัก
+  },
+  {
+    id: 'vehicles',
+    title: 'ยานพาหนะของฉัน (ป้ายทะเบียนรถ)',
+    icon: Car,
+    action: () => alert('ยานพาหนะ: รถทะเบียน 1กข-9999 กทม'),
+    featureKey: 'ENABLE_VEHICLE_MANAGEMENT' // ✅ ปิดได้โดย Admin
+  },
+  {
+    id: 'receipts',
+    title: 'ประวัติใบเสร็จรับเงิน (E-Receipt)',
+    icon: Receipt,
+    route: '/liff/receipts',
+    featureKey: null // 🔒 ฟีเจอร์หลัก
+  },
+  {
+    id: 'moveout',
+    title: 'แจ้งย้ายออกล่วงหน้า',
+    icon: LogOut,
+    isDanger: true,
+    action: () => alert('กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
+    featureKey: null
+  }
+];
+
+/**
+ * ----------------------------------------------------------------------
+ * 💡 Dynamic Computed Properties (ฟิลเตอร์เฉพาะเมนูที่เปิดใช้งาน)
+ * ----------------------------------------------------------------------
+ */
+const availableQuickActions = computed(() => {
+  return quickActionsConfig.filter((menu) => {
+    if (!menu.featureKey) return true; // ฟีเจอร์หลัก แสดงเสมอ
+    return featureStore.isEnabled(menu.featureKey); // แสดงเฉพาะที่เปิดใช้งาน
+  });
+});
+
+const availableGeneralMenus = computed(() => {
+  return generalMenusConfig.filter((menu) => {
+    if (!menu.featureKey) return true;
+    return featureStore.isEnabled(menu.featureKey);
+  });
+});
+
+/**
+ * ฟังก์ชันจัดการการคลิกเมนู
+ */
+const handleMenuClick = (menu) => {
+  if (menu.action) {
+    menu.action();
+  } else if (menu.route) {
+    router.push(menu.route);
+  }
+};
+
 onMounted(async () => {
-  // 1. ดึงสถานะ Feature Flags ทั้งหมด
+  // 1. ดึงข้อมูลสถานะ Feature Toggles ล่าสุด
   featureStore.fetchFeatures();
 
   // 2. LIFF Initialization & Profile Fetch
@@ -266,7 +314,7 @@ onMounted(async () => {
     console.warn('LIFF init fallback mode:', err.message);
   }
 
-  // 3. สร้าง Digital ID QR Code สำหรับให้ รปภ. สแกน
+  // 3. สร้าง Digital ID QR Code
   const payload = `TENANT-ID:SOMCHAI-ROOM-101-${Date.now()}`;
   digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
 });
