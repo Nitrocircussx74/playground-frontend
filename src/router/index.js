@@ -80,6 +80,18 @@ const routes = [
         meta: { isLiff: true, title: 'ศูนย์กลางลูกบ้าน (Tenant Hub)' }
       },
       {
+        path: 'invoices',
+        name: 'LiffInvoiceList',
+        component: () => import('@/views/LiffInvoiceListView.vue'),
+        meta: { isLiff: true, title: 'บิลค่าเช่าทั้งหมด' }
+      },
+      {
+        path: 'invoices/:id',
+        name: 'LiffInvoiceDetail',
+        component: () => import('@/views/LiffInvoiceDetailView.vue'),
+        meta: { isLiff: true, title: 'รายละเอียดบิล & ชำระเงิน' }
+      },
+      {
         path: 'pay/:invoiceId',
         name: 'LiffPayment',
         component: () => import('@/views/LiffPaymentView.vue'),
@@ -151,7 +163,6 @@ async function cmsNavigationGuard(to, from, next) {
  * ไม่แตะต้อง Admin Cookies/Tokens ป้องกันการแทรกแซงข้ามระบบ
  */
 async function liffNavigationGuard(to, from, next) {
-  // สามารถขยายการตรวจสอบ LINE Login / LIFF ID Verification ได้ตรงนี้
   console.log(`[LIFF Dedicated Guard] Routing to: ${to.path}`);
   next();
 }
