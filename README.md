@@ -8,9 +8,10 @@
 
 1. **🔒 Secure Access Token Storage (XSS Protection)**: เก็บ Access Token ไว้ใน Memory (Pinia State) เท่านั้น ห้ามเก็บลง `localStorage`
 2. **🍪 HTTP-Only Cookie Integration**: ตั้งค่า Axios Instance ด้วย `withCredentials: true` เพื่อส่งและรับ Refresh Token Cookie โดยอัตโนมัติ
-3. **🔄 Silent Refresh & Request Queueing**: Response Interceptor ดักจับ 401 Unauthorized และยิงขอ Access Token ใหม่แบบ Silent Refresh พร้อมระบบคิว (`failedQueue`) ป้องกัน race condition เมื่อยิง API ซ้ำกันหลายตัว
-4. **🛡️ Vue Router Navigation Guards**: ตรวจสอบการเปิดใช้งาน (F5) และป้องกันการเข้าถึงหน้าเว็บสำหรับ Protected Routes (`/dashboard`, `/profile`)
-5. **🎨 Premium Glassmorphism Design**: ออกแบบด้วยสไตล์ Glassmorphic UI สวยงาม รองรับ Responsive
+3. **🔄 Silent Refresh & Request Queueing**: Response Interceptor ดักจับ 401 Unauthorized และยิงขอ Access Token ใหม่แบบ Silent Refresh พร้อมระบบคิว (`failedQueue`)
+4. **🏢 Multi-System Single Repo**: สถาปัตยกรรม 1 Repo รองรับ 2 ระบบ (1. Admin Portal `/admin` กับ 2. LINE LIFF Tenant App `/liff`)
+5. **💬 LINE LIFF SDK Integration**: ติดตั้ง `@line/liff` SDK ดึงข้อมูล LINE User Profile (`userId`, `displayName`, `pictureUrl`) อัตโนมัติเมื่อเปิดผ่านแอป LINE
+6. **🎨 Tailwind CSS & Shadcn Vue Components**: ดีไซน์สไตล์ Light Mode สวยงาม สะอาดตา ด้วย Tailwind CSS v3 และ Shadcn Vue Components
 
 ---
 
