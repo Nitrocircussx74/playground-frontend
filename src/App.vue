@@ -1,5 +1,11 @@
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white flex flex-col">
+  <!-- กรณีเป็น Route ของ Admin (/admin) หรือ LIFF (/liff) ให้ Layout ของแต่ละส่วนบริหารจัดการ Viewport 100% -->
+  <div v-if="isCustomLayout" class="min-h-screen bg-slate-100 font-sans selection:bg-purple-600 selection:text-white">
+    <router-view />
+  </div>
+
+  <!-- กรณีเป็น Standalone View ทั่วไป (เช่น /login, /dashboard, /profile) -->
+  <div v-else class="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-600 selection:text-white flex flex-col">
     <!-- Ambient Background Accents -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
       <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl"></div>
@@ -13,36 +19,36 @@
           <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-600/30 group-hover:scale-105 transition-transform duration-200">
             ⚡
           </div>
-          <span class="font-bold text-lg tracking-tight text-slate-900">
+          <span class="font-bold text-base sm:text-lg tracking-tight text-slate-900">
             Vue3 Auth Portal
           </span>
         </router-link>
 
-        <nav class="flex items-center gap-4" v-if="authStore.isAuthenticated">
+        <nav class="flex items-center gap-2 sm:gap-4" v-if="authStore.isAuthenticated">
           <router-link
             to="/dashboard"
-            class="text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/dashboard' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'text-slate-600 hover:text-slate-900'"
           >
             Dashboard
           </router-link>
           <router-link
             to="/profile"
-            class="text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs sm:text-sm font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
             :class="route.path === '/profile' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'text-slate-600 hover:text-slate-900'"
           >
             Profile
           </router-link>
 
-          <div class="flex items-center gap-3 pl-3 border-l border-slate-200">
-            <span class="text-xs text-slate-600 hidden sm:inline-block font-mono font-medium">
+          <div class="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3 border-l border-slate-200">
+            <span class="text-xs text-slate-600 hidden md:inline-block font-mono font-medium">
               {{ authStore.currentUser?.email }}
             </span>
             <Button
               @click="handleLogout"
               variant="destructive"
               size="sm"
-              class="h-8 px-3 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold"
+              class="h-8 px-2.5 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold"
               :disabled="authStore.loading"
             >
               Logout
@@ -61,7 +67,7 @@
     </header>
 
     <!-- Main Content Body -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 relative z-10">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
       <router-view />
     </main>
 
@@ -75,6 +81,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { Button } from '@/components/ui/button';
@@ -82,6 +89,10 @@ import { Button } from '@/components/ui/button';
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
+
+const isCustomLayout = computed(() => {
+  return route.path.startsWith('/admin') || route.path.startsWith('/liff');
+});
 
 const handleLogout = async () => {
   await authStore.logout();
