@@ -65,6 +65,13 @@
           >
             Broadcasts
           </router-link>
+          <router-link
+            to="/features"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+            :class="route.path === '/features' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+          >
+            Features 🚩
+          </router-link>
 
           <div class="flex items-center gap-2 sm:gap-3 pl-2.5 border-l border-slate-200">
             <span class="text-xs text-slate-500 hidden md:inline-block font-mono font-medium">
@@ -100,7 +107,7 @@
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white/60 py-6 relative z-10">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
-        <p>Dormitory Management System — LINE Broadcast & LIFF Announcements Active</p>
+        <p>Dormitory Management System — Feature Flag & Dynamic Toggles Enabled</p>
       </div>
     </footer>
   </div>

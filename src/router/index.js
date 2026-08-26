@@ -48,6 +48,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/features',
+    name: 'FeatureSettings',
+    component: () => import('@/views/FeatureSettingsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/liff/pay/:invoiceId',
     name: 'LiffPayment',
     component: () => import('@/views/LiffPaymentView.vue')
@@ -71,6 +77,11 @@ const routes = [
     path: '/liff/receipts',
     name: 'LiffReceiptHistory',
     component: () => import('@/views/LiffReceiptHistoryView.vue')
+  },
+  {
+    path: '/liff/profile',
+    name: 'LiffProfile',
+    component: () => import('@/views/LiffProfileView.vue')
   },
   {
     path: '/profile',
