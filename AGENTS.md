@@ -12,13 +12,15 @@
 
 ## 📌 ข้อมูลโปรเจกต์ (Project Overview)
 
+- **Architecture Overview**: โปรเจกต์นี้ทำงานร่วมกันเป็นคู่ (Full-Stack Architecture):
+  - 🖥️ **`playground-frontend`**: ระบบ Frontend (Vue 3 + Vite + Pinia + Axios)
+  - ⚙️ **`playground-api`**: ระบบ Backend (Node.js + Express + PostgreSQL + JWT + HTTP-Only Cookie)
 - **Repository**: `https://github.com/Nitrocircussx74/playground-frontend` (GitHub Account: `Nitrocircussx74`)
 - **Package Manager**: **Yarn** (`yarn.lock`)
 - **Framework & Build Tool**: Vue 3 + Vite
 - **State Management**: **Pinia** (`src/stores/auth.js`) - เก็บ Access Token และข้อมูล User ใน Memory เท่านั้นเพื่อป้องกัน XSS
 - **Routing & Guards**: **Vue Router 4** (`src/router/index.js`) - ควบคุมการเข้าถึงหน้าด้วย Route Guard (`router.beforeEach`)
-- **HTTP Client**: **Axios** (`src/utils/api.js`) - ตั้งค่า `withCredentials: true` เพื่อรองรับ HTTP-Only Refresh Token Cookie พร้อมระบบ Request Queueing สำหรับ Silent Refresh
-- **Architecture**: Layered Clean Architecture (`src/utils`, `src/services`, `src/stores`, `src/router`, `src/views`, `src/assets`)
+- **HTTP Client**: **Axios** (`src/utils/api.js`) - ตั้งค่า `withCredentials: true` เพื่อรองรับ HTTP-Only Refresh Token Cookie จาก `playground-api` (Base URL: `http://localhost:3000`) พร้อมระบบ Request Queueing สำหรับ Silent Refresh
 - **Language Policy**: ตอบผู้ใช้และเขียนข้อความคอมเมนต์เป็น **ภาษาไทย** เท่านั้น
 
 ---
