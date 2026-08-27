@@ -28,7 +28,10 @@ export const useDashboardStore = defineStore('dashboard', {
         totalDebt: 0,
         debtorCount: 0,
         debtors: []
-      }
+      },
+      expiringLeases: [],
+      expiringLeasesCount: 0,
+      pendingMaintenanceCount: 0
     },
     revenueTrends: [],
     isLoading: false,
