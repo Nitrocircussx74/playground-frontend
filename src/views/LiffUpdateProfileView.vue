@@ -1,11 +1,23 @@
 <template>
-  <div class="min-h-screen bg-slate-100/90 pb-24 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
+  <div class="min-h-screen bg-slate-100/90 pb-28 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
     <div class="max-w-md mx-auto px-4 py-6 space-y-5 relative z-10">
       
       <!-- Header -->
-      <div class="space-y-1">
-        <h1 class="text-xl font-bold text-slate-900 tracking-tight">✏️ แก้ไขข้อมูลส่วนตัวลูกบ้าน</h1>
-        <p class="text-xs text-slate-500">อัปเดตข้อมูลติดต่อและยานพาหนะที่ลงทะเบียนในหอพัก</p>
+      <div class="flex items-center justify-between">
+        <div class="space-y-1">
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight">✏️ แก้ไขข้อมูลส่วนตัวลูกบ้าน</h1>
+          <p class="text-xs text-slate-500">อัปเดตข้อมูลติดต่อและยานพาหนะที่ลงทะเบียนในหอพัก</p>
+        </div>
+
+        <!-- Top Save Header Button -->
+        <button
+          type="button"
+          @click="saveProfile"
+          :disabled="isSubmitting || !!phoneError"
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 shrink-0"
+        >
+          {{ isSubmitting ? 'บันทึก...' : 'บันทึก' }}
+        </button>
       </div>
 
       <!-- Toast Feedback Banner -->
@@ -144,15 +156,15 @@
           </div>
         </div>
 
-        <!-- Sticky Bottom Action Button -->
-        <div class="fixed bottom-0 left-1/2 -translate-x-1/2 max-w-md w-full p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-40">
+        <!-- Inline Main Submit Button (ปุ่มบันทึกข้อมูลส่วนตัว) -->
+        <div class="pt-2">
           <button
             type="submit"
             :disabled="isSubmitting || !!phoneError"
             class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <div v-if="isSubmitting" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-            <span>{{ isSubmitting ? 'กำลังบันทึกข้อมูล...' : 'บันทึกข้อมูล (Save Changes)' }}</span>
+            <span>{{ isSubmitting ? 'กำลังบันทึกข้อมูล...' : '💾 บันทึกข้อมูลส่วนตัว (Save Profile)' }}</span>
           </button>
         </div>
       </form>
