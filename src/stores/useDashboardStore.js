@@ -37,11 +37,11 @@ export const useDashboardStore = defineStore('dashboard', {
   }),
 
   actions: {
-    async fetchSummary() {
+    async fetchSummary(buildingId) {
       this.isLoading = true;
       this.errorMessage = '';
       try {
-        const response = await dashboardService.getSummary();
+        const response = await dashboardService.getSummary({ ...(buildingId && { buildingId }) });
         if (response.success) {
           this.summary = response.data;
         }
@@ -52,9 +52,9 @@ export const useDashboardStore = defineStore('dashboard', {
       }
     },
 
-    async fetchRevenueTrend() {
+    async fetchRevenueTrend(buildingId) {
       try {
-        const response = await dashboardService.getRevenueTrend();
+        const response = await dashboardService.getRevenueTrend({ ...(buildingId && { buildingId }) });
         if (response.success) {
           this.revenueTrends = response.data;
         }

@@ -145,12 +145,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import maintenanceService from '@/services/maintenanceService';
 
 const roomStore = useRoomStore();
+const buildingStore = useBuildingStore();
 const requests = ref([]);
 const uploading = ref(false);
 const submitting = ref(false);
@@ -163,12 +165,20 @@ const form = reactive({
 });
 
 const fetchData = async () => {
-  await roomStore.fetchRooms();
-  const res = await maintenanceService.getRequests();
+  const bId = buildingStore.activeBuildingId;
+  await roomStore.fetchRooms(bId);
+  const res = await maintenanceService.getRequests({ ...(bId && { buildingId: bId }) });
   requests.value = res.data || [];
 };
 
 onMounted(fetchData);
+
+watch(
+  () => buildingStore.activeBuildingId,
+  () => {
+    fetchData();
+  }
+);
 
 const handleFileChange = async (e) => {
   const file = e.target.files[0];

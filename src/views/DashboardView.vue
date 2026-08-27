@@ -249,11 +249,12 @@ import { ref, computed, onMounted } from 'vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Bar, Doughnut } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale } from 'chart.js';
-import { useDashboardStore } from '@/stores/useDashboardStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);
 
 const dashboardStore = useDashboardStore();
+const buildingStore = useBuildingStore();
 const selectedCycle = ref('');
 const showRemindModal = ref(false);
 const reminding = ref(false);
@@ -265,9 +266,17 @@ onMounted(() => {
   loadDashboardData();
 });
 
+watch(
+  () => buildingStore.activeBuildingId,
+  () => {
+    loadDashboardData();
+  }
+);
+
 const loadDashboardData = async () => {
-  await dashboardStore.fetchSummary();
-  await dashboardStore.fetchRevenueTrend();
+  const bId = buildingStore.activeBuildingId;
+  await dashboardStore.fetchSummary(bId);
+  await dashboardStore.fetchRevenueTrend(bId);
   if (summary.value.financial?.currentCycle) {
     selectedCycle.value = summary.value.financial.currentCycle;
   }

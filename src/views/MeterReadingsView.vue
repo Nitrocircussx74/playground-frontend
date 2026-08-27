@@ -121,12 +121,14 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useMeterStore } from '@/stores/useMeterStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 
 const roomStore = useRoomStore();
 const meterStore = useMeterStore();
+const buildingStore = useBuildingStore();
 
 const form = reactive({
   roomId: '',
@@ -136,16 +138,29 @@ const form = reactive({
   isReset: false
 });
 
+const loadData = () => {
+  const bId = buildingStore.activeBuildingId;
+  roomStore.fetchRooms(bId);
+  meterStore.fetchMeterRecords(bId);
+};
+
 onMounted(() => {
-  roomStore.fetchRooms();
-  meterStore.fetchMeterRecords();
+  loadData();
 });
+
+watch(
+  () => buildingStore.activeBuildingId,
+  () => {
+    loadData();
+  }
+);
 
 const handleSubmit = async () => {
   try {
     await meterStore.recordMeter({ ...form });
     form.currentReading = '';
     alert('Meter reading saved successfully!');
+    loadData();
   } catch (error) {
     alert(error.response?.data?.message || 'Error saving meter reading');
   }

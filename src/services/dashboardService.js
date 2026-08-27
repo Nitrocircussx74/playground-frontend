@@ -1,13 +1,13 @@
 import api from '@/utils/api';
 
 export default {
-  async getSummary() {
-    const response = await api.get('/api/v1/dashboard/summary');
+  async getSummary(params = {}) {
+    const response = await api.get('/api/v1/dashboard/summary', { params });
     return response.data;
   },
 
-  async getRevenueTrend() {
-    const response = await api.get('/api/v1/dashboard/trend');
+  async getRevenueTrend(params = {}) {
+    const response = await api.get('/api/v1/dashboard/trend', { params });
     return response.data;
   },
 

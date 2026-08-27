@@ -139,11 +139,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
 
 const roomStore = useRoomStore();
+const buildingStore = useBuildingStore();
 const showCreateModal = ref(false);
 const submitting = ref(false);
 const announcements = ref([]);
@@ -155,10 +157,22 @@ const form = reactive({
   targetValue: ''
 });
 
-onMounted(() => {
-  roomStore.fetchRooms();
+const loadData = () => {
+  const bId = buildingStore.activeBuildingId;
+  roomStore.fetchRooms(bId);
   fetchAnnouncements();
+};
+
+onMounted(() => {
+  loadData();
 });
+
+watch(
+  () => buildingStore.activeBuildingId,
+  () => {
+    loadData();
+  }
+);
 
 const fetchAnnouncements = async () => {
   try {
