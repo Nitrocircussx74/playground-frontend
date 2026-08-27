@@ -175,12 +175,32 @@ const digitalIdQrUrl = ref('');
 const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
 
 const tenantProfile = reactive({
-  firstName: 'สมชาย',
-  lastName: 'ใจดี',
+  firstName: 'ผู้เช่า',
+  lastName: '',
   roomNumber: '101',
-  phone: '081-234-5678',
+  phone: '',
   avatarUrl: ''
 });
+
+const fetchTenantProfile = async (lineUserId = '') => {
+  try {
+    const res = await api.get('/api/v1/liff/profile', {
+      params: lineUserId ? { lineUserId } : {}
+    });
+    if (res.data?.success && res.data?.data) {
+      const data = res.data.data;
+      tenantProfile.firstName = data.firstName || '';
+      tenantProfile.lastName = data.lastName || '';
+      tenantProfile.roomNumber = data.roomNumber || '101';
+      tenantProfile.phone = data.phone || '';
+      if (data.linePictureUrl) {
+        tenantProfile.avatarUrl = data.linePictureUrl;
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to fetch tenant profile from API:', err.message);
+  }
+};
 
 // 1. เมนูด่วน (Quick Actions Grid)
 const quickActionsConfig = [
@@ -283,28 +303,33 @@ const handleMenuClick = (menu) => {
 
 onMounted(async () => {
   featureStore.fetchFeatures();
+  await fetchTenantProfile();
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-  try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      if (profile.pictureUrl) tenantProfile.avatarUrl = profile.pictureUrl;
-      if (profile.displayName) tenantProfile.firstName = profile.displayName;
+  const liffId = import.meta.env.VITE_LIFF_ID || import.meta.env.VITE_LINE_LIFF_ID || '';
+  if (liffId) {
+    try {
+      await liff.init({ liffId });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        if (profile.userId) {
+          await fetchTenantProfile(profile.userId);
+        }
+        if (profile.pictureUrl) tenantProfile.avatarUrl = profile.pictureUrl;
 
-      // Auto-sync LINE profile in background to database
-      api.patch('/api/v1/liff/auth/sync-profile', {
-        lineUserId: profile.userId,
-        lineDisplayName: profile.displayName,
-        linePictureUrl: profile.pictureUrl,
-        lineStatusMessage: profile.statusMessage
-      }).catch(() => {});
+        // Auto-sync LINE profile in background to database
+        api.patch('/api/v1/liff/auth/sync-profile', {
+          lineUserId: profile.userId,
+          lineDisplayName: profile.displayName,
+          linePictureUrl: profile.pictureUrl,
+          lineStatusMessage: profile.statusMessage
+        }).catch(() => {});
+      }
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
   }
 
-  const payload = `TENANT-ID:SOMCHAI-ROOM-101-${Date.now()}`;
+  const payload = `TENANT-ID:${tenantProfile.firstName}-ROOM-${tenantProfile.roomNumber}-${Date.now()}`;
   digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
 });
 </script>
