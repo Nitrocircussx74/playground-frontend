@@ -290,7 +290,7 @@ const isMobileMenuOpen = ref(false);
 
 const isOwnerRole = computed(() => {
   const role = (authStore.currentUser?.role || authStore.user?.role || '').toLowerCase();
-  return ['owner', 'super_admin', 'superadmin'].includes(role);
+  return ['owner', 'super_admin', 'superadmin', 'admin'].includes(role);
 });
 
 onMounted(() => {
@@ -310,7 +310,7 @@ watch(
 );
 
 const isCustomLayout = computed(() => {
-  return route.path.startsWith('/admin') || route.path.startsWith('/liff');
+  return route.path.startsWith('/liff') || route.path === '/login' || route.path === '/403';
 });
 
 const handleBuildingChange = (e) => {
