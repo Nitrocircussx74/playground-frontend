@@ -438,10 +438,16 @@ const isReadOnly = computed(() => {
   const userRole = (
     authStore.currentUser?.role ||
     authStore.user?.role ||
-    'MANAGER'
+    ''
   ).toLowerCase();
 
-  return userRole !== 'owner' && userRole !== 'super_admin';
+  // หากเป็น MANAGER หรือ TENANT ให้ล็อกเป็น Read-only Mode (isReadOnly = true)
+  if (userRole === 'manager' || userRole === 'tenant') {
+    return true;
+  }
+
+  // หากเป็น OWNER, super_admin, superadmin หรือ admin อนุญาตให้แก้ไขได้ (isReadOnly = false)
+  return false;
 });
 
 /**
