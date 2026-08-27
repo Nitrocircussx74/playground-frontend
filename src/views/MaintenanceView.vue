@@ -4,7 +4,9 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>🛠️</span>
+          <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
+            <Wrench class="w-5 h-5" />
+          </div>
           <span>ระบบแจ้งซ่อมและติดตามงาน (Maintenance Ticketing)</span>
         </h1>
         <p class="text-sm text-slate-500">จัดการตั๋วงานซ่อม มอบหมายช่าง คำนวณค่าซ่อม และส่งสัญญาณอัปเดต LINE ลูกบ้าน</p>
@@ -15,13 +17,15 @@
           @click="showNewModal = true"
           class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
         >
-          <span>+ สร้างใบแจ้งซ่อมใหม่</span>
+          <Plus class="w-4 h-4" />
+          <span>สร้างใบแจ้งซ่อมใหม่</span>
         </button>
         <button
           @click="fetchData"
           class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer"
         >
-          <span>🔄 รีเฟรชข้อมูล</span>
+          <RefreshCw class="w-3.5 h-3.5 text-slate-500" />
+          <span>รีเฟรชข้อมูล</span>
         </button>
       </div>
     </div>
@@ -32,7 +36,7 @@
       <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <Clock class="w-4 h-4 text-amber-500" />
             <h3 class="font-bold text-slate-800 text-sm">รอดำเนินการ (Pending)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
@@ -48,8 +52,9 @@
             class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
           >
             <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-800 font-mono">
-                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
+                <DoorClosed class="w-3.5 h-3.5" />
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
               </span>
               <span class="text-[11px] text-slate-400 font-mono">
                 {{ new Date(item.createdAt).toLocaleDateString('th-TH') }}
@@ -58,7 +63,7 @@
 
             <div>
               <h4 class="font-bold text-slate-900 text-sm group-hover:text-purple-600 transition-colors flex items-center gap-1.5">
-                <span>🔧</span>
+                <Wrench class="w-4 h-4 text-amber-500 shrink-0" />
                 <span>{{ item.title }}</span>
               </h4>
               <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
@@ -69,12 +74,16 @@
             </div>
 
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>👤 {{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <span class="flex items-center gap-1">
+                <UserCheck class="w-3.5 h-3.5 text-slate-400" />
+                <span>{{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              </span>
               <button
                 @click.stop="handleQuickStatus(item.id, 'in_progress')"
-                class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200"
+                class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1"
               >
-                ➔ ย้ายไปกำลังซ่อม
+                <Zap class="w-3 h-3" />
+                <span>➔ กำลังซ่อม</span>
               </button>
             </div>
           </div>
@@ -89,7 +98,7 @@
       <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+            <Zap class="w-4 h-4 text-blue-500" />
             <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ (In Progress)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
@@ -105,33 +114,40 @@
             class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
           >
             <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-800 font-mono">
-                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
+                <DoorClosed class="w-3.5 h-3.5" />
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
               </span>
-              <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full">
-                กำลังซ่อม
+              <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
+                <Zap class="w-3 h-3" />
+                <span>กำลังซ่อม</span>
               </span>
             </div>
 
             <div>
               <h4 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors flex items-center gap-1.5">
-                <span>⚡</span>
+                <Wrench class="w-4 h-4 text-blue-500 shrink-0" />
                 <span>{{ item.title }}</span>
               </h4>
               <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
             </div>
 
-            <div v-if="item.technicianName" class="p-2 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium">
-              👨‍🔧 ช่าง: {{ item.technicianName }}
+            <div v-if="item.technicianName" class="p-2 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium flex items-center gap-1.5">
+              <UserCheck class="w-3.5 h-3.5 text-blue-600" />
+              <span>ช่าง: {{ item.technicianName }}</span>
             </div>
 
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>👤 {{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <span class="flex items-center gap-1">
+                <UserCheck class="w-3.5 h-3.5 text-slate-400" />
+                <span>{{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              </span>
               <button
                 @click.stop="handleQuickStatus(item.id, 'resolved')"
-                class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200"
+                class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1"
               >
-                ➔ ซ่อมเสร็จแล้ว
+                <CheckCircle2 class="w-3 h-3" />
+                <span>➔ ซ่อมเสร็จแล้ว</span>
               </button>
             </div>
           </div>
@@ -146,7 +162,7 @@
       <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <CheckCircle2 class="w-4 h-4 text-emerald-500" />
             <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้น (Resolved)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
@@ -162,25 +178,32 @@
             class="p-4 bg-white/90 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
           >
             <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 font-mono">
-                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 font-mono flex items-center gap-1">
+                <DoorClosed class="w-3.5 h-3.5 text-slate-500" />
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
               </span>
-              <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                ✅ เรียบร้อย
+              <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+                <CheckCircle2 class="w-3 h-3" />
+                <span>เรียบร้อย</span>
               </span>
             </div>
 
             <div>
               <h4 class="font-bold text-slate-900 text-sm line-through decoration-slate-400 text-slate-600 flex items-center gap-1.5">
+                <Wrench class="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>{{ item.title }}</span>
               </h4>
               <p class="text-xs text-slate-500 mt-1 line-clamp-1 leading-relaxed">{{ item.description }}</p>
             </div>
 
             <div class="flex items-center justify-between text-xs pt-1">
-              <span v-if="item.technicianName" class="text-slate-500">👨‍🔧 {{ item.technicianName }}</span>
-              <span v-if="Number(item.repairCost || 0) > 0" class="font-mono font-bold text-emerald-700">
-                ฿{{ Number(item.repairCost).toLocaleString() }}
+              <span v-if="item.technicianName" class="text-slate-500 flex items-center gap-1">
+                <UserCheck class="w-3.5 h-3.5 text-slate-400" />
+                <span>{{ item.technicianName }}</span>
+              </span>
+              <span v-if="Number(item.repairCost || 0) > 0" class="font-mono font-bold text-emerald-700 flex items-center gap-1">
+                <Coins class="w-3.5 h-3.5" />
+                <span>฿{{ Number(item.repairCost).toLocaleString() }}</span>
               </span>
             </div>
           </div>
@@ -196,18 +219,24 @@
     <div v-if="selectedTicket" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div>
-            <h3 class="text-base font-bold text-slate-900">✏️ จัดการตั๋วงานซ่อม (ห้อง {{ selectedTicket.room?.roomNumber }})</h3>
-            <p class="text-xs text-slate-500">อัปเดตสถานะ มอบหมายช่าง และกรอกค่าใช้จ่ายเพิ่มเติม</p>
+          <div class="flex items-center gap-2">
+            <Edit3 class="w-5 h-5 text-purple-600" />
+            <div>
+              <h3 class="text-base font-bold text-slate-900">จัดการตั๋วงานซ่อม (ห้อง {{ selectedTicket.room?.roomNumber }})</h3>
+              <p class="text-xs text-slate-500">อัปเดตสถานะ มอบหมายช่าง และกรอกค่าใช้จ่ายเพิ่มเติม</p>
+            </div>
           </div>
-          <button @click="selectedTicket = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">✕</button>
+          <button @click="selectedTicket = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs cursor-pointer">
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
         <form @submit.prevent="handleSaveTicket" class="space-y-4 text-xs text-slate-700">
           <div>
             <label class="block font-bold text-slate-800 mb-1">หัวข้อการแจ้งซ่อม</label>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold text-slate-900">
-              {{ selectedTicket.title }}
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold text-slate-900 flex items-center gap-2">
+              <Wrench class="w-4 h-4 text-purple-600" />
+              <span>{{ selectedTicket.title }}</span>
             </div>
           </div>
 
@@ -219,7 +248,10 @@
           </div>
 
           <div v-if="selectedTicket.imageUrl || selectedTicket.photoUrl">
-            <label class="block font-bold text-slate-800 mb-1">รูปถ่ายประกอบปัญหาสภาพจริง</label>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1">
+              <Camera class="w-3.5 h-3.5 text-slate-500" />
+              <span>รูปถ่ายประกอบปัญหาสภาพจริง</span>
+            </label>
             <a :href="selectedTicket.imageUrl || selectedTicket.photoUrl" target="_blank" class="block max-h-40 rounded-xl overflow-hidden border border-slate-200">
               <img :src="selectedTicket.imageUrl || selectedTicket.photoUrl" class="w-full h-full object-cover hover:scale-105 transition-transform" />
             </a>
@@ -262,7 +294,10 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">หมายเหตุจากแอดมิน / รายงานสรุป</label>
+            <label class="block font-bold text-slate-800 mb-1 flex items-center gap-1">
+              <MessageSquare class="w-3.5 h-3.5 text-slate-500" />
+              <span>หมายเหตุจากแอดมิน / รายงานสรุป</span>
+            </label>
             <textarea
               v-model="editForm.adminNote"
               rows="3"
@@ -275,25 +310,26 @@
             <button
               type="button"
               @click="handleDeleteTicket(selectedTicket.id)"
-              class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition-all border border-rose-200"
+              class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition-all border border-rose-200 flex items-center gap-1 cursor-pointer"
             >
-              🗑️ ลบตั๋วแจ้งซ่อม
+              <Trash2 class="w-3.5 h-3.5" />
+              <span>ลบตั๋วแจ้งซ่อม</span>
             </button>
 
             <div class="flex gap-2">
               <button
                 type="button"
                 @click="selectedTicket = null"
-                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
               >
                 ยกเลิก
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50"
+                class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 flex items-center gap-1 cursor-pointer"
               >
-                {{ saving ? 'กำลังบันทึก...' : '💾 บันทึก & ส่ง LINE' }}
+                <span>{{ saving ? 'กำลังบันทึก...' : '💾 บันทึก & ส่ง LINE' }}</span>
               </button>
             </div>
           </div>
@@ -305,8 +341,13 @@
     <div v-if="showNewModal" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-base font-bold text-slate-900">➕ สร้างใบแจ้งซ่อมใหม่ (Admin)</h3>
-          <button @click="showNewModal = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">✕</button>
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
+            <Plus class="w-5 h-5 text-purple-600" />
+            <span>สร้างใบแจ้งซ่อมใหม่ (Admin)</span>
+          </h3>
+          <button @click="showNewModal = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs cursor-pointer">
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
         <form @submit.prevent="handleCreateSubmit" class="space-y-4 text-xs text-slate-700">
@@ -360,14 +401,14 @@
             <button
               type="button"
               @click="showNewModal = false"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
               :disabled="submitting || uploading"
-              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50"
+              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
             >
               {{ submitting ? 'กำลังบันทึก...' : 'สร้างตั๋วแจ้งซ่อม' }}
             </button>
@@ -380,6 +421,22 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
+import {
+  Wrench,
+  Plus,
+  RefreshCw,
+  Clock,
+  Zap,
+  CheckCircle2,
+  UserCheck,
+  Coins,
+  MessageSquare,
+  Trash2,
+  Edit3,
+  Camera,
+  DoorClosed,
+  X
+} from 'lucide-vue-next';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
