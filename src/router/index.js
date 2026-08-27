@@ -39,6 +39,12 @@ const routes = [
     meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
+    path: '/building-settings',
+    name: 'BuildingSettings',
+    component: () => import('@/views/BuildingSettingsView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
     path: '/meter-readings',
     name: 'MeterReadings',
     component: () => import('@/views/MeterReadingsView.vue'),

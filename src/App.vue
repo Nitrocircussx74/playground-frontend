@@ -59,6 +59,16 @@
         </router-link>
 
         <router-link
+          to="/building-settings"
+          @click="isMobileMenuOpen = false"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+          :class="route.path === '/building-settings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <span class="text-base">⚙️</span>
+          <span>ตั้งค่าตึก</span>
+        </router-link>
+
+        <router-link
           to="/rooms"
           @click="isMobileMenuOpen = false"
           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
