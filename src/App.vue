@@ -166,6 +166,17 @@
             </router-link>
 
             <router-link
+              v-if="isOwnerRole"
+              to="/admin/audit-logs"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/admin/audit-logs' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">📜</span>
+              <span>ประวัติการใช้งาน</span>
+            </router-link>
+
+            <router-link
               to="/features"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
