@@ -80,6 +80,12 @@ const routes = [
         meta: { isLiff: true, title: 'ศูนย์กลางลูกบ้าน (Tenant Hub)' }
       },
       {
+        path: 'profile/edit',
+        name: 'LiffUpdateProfile',
+        component: () => import('@/views/LiffUpdateProfileView.vue'),
+        meta: { isLiff: true, title: 'แก้ไขข้อมูลส่วนตัว' }
+      },
+      {
         path: 'invoices',
         name: 'LiffInvoiceList',
         component: () => import('@/views/LiffInvoiceListView.vue'),
@@ -135,12 +141,6 @@ const router = createRouter({
   routes
 });
 
-/**
- * ----------------------------------------------------------------------
- * 🏢 CMS / Admin Backoffice Navigation Guard
- * ----------------------------------------------------------------------
- * รับผิดชอบการตรวจสอบสิทธิ์ Admin (JWT Dual Token in HttpOnly Cookies)
- */
 async function cmsNavigationGuard(to, from, next) {
   const authStore = useAuthStore();
 
@@ -155,21 +155,11 @@ async function cmsNavigationGuard(to, from, next) {
   next();
 }
 
-/**
- * ----------------------------------------------------------------------
- * 📱 LINE / LIFF Tenant Dedicated Navigation Guard
- * ----------------------------------------------------------------------
- * รับผิดชอบการตรวจสอบและควบคุมฝั่งลูกบ้าน LINE LIFF แยกอิสระ 100% จาก Admin
- * ไม่แตะต้อง Admin Cookies/Tokens ป้องกันการแทรกแซงข้ามระบบ
- */
 async function liffNavigationGuard(to, from, next) {
   console.log(`[LIFF Dedicated Guard] Routing to: ${to.path}`);
   next();
 }
 
-/**
- * Master Router Dispatcher: แยก Guard ตามประเภทของ Route อย่างเด็ดขาด
- */
 router.beforeEach(async (to, from, next) => {
   if (to.path.startsWith('/liff') || to.meta.isLiff) {
     return liffNavigationGuard(to, from, next);

@@ -181,15 +181,6 @@ const tenantProfile = reactive({
   avatarUrl: ''
 });
 
-/**
- * ----------------------------------------------------------------------
- * 📌 Dynamic Menu Configuration (การตั้งค่าเมนูแบบยืดหยุ่น)
- * ----------------------------------------------------------------------
- * `featureKey`:
- *   - กำหนดชื่อคีย์ Feature Toggle หากฟีเจอร์นี้เปิด/ปิดได้ (เช่น 'ENABLE_PARCEL_NOTIFY')
- *   - กำหนดเป็น null/undefined หากเป็นฟีเจอร์หลักของระบบที่ห้ามปิด
- */
-
 // 1. เมนูด่วน (Quick Actions Grid)
 const quickActionsConfig = [
   {
@@ -199,7 +190,7 @@ const quickActionsConfig = [
     icon: CreditCard,
     bgClass: 'bg-indigo-50',
     iconClass: 'text-indigo-600',
-    route: '/liff/invoices', // 📌 ลิงก์ตรงไปยังรายการบิลลูกบ้านฝั่ง LIFF Portal
+    route: '/liff/invoices',
     featureKey: 'ENABLE_LINE_PAYMENT'
   },
   {
@@ -220,7 +211,7 @@ const quickActionsConfig = [
     bgClass: 'bg-emerald-50',
     iconClass: 'text-emerald-600',
     action: () => alert('ระบบพัสดุ: มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ'),
-    featureKey: 'ENABLE_PARCEL_NOTIFY' // ✅ ปิดได้โดย Admin
+    featureKey: 'ENABLE_PARCEL_NOTIFY'
   },
   {
     id: 'announcements',
@@ -230,7 +221,7 @@ const quickActionsConfig = [
     bgClass: 'bg-rose-50',
     iconClass: 'text-rose-600',
     route: '/liff/announcements',
-    featureKey: null // 🔒 ฟีเจอร์หลัก (ไม่สามารถปิดได้)
+    featureKey: null
   }
 ];
 
@@ -240,22 +231,22 @@ const generalMenusConfig = [
     id: 'profile',
     title: 'จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)',
     icon: User,
-    route: '/profile',
-    featureKey: null // 🔒 ฟีเจอร์หลัก
+    route: '/liff/profile/edit', // 📌 Route ตรงไปยัง LiffUpdateProfileView.vue
+    featureKey: null
   },
   {
     id: 'vehicles',
     title: 'ยานพาหนะของฉัน (ป้ายทะเบียนรถ)',
     icon: Car,
-    action: () => alert('ยานพาหนะ: รถทะเบียน 1กข-9999 กทม'),
-    featureKey: 'ENABLE_VEHICLE_MANAGEMENT' // ✅ ปิดได้โดย Admin
+    route: '/liff/profile/edit',
+    featureKey: 'ENABLE_VEHICLE_MANAGEMENT'
   },
   {
     id: 'receipts',
     title: 'ประวัติใบเสร็จรับเงิน (E-Receipt)',
     icon: Receipt,
     route: '/liff/receipts',
-    featureKey: null // 🔒 ฟีเจอร์หลัก
+    featureKey: null
   },
   {
     id: 'moveout',
@@ -267,15 +258,10 @@ const generalMenusConfig = [
   }
 ];
 
-/**
- * ----------------------------------------------------------------------
- * 💡 Dynamic Computed Properties (ฟิลเตอร์เฉพาะเมนูที่เปิดใช้งาน)
- * ----------------------------------------------------------------------
- */
 const availableQuickActions = computed(() => {
   return quickActionsConfig.filter((menu) => {
-    if (!menu.featureKey) return true; // ฟีเจอร์หลัก แสดงเสมอ
-    return featureStore.isEnabled(menu.featureKey); // แสดงเฉพาะที่เปิดใช้งาน
+    if (!menu.featureKey) return true;
+    return featureStore.isEnabled(menu.featureKey);
   });
 });
 
@@ -286,9 +272,6 @@ const availableGeneralMenus = computed(() => {
   });
 });
 
-/**
- * ฟังก์ชันจัดการการคลิกเมนู
- */
 const handleMenuClick = (menu) => {
   if (menu.action) {
     menu.action();
@@ -298,10 +281,8 @@ const handleMenuClick = (menu) => {
 };
 
 onMounted(async () => {
-  // 1. ดึงข้อมูลสถานะ Feature Toggles ล่าสุด
   featureStore.fetchFeatures();
 
-  // 2. LIFF Initialization & Profile Fetch
   const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
   try {
     await liff.init({ liffId });
@@ -314,7 +295,6 @@ onMounted(async () => {
     console.warn('LIFF init fallback mode:', err.message);
   }
 
-  // 3. สร้าง Digital ID QR Code
   const payload = `TENANT-ID:SOMCHAI-ROOM-101-${Date.now()}`;
   digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
 });
