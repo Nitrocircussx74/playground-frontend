@@ -160,6 +160,12 @@ const routes = [
         meta: { isLiff: true, title: 'ลงทะเบียนลูกบ้าน' }
       },
       {
+        path: 'onboarding',
+        name: 'LiffOnboarding',
+        component: () => import('@/views/LiffOnboardingView.vue'),
+        meta: { isLiff: true, title: 'ผูกบัญชีลูกบ้าน (Account Linking)' }
+      },
+      {
         path: 'announcements',
         name: 'LiffAnnouncements',
         component: () => import('@/views/LiffAnnouncementsView.vue'),
