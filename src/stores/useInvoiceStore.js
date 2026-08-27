@@ -75,6 +75,21 @@ export const useInvoiceStore = defineStore('invoice', {
       }
     },
 
+    async recordManualPayment(invoiceId, payload) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      try {
+        const response = await invoiceService.recordManualPayment(invoiceId, payload);
+        await this.fetchInvoices();
+        return response;
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to record manual payment';
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async exportPdf(invoiceId, invoiceNumber) {
       this.isLoading = true;
       try {

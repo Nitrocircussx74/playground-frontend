@@ -21,6 +21,11 @@ export default {
     return response.data;
   },
 
+  async recordManualPayment(invoiceId, payload) {
+    const response = await api.post(`/api/v1/invoices/${invoiceId}/pay-manual`, payload);
+    return response.data;
+  },
+
   async exportPdf(invoiceId) {
     const response = await api.get(`/api/v1/invoices/${invoiceId}/export`, {
       responseType: 'blob'
