@@ -127,6 +127,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
+import { showSuccess, showError, showConfirm } from '@/utils/swal';
 
 const buildingStore = useBuildingStore();
 const loading = ref(false);
@@ -193,13 +194,13 @@ const summaryTotals = computed(() => {
 const handlePublishInvoices = async () => {
   if (draftInvoices.value.length === 0) return;
 
-  if (
-    !confirm(
-      `ยืนยันการเปลี่ยนสถานะบิลเป็น Pending และส่ง LINE Flex Message แจ้งบิลไปยังผู้เช่าจำนวน ${draftInvoices.value.length} รายใช่หรือไม่?`
-    )
-  ) {
-    return;
-  }
+  const confirmed = await showConfirm(
+    'ยืนยันออกบิล & ส่งแจ้งเตือน',
+    `คุณต้องการเปลี่ยนสถานะบิลเป็น Pending และส่ง LINE Flex Message แจ้งบิลไปยังผู้เช่าจำนวน ${draftInvoices.value.length} รายใช่หรือไม่?`,
+    'ส่งแจ้งเตือนทันที'
+  );
+
+  if (!confirmed) return;
 
   publishing.value = true;
   try {
@@ -208,12 +209,12 @@ const handlePublishInvoices = async () => {
     });
 
     if (res.data.success) {
-      alert(res.data.message || 'ยืนยันบิลสำเร็จและส่งแจ้งเตือนเรียบร้อยแล้ว!');
+      await showSuccess('สำเร็จ!', res.data.message || 'ยืนยันบิลสำเร็จและส่งแจ้งเตือนเรียบร้อยแล้ว!');
       fetchDraftInvoices();
     }
   } catch (error) {
     console.error('Failed to publish invoices:', error);
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการยืนยันบิล');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการยืนยันบิล');
   } finally {
     publishing.value = false;
   }

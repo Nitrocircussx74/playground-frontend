@@ -251,6 +251,7 @@
 import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
+import { showSuccess, showError, showWarning, showConfirm } from '@/utils/swal';
 
 const props = defineProps({
   onSuccess: {
@@ -454,13 +455,16 @@ const handleKeyNavigation = (event, rowIndex, colType) => {
  */
 const handleGenerateInvoices = async () => {
   if (totalErrors.value > 0) {
-    alert('มีรายการเลขมิเตอร์ผิดพลาด กรุณาแก้ไขข้อผิดพลาดขอบสีแดงก่อนดำเนินการ');
+    showWarning('พบข้อมูลมิเตอร์ผิดพลาด', 'กรุณาตรวจสอบและแก้ไขข้อผิดพลาดขอบสีแดงก่อนดำเนินการออกบิล');
     return;
   }
 
-  if (!confirm(`ยืนยันการคำนวณและสร้างบิล Draft จำนวน ${rows.value.length} ห้องพักใช่หรือไม่?`)) {
-    return;
-  }
+  const confirmed = await showConfirm(
+    'คำนวณ & ออกบิลร่าง',
+    `ยืนยันการคำนวณและสร้างบิล Draft จำนวน ${rows.value.length} ห้องพักใช่หรือไม่?`
+  );
+
+  if (!confirmed) return;
 
   submitting.value = true;
   try {
@@ -478,14 +482,14 @@ const handleGenerateInvoices = async () => {
     const res = await api.post(`/api/admin/buildings/${buildingStore.activeBuildingId}/invoices/generate`, payload);
 
     if (res.data.success) {
-      alert(res.data.message || 'สร้างบิลสถานะ Draft สำเร็จเรียบร้อยแล้ว!');
+      await showSuccess('สำเร็จ!', res.data.message || 'สร้างบิลสถานะ Draft สำเร็จเรียบร้อยแล้ว');
       if (props.onSuccess) {
         props.onSuccess();
       }
     }
   } catch (error) {
     console.error('Failed to generate invoices:', error);
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการออกบิล');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการออกบิล');
   } finally {
     submitting.value = false;
   }

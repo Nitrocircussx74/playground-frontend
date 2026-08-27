@@ -150,6 +150,7 @@ import liff from '@line/liff';
 import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
+import { showWarning } from '@/utils/swal';
 
 import {
   CreditCard,
@@ -210,7 +211,7 @@ const quickActionsConfig = [
     icon: Package,
     bgClass: 'bg-emerald-50',
     iconClass: 'text-emerald-600',
-    action: () => alert('ระบบพัสดุ: มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ'),
+    action: () => showWarning('ระบบพัสดุ', 'มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ'),
     featureKey: 'ENABLE_PARCEL_NOTIFY'
   },
   {
@@ -253,7 +254,7 @@ const generalMenusConfig = [
     title: 'แจ้งย้ายออกล่วงหน้า',
     icon: LogOut,
     isDanger: true,
-    action: () => alert('กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
+    action: () => showWarning('แจ้งย้ายออก', 'กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
     featureKey: null
   }
 ];

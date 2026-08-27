@@ -75,6 +75,7 @@
 import { ref, onMounted } from 'vue';
 import liff from '@line/liff';
 import api from '@/utils/api';
+import { showError } from '@/utils/swal';
 
 const loading = ref(true);
 const paidInvoices = ref([]);
@@ -126,7 +127,7 @@ const downloadReceiptPdf = async (invoiceId, invoiceNumber) => {
     link.remove();
     window.URL.revokeObjectURL(url);
   } catch (err) {
-    alert(err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
   }
 };
 </script>

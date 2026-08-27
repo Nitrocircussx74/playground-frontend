@@ -21,6 +21,7 @@
     "pinia": "^2.1.7",
     "qrcode": "^1.5.4",
     "radix-vue": "^1.9.17",
+    "sweetalert2": "^11.26.25",
     "tailwind-merge": "^3.6.0",
     "vue": "^3.4.29",
     "vue-chartjs": "^5.3.4",

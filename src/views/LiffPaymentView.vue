@@ -147,6 +147,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
+import { showError } from '@/utils/swal';
 
 const route = useRoute();
 const invoiceId = route.params.invoiceId;
@@ -219,7 +220,7 @@ const handleUploadSlip = async () => {
       message: res.data.message
     };
   } catch (error) {
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการแนบสลิป');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการแนบสลิป');
   } finally {
     submitting.value = false;
   }

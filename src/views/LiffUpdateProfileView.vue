@@ -238,6 +238,7 @@ import { useRouter } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
 import { useFeatureStore } from '@/stores/useFeatureStore';
+import { showConfirm } from '@/utils/swal';
 import { Trash2, X } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -368,8 +369,9 @@ const addVehicle = () => {
   showToast('ลงทะเบียนยานพาหนะเรียบร้อยแล้ว', 'success');
 };
 
-const removeVehicle = (id) => {
-  if (!confirm('ยืนยันลบรายการยานพาหนะนี้?')) return;
+const removeVehicle = async (id) => {
+  const confirmed = await showConfirm('ลบยานพาหนะ', 'ยืนยันลบรายการยานพาหนะนี้?');
+  if (!confirmed) return;
   vehicles.value = vehicles.value.filter((v) => v.id !== id);
   showToast('ลบรายการยานพาหนะแล้ว', 'success');
 };

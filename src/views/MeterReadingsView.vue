@@ -167,6 +167,7 @@ import { useMeterStore } from '@/stores/useMeterStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import MeterReadingTable from '@/components/meter/MeterReadingTable.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
+import { showSuccess, showError } from '@/utils/swal';
 
 const activeTab = ref('fast-table');
 const roomStore = useRoomStore();
@@ -206,10 +207,10 @@ const handleSubmit = async () => {
   try {
     await meterStore.recordMeter({ ...form });
     form.currentReading = '';
-    alert('Meter reading saved successfully!');
+    await showSuccess('สำเร็จ!', 'บันทึกมิเตอร์สำเร็จแล้ว!');
     loadData();
   } catch (error) {
-    alert(error.response?.data?.message || 'Error saving meter reading');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Error saving meter reading');
   }
 };
 </script>

@@ -251,6 +251,7 @@ import { Bar, Doughnut } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale } from 'chart.js';
 import { useDashboardStore } from '@/stores/useDashboardStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { showSuccess, showError } from '@/utils/swal';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);
 
@@ -295,10 +296,10 @@ const handleRemindDebtors = async () => {
   reminding.value = true;
   try {
     const res = await dashboardStore.remindDebtors();
-    alert(res.message || 'Debt reminder notifications sent successfully!');
+    await showSuccess('สำเร็จ!', res.message || 'ส่งการแจ้งเตือนทวงถามยอดค้างชำระเรียบร้อยแล้ว');
     showRemindModal.value = false;
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to send debt reminders');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to send debt reminders');
   } finally {
     reminding.value = false;
   }

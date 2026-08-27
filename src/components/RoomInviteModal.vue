@@ -121,6 +121,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import api from '@/utils/api';
+import { showError, showConfirm, showToast } from '@/utils/swal';
 
 const props = defineProps({
   show: Boolean,
@@ -164,21 +165,24 @@ const handleGenerateInvite = async () => {
   try {
     const res = await api.post(`/api/v1/rooms/${props.room.id}/invites`);
     newlyGenerated.value = res.data.data;
+    showToast('สร้างรหัสเชิญสำเร็จ!');
     await fetchInvites();
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to generate invite code');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to generate invite code');
   } finally {
     generating.value = false;
   }
 };
 
 const handleRevokeInvite = async (inviteId) => {
-  if (!confirm('คุณต้องการยกเลิกรหัสเชิญนี้ใช่หรือไม่?')) return;
+  const confirmed = await showConfirm('ยกเลิกรหัสเชิญ', 'คุณต้องการยกเลิกรหัสเชิญนี้ใช่หรือไม่?');
+  if (!confirmed) return;
   try {
     await api.delete(`/api/v1/rooms/invites/${inviteId}`);
+    showToast('ยกเลิกรหัสเชิญเรียบร้อยแล้ว');
     await fetchInvites();
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to revoke invite');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to revoke invite');
   }
 };
 

@@ -158,6 +158,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
+import { showSuccess, showError } from '@/utils/swal';
 
 const route = useRoute();
 const invoiceId = route.params.id;
@@ -242,9 +243,9 @@ const handleUploadSlip = async () => {
 
     // อัปเดตสถานะเป็๋น reviewing ทันทีโดยไม่ต้องโหลดใหม่
     invoice.value.status = 'reviewing';
-    alert('ส่งสลิปโอนเงินเรียบร้อยแล้ว! แอดมินกำลังทำการตรวจสอบยอดเงินครับ');
+    await showSuccess('สำเร็จ!', 'ส่งสลิปโอนเงินเรียบร้อยแล้ว! แอดมินกำลังทำการตรวจสอบยอดเงินครับ');
   } catch (err) {
-    alert(err.response?.data?.message || 'เกิดข้อผิดพลาดในการแนบสลิป');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'เกิดข้อผิดพลาดในการแนบสลิป');
   } finally {
     submitting.value = false;
   }
@@ -264,7 +265,7 @@ const downloadReceiptPdf = async () => {
     link.click();
     link.remove();
   } catch (err) {
-    alert('ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
   }
 };
 </script>

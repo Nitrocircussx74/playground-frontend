@@ -142,6 +142,7 @@
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
 
 const roomStore = useRoomStore();
@@ -187,7 +188,7 @@ const handleCreateAnnouncement = async () => {
   submitting.value = true;
   try {
     const res = await api.post('/api/v1/announcements', { ...form });
-    alert(` broadcast Announcement sent successfully to ${res.data.data.recipientCount} tenants!`);
+    await showSuccess('สำเร็จ!', `บรอดแคสต์ประกาศข่าวสารเรียบร้อยแล้ว (ส่งถึงลูกบ้าน ${res.data.data.recipientCount} ราย)`);
     form.title = '';
     form.content = '';
     form.targetType = 'all';
@@ -195,7 +196,7 @@ const handleCreateAnnouncement = async () => {
     showCreateModal.value = false;
     fetchAnnouncements();
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to send announcement');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to send announcement');
   } finally {
     submitting.value = false;
   }

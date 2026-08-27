@@ -188,6 +188,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
 import api from '@/utils/api';
+import { showSuccess, showError } from '@/utils/swal';
 
 const props = defineProps({
   show: Boolean,
@@ -320,16 +321,16 @@ const handleSubmit = async () => {
 
     if (isEditing.value) {
       await api.put(`/api/v1/invoices/${props.invoice.id}`, payload);
-      alert(`อัปเดตใบแจ้งหนี้ ${props.invoice.invoiceNumber} เรียบร้อยแล้ว!`);
+      await showSuccess('สำเร็จ!', `อัปเดตใบแจ้งหนี้ ${props.invoice.invoiceNumber} เรียบร้อยแล้ว`);
     } else {
       await api.post('/api/v1/invoices', payload);
-      alert('สร้างใบแจ้งหนี้เรียบร้อยแล้ว!');
+      await showSuccess('สำเร็จ!', 'สร้างใบแจ้งหนี้เรียบร้อยแล้ว');
     }
 
     emit('saved');
     emit('close');
   } catch (error) {
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกใบแจ้งหนี้');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกใบแจ้งหนี้');
   } finally {
     submitting.value = false;
   }

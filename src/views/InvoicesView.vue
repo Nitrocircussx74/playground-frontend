@@ -168,6 +168,7 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
+import { showSuccess, showError, showConfirm } from '@/utils/swal';
 
 const activeTab = ref('all-invoices');
 const roomStore = useRoomStore();
@@ -210,19 +211,20 @@ const handleUploadSlip = async (invoiceId, event) => {
   try {
     const uploadRes = await uploadService.uploadFile(file);
     await invoiceStore.uploadSlip(invoiceId, uploadRes.data.url);
-    alert('Slip uploaded successfully!');
+    await showSuccess('สำเร็จ!', 'อัปโหลดสลิปโอนเงินเรียบร้อยแล้ว');
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to upload slip');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to upload slip');
   }
 };
 
 const handleApprove = async (invoiceId) => {
-  if (!confirm('Approve payment for this invoice?')) return;
+  const confirmed = await showConfirm('ยืนยันชำระเงิน', 'คุณต้องการยืนยันการชำระเงินและเปลี่ยนสถานะบิลนี้เป็น Paid ใช่หรือไม่?');
+  if (!confirmed) return;
   try {
     await invoiceStore.updateStatus(invoiceId, 'paid');
-    alert('Invoice marked as PAID!');
+    await showSuccess('สำเร็จ!', 'อัปเดตสถานะใบแจ้งหนี้เป็น PAID (ชำระแล้ว)');
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to update status');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to update status');
   }
 };
 </script>

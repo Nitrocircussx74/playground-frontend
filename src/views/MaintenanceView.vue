@@ -150,6 +150,7 @@ import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import maintenanceService from '@/services/maintenanceService';
+import { showSuccess, showError, showToast } from '@/utils/swal';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -188,8 +189,9 @@ const handleFileChange = async (e) => {
   try {
     const res = await uploadService.uploadFile(file);
     form.imageUrl = res.data.url;
+    showToast('อัปโหลดรูปภาพเรียบร้อยแล้ว');
   } catch (err) {
-    alert(err.response?.data?.message || 'File upload failed');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'File upload failed');
   } finally {
     uploading.value = false;
   }
@@ -199,13 +201,13 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     await maintenanceService.createRequest({ ...form });
-    alert('Maintenance request submitted successfully!');
+    await showSuccess('สำเร็จ!', 'บันทึกข้อมูลการแจ้งซ่อมเรียบร้อยแล้ว');
     form.title = '';
     form.description = '';
     form.imageUrl = '';
     fetchData();
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to submit request');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to submit request');
   } finally {
     submitting.value = false;
   }
@@ -214,9 +216,10 @@ const handleSubmit = async () => {
 const handleUpdateStatus = async (id, status) => {
   try {
     await maintenanceService.updateStatus(id, status);
+    showToast(`อัปเดตสถานะเป็น ${status} เรียบร้อยแล้ว`);
     fetchData();
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to update status');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to update status');
   }
 };
 </script>

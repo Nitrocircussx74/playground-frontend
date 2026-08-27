@@ -207,6 +207,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
+import { showSuccess, showError, showToast } from '@/utils/swal';
 
 const buildingStore = useBuildingStore();
 
@@ -244,9 +245,9 @@ const handleFileUpload = async (event) => {
   try {
     const res = await uploadService.uploadFile(file);
     editForm.paymentQrUrl = res.data.url;
-    alert('อัปโหลดไฟล์ QR Code เรียบร้อยแล้ว!');
+    showToast('อัปโหลดไฟล์ QR Code เรียบร้อยแล้ว!');
   } catch (error) {
-    alert(error.response?.data?.message || 'ไม่สามารถอัปโหลดไฟล์ได้');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถอัปโหลดไฟล์ได้');
   }
 };
 
@@ -254,13 +255,13 @@ const handleCreateBuilding = async () => {
   submitting.value = true;
   try {
     await buildingStore.createBuilding({ ...createForm });
-    alert('สร้างตึกใหม่เรียบร้อยแล้ว!');
+    await showSuccess('สำเร็จ!', 'สร้างตึกใหม่เรียบร้อยแล้ว');
     showCreateModal.value = false;
     createForm.name = '';
     createForm.address = '';
     createForm.promptpayNum = '';
   } catch (error) {
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการสร้างตึก');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการสร้างตึก');
   } finally {
     submitting.value = false;
   }
@@ -271,10 +272,10 @@ const handleUpdateSetting = async () => {
   submitting.value = true;
   try {
     await buildingStore.updateBuildingSetting(selectedBuilding.value.id, { ...editForm });
-    alert('อัปเดตการตั้งค่าประจำตึกเรียบร้อยแล้ว!');
+    await showSuccess('สำเร็จ!', 'อัปเดตการตั้งค่าประจำตึกเรียบร้อยแล้ว');
     showEditModal.value = false;
   } catch (error) {
-    alert(error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกการตั้งค่า');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกการตั้งค่า');
   } finally {
     submitting.value = false;
   }

@@ -27,7 +27,20 @@
     <div v-if="showCreateModal" class="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
       <h2 class="text-lg font-semibold text-slate-900">Add New Room (เพิ่มห้องพักใหม่)</h2>
 
-      <form @submit.prevent="handleCreateRoom" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <form @submit.prevent="handleCreateRoom" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Building (ประจำตึก)</label>
+          <select
+            v-model="form.buildingId"
+            required
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+          >
+            <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
+              {{ b.name }}
+            </option>
+          </select>
+        </div>
+
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Room Number (เลขห้อง)</label>
           <input
@@ -121,6 +134,7 @@
 import { reactive, ref, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { showSuccess, showError } from '@/utils/swal';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
 import RoomInviteModal from '@/components/RoomInviteModal.vue';
 
@@ -133,18 +147,24 @@ const selectedRoomForInvite = ref(null);
 
 const form = reactive({
   roomNumber: '',
-  floor: 2,
+  floor: 1,
   price: 4500,
-  status: 'available'
+  status: 'available',
+  buildingId: buildingStore.activeBuildingId || ''
 });
 
 onMounted(() => {
+  buildingStore.fetchBuildings();
   roomStore.fetchRooms(buildingStore.activeBuildingId);
+  if (buildingStore.activeBuildingId) {
+    form.buildingId = buildingStore.activeBuildingId;
+  }
 });
 
 watch(
   () => buildingStore.activeBuildingId,
   (newBuildingId) => {
+    form.buildingId = newBuildingId;
     roomStore.fetchRooms(newBuildingId);
   }
 );
@@ -153,13 +173,13 @@ const handleCreateRoom = async () => {
   try {
     await roomStore.createRoom({
       ...form,
-      buildingId: buildingStore.activeBuildingId
+      buildingId: form.buildingId || buildingStore.activeBuildingId
     });
-    alert(`Room ${form.roomNumber} created successfully!`);
+    await showSuccess('สำเร็จ!', `สร้างห้องพัก ${form.roomNumber} เรียบร้อยแล้ว`);
     form.roomNumber = '';
     showCreateModal.value = false;
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to create room');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to create room');
   }
 };
 

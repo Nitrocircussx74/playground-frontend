@@ -133,8 +133,8 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
-import liff from '@line/liff';
 import api from '@/utils/api';
+import { showSuccess, showError } from '@/utils/swal';
 
 const activeTab = ref('new');
 const loading = ref(false);
@@ -209,14 +209,14 @@ const handleSubmit = async () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
-    alert('บันทึกข้อมูลการแจ้งซ่อมเรียบร้อยแล้ว!');
+    await showSuccess('สำเร็จ!', 'บันทึกข้อมูลการแจ้งซ่อมเรียบร้อยแล้ว!');
     form.title = '';
     form.description = '';
     selectedFile.value = null;
     previewUrl.value = '';
     activeTab.value = 'tracking';
   } catch (err) {
-    alert(err.response?.data?.message || 'ไม่สามารถบันทึกข้อมูลการแจ้งซ่อมได้');
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถบันทึกข้อมูลการแจ้งซ่อมได้');
   } finally {
     submitting.value = false;
   }

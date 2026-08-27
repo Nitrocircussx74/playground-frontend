@@ -72,6 +72,7 @@
 import { onMounted, watch } from 'vue';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { showError, showToast } from '@/utils/swal';
 
 const featureStore = useFeatureStore();
 const buildingStore = useBuildingStore();
@@ -94,8 +95,9 @@ watch(
 const handleToggle = async (key, newValue) => {
   try {
     await featureStore.toggleFeature(key, newValue, buildingStore.activeBuildingId);
+    showToast(`อัปเดตฟีเจอร์ ${key} เรียบร้อยแล้ว`);
   } catch (error) {
-    alert(error.response?.data?.message || 'Failed to toggle feature');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to toggle feature');
   }
 };
 </script>
