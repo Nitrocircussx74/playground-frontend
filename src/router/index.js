@@ -69,6 +69,18 @@ const routes = [
     meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
+    path: '/parcels',
+    name: 'AdminParcels',
+    component: () => import('@/views/AdminParcelView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/admin/parcels',
+    name: 'AdminParcelsDirect',
+    component: () => import('@/views/AdminParcelView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
     path: '/features',
     name: 'FeatureSettings',
     component: () => import('@/views/FeatureSettingsView.vue'),
@@ -150,6 +162,12 @@ const routes = [
         name: 'LiffMaintenance',
         component: () => import('@/views/LiffMaintenanceView.vue'),
         meta: { isLiff: true, title: 'แจ้งซ่อม & ติดตามสถานะ' }
+      },
+      {
+        path: 'parcels',
+        name: 'LiffParcels',
+        component: () => import('@/views/LiffParcelsView.vue'),
+        meta: { isLiff: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
       },
       {
         path: 'receipts',

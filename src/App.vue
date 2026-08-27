@@ -145,6 +145,16 @@
               <span class="text-base">📢</span>
               <span>ข่าวสาร & ประกาศ</span>
             </router-link>
+
+            <router-link
+              to="/parcels"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/parcels' || route.path === '/admin/parcels' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">📦</span>
+              <span>จัดการพัสดุ</span>
+            </router-link>
           </div>
         </div>
 
