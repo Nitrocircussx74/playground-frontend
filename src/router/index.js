@@ -171,8 +171,20 @@ async function cmsNavigationGuard(to, from, next) {
   }
 
   if (to.meta.roles && to.meta.roles.length > 0) {
-    const userRole = (authStore.user?.role || 'tenant').toLowerCase();
+    const userRole = (
+      authStore.user?.role ||
+      authStore.currentUser?.role ||
+      'tenant'
+    ).toLowerCase();
+
     const allowedRoles = to.meta.roles.map((r) => r.toLowerCase());
+    const isCmsAdminUser = ['admin', 'super_admin', 'superadmin', 'owner', 'manager'].includes(userRole);
+
+    // If route requires 'admin' role, allow any CMS backoffice role (admin, super_admin, owner, manager)
+    if (allowedRoles.includes('admin') && isCmsAdminUser) {
+      return next();
+    }
+
     if (!allowedRoles.includes(userRole)) {
       return next({ path: '/403' });
     }
