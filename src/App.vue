@@ -11,9 +11,9 @@
     </div>
 
     <!-- Glassmorphism Light Navigation Bar -->
-    <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-sm">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <router-link to="/" class="flex items-center gap-2.5 group text-decoration-none">
+    <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <router-link to="/" class="flex items-center gap-2.5 group text-decoration-none shrink-0">
           <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-600/30 group-hover:scale-105 transition-transform duration-200">
             🏢
           </div>
@@ -22,66 +22,95 @@
           </span>
         </router-link>
 
-        <nav class="flex items-center gap-1.5 sm:gap-2.5" v-if="authStore.isAuthenticated">
+        <nav class="flex items-center gap-1.5 sm:gap-2" v-if="authStore.isAuthenticated">
           <router-link
             to="/dashboard"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/dashboard' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/dashboard' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Dashboard
           </router-link>
+
+          <router-link
+            to="/buildings"
+            class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+            :class="route.path === '/buildings' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+          >
+            <span>🏢</span>
+            <span>Buildings</span>
+          </router-link>
+
           <router-link
             to="/rooms"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/rooms' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/rooms' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Rooms
           </router-link>
+
           <router-link
             to="/meter-readings"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/meter-readings' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/meter-readings' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Meters
           </router-link>
+
           <router-link
             to="/invoices"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/invoices' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/invoices' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Invoices
           </router-link>
+
           <router-link
             to="/maintenance"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/maintenance' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/maintenance' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Maintenance
           </router-link>
+
           <router-link
             to="/announcements"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/announcements' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/announcements' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Broadcasts
           </router-link>
+
           <router-link
             to="/features"
             class="text-xs sm:text-sm font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-            :class="route.path === '/features' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
+            :class="route.path === '/features' ? 'bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'"
           >
             Features 🚩
           </router-link>
 
-          <div class="flex items-center gap-2 sm:gap-3 pl-2.5 border-l border-slate-200">
-            <span class="text-xs text-slate-500 hidden md:inline-block font-mono font-medium">
+          <!-- Building Context Switcher Dropdown in Top Header -->
+          <div class="flex items-center gap-1.5 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-xl shadow-2xs ml-1">
+            <span class="text-xs font-bold text-purple-900 hidden lg:inline">🏢 เลือกตึก:</span>
+            <select
+              :value="buildingStore.activeBuildingId"
+              @change="handleBuildingChange"
+              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2 py-0.5 focus:outline-hidden cursor-pointer"
+            >
+              <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
+                {{ b.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2 sm:gap-3 pl-2.5 border-l border-slate-200 shrink-0">
+            <span class="text-xs text-slate-500 hidden xl:inline-block font-mono font-medium">
               {{ authStore.currentUser?.email }}
             </span>
             <Button
               @click="handleLogout"
               variant="destructive"
               size="sm"
-              class="h-8 px-2.5 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold shadow-xs"
+              class="h-8 px-2.5 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-semibold shadow-2xs"
               :disabled="authStore.loading"
             >
               Logout
@@ -100,32 +129,44 @@
     </header>
 
     <!-- Main Content Body -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
       <router-view />
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white/60 py-6 relative z-10">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
-        <p>Dormitory Management System — Feature Flag & Dynamic Toggles Enabled</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs text-slate-500 font-medium">
+        <p>Dormitory Management System — Multi-Building Architecture & Dynamic Toggles Enabled</p>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useRouter, useRoute } from 'vue-router';
 import { Button } from '@/components/ui/button';
 
 const authStore = useAuthStore();
+const buildingStore = useBuildingStore();
 const router = useRouter();
 const route = useRoute();
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    buildingStore.fetchBuildings();
+  }
+});
 
 const isCustomLayout = computed(() => {
   return route.path.startsWith('/admin') || route.path.startsWith('/liff');
 });
+
+const handleBuildingChange = (e) => {
+  buildingStore.setActiveBuildingId(e.target.value);
+};
 
 const handleLogout = async () => {
   await authStore.logout();
