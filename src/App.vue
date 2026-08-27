@@ -210,8 +210,11 @@
             <select
               :value="buildingStore.activeBuildingId"
               @change="handleBuildingChange"
-              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2 py-1 focus:outline-hidden cursor-pointer"
+              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden cursor-pointer min-w-[140px]"
             >
+              <option v-if="buildingStore.buildings.length === 0" value="" disabled>
+                {{ buildingStore.isLoading ? 'กำลังโหลดตึก...' : 'ไม่พบข้อมูลตึก' }}
+              </option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
                 {{ b.name }}
               </option>
@@ -237,7 +240,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useRouter, useRoute } from 'vue-router';
@@ -255,6 +258,16 @@ onMounted(() => {
     buildingStore.fetchBuildings();
   }
 });
+
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth) => {
+    if (isAuth && buildingStore.buildings.length === 0) {
+      buildingStore.fetchBuildings();
+    }
+  },
+  { immediate: true }
+);
 
 const isCustomLayout = computed(() => {
   return route.path.startsWith('/admin') || route.path.startsWith('/liff');

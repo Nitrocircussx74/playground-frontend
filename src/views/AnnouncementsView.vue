@@ -158,7 +158,10 @@ const form = reactive({
   targetValue: ''
 });
 
-const loadData = () => {
+const loadData = async () => {
+  if (buildingStore.buildings.length === 0) {
+    await buildingStore.fetchBuildings();
+  }
   const bId = buildingStore.activeBuildingId;
   roomStore.fetchRooms(bId);
   fetchAnnouncements();
