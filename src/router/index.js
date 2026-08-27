@@ -119,7 +119,9 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/liff/profile'
+        name: 'LiffEntry',
+        component: () => import('@/views/LiffEntryView.vue'),
+        meta: { isLiff: true, title: 'ระบบจัดการหอพัก (LINE LIFF)' }
       },
       {
         path: 'profile',
