@@ -153,15 +153,38 @@
           <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
             System Settings
           </div>
-          <router-link
-            to="/features"
-            @click="isMobileMenuOpen = false"
-            class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
-            :class="route.path === '/features' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
-          >
-            <span class="text-base">🚩</span>
-            <span>ตั้งค่าฟีเจอร์</span>
-          </router-link>
+          <div class="space-y-1">
+            <router-link
+              v-if="isOwnerRole"
+              to="/admin/users"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/admin/users' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">👥</span>
+              <span>จัดการแอดมิน</span>
+            </router-link>
+
+            <router-link
+              to="/features"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/features' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">🚩</span>
+              <span>ตั้งค่าฟีเจอร์</span>
+            </router-link>
+
+            <router-link
+              to="/profile"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/profile' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">👤</span>
+              <span>โปรไฟล์ของฉัน</span>
+            </router-link>
+          </div>
         </div>
       </nav>
 
@@ -253,6 +276,11 @@ const router = useRouter();
 const route = useRoute();
 
 const isMobileMenuOpen = ref(false);
+
+const isOwnerRole = computed(() => {
+  const role = (authStore.currentUser?.role || authStore.user?.role || '').toLowerCase();
+  return ['owner', 'super_admin', 'superadmin'].includes(role);
+});
 
 onMounted(() => {
   if (authStore.isAuthenticated) {

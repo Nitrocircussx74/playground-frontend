@@ -80,6 +80,12 @@ const routes = [
     component: () => import('@/views/ProfileView.vue'),
     meta: { isCms: true, requiresAuth: true }
   },
+  {
+    path: '/admin/users',
+    name: 'AdminUserManagement',
+    component: () => import('@/views/AdminUserManagementView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'] }
+  },
 
   // 📱 2. LINE / LIFF Tenant Portal Routes (แยก Guard ทำงานอิสระเฉพาะของฝั่ง LINE)
   {
