@@ -25,21 +25,15 @@
 
     <!-- Create Room Form Panel -->
     <div v-if="showCreateModal" class="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
-      <h2 class="text-lg font-semibold text-slate-900">Add New Room (เพิ่มห้องพักใหม่)</h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-slate-900">Add New Room (เพิ่มห้องพักใหม่)</h2>
+        <span class="text-xs font-bold px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full flex items-center gap-1.5">
+          <span>🏢</span>
+          <span>ตึก: {{ activeBuildingName }}</span>
+        </span>
+      </div>
 
-      <form @submit.prevent="handleCreateRoom" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Building (ประจำตึก)</label>
-          <select
-            v-model="form.buildingId"
-            required
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-          >
-            <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
-              {{ b.name }}
-            </option>
-          </select>
-        </div>
+      <form @submit.prevent="handleCreateRoom" class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Room Number (เลขห้อง)</label>
@@ -131,7 +125,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, computed, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';
@@ -140,6 +134,11 @@ import RoomInviteModal from '@/components/RoomInviteModal.vue';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
+
+const activeBuildingName = computed(() => {
+  const current = buildingStore.buildings.find((b) => b.id === buildingStore.activeBuildingId);
+  return current ? current.name : 'ตึกที่เลือกอยู่';
+});
 
 const showCreateModal = ref(false);
 const showInviteModal = ref(false);
