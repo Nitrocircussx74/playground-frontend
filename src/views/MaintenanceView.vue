@@ -1,169 +1,417 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center justify-between">
+  <div class="space-y-6 font-sans">
+    <!-- Header & Action Controls -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Maintenance Requests</h1>
-        <p class="text-sm text-slate-500">Report room issues or view repair request status</p>
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <span>🛠️</span>
+          <span>ระบบแจ้งซ่อมและติดตามงาน (Maintenance Ticketing)</span>
+        </h1>
+        <p class="text-sm text-slate-500">จัดการตั๋วงานซ่อม มอบหมายช่าง คำนวณค่าซ่อม และส่งสัญญาณอัปเดต LINE ลูกบ้าน</p>
       </div>
 
-      <button
-        @click="fetchData"
-        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-xs"
-      >
-        Refresh List
-      </button>
+      <div class="flex items-center gap-2.5">
+        <button
+          @click="showNewModal = true"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>+ สร้างใบแจ้งซ่อมใหม่</span>
+        </button>
+        <button
+          @click="fetchData"
+          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>🔄 รีเฟรชข้อมูล</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Maintenance Form Box -->
-    <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4">
-      <h2 class="text-lg font-semibold text-slate-900">New Repair Request (แจ้งซ่อมอุปกรณ์)</h2>
+    <!-- Kanban Board Grid (3 Columns) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+      <!-- Column 1: Pending (รอดำเนินการ) -->
+      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <h3 class="font-bold text-slate-800 text-sm">รอดำเนินการ (Pending)</h3>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
+            {{ pendingList.length }}
+          </span>
+        </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <div
+            v-for="item in pendingList"
+            :key="item.id"
+            @click="openEditModal(item)"
+            class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-800 font-mono">
+                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              </span>
+              <span class="text-[11px] text-slate-400 font-mono">
+                {{ new Date(item.createdAt).toLocaleDateString('th-TH') }}
+              </span>
+            </div>
+
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm group-hover:text-purple-600 transition-colors flex items-center gap-1.5">
+                <span>🔧</span>
+                <span>{{ item.title }}</span>
+              </h4>
+              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
+            </div>
+
+            <div v-if="item.imageUrl || item.photoUrl" class="rounded-xl overflow-hidden max-h-32 border border-slate-100">
+              <img :src="item.imageUrl || item.photoUrl" class="w-full h-full object-cover" />
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>👤 {{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <button
+                @click.stop="handleQuickStatus(item.id, 'in_progress')"
+                class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200"
+              >
+                ➔ ย้ายไปกำลังซ่อม
+              </button>
+            </div>
+          </div>
+
+          <div v-if="pendingList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+            ไม่มีรายการรอดำเนินการ 🎉
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: In Progress (กำลังดำเนินการซ่อม) -->
+      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+            <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ (In Progress)</h3>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
+            {{ inProgressList.length }}
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            v-for="item in inProgressList"
+            :key="item.id"
+            @click="openEditModal(item)"
+            class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-100 text-purple-800 font-mono">
+                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              </span>
+              <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full">
+                กำลังซ่อม
+              </span>
+            </div>
+
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors flex items-center gap-1.5">
+                <span>⚡</span>
+                <span>{{ item.title }}</span>
+              </h4>
+              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
+            </div>
+
+            <div v-if="item.technicianName" class="p-2 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium">
+              👨‍🔧 ช่าง: {{ item.technicianName }}
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>👤 {{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <button
+                @click.stop="handleQuickStatus(item.id, 'resolved')"
+                class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200"
+              >
+                ➔ ซ่อมเสร็จแล้ว
+              </button>
+            </div>
+          </div>
+
+          <div v-if="inProgressList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+            ไม่มีรายการกำลังซ่อม
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 3: Resolved (เสร็จสิ้น) -->
+      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้น (Resolved)</h3>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            {{ resolvedList.length }}
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            v-for="item in resolvedList"
+            :key="item.id"
+            @click="openEditModal(item)"
+            class="p-4 bg-white/90 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
+          >
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 font-mono">
+                🚪 ห้อง {{ item.room?.roomNumber || 'N/A' }}
+              </span>
+              <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                ✅ เรียบร้อย
+              </span>
+            </div>
+
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm line-through decoration-slate-400 text-slate-600 flex items-center gap-1.5">
+                <span>{{ item.title }}</span>
+              </h4>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-1 leading-relaxed">{{ item.description }}</p>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-1">
+              <span v-if="item.technicianName" class="text-slate-500">👨‍🔧 {{ item.technicianName }}</span>
+              <span v-if="Number(item.repairCost || 0) > 0" class="font-mono font-bold text-emerald-700">
+                ฿{{ Number(item.repairCost).toLocaleString() }}
+              </span>
+            </div>
+          </div>
+
+          <div v-if="resolvedList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+            ยังไม่มีรายการที่ปิดงานซ่อม
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 1: Edit Maintenance Ticket Modal -->
+    <div v-if="selectedTicket" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Room (เลือกห้องพัก)</label>
-            <select
-              v-model="form.roomId"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            <h3 class="text-base font-bold text-slate-900">✏️ จัดการตั๋วงานซ่อม (ห้อง {{ selectedTicket.room?.roomNumber }})</h3>
+            <p class="text-xs text-slate-500">อัปเดตสถานะ มอบหมายช่าง และกรอกค่าใช้จ่ายเพิ่มเติม</p>
+          </div>
+          <button @click="selectedTicket = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">✕</button>
+        </div>
+
+        <form @submit.prevent="handleSaveTicket" class="space-y-4 text-xs text-slate-700">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">หัวข้อการแจ้งซ่อม</label>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold text-slate-900">
+              {{ selectedTicket.title }}
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">รายละเอียดจากลูกบ้าน</label>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-700 leading-relaxed">
+              {{ selectedTicket.description }}
+            </div>
+          </div>
+
+          <div v-if="selectedTicket.imageUrl || selectedTicket.photoUrl">
+            <label class="block font-bold text-slate-800 mb-1">รูปถ่ายประกอบปัญหาสภาพจริง</label>
+            <a :href="selectedTicket.imageUrl || selectedTicket.photoUrl" target="_blank" class="block max-h-40 rounded-xl overflow-hidden border border-slate-200">
+              <img :src="selectedTicket.imageUrl || selectedTicket.photoUrl" class="w-full h-full object-cover hover:scale-105 transition-transform" />
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-800 mb-1">สถานะงานซ่อม <span class="text-rose-500">*</span></label>
+              <select
+                v-model="editForm.status"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 focus:outline-hidden"
+              >
+                <option value="pending">⏳ รอดำเนินการ (PENDING)</option>
+                <option value="in_progress">🔧 กำลังซ่อม (IN_PROGRESS)</option>
+                <option value="resolved">✅ ซ่อมเสร็จสิ้น (RESOLVED)</option>
+                <option value="cancelled">❌ ยกเลิก (CANCELLED)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
+              <input
+                v-model="editForm.technicianName"
+                type="text"
+                placeholder="e.g. ช่างสมชาย (ช่างแอร์)"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-semibold text-slate-900 focus:outline-hidden"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม / ค่าอะไหล่เพิ่มเติม (บาท)</label>
+            <input
+              v-model.number="editForm.repairCost"
+              type="number"
+              min="0"
+              placeholder="0.00"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-mono font-bold text-slate-900 focus:outline-hidden"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">หมายเหตุจากแอดมิน / รายงานสรุป</label>
+            <textarea
+              v-model="editForm.adminNote"
+              rows="3"
+              placeholder="ข้อความถึงลูกบ้าน (จะส่งผ่าน LINE Flex Message เมื่ออัปเดต)..."
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 focus:outline-hidden"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              @click="handleDeleteTicket(selectedTicket.id)"
+              class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition-all border border-rose-200"
             >
-              <option value="" disabled>-- Select Room --</option>
+              🗑️ ลบตั๋วแจ้งซ่อม
+            </button>
+
+            <div class="flex gap-2">
+              <button
+                type="button"
+                @click="selectedTicket = null"
+                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="submit"
+                :disabled="saving"
+                class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50"
+              >
+                {{ saving ? 'กำลังบันทึก...' : '💾 บันทึก & ส่ง LINE' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 2: Create New Maintenance Request Modal -->
+    <div v-if="showNewModal" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-base font-bold text-slate-900">➕ สร้างใบแจ้งซ่อมใหม่ (Admin)</h3>
+          <button @click="showNewModal = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">✕</button>
+        </div>
+
+        <form @submit.prevent="handleCreateSubmit" class="space-y-4 text-xs text-slate-700">
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
+            <select
+              v-model="newForm.roomId"
+              required
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 focus:outline-hidden"
+            >
+              <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
-                Room {{ room.roomNumber }}
+                ห้อง {{ room.roomNumber }}
               </option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Title (หัวข้อการแจ้งซ่อม)</label>
+            <label class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
             <input
-              v-model="form.title"
+              v-model="newForm.title"
               type="text"
-              placeholder="e.g. เครื่องปรับอากาศไม่เย็น / ก๊อกน้ำรั่ว"
+              placeholder="e.g. เครื่องปรับอากาศมีเสียงดัง / หลอดไฟห้องน้ำเสีย"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-semibold text-slate-900 focus:outline-hidden"
             />
           </div>
-        </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Description (รายละเอียด)</label>
-          <textarea
-            v-model="form.description"
-            rows="3"
-            placeholder="รายละเอียดเพิ่มเติมของปัญหา..."
-            required
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-          ></textarea>
-        </div>
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">รายละเอียดเพิ่มเติม <span class="text-rose-500">*</span></label>
+            <textarea
+              v-model="newForm.description"
+              rows="3"
+              placeholder="รายละเอียดอาการชำรุด..."
+              required
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 focus:outline-hidden"
+            ></textarea>
+          </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Photo (แนบรูปภาพประกอบ)</label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg, image/webp"
-            @change="handleFileChange"
-            class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-          />
-          <span v-if="uploading" class="text-xs text-indigo-600 mt-1 block">Uploading image...</span>
-          <img v-if="form.imageUrl" :src="form.imageUrl" class="mt-2 h-24 w-24 object-cover rounded-xl border border-slate-200" />
-        </div>
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">อัปโหลดรูปภาพประกอบ</label>
+            <input
+              type="file"
+              accept="image/*"
+              @change="handleFileChange"
+              class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+            />
+          </div>
 
-        <div class="flex justify-end">
-          <button
-            type="submit"
-            :disabled="submitting || uploading"
-            class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-xs disabled:opacity-50"
-          >
-            {{ submitting ? 'Submitting...' : 'Submit Request' }}
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Maintenance Table -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
-      <div class="p-4 border-b border-slate-200">
-        <h3 class="font-semibold text-slate-900">Maintenance Request Log</h3>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-700">
-          <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
-            <tr>
-              <th class="p-3.5">Room</th>
-              <th class="p-3.5">Title</th>
-              <th class="p-3.5">Description</th>
-              <th class="p-3.5">Photo</th>
-              <th class="p-3.5">Status</th>
-              <th class="p-3.5">Date</th>
-              <th class="p-3.5 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            <tr v-for="item in requests" :key="item.id" class="hover:bg-slate-50/60">
-              <td class="p-3.5 font-semibold text-slate-900">Room {{ item.room?.roomNumber }}</td>
-              <td class="p-3.5 font-medium text-slate-800">{{ item.title }}</td>
-              <td class="p-3.5 text-xs text-slate-600 max-w-xs truncate">{{ item.description }}</td>
-              <td class="p-3.5">
-                <a v-if="item.imageUrl" :href="item.imageUrl" target="_blank" class="text-indigo-600 hover:underline text-xs font-medium">
-                  View Photo
-                </a>
-                <span v-else class="text-xs text-slate-400">No Image</span>
-              </td>
-              <td class="p-3.5">
-                <span
-                  class="text-xs font-semibold px-2.5 py-1 rounded-full border"
-                  :class="{
-                    'bg-amber-50 border-amber-300 text-amber-800': item.status === 'pending',
-                    'bg-indigo-50 border-indigo-300 text-indigo-800': item.status === 'in_progress',
-                    'bg-emerald-50 border-emerald-300 text-emerald-800': item.status === 'completed'
-                  }"
-                >
-                  {{ item.status.toUpperCase() }}
-                </span>
-              </td>
-              <td class="p-3.5 text-xs text-slate-500">{{ new Date(item.createdAt).toLocaleDateString() }}</td>
-              <td class="p-3.5 text-right">
-                <button
-                  v-if="item.status !== 'completed'"
-                  @click="handleUpdateStatus(item.id, 'completed')"
-                  class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg"
-                >
-                  Mark Completed
-                </button>
-              </td>
-            </tr>
-            <tr v-if="requests.length === 0">
-              <td colspan="7" class="p-6 text-center text-slate-400">No repair requests found</td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              @click="showNewModal = false"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              :disabled="submitting || uploading"
+              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50"
+            >
+              {{ submitting ? 'กำลังบันทึก...' : 'สร้างตั๋วแจ้งซ่อม' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import maintenanceService from '@/services/maintenanceService';
-import { showSuccess, showError, showToast } from '@/utils/swal';
+import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
 const requests = ref([]);
 const uploading = ref(false);
 const submitting = ref(false);
+const saving = ref(false);
+const showNewModal = ref(false);
+const selectedTicket = ref(null);
 
-const form = reactive({
+const newForm = reactive({
   roomId: '',
   title: '',
   description: '',
   imageUrl: ''
 });
+
+const editForm = reactive({
+  status: 'pending',
+  technicianName: '',
+  repairCost: 0,
+  adminNote: ''
+});
+
+const pendingList = computed(() => requests.value.filter((r) => r.status === 'pending'));
+const inProgressList = computed(() => requests.value.filter((r) => r.status === 'in_progress'));
+const resolvedList = computed(() => requests.value.filter((r) => r.status === 'resolved' || r.status === 'completed'));
 
 const fetchData = async () => {
   const bId = buildingStore.activeBuildingId;
@@ -181,14 +429,21 @@ watch(
   }
 );
 
-const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+const openEditModal = (ticket) => {
+  selectedTicket.value = ticket;
+  editForm.status = ticket.status;
+  editForm.technicianName = ticket.technicianName || '';
+  editForm.repairCost = Number(ticket.repairCost || 0);
+  editForm.adminNote = ticket.adminNote || '';
+};
 
+const handleFileChange = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
   uploading.value = true;
   try {
     const res = await uploadService.uploadFile(file);
-    form.imageUrl = res.data.url;
+    newForm.imageUrl = res.data.url;
     showToast('อัปโหลดรูปภาพเรียบร้อยแล้ว');
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'File upload failed');
@@ -197,14 +452,15 @@ const handleFileChange = async (e) => {
   }
 };
 
-const handleSubmit = async () => {
+const handleCreateSubmit = async () => {
   submitting.value = true;
   try {
-    await maintenanceService.createRequest({ ...form });
-    await showSuccess('สำเร็จ!', 'บันทึกข้อมูลการแจ้งซ่อมเรียบร้อยแล้ว');
-    form.title = '';
-    form.description = '';
-    form.imageUrl = '';
+    await maintenanceService.createRequest({ ...newForm });
+    await showSuccess('สำเร็จ!', 'บันทึกตั๋วแจ้งซ่อมเรียบร้อยแล้ว');
+    newForm.title = '';
+    newForm.description = '';
+    newForm.imageUrl = '';
+    showNewModal.value = false;
     fetchData();
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to submit request');
@@ -213,13 +469,45 @@ const handleSubmit = async () => {
   }
 };
 
-const handleUpdateStatus = async (id, status) => {
+const handleSaveTicket = async () => {
+  if (!selectedTicket.value) return;
+  saving.value = true;
+  try {
+    await maintenanceService.updateStatus(selectedTicket.value.id, editForm.status, {
+      adminNote: editForm.adminNote,
+      technicianName: editForm.technicianName,
+      repairCost: editForm.repairCost
+    });
+    showToast('อัปเดตตั๋วแจ้งซ่อมและส่ง LINE อัปเดตลูกบ้านเรียบร้อยแล้ว');
+    selectedTicket.value = null;
+    fetchData();
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to update ticket');
+  } finally {
+    saving.value = false;
+  }
+};
+
+const handleQuickStatus = async (id, status) => {
   try {
     await maintenanceService.updateStatus(id, status);
     showToast(`อัปเดตสถานะเป็น ${status} เรียบร้อยแล้ว`);
     fetchData();
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to update status');
+  }
+};
+
+const handleDeleteTicket = async (id) => {
+  const confirm = await showConfirm('ยืนยันการลบ', 'คุณต้องการลบตั๋วแจ้งซ่อมนี้ใช่หรือไม่?');
+  if (!confirm.isConfirmed) return;
+  try {
+    await maintenanceService.deleteRequest(id);
+    showToast('ลบตั๋วแจ้งซ่อมเรียบร้อยแล้ว');
+    selectedTicket.value = null;
+    fetchData();
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'Failed to delete ticket');
   }
 };
 </script>

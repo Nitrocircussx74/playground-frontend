@@ -11,8 +11,13 @@ export default {
     return response.data;
   },
 
-  async updateStatus(id, status) {
-    const response = await api.patch(`/api/v1/maintenance-requests/${id}/status`, { status });
+  async updateStatus(id, status, extraPayload = {}) {
+    const response = await api.patch(`/api/v1/maintenance-requests/${id}`, { status, ...extraPayload });
+    return response.data;
+  },
+
+  async deleteRequest(id) {
+    const response = await api.delete(`/api/v1/maintenance-requests/${id}`);
     return response.data;
   }
 };
