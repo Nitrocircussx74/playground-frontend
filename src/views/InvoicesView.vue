@@ -1,20 +1,43 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Invoice Management</h1>
-        <p class="text-sm text-slate-500">Create custom monthly invoices, customize fees, export PDFs, and verify payment slips</p>
+    <!-- View Navigation Tabs Header -->
+    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="flex items-center gap-2">
+        <button
+          @click="activeTab = 'all-invoices'"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
+          :class="activeTab === 'all-invoices' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+        >
+          <span>🧾</span>
+          <span>ใบแจ้งหนี้ทั้งหมด (All Invoices)</span>
+        </button>
+
+        <button
+          @click="activeTab = 'draft-review'"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
+          :class="activeTab === 'draft-review' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+        >
+          <span>📝</span>
+          <span>ตรวจทานบิล Draft (Review & Publish)</span>
+        </button>
       </div>
 
       <button
+        v-if="activeTab === 'all-invoices'"
         @click="openCreateModal"
-        class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5"
+        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5"
       >
-        <span>+ สร้างบิลปรับแต่ง (Custom Invoice)</span>
+        <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
       </button>
     </div>
 
-    <!-- Invoices Table -->
+    <!-- Tab 2: Draft Invoice Review (InvoiceReview.vue) -->
+    <div v-if="activeTab === 'draft-review'">
+      <InvoiceReview />
+    </div>
+
+    <!-- Tab 1: Invoices Table -->
+    <div v-else class="space-y-6">
     <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex items-center justify-between">
         <h3 class="font-semibold text-slate-900">All Invoices</h3>
@@ -133,6 +156,7 @@
       @close="showEditModal = false"
       @saved="invoiceStore.fetchInvoices()"
     />
+    </div>
   </div>
 </template>
 
@@ -143,7 +167,9 @@ import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
+import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
 
+const activeTab = ref('all-invoices');
 const roomStore = useRoomStore();
 const invoiceStore = useInvoiceStore();
 const buildingStore = useBuildingStore();
