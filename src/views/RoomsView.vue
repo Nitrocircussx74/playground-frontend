@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Room Management</h1>
-        <p class="text-sm text-slate-500">Overview of all dormitory rooms and occupancy status</p>
+        <p class="text-sm text-slate-500">Overview of all dormitory rooms, occupancy status & invite code manager</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -19,31 +19,6 @@
           class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all border border-slate-200"
         >
           Refresh List
-        </button>
-      </div>
-    </div>
-
-    <!-- Generated Invite Code Display Modal -->
-    <div v-if="activeInvite" class="p-5 bg-gradient-to-r from-purple-900 to-indigo-900 text-white rounded-2xl shadow-md space-y-3 relative">
-      <button @click="activeInvite = null" class="absolute top-3 right-3 text-xs text-white/70 hover:text-white">✕</button>
-
-      <div class="flex items-center justify-between">
-        <span class="text-xs uppercase tracking-wider font-semibold bg-white/20 px-2.5 py-1 rounded-full">
-          🔑 Invite Code Generated for Room {{ activeInvite.room?.roomNumber }}
-        </span>
-        <span class="text-xs text-purple-200">Expires in 48 hours</span>
-      </div>
-
-      <div class="flex items-center gap-4 pt-2">
-        <div class="text-3xl font-mono font-extrabold tracking-widest text-yellow-300 bg-black/30 px-4 py-2 rounded-xl border border-yellow-400/30">
-          {{ activeInvite.code }}
-        </div>
-
-        <button
-          @click="copyInviteToClipboard"
-          class="px-4 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1"
-        >
-          <span>📋 Copy Invite Code for Tenant</span>
         </button>
       </div>
     </div>
@@ -125,13 +100,20 @@
         <!-- Generate Invite Button for Available Rooms -->
         <button
           v-if="room.status === 'available'"
-          @click="handleGenerateInvite(room.id)"
-          class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          @click="openInviteModal(room)"
+          class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-2xs"
         >
-          <span>🔑 Generate Invite Code for Room {{ room.roomNumber }}</span>
+          <span>🔑 Manage Invite Code (ห้อง {{ room.roomNumber }})</span>
         </button>
       </div>
     </div>
+
+    <!-- Room Invite Code Management Modal -->
+    <RoomInviteModal
+      :show="showInviteModal"
+      :room="selectedRoomForInvite"
+      @close="showInviteModal = false"
+    />
   </div>
 </template>
 
@@ -139,11 +121,12 @@
 import { reactive, ref, onMounted } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
-import api from '@/utils/api';
+import RoomInviteModal from '@/components/RoomInviteModal.vue';
 
 const roomStore = useRoomStore();
 const showCreateModal = ref(false);
-const activeInvite = ref(null);
+const showInviteModal = ref(false);
+const selectedRoomForInvite = ref(null);
 
 const form = reactive({
   roomNumber: '',
@@ -167,19 +150,8 @@ const handleCreateRoom = async () => {
   }
 };
 
-const handleGenerateInvite = async (roomId) => {
-  try {
-    const res = await api.post(`/api/v1/rooms/${roomId}/invites`);
-    activeInvite.value = res.data.data;
-  } catch (error) {
-    alert(error.response?.data?.message || 'Failed to generate invite code');
-  }
-};
-
-const copyInviteToClipboard = () => {
-  if (!activeInvite.value) return;
-  const text = `รหัสเชิญลงทะเบียนหอพักสำหรับห้อง ${activeInvite.value.room?.roomNumber}: ${activeInvite.value.code}\nกรุณาลงทะเบียนผ่านลิงก์ LIFF: http://localhost:5173/liff/register`;
-  navigator.clipboard.writeText(text);
-  alert('คัดลอกรหัสเชิญเรียบร้อยแล้ว! สามารถส่งให้ลูกบ้านทาง LINE ได้ทันที');
+const openInviteModal = (room) => {
+  selectedRoomForInvite.value = room;
+  showInviteModal.value = true;
 };
 </script>

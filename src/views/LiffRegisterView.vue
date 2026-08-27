@@ -22,8 +22,8 @@
         </p>
 
         <div class="pt-4 border-t border-slate-100">
-          <router-link to="/login" class="inline-block px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold text-xs transition-all shadow-sm">
-            เข้าสู่ระบบผู้เช่า (Login)
+          <router-link to="/liff/profile" class="inline-block px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-semibold text-xs transition-all shadow-sm">
+            ไปยังศูนย์กลางผู้เช่า (Tenant Hub)
           </router-link>
         </div>
       </div>
@@ -31,17 +31,41 @@
       <!-- Registration Form Card -->
       <div v-else class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-5">
         <div v-if="errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-2xl">
-          {{ errorMessage }}
+          ⚠️ {{ errorMessage }}
+        </div>
+
+        <!-- Verified Room Information Banner -->
+        <div v-if="verifiedRoom" class="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-1">
+          <div class="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+            <span>✓ ตรวจสอบรหัสสำเร็จ:</span>
+            <span class="text-indigo-600 font-extrabold">ห้อง {{ verifiedRoom.roomNumber }} (ชั้น {{ verifiedRoom.floor }})</span>
+          </div>
+          <div class="text-xs text-indigo-700">
+            ค่าเช่าประจำเดือน: <span class="font-bold font-mono">฿{{ Number(verifiedRoom.price).toLocaleString() }}</span> บาท/เดือน
+          </div>
         </div>
 
         <form @submit.prevent="handleRegister" class="space-y-4">
           <!-- 1. Invite Code (Top Priority Field) -->
           <div>
-            <label class="block text-xs font-bold text-indigo-700 mb-1">
-              🔑 รหัสเชิญลงทะเบียน (Invite Code) <span class="text-rose-500">*</span>
-            </label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-indigo-700">
+                🔑 รหัสเชิญลงทะเบียน (Invite Code) <span class="text-rose-500">*</span>
+              </label>
+
+              <button
+                type="button"
+                @click="verifyCode"
+                :disabled="verifying || !form.inviteCode"
+                class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 disabled:opacity-50"
+              >
+                {{ verifying ? 'กำลังตรวจ...' : 'ตรวจรหัส' }}
+              </button>
+            </div>
+
             <input
               v-model="form.inviteCode"
+              @input="onInviteInput"
               type="text"
               placeholder="กรอกรหัสเชิญ 6 หลัก e.g. X9K2P4"
               required
@@ -111,12 +135,16 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
 
+const route = useRoute();
 const loading = ref(false);
+const verifying = ref(false);
 const errorMessage = ref('');
 const successData = ref(null);
+const verifiedRoom = ref(null);
 const lineUserId = ref('');
 
 const form = reactive({
@@ -128,6 +156,12 @@ const form = reactive({
 });
 
 onMounted(async () => {
+  // Read invite code from URL query parameter
+  if (route.query.inviteCode) {
+    form.inviteCode = String(route.query.inviteCode).toUpperCase();
+    verifyCode();
+  }
+
   const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
   try {
     await liff.init({ liffId });
@@ -139,6 +173,29 @@ onMounted(async () => {
     console.warn('LIFF init fallback mode:', err.message);
   }
 });
+
+const onInviteInput = () => {
+  verifiedRoom.value = null;
+  errorMessage.value = '';
+  if (form.inviteCode.length === 6) {
+    verifyCode();
+  }
+};
+
+const verifyCode = async () => {
+  if (!form.inviteCode) return;
+  verifying.value = true;
+  errorMessage.value = '';
+  try {
+    const res = await api.get(`/api/v1/liff/invites/verify/${form.inviteCode}`);
+    verifiedRoom.value = res.data.data;
+  } catch (error) {
+    verifiedRoom.value = null;
+    errorMessage.value = error.response?.data?.message || 'รหัสเชิญไม่ถูกต้องหรือหมดอายุแล้ว';
+  } finally {
+    verifying.value = false;
+  }
+};
 
 const handleRegister = async () => {
   loading.value = true;
