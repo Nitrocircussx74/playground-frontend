@@ -10,14 +10,10 @@
       <!-- Toolbar Controls -->
       <div class="flex flex-wrap items-center gap-2.5">
         <!-- Billing Cycle Selector -->
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+        <div class="flex items-center gap-1 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
+          <Calendar class="w-3.5 h-3.5 text-purple-600 shrink-0" />
           <label class="text-xs font-semibold text-slate-500">Cycle:</label>
-          <input
-            v-model="selectedCycle"
-            type="text"
-            placeholder="MM-YYYY (e.g. 08-2026)"
-            class="text-xs font-mono font-semibold bg-transparent focus:outline-hidden w-28 text-slate-800"
-          />
+          <CycleDatePicker v-model="selectedCycle" />
         </div>
 
         <!-- Refresh Button -->
@@ -364,6 +360,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { Calendar } from 'lucide-vue-next';
+import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Bar, Doughnut } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale } from 'chart.js';

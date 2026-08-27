@@ -32,13 +32,9 @@
 
           <div>
             <label class="block font-semibold text-slate-700 mb-1">รอบบิล (Billing Cycle) <span class="text-rose-500">*</span></label>
-            <input
-              v-model="form.billingCycle"
-              type="text"
-              placeholder="e.g. 09-2026"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-900 focus:outline-hidden"
-            />
+            <div class="p-1 bg-slate-50 border border-slate-300 rounded-xl">
+              <CycleDatePicker v-model="form.billingCycle" />
+            </div>
           </div>
         </div>
 
@@ -187,6 +183,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
+import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 

@@ -15,15 +15,9 @@
 
         <!-- Billing Cycle Picker & Quick Info -->
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-xl">
             <span class="text-xs font-semibold text-slate-500">รอบบิล:</span>
-            <input
-              v-model="selectedCycle"
-              type="text"
-              placeholder="08-2026"
-              class="w-24 text-xs font-mono font-bold text-indigo-700 bg-transparent focus:outline-none"
-              @change="fetchDraftData"
-            />
+            <CycleDatePicker v-model="selectedCycle" @change="fetchDraftData" />
           </div>
 
           <button
@@ -249,6 +243,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue';
+import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
 import { showSuccess, showError, showWarning, showConfirm } from '@/utils/swal';
