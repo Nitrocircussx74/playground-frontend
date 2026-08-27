@@ -111,16 +111,33 @@
       <div v-for="room in roomStore.rooms" :key="room.id" class="space-y-2">
         <RoomOverviewCard :room="room" />
 
-        <!-- Generate Invite Button for Available Rooms -->
-        <button
-          v-if="room.status === 'available'"
-          @click="openInviteModal(room)"
-          class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-2xs"
-        >
-          <span>🔑 Manage Invite Code (ห้อง {{ room.roomNumber }})</span>
-        </button>
+        <!-- History & Invite Buttons -->
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            @click="openHistoryModal(room)"
+            class="w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+          >
+            <span>📜 ประวัติสัญญา</span>
+          </button>
+
+          <button
+            v-if="room.status === 'available'"
+            @click="openInviteModal(room)"
+            class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+          >
+            <span>🔑 Invite Code</span>
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Room Tenancy History Modal -->
+    <RoomTenancyHistoryModal
+      :show="showHistoryModal"
+      :room="selectedRoomForHistory"
+      @close="showHistoryModal = false"
+      @updated="loadRooms"
+    />
 
     <!-- Room Invite Code Management Modal -->
     <RoomInviteModal
@@ -145,6 +162,7 @@ import { showSuccess, showError } from '@/utils/swal';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
 import RoomInviteModal from '@/components/RoomInviteModal.vue';
 import RoomImportModal from '@/components/RoomImportModal.vue';
+import RoomTenancyHistoryModal from '@/components/RoomTenancyHistoryModal.vue';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -158,6 +176,14 @@ const showCreateModal = ref(false);
 const showImportModal = ref(false);
 const showInviteModal = ref(false);
 const selectedRoomForInvite = ref(null);
+
+const showHistoryModal = ref(false);
+const selectedRoomForHistory = ref(null);
+
+const openHistoryModal = (room) => {
+  selectedRoomForHistory.value = room;
+  showHistoryModal.value = true;
+};
 
 const form = reactive({
   roomNumber: '',
