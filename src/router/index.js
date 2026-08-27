@@ -165,8 +165,9 @@ async function cmsNavigationGuard(to, from, next) {
   }
 
   if (to.meta.roles && to.meta.roles.length > 0) {
-    const userRole = authStore.user?.role || 'tenant';
-    if (!to.meta.roles.includes(userRole)) {
+    const userRole = (authStore.user?.role || 'tenant').toLowerCase();
+    const allowedRoles = to.meta.roles.map((r) => r.toLowerCase());
+    if (!allowedRoles.includes(userRole)) {
       return next({ path: '/403' });
     }
   }
