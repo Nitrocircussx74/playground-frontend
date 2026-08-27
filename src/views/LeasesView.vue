@@ -106,7 +106,21 @@
         <!-- Tenant Info -->
         <div class="space-y-1 text-xs">
           <div class="font-bold text-slate-900 flex items-center justify-between">
-            <span>👤 {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : 'ผู้เช่า' }}</span>
+            <div class="flex items-center gap-1.5">
+              <img
+                v-if="item.tenant?.linePictureUrl"
+                :src="item.tenant.linePictureUrl"
+                alt="LINE Avatar"
+                class="w-5 h-5 rounded-full object-cover border border-emerald-500 shadow-xs"
+              />
+              <div
+                v-else
+                class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-extrabold text-[10px] flex items-center justify-center border border-slate-300"
+              >
+                {{ item.tenant?.firstName ? item.tenant.firstName.charAt(0) : '👤' }}
+              </div>
+              <span>{{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : 'ผู้เช่า' }}</span>
+            </div>
             <span class="text-slate-500 font-mono text-[11px] font-normal">📞 {{ item.tenant?.phone || '-' }}</span>
           </div>
 

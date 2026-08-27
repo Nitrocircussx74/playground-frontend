@@ -80,10 +80,13 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
-import { showSuccess, showError } from '@/utils/swal';
+import { showSuccess } from '@/utils/swal';
 
 const router = useRouter();
 const lineUserId = ref('');
+const lineDisplayName = ref('');
+const linePictureUrl = ref('');
+const lineStatusMessage = ref('');
 const submitting = ref(false);
 const errorMessage = ref('');
 
@@ -100,7 +103,10 @@ onMounted(async () => {
     await liff.init({ liffId });
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
-      lineUserId.value = profile.userId;
+      lineUserId.value = profile.userId || '';
+      lineDisplayName.value = profile.displayName || '';
+      linePictureUrl.value = profile.pictureUrl || '';
+      lineStatusMessage.value = profile.statusMessage || '';
     }
   } catch (err) {
     console.warn('LIFF init fallback in LiffOnboarding:', err.message);
@@ -115,7 +121,10 @@ const handleLinkAccount = async () => {
     const payload = {
       inviteCode: form.inviteCode.trim().toUpperCase(),
       phoneLast4: form.phoneLast4.trim(),
-      lineUserId: lineUserId.value || null
+      lineUserId: lineUserId.value || null,
+      lineDisplayName: lineDisplayName.value || null,
+      linePictureUrl: linePictureUrl.value || null,
+      lineStatusMessage: lineStatusMessage.value || null
     };
 
     const res = await api.post('/api/v1/liff/auth/link-account', payload);

@@ -291,6 +291,14 @@ onMounted(async () => {
       const profile = await liff.getProfile();
       if (profile.pictureUrl) tenantProfile.avatarUrl = profile.pictureUrl;
       if (profile.displayName) tenantProfile.firstName = profile.displayName;
+
+      // Auto-sync LINE profile in background to database
+      api.patch('/api/v1/liff/auth/sync-profile', {
+        lineUserId: profile.userId,
+        lineDisplayName: profile.displayName,
+        linePictureUrl: profile.pictureUrl,
+        lineStatusMessage: profile.statusMessage
+      }).catch(() => {});
     }
   } catch (err) {
     console.warn('LIFF init fallback mode:', err.message);
