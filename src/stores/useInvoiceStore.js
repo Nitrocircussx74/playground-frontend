@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import invoiceService from '@/services/invoiceService';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 
 export const useInvoiceStore = defineStore('invoice', {
   state: () => ({
@@ -10,10 +11,17 @@ export const useInvoiceStore = defineStore('invoice', {
 
   actions: {
     async fetchInvoices(params = {}) {
+      const bStore = useBuildingStore();
+      const targetBuildingId = params.buildingId || bStore.activeBuildingId;
+      const queryParams = { ...params };
+      if (targetBuildingId) {
+        queryParams.buildingId = targetBuildingId;
+      }
+
       this.isLoading = true;
       this.errorMessage = '';
       try {
-        const response = await invoiceService.getInvoices(params);
+        const response = await invoiceService.getInvoices(queryParams);
         this.invoices = response.data || [];
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to fetch invoices';
