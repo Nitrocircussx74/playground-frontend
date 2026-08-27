@@ -1,8 +1,8 @@
 import api from '@/utils/api';
 
 export default {
-  async getRooms() {
-    const response = await api.get('/api/v1/rooms');
+  async getRooms(buildingId) {
+    const response = await api.get('/api/v1/rooms', { params: { buildingId } });
     return response.data;
   },
 

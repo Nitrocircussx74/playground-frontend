@@ -137,22 +137,35 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 
 const roomStore = useRoomStore();
 const invoiceStore = useInvoiceStore();
+const buildingStore = useBuildingStore();
 
 const showEditModal = ref(false);
 const selectedInvoice = ref(null);
 
+const loadData = (buildingId) => {
+  roomStore.fetchRooms(buildingId);
+  invoiceStore.fetchInvoices({ buildingId });
+};
+
 onMounted(() => {
-  roomStore.fetchRooms();
-  invoiceStore.fetchInvoices();
+  loadData(buildingStore.activeBuildingId);
 });
+
+watch(
+  () => buildingStore.activeBuildingId,
+  (newBuildingId) => {
+    loadData(newBuildingId);
+  }
+);
 
 const openCreateModal = () => {
   selectedInvoice.value = null;

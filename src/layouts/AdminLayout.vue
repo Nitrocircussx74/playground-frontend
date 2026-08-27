@@ -4,7 +4,7 @@
     <div
       v-if="isMobileMenuOpen"
       @click="isMobileMenuOpen = false"
-      class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+      class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 md:hidden transition-opacity duration-300"
     ></div>
 
     <!-- Sidebar สำหรับ Admin (Desktop: Permanent, Mobile: Slide-over Drawer) -->
@@ -35,23 +35,53 @@
       <!-- Sidebar Navigation Menu -->
       <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
         <router-link
-          to="/admin/dashboard"
+          to="/dashboard"
           @click="isMobileMenuOpen = false"
           class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-          :class="route.path === '/admin/dashboard' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+          :class="route.path === '/dashboard' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
         >
           <span>📊</span>
           <span>Dashboard</span>
         </router-link>
 
         <router-link
-          to="/admin/rooms"
+          to="/buildings"
           @click="isMobileMenuOpen = false"
           class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-          :class="route.path === '/admin/rooms' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+          :class="route.path === '/buildings' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <span>🏢</span>
+          <span>จัดการตึก/อาคาร</span>
+        </router-link>
+
+        <router-link
+          to="/rooms"
+          @click="isMobileMenuOpen = false"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          :class="route.path === '/rooms' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
         >
           <span>🚪</span>
           <span>จัดการห้องพัก</span>
+        </router-link>
+
+        <router-link
+          to="/meter-readings"
+          @click="isMobileMenuOpen = false"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          :class="route.path === '/meter-readings' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <span>⚡</span>
+          <span>จดมิเตอร์น้ำ-ไฟ</span>
+        </router-link>
+
+        <router-link
+          to="/invoices"
+          @click="isMobileMenuOpen = false"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          :class="route.path === '/invoices' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <span>🧾</span>
+          <span>จัดการใบแจ้งหนี้</span>
         </router-link>
       </nav>
 
@@ -68,13 +98,13 @@
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <!-- Navbar บน -->
-      <header class="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shadow-sm shrink-0">
+      <!-- Navbar บนพร้อม Building Switcher Dropdown (Global Context Switcher) -->
+      <header class="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shadow-xs shrink-0">
         <div class="flex items-center gap-3">
           <!-- ปุ่ม Hamburger สำหรับ Mobile -->
           <button
             @click="isMobileMenuOpen = !isMobileMenuOpen"
-            class="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg focus:outline-none"
+            class="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg focus:outline-hidden"
             aria-label="Toggle Mobile Menu"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,9 +117,25 @@
           </h2>
         </div>
 
-        <div class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full shrink-0">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="hidden sm:inline">Admin Online</span>
+        <!-- Right Side: Building Switcher Dropdown -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl shadow-2xs">
+            <span class="text-xs font-bold text-purple-900 hidden sm:inline">🏢 เลือกตึก:</span>
+            <select
+              :value="buildingStore.activeBuildingId"
+              @change="handleBuildingChange"
+              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2 py-1 focus:outline-hidden cursor-pointer"
+            >
+              <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
+                {{ b.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="hidden sm:inline">Admin Online</span>
+          </div>
         </div>
       </header>
 
@@ -102,18 +148,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useAdminAuthStore } from '@/stores/adminAuth';
+import { useAuthStore } from '@/stores/auth';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 
 const route = useRoute();
 const router = useRouter();
-const adminAuthStore = useAdminAuthStore();
+const authStore = useAuthStore();
+const buildingStore = useBuildingStore();
 
 const isMobileMenuOpen = ref(false);
 
-const handleAdminLogout = () => {
-  adminAuthStore.logout();
+onMounted(() => {
+  buildingStore.fetchBuildings();
+});
+
+const handleBuildingChange = (event) => {
+  const newBuildingId = event.target.value;
+  buildingStore.setActiveBuildingId(newBuildingId);
+};
+
+const handleAdminLogout = async () => {
+  await authStore.logout();
   router.push('/login');
 };
 </script>

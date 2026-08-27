@@ -10,11 +10,11 @@ export const useRoomStore = defineStore('room', {
   }),
 
   actions: {
-    async fetchRooms() {
+    async fetchRooms(buildingId) {
       this.isLoading = true;
       this.errorMessage = '';
       try {
-        const response = await roomService.getRooms();
+        const response = await roomService.getRooms(buildingId);
         this.rooms = response.data || [];
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to fetch rooms';

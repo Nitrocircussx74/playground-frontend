@@ -118,12 +118,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
+import { useBuildingStore } from '@/stores/useBuildingStore';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
 import RoomInviteModal from '@/components/RoomInviteModal.vue';
 
 const roomStore = useRoomStore();
+const buildingStore = useBuildingStore();
+
 const showCreateModal = ref(false);
 const showInviteModal = ref(false);
 const selectedRoomForInvite = ref(null);
@@ -136,12 +139,22 @@ const form = reactive({
 });
 
 onMounted(() => {
-  roomStore.fetchRooms();
+  roomStore.fetchRooms(buildingStore.activeBuildingId);
 });
+
+watch(
+  () => buildingStore.activeBuildingId,
+  (newBuildingId) => {
+    roomStore.fetchRooms(newBuildingId);
+  }
+);
 
 const handleCreateRoom = async () => {
   try {
-    await roomStore.createRoom({ ...form });
+    await roomStore.createRoom({
+      ...form,
+      buildingId: buildingStore.activeBuildingId
+    });
     alert(`Room ${form.roomNumber} created successfully!`);
     form.roomNumber = '';
     showCreateModal.value = false;
