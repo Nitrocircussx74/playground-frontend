@@ -210,13 +210,14 @@
             <select
               :value="buildingStore.activeBuildingId"
               @change="handleBuildingChange"
-              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden cursor-pointer min-w-[140px]"
+              class="bg-white border border-purple-300 text-purple-900 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden cursor-pointer min-w-[170px]"
             >
+              <option value="">🌐 ภาพรวมทั้งหมด (ทุกหอพัก)</option>
               <option v-if="buildingStore.buildings.length === 0" value="" disabled>
                 {{ buildingStore.isLoading ? 'กำลังโหลดตึก...' : 'ไม่พบข้อมูลตึก' }}
               </option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
-                {{ b.name }}
+                🏢 {{ b.name }}
               </option>
             </select>
           </div>

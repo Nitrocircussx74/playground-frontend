@@ -11,8 +11,8 @@ export const useBuildingStore = defineStore('building', {
 
   getters: {
     activeBuilding: (state) => {
-      if (!state.activeBuildingId) return state.buildings[0] || null;
-      return state.buildings.find((b) => b.id === state.activeBuildingId) || state.buildings[0] || null;
+      if (!state.activeBuildingId) return null;
+      return state.buildings.find((b) => b.id === state.activeBuildingId) || null;
     }
   },
 
@@ -24,11 +24,11 @@ export const useBuildingStore = defineStore('building', {
         const res = await api.get('/api/v1/buildings');
         this.buildings = res.data.data || [];
 
-        // If no activeBuildingId is set or if activeBuildingId doesn't exist in fetched list, set default to first building
-        if (this.buildings.length > 0) {
+        // If activeBuildingId is set but invalid, reset to empty (All Buildings)
+        if (this.buildings.length > 0 && this.activeBuildingId) {
           const exists = this.buildings.some((b) => b.id === this.activeBuildingId);
-          if (!this.activeBuildingId || !exists) {
-            this.setActiveBuildingId(this.buildings[0].id);
+          if (!exists) {
+            this.setActiveBuildingId('');
           }
         }
       } catch (err) {
@@ -39,7 +39,7 @@ export const useBuildingStore = defineStore('building', {
     },
 
     setActiveBuildingId(id) {
-      this.activeBuildingId = id;
+      this.activeBuildingId = id || '';
       if (id) {
         localStorage.setItem('activeBuildingId', id);
       } else {

@@ -48,6 +48,32 @@
       </div>
     </div>
 
+    <!-- Dashboard Mode Banner -->
+    <div
+      class="p-4 rounded-2xl border flex items-center justify-between shadow-2xs transition-all"
+      :class="isConsolidatedMode ? 'bg-gradient-to-r from-purple-900 to-indigo-900 text-white border-purple-800' : 'bg-white border-slate-200 text-slate-900'"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl shrink-0">
+          {{ isConsolidatedMode ? '🌐' : '🏢' }}
+        </div>
+        <div>
+          <h2 class="font-bold text-sm sm:text-base">
+            {{ isConsolidatedMode ? 'โหมดภาพรวมทั้งหมด (Consolidated Portfolio View)' : `สรุปผลประกอบการ: ${activeBuildingName}` }}
+          </h2>
+          <p class="text-xs" :class="isConsolidatedMode ? 'text-purple-200' : 'text-slate-500'">
+            {{ isConsolidatedMode ? 'แสดงผลสรุปรายรับรวม อัตราครองห้องรวม และการเปรียบเทียบระหว่างตึกทั้งหมดในระบบ' : 'แสดงข้อมูลสถิติเฉพาะหอพักที่เลือกอยู่' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-bold" :class="isConsolidatedMode ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40' : 'bg-slate-100 text-slate-700 border border-slate-200'">
+          {{ isConsolidatedMode ? 'ทุกหอพัก' : activeBuildingName }}
+        </span>
+      </div>
+    </div>
+
     <!-- Error Alert -->
     <div v-if="dashboardStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs font-medium flex items-center justify-between">
       <span>⚠️ {{ dashboardStore.errorMessage }}</span>
@@ -61,6 +87,39 @@
     </div>
 
     <div v-else class="space-y-6">
+      <!-- Building Comparison Section (Visible in Consolidated Mode) -->
+      <div v-if="isConsolidatedMode && summary.buildingBreakdown?.length > 0" class="space-y-3">
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+          <span>📊 เปรียบเทียบผลประกอบการระหว่างตึก (Building Performance Breakdown)</span>
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-for="b in summary.buildingBreakdown"
+            :key="b.id"
+            @click="selectBuilding(b.id)"
+            class="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md hover:border-purple-300 cursor-pointer transition-all space-y-3 group"
+          >
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-slate-900 group-hover:text-purple-600 transition-colors flex items-center gap-2">
+                <span>🏢 {{ b.name }}</span>
+              </h4>
+              <span class="text-xs text-purple-600 font-semibold group-hover:underline">ดูรายละเอียด →</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+              <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                <div class="text-slate-500 text-[11px]">รายได้เดือนนี้</div>
+                <div class="font-bold font-mono text-purple-700 text-sm">฿{{ b.currentRevenue?.toLocaleString() }}</div>
+              </div>
+              <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                <div class="text-slate-500 text-[11px]">อัตราครองห้อง</div>
+                <div class="font-bold text-slate-900 text-sm">{{ b.occupancyRate }}% <span class="text-[10px] text-slate-400">({{ b.occupiedRooms }}/{{ b.totalRooms }})</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- 1. KPI Summary Cards Section -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <!-- Card 1: Revenue -->
@@ -263,8 +322,20 @@ const reminding = ref(false);
 
 const summary = computed(() => dashboardStore.summary);
 const revenueTrends = computed(() => dashboardStore.revenueTrends);
+const isConsolidatedMode = computed(() => !buildingStore.activeBuildingId);
+
+const activeBuildingName = computed(() => {
+  if (!buildingStore.activeBuildingId) return 'ภาพรวมทุกหอพัก';
+  const b = buildingStore.buildings.find((x) => x.id === buildingStore.activeBuildingId);
+  return b ? b.name : 'ตึกที่เลือก';
+});
+
+const selectBuilding = (buildingId) => {
+  buildingStore.setActiveBuildingId(buildingId);
+};
 
 onMounted(() => {
+  buildingStore.fetchBuildings();
   loadDashboardData();
 });
 
