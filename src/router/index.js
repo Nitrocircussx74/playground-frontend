@@ -15,46 +15,52 @@ const routes = [
 
   // 🏢 1. CMS Admin Backoffice Routes (ต้องการสิทธิ์ Admin JWT Authentication)
   {
+    path: '/403',
+    name: 'Forbidden',
+    component: () => import('@/views/ForbiddenView.vue'),
+    meta: { isCms: true }
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/DashboardView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/rooms',
     name: 'Rooms',
     component: () => import('@/views/RoomsView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/meter-readings',
     name: 'MeterReadings',
     component: () => import('@/views/MeterReadingsView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/invoices',
     name: 'Invoices',
     component: () => import('@/views/InvoicesView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: () => import('@/views/MaintenanceView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/announcements',
     name: 'Announcements',
     component: () => import('@/views/AnnouncementsView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/features',
     name: 'FeatureSettings',
     component: () => import('@/views/FeatureSettingsView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/profile',
@@ -150,6 +156,13 @@ async function cmsNavigationGuard(to, from, next) {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ path: '/login', query: { redirect: to.fullPath } });
+  }
+
+  if (to.meta.roles && to.meta.roles.length > 0) {
+    const userRole = authStore.user?.role || 'tenant';
+    if (!to.meta.roles.includes(userRole)) {
+      return next({ path: '/403' });
+    }
   }
 
   next();
