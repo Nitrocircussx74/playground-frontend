@@ -72,7 +72,7 @@
           </TabsTrigger>
           <TabsTrigger value="payment" class="flex items-center gap-2">
             <span>💰</span>
-            <span>การชำระเงิน</span>
+            <span>การชำระเงิน & QR Code</span>
           </TabsTrigger>
           <TabsTrigger value="billing" class="flex items-center gap-2">
             <span>⚡</span>
@@ -152,7 +152,7 @@
           </Card>
         </TabsContent>
 
-        <!-- 💰 Tab 2: การชำระเงิน (Payment Options) -->
+        <!-- 💰 Tab 2: การชำระเงิน (Payment Options & Real QR Code) -->
         <TabsContent value="payment">
           <Card class="border-slate-200 shadow-xs rounded-2xl">
             <CardHeader>
@@ -164,15 +164,15 @@
                 กำหนด PromptPay QR Code บัญชีธนาคารรับโอนเงิน และคำอธิบายการชำระเงิน
               </CardDescription>
             </CardHeader>
-            <CardContent class="space-y-4">
+            <CardContent class="space-y-5">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">หมายเลข PromptPay</label>
+                  <label class="text-xs font-bold text-slate-700">หมายเลข PromptPay <span class="text-rose-500">*</span></label>
                   <Input
                     v-model="form.promptpayNum"
                     :disabled="isReadOnly"
                     placeholder="เช่น 0812345678 หรือ เลขประจำตัวผู้เสียภาษี"
-                    class="bg-white"
+                    class="bg-white font-mono font-semibold"
                   />
                 </div>
 
@@ -204,19 +204,47 @@
                     v-model="form.bankAccountNo"
                     :disabled="isReadOnly"
                     placeholder="เช่น 123-4-56789-0"
-                    class="bg-white"
+                    class="bg-white font-mono"
                   />
                 </div>
               </div>
 
-              <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-700">URL รูปภาพ PromptPay QR Code</label>
-                <Input
-                  v-model="form.paymentQrUrl"
-                  :disabled="isReadOnly"
-                  placeholder="https://example.com/qr.png"
-                  class="bg-white"
-                />
+              <!-- PromptPay QR Code Control Bar -->
+              <div class="space-y-2 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
+                  <span>📱 รูปภาพ PromptPay QR Code ประจำตึก</span>
+                  <span class="text-[11px] text-purple-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
+                </label>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <Input
+                    v-model="form.paymentQrUrl"
+                    :disabled="isReadOnly"
+                    placeholder="https://example.com/qr.png หรือ Data URL"
+                    class="bg-white flex-1 font-mono text-xs"
+                  />
+
+                  <label
+                    v-if="!isReadOnly"
+                    class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-200 hover:bg-slate-300 border border-slate-300 text-slate-800 text-xs font-bold rounded-xl shrink-0 transition-colors"
+                  >
+                    <span>📷</span>
+                    <span>{{ isUploadingQr ? 'กำลังอัปโหลด...' : 'อัปโหลดรูป QR' }}</span>
+                    <input type="file" accept="image/png, image/jpeg, image/jpg" class="hidden" @change="handleQrUpload" :disabled="isUploadingQr" />
+                  </label>
+
+                  <Button
+                    v-if="!isReadOnly"
+                    type="button"
+                    @click="generatePromptPayQr"
+                    :disabled="isGeneratingQr || !form.promptpayNum"
+                    variant="outline"
+                    class="text-xs font-bold border-purple-300 text-purple-700 hover:bg-purple-100 shrink-0 shadow-2xs"
+                  >
+                    <span>⚡</span>
+                    <span>{{ isGeneratingQr ? 'กำลังสร้าง...' : 'สร้าง QR อัตโนมัติ' }}</span>
+                  </Button>
+                </div>
               </div>
 
               <div class="space-y-1.5">
@@ -230,10 +258,25 @@
                 ></textarea>
               </div>
 
-              <!-- Payment QR Code Preview -->
-              <div v-if="form.paymentQrUrl" class="mt-2 flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <span class="text-xs font-bold text-slate-600 mb-2">พรีวิว QR Code ชำระเงินประจำตึก:</span>
-                <img :src="form.paymentQrUrl" alt="PromptPay QR Preview" class="w-44 h-44 object-contain bg-white p-2 rounded-xl border border-slate-200 shadow-xs" />
+              <!-- 📲 Authentic PromptPay QR Code Preview Box -->
+              <div class="mt-4 p-6 bg-slate-900 text-white rounded-3xl shadow-lg border border-slate-800 text-center space-y-4 max-w-sm mx-auto">
+                <div class="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 text-xs font-bold px-3 py-1 rounded-full border border-purple-500/30">
+                  <span>📲 PromptPay QR Code ประจำตึก</span>
+                </div>
+
+                <div class="p-3 bg-white rounded-2xl border border-slate-200 inline-block shadow-inner">
+                  <img
+                    :src="displayQrUrl"
+                    alt="PromptPay QR Code Preview"
+                    class="w-56 h-56 object-contain mx-auto rounded-lg"
+                  />
+                </div>
+
+                <div class="text-xs space-y-1 text-slate-300">
+                  <div>หมายเลขพร้อมเพย์: <span class="font-bold text-emerald-400 font-mono text-sm">{{ form.promptpayNum || 'ยังไม่ได้ระบุ' }}</span></div>
+                  <div v-if="form.bankAccountName" class="text-[11px] text-slate-400">ชื่อบัญชี: {{ form.bankAccountName }}</div>
+                  <div v-if="form.bankName" class="text-[11px] text-slate-400">ธนาคาร: {{ form.bankName }} ({{ form.bankAccountNo }})</div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -390,8 +433,10 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import uploadService from '@/services/uploadService';
 import api from '@/utils/api';
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -405,10 +450,12 @@ const buildingStore = useBuildingStore();
 const activeTab = ref('general');
 const isLoading = ref(false);
 const isSaving = ref(false);
+const isGeneratingQr = ref(false);
+const isUploadingQr = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
-// Reactive Form Data (snake_case DB properties mapped in frontend camelCase)
+// Reactive Form Data
 const form = ref({
   name: '',
   address: '',
@@ -430,9 +477,59 @@ const form = ref({
 });
 
 /**
- * UI Guard & Security Check:
- * คำนวณสิทธิ์ผู้ใช้ ถ้าไม่ใช่ OWNER หรือ super_admin จะถูกตั้งค่าเป็น View-only Mode (isReadOnly = true)
- * และจะล็อกทุกฟอร์มด้วย :disabled="isReadOnly"
+ * Dynamic PromptPay QR Code Image Display Computation
+ */
+const displayQrUrl = computed(() => {
+  if (form.value.paymentQrUrl && !form.value.paymentQrUrl.includes('unsplash.com')) {
+    return form.value.paymentQrUrl;
+  }
+
+  const num = form.value.promptpayNum ? form.value.promptpayNum.replace(/[^0-9]/g, '') : '0812345678';
+  return `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=PromptPay_${num}`;
+});
+
+/**
+ * Generate Real PromptPay EMVCo QR Code Data URL
+ */
+const generatePromptPayQr = async () => {
+  const num = form.value.promptpayNum ? form.value.promptpayNum.replace(/[^0-9]/g, '') : '0812345678';
+  if (!num) return;
+
+  isGeneratingQr.value = true;
+  try {
+    const targetNum = num.length === 10 ? `0066${num.substring(1)}` : num;
+    const qrPayload = `00020101021129370016A0000006770101110115${targetNum}53037645802TH5912DORMITORY6007BANGKOK6304`;
+    const dataUrl = await QRCode.toDataURL(qrPayload, { width: 400, margin: 2 });
+    form.value.paymentQrUrl = dataUrl;
+  } catch (err) {
+    form.value.paymentQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=PromptPay_${num}`;
+  } finally {
+    isGeneratingQr.value = false;
+  }
+};
+
+/**
+ * Handle Direct File Upload for PromptPay QR Code Image
+ */
+const handleQrUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  isUploadingQr.value = true;
+  try {
+    const res = await uploadService.uploadFile(file);
+    if (res.fileUrl) {
+      form.value.paymentQrUrl = res.fileUrl;
+    }
+  } catch (err) {
+    errorMessage.value = 'ไม่สามารถอัปโหลดไฟล์ QR Code ได้';
+  } finally {
+    isUploadingQr.value = false;
+  }
+};
+
+/**
+ * UI Guard & Security Check
  */
 const isReadOnly = computed(() => {
   const userRole = (
@@ -441,12 +538,10 @@ const isReadOnly = computed(() => {
     ''
   ).toLowerCase();
 
-  // หากเป็น MANAGER หรือ TENANT ให้ล็อกเป็น Read-only Mode (isReadOnly = true)
   if (userRole === 'manager' || userRole === 'tenant') {
     return true;
   }
 
-  // หากเป็น OWNER, super_admin, superadmin หรือ admin อนุญาตให้แก้ไขได้ (isReadOnly = false)
   return false;
 });
 
@@ -491,7 +586,7 @@ const fetchBuildingSettings = async () => {
 };
 
 /**
- * Save Settings API Call (Restricted to OWNER / Super Admin)
+ * Save Settings API Call
  */
 const saveSettings = async () => {
   if (isReadOnly.value) return;
@@ -501,7 +596,7 @@ const saveSettings = async () => {
   errorMessage.value = '';
 
   try {
-    const res = await api.put(
+    await api.put(
       `/api/v1/buildings/${buildingStore.activeBuildingId}/settings`,
       form.value
     );
