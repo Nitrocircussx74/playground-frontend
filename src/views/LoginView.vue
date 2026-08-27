@@ -23,6 +23,7 @@
               type="email"
               placeholder="developer@example.com"
               required
+              data-testid="email-input"
               :disabled="authStore.loading"
             />
           </div>
@@ -35,16 +36,18 @@
               type="password"
               placeholder="••••••••"
               required
+              data-testid="password-input"
               :disabled="authStore.loading"
             />
           </div>
 
-          <div v-if="errorMessage" class="p-3.5 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg text-center font-medium shadow-sm">
+          <div v-if="errorMessage" data-testid="error-message" class="p-3.5 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg text-center font-medium shadow-sm">
             {{ errorMessage }}
           </div>
 
           <Button
             type="submit"
+            data-testid="login-button"
             class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-purple-600/25 h-10 mt-2 transition-all duration-200"
             :disabled="authStore.loading"
           >
