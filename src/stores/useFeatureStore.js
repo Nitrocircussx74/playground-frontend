@@ -23,13 +23,15 @@ export const useFeatureStore = defineStore('feature', {
 
   actions: {
     /**
-     * ดึงรายการสถานะ Feature Toggles ทั้งหมดจาก Backend
+     * ดึงรายการสถานะ Feature Toggles ทั้งหมดจาก Backend (รองรับแยกรายตึก)
      */
-    async fetchFeatures() {
+    async fetchFeatures(buildingId = null) {
       this.isLoading = true;
       this.errorMessage = '';
       try {
-        const response = await api.get('/api/v1/features');
+        const response = await api.get('/api/v1/features', {
+          params: { ...(buildingId && { buildingId }) }
+        });
         this.features = response.data.data.features;
         this.featureMap = response.data.data.featureMap;
       } catch (error) {
@@ -43,14 +45,17 @@ export const useFeatureStore = defineStore('feature', {
     /**
      * อัปเดตสถานะเปิด-ปิดฟีเจอร์ (Admin Action)
      */
-    async toggleFeature(key, isActive) {
+    async toggleFeature(key, isActive, buildingId = null) {
       try {
         // Optimistic UI Update
         this.featureMap[key] = isActive;
         const item = this.features.find((f) => f.key === key);
         if (item) item.isActive = isActive;
 
-        const response = await api.put(`/api/v1/features/${key}`, { isActive });
+        const response = await api.put(`/api/v1/features/${key}`, {
+          isActive,
+          ...(buildingId && { buildingId })
+        });
         return response.data;
       } catch (error) {
         // Revert on error
