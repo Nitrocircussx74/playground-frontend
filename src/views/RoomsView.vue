@@ -8,6 +8,13 @@
 
       <div class="flex items-center gap-3">
         <button
+          @click="showImportModal = true"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5"
+        >
+          <span>📥 Import CSV / Batch Rooms</span>
+        </button>
+
+        <button
           @click="showCreateModal = !showCreateModal"
           class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5"
         >
@@ -121,6 +128,12 @@
       :room="selectedRoomForInvite"
       @close="showInviteModal = false"
     />
+
+    <!-- Bulk Room Import Modal -->
+    <RoomImportModal
+      :show="showImportModal"
+      @close="showImportModal = false"
+    />
   </div>
 </template>
 
@@ -131,6 +144,7 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
 import RoomInviteModal from '@/components/RoomInviteModal.vue';
+import RoomImportModal from '@/components/RoomImportModal.vue';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -141,6 +155,7 @@ const activeBuildingName = computed(() => {
 });
 
 const showCreateModal = ref(false);
+const showImportModal = ref(false);
 const showInviteModal = ref(false);
 const selectedRoomForInvite = ref(null);
 

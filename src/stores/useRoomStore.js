@@ -59,6 +59,27 @@ export const useRoomStore = defineStore('room', {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    async importRooms(payload) {
+      const bStore = useBuildingStore();
+      const targetBuildingId = payload.buildingId || bStore.activeBuildingId;
+
+      this.isLoading = true;
+      this.errorMessage = '';
+      try {
+        const response = await roomService.importRooms({
+          ...payload,
+          buildingId: targetBuildingId
+        });
+        await this.fetchRooms(targetBuildingId);
+        return response;
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to import rooms';
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 });

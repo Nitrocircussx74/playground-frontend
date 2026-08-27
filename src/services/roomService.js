@@ -14,5 +14,10 @@ export default {
   async createRoom(payload) {
     const response = await api.post('/api/v1/rooms', payload);
     return response.data;
+  },
+
+  async importRooms(payload) {
+    const response = await api.post('/api/v1/rooms/import', payload);
+    return response.data;
   }
 };
