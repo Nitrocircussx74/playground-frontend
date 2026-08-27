@@ -23,11 +23,19 @@
 
         <button
           @click="activeTab = 'single-history'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
           :class="activeTab === 'single-history' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>📜</span>
           <span>ประวัติการจดมิเตอร์</span>
+        </button>
+
+        <button
+          @click="showImportModal = true"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-md shadow-teal-600/20 cursor-pointer"
+        >
+          <span>📊</span>
+          <span>นำเข้าไฟล์ Excel/CSV</span>
         </button>
       </div>
     </div>
@@ -157,6 +165,12 @@
         </div>
       </div>
     </div>
+    <!-- 📊 Bulk Meter Import Modal -->
+    <MeterImportModal
+      :show="showImportModal"
+      @close="showImportModal = false"
+      @imported="handleImported"
+    />
   </div>
 </template>
 
@@ -167,9 +181,11 @@ import { useMeterStore } from '@/stores/useMeterStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import MeterReadingTable from '@/components/meter/MeterReadingTable.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
+import MeterImportModal from '@/components/MeterImportModal.vue';
 import { showSuccess, showError } from '@/utils/swal';
 
 const activeTab = ref('fast-table');
+const showImportModal = ref(false);
 const roomStore = useRoomStore();
 const meterStore = useMeterStore();
 const buildingStore = useBuildingStore();
@@ -200,6 +216,10 @@ watch(
 );
 
 const handleMeterSuccess = () => {
+  activeTab.value = 'draft-review';
+};
+
+const handleImported = () => {
   activeTab.value = 'draft-review';
 };
 
