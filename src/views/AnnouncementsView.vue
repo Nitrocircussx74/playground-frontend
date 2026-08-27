@@ -177,7 +177,9 @@ watch(
 
 const fetchAnnouncements = async () => {
   try {
-    const res = await api.get('/api/v1/announcements');
+    const res = await api.get('/api/v1/announcements', {
+      params: { buildingId: buildingStore.activeBuildingId }
+    });
     announcements.value = res.data.data;
   } catch (error) {
     console.error('Failed to fetch announcements:', error);
@@ -187,7 +189,10 @@ const fetchAnnouncements = async () => {
 const handleCreateAnnouncement = async () => {
   submitting.value = true;
   try {
-    const res = await api.post('/api/v1/announcements', { ...form });
+    const res = await api.post('/api/v1/announcements', {
+      ...form,
+      buildingId: buildingStore.activeBuildingId
+    });
     await showSuccess('สำเร็จ!', `บรอดแคสต์ประกาศข่าวสารเรียบร้อยแล้ว (ส่งถึงลูกบ้าน ${res.data.data.recipientCount} ราย)`);
     form.title = '';
     form.content = '';
