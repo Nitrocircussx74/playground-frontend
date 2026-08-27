@@ -7,7 +7,7 @@
           <h3 class="text-lg font-bold text-slate-900">
             {{ isEditing ? `✏️ แก้ไขใบแจ้งหนี้ ${invoice?.invoiceNumber}` : '📝 สร้างใบแจ้งหนี้แบบปรับแต่ง' }}
           </h3>
-          <p class="text-xs text-slate-500">ปรับแต่งค่าน้ำ, ค่าไฟ, ละเว้นส่วนกลาง หรือเพิ่มค่าบริการอื่นๆ</p>
+          <p class="text-xs text-slate-500">ปรับแต่งค่าน้ำ, ค่าไฟ, ละเว้นส่วนกลาง หรือเพิ่มรายการค่าบริการอื่นๆ ได้หลายรายการ</p>
         </div>
         <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
       </div>
@@ -105,27 +105,46 @@
           </label>
         </div>
 
-        <!-- Other Fee & Note -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">ค่าบริการอื่นๆ (บาท)</label>
-            <input
-              v-model.number="form.otherFee"
-              type="number"
-              min="0"
-              placeholder="0"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-900 focus:outline-hidden"
-            />
+        <!-- Dynamic Multiple Other Fees Section -->
+        <div class="space-y-2 border-t border-slate-100 pt-3">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-slate-800">📌 รายการค่าบริการอื่นๆ (เพิ่มได้หลายรายการ)</label>
+            <button
+              type="button"
+              @click="addOtherFeeItem"
+              class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold transition-all"
+            >
+              + เพิ่มรายการ
+            </button>
           </div>
 
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">หมายเหตุค่าบริการอื่นๆ</label>
-            <input
-              v-model="form.otherFeeNote"
-              type="text"
-              placeholder="e.g. ค่าที่จอดรถ, ค่าคีย์การ์ด"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-hidden"
-            />
+          <div v-if="otherFeeItems.length === 0" class="text-slate-400 text-[11px] text-center py-2 bg-slate-50 rounded-xl border border-slate-100">
+            ไม่มีรายการค่าบริการอื่นๆ
+          </div>
+
+          <div v-else class="space-y-2 max-h-36 overflow-y-auto pr-1">
+            <div v-for="(item, idx) in otherFeeItems" :key="idx" class="flex items-center gap-2">
+              <input
+                v-model="item.note"
+                type="text"
+                placeholder="ชื่อรายการ (e.g. ค่าที่จอดรถ, ค่าคีย์การ์ด)"
+                class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-hidden"
+              />
+              <input
+                v-model.number="item.amount"
+                type="number"
+                min="0"
+                placeholder="จำนวนเงิน (บาท)"
+                class="w-28 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-900 focus:outline-hidden"
+              />
+              <button
+                type="button"
+                @click="removeOtherFeeItem(idx)"
+                class="text-rose-500 hover:text-rose-700 font-bold p-1 text-sm"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         </div>
 
@@ -134,7 +153,7 @@
           <div>
             <div class="text-[11px] text-slate-400">ยอดรวมสุทธิ (Grand Total)</div>
             <div class="text-xs text-slate-300">
-              ค่าห้อง + ค่าน้ำ + ค่าไฟ + ส่วนกลาง + อื่นๆ
+              ค่าห้อง + ค่าน้ำ + ค่าไฟ + ส่วนกลาง + รายการอื่นๆ ({{ otherFeeItems.length }} รายการ)
             </div>
           </div>
 
@@ -181,6 +200,10 @@ const emit = defineEmits(['close', 'saved']);
 const submitting = ref(false);
 const isEditing = computed(() => !!props.invoice?.id);
 
+const otherFeeItems = ref([
+  { note: '', amount: 0 }
+]);
+
 const form = reactive({
   roomId: '',
   billingCycle: '09-2026',
@@ -188,10 +211,16 @@ const form = reactive({
   customWaterTotal: 0,
   customElectricTotal: 0,
   waiveCommonFee: false,
-  commonFee: 100,
-  otherFee: 0,
-  otherFeeNote: ''
+  commonFee: 100
 });
+
+const addOtherFeeItem = () => {
+  otherFeeItems.value.push({ note: '', amount: 0 });
+};
+
+const removeOtherFeeItem = (index) => {
+  otherFeeItems.value.splice(index, 1);
+};
 
 watch(
   () => props.show,
@@ -206,8 +235,29 @@ watch(
         form.customElectricTotal = Number(props.invoice.electricTotal) || 0;
         form.commonFee = Number(props.invoice.commonFee) || 0;
         form.waiveCommonFee = Number(props.invoice.commonFee) === 0;
-        form.otherFee = Number(props.invoice.otherFee) || 0;
-        form.otherFeeNote = props.invoice.otherFeeNote || '';
+
+        // Parse Multiple Other Fee Items
+        if (props.invoice.otherFeeNote) {
+          try {
+            if (props.invoice.otherFeeNote.startsWith('[')) {
+              otherFeeItems.value = JSON.parse(props.invoice.otherFeeNote);
+            } else {
+              otherFeeItems.value = [
+                { note: props.invoice.otherFeeNote, amount: Number(props.invoice.otherFee) || 0 }
+              ];
+            }
+          } catch {
+            otherFeeItems.value = [
+              { note: props.invoice.otherFeeNote, amount: Number(props.invoice.otherFee) || 0 }
+            ];
+          }
+        } else if (Number(props.invoice.otherFee) > 0) {
+          otherFeeItems.value = [
+            { note: 'ค่าบริการอื่นๆ', amount: Number(props.invoice.otherFee) }
+          ];
+        } else {
+          otherFeeItems.value = [];
+        }
       } else {
         // Create Mode
         form.roomId = props.rooms && props.rooms.length > 0 ? props.rooms[0].id : '';
@@ -217,8 +267,7 @@ watch(
         form.customElectricTotal = 0;
         form.waiveCommonFee = false;
         form.commonFee = 100;
-        form.otherFee = 0;
-        form.otherFeeNote = '';
+        otherFeeItems.value = [{ note: '', amount: 0 }];
       }
     }
   }
@@ -235,19 +284,26 @@ watch(
   }
 );
 
+const totalOtherFeeAmount = computed(() => {
+  return otherFeeItems.value.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+});
+
 const calculatedGrandTotal = computed(() => {
   const roomP = Number(form.roomPrice) || 0;
   const waterP = Number(form.customWaterTotal) || 0;
   const electricP = Number(form.customElectricTotal) || 0;
   const commonP = form.waiveCommonFee ? 0 : (Number(form.commonFee) || 0);
-  const otherP = Number(form.otherFee) || 0;
 
-  return roomP + waterP + electricP + commonP + otherP;
+  return roomP + waterP + electricP + commonP + totalOtherFeeAmount.value;
 });
 
 const handleSubmit = async () => {
   submitting.value = true;
   try {
+    const validItems = otherFeeItems.value.filter((item) => (Number(item.amount) > 0 || item.note.trim() !== ''));
+    const totalOtherFee = validItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+    const otherFeeNoteStr = validItems.length > 0 ? JSON.stringify(validItems) : null;
+
     const payload = {
       roomId: form.roomId,
       billingCycle: form.billingCycle,
@@ -258,8 +314,8 @@ const handleSubmit = async () => {
       electricTotal: form.customElectricTotal,
       waiveCommonFee: form.waiveCommonFee,
       commonFee: form.waiveCommonFee ? 0 : form.commonFee,
-      otherFee: form.otherFee,
-      otherFeeNote: form.otherFeeNote
+      otherFee: totalOtherFee,
+      otherFeeNote: otherFeeNoteStr
     };
 
     if (isEditing.value) {
