@@ -37,96 +37,132 @@
       </div>
 
       <!-- Left Sidebar Navigation Menu Items -->
-      <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-        <router-link
-          to="/dashboard"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/dashboard' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">📊</span>
-          <span>Dashboard</span>
-        </router-link>
+      <nav class="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+        <!-- 1. ภาพรวมระบบ (Overview) -->
+        <div>
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
+            Overview
+          </div>
+          <router-link
+            to="/dashboard"
+            @click="isMobileMenuOpen = false"
+            class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+            :class="route.path === '/dashboard' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+          >
+            <span class="text-base">📊</span>
+            <span>Dashboard</span>
+          </router-link>
+        </div>
 
-        <router-link
-          to="/buildings"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/buildings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">🏢</span>
-          <span>จัดการตึก/อาคาร</span>
-        </router-link>
+        <!-- 2. จัดการตึก & ห้องพัก (Building & Rooms) -->
+        <div>
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
+            Building & Rooms
+          </div>
+          <div class="space-y-1">
+            <router-link
+              to="/buildings"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/buildings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">🏢</span>
+              <span>จัดการตึก/อาคาร</span>
+            </router-link>
 
-        <router-link
-          to="/building-settings"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/building-settings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">⚙️</span>
-          <span>ตั้งค่าตึก</span>
-        </router-link>
+            <router-link
+              to="/building-settings"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/building-settings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">⚙️</span>
+              <span>ตั้งค่าตึก</span>
+            </router-link>
 
-        <router-link
-          to="/rooms"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/rooms' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">🚪</span>
-          <span>จัดการห้องพัก</span>
-        </router-link>
+            <router-link
+              to="/rooms"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/rooms' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">🚪</span>
+              <span>จัดการห้องพัก</span>
+            </router-link>
+          </div>
+        </div>
 
-        <router-link
-          to="/meter-readings"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/meter-readings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">⚡</span>
-          <span>จดมิเตอร์น้ำ-ไฟ</span>
-        </router-link>
+        <!-- 3. การเงิน & มิเตอร์ (Billing & Utilities) -->
+        <div>
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
+            Billing & Utilities
+          </div>
+          <div class="space-y-1">
+            <router-link
+              to="/meter-readings"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/meter-readings' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">⚡</span>
+              <span>จดมิเตอร์น้ำ-ไฟ</span>
+            </router-link>
 
-        <router-link
-          to="/invoices"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/invoices' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">🧾</span>
-          <span>จัดการใบแจ้งหนี้</span>
-        </router-link>
+            <router-link
+              to="/invoices"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/invoices' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">🧾</span>
+              <span>จัดการใบแจ้งหนี้</span>
+            </router-link>
+          </div>
+        </div>
 
-        <router-link
-          to="/maintenance"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/maintenance' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">🔧</span>
-          <span>แจ้งซ่อม & ติดตาม</span>
-        </router-link>
+        <!-- 4. บริการผู้เช่า (Tenant Services) -->
+        <div>
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
+            Tenant Services
+          </div>
+          <div class="space-y-1">
+            <router-link
+              to="/maintenance"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/maintenance' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">🔧</span>
+              <span>แจ้งซ่อม & ติดตาม</span>
+            </router-link>
 
-        <router-link
-          to="/announcements"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/announcements' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">📢</span>
-          <span>ข่าวสาร & ประกาศ</span>
-        </router-link>
+            <router-link
+              to="/announcements"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/announcements' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">📢</span>
+              <span>ข่าวสาร & ประกาศ</span>
+            </router-link>
+          </div>
+        </div>
 
-        <router-link
-          to="/features"
-          @click="isMobileMenuOpen = false"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-          :class="route.path === '/features' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-        >
-          <span class="text-base">🚩</span>
-          <span>ตั้งค่าฟีเจอร์</span>
-        </router-link>
+        <!-- 5. ตั้งค่าระบบ (System Settings) -->
+        <div>
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1.5">
+            System Settings
+          </div>
+          <router-link
+            to="/features"
+            @click="isMobileMenuOpen = false"
+            class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+            :class="route.path === '/features' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+          >
+            <span class="text-base">🚩</span>
+            <span>ตั้งค่าฟีเจอร์</span>
+          </router-link>
+        </div>
       </nav>
 
       <!-- Sidebar Footer -->
