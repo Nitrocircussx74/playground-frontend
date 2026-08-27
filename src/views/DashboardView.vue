@@ -1,22 +1,61 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
+    <!-- Header & Export Toolbar -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Business Analytics Dashboard</h1>
-        <p class="text-sm text-slate-500">Real-time overview of revenue, occupancy rate, and debt tracking</p>
+        <p class="text-sm text-slate-500">Real-time overview of revenue, occupancy rate, debt tracking & report export</p>
       </div>
 
-      <button
-        @click="fetchSummaryData"
-        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all border border-slate-200"
-      >
-        Refresh Dashboard
-      </button>
+      <!-- Toolbar Controls -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <!-- Billing Cycle Selector -->
+        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+          <label class="text-xs font-semibold text-slate-500">Cycle:</label>
+          <input
+            v-model="selectedCycle"
+            type="text"
+            placeholder="MM-YYYY (e.g. 08-2026)"
+            class="text-xs font-mono font-semibold bg-transparent focus:outline-hidden w-28 text-slate-800"
+          />
+        </div>
+
+        <!-- Refresh Button -->
+        <button
+          @click="loadDashboardData"
+          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5"
+        >
+          <span>🔄 Refresh</span>
+        </button>
+
+        <!-- Export CSV Button -->
+        <button
+          @click="handleExportCsv"
+          :disabled="dashboardStore.isLoading"
+          class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+        >
+          <span>📊 Export CSV</span>
+        </button>
+
+        <!-- Export PDF Button -->
+        <button
+          @click="handleExportPdf"
+          :disabled="dashboardStore.isLoading"
+          class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+        >
+          <span>📄 Export PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Alert -->
+    <div v-if="dashboardStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs font-medium flex items-center justify-between">
+      <span>⚠️ {{ dashboardStore.errorMessage }}</span>
+      <button @click="dashboardStore.errorMessage = ''" class="text-rose-500 hover:text-rose-700 font-bold">✕</button>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="p-12 text-center text-slate-500">
+    <div v-if="dashboardStore.isLoading && !summary.occupancy?.totalRooms" class="p-12 text-center text-slate-500">
       <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       Loading business analytics...
     </div>
@@ -25,7 +64,7 @@
       <!-- 1. KPI Summary Cards Section -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <!-- Card 1: Revenue -->
-        <Card class="bg-gradient-to-br from-white to-purple-50/40 border border-slate-200/80 shadow-xs">
+        <Card class="bg-gradient-to-br from-white to-purple-50/40 border border-slate-200/80 shadow-2xs">
           <CardHeader class="pb-2">
             <CardTitle class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Revenue This Month</CardTitle>
           </CardHeader>
@@ -37,13 +76,13 @@
               <span :class="summary.financial?.momGrowth >= 0 ? 'text-emerald-600' : 'text-rose-600'">
                 {{ summary.financial?.momGrowth >= 0 ? '▲' : '▼' }} {{ Math.abs(summary.financial?.momGrowth || 0) }}%
               </span>
-              <span class="text-slate-400">vs last month ({{ summary.financial?.prevCycle }})</span>
+              <span class="text-slate-400">vs last month ({{ summary.financial?.prevCycle || 'N/A' }})</span>
             </div>
           </CardContent>
         </Card>
 
         <!-- Card 2: Total Debt -->
-        <Card class="bg-gradient-to-br from-white to-rose-50/40 border border-slate-200/80 shadow-xs">
+        <Card class="bg-gradient-to-br from-white to-rose-50/40 border border-slate-200/80 shadow-2xs">
           <CardHeader class="pb-2">
             <CardTitle class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Overdue Debt</CardTitle>
           </CardHeader>
@@ -58,7 +97,7 @@
         </Card>
 
         <!-- Card 3: Occupancy Rate -->
-        <Card class="bg-gradient-to-br from-white to-indigo-50/40 border border-slate-200/80 shadow-xs">
+        <Card class="bg-gradient-to-br from-white to-indigo-50/40 border border-slate-200/80 shadow-2xs">
           <CardHeader class="pb-2">
             <CardTitle class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Occupancy Rate</CardTitle>
           </CardHeader>
@@ -73,65 +112,39 @@
         </Card>
       </div>
 
-      <!-- 2. Chart Section -->
+      <!-- 2. Interactive Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <!-- Revenue Breakdown Chart -->
-        <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4">
+        <!-- 6-Month Revenue Trend Chart -->
+        <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-semibold text-slate-900">Revenue Breakdown ({{ summary.financial?.currentCycle }})</h3>
+            <div>
+              <h3 class="font-semibold text-slate-900">Revenue Trend (แนวโน้มรายรับ 6 เดือน)</h3>
+              <p class="text-xs text-slate-500">Historical monthly revenue performance</p>
+            </div>
           </div>
 
           <div class="h-64 flex items-center justify-center">
-            <Bar :data="chartData" :options="chartOptions" />
+            <Bar :data="trendChartData" :options="trendChartOptions" />
           </div>
         </div>
 
-        <!-- Occupancy Distribution -->
-        <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4">
-          <h3 class="font-semibold text-slate-900">Room Status Distribution</h3>
-
-          <div class="space-y-3 pt-2">
+        <!-- Revenue Breakdown Chart -->
+        <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-4">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-indigo-700">Occupied Rooms (มีผู้เช่า)</span>
-                <span>{{ summary.occupancy?.occupiedRooms }} Rooms</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div class="bg-indigo-600 h-full" :style="{ width: `${summary.occupancy?.occupancyRate}%` }"></div>
-              </div>
+              <h3 class="font-semibold text-slate-900">Revenue Breakdown ({{ summary.financial?.currentCycle || 'Current Cycle' }})</h3>
+              <p class="text-xs text-slate-500">Category breakdown for room, utilities, & common fees</p>
             </div>
+          </div>
 
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-emerald-700">Available Rooms (ห้องว่าง)</span>
-                <span>{{ summary.occupancy?.availableRooms }} Rooms</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div
-                  class="bg-emerald-500 h-full"
-                  :style="{ width: `${(summary.occupancy?.availableRooms / summary.occupancy?.totalRooms) * 100}%` }"
-                ></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-amber-700">Maintenance Rooms (ซ่อมบำรุง)</span>
-                <span>{{ summary.occupancy?.maintenanceRooms }} Rooms</span>
-              </div>
-              <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                <div
-                  class="bg-amber-500 h-full"
-                  :style="{ width: `${(summary.occupancy?.maintenanceRooms / summary.occupancy?.totalRooms) * 100}%` }"
-                ></div>
-              </div>
-            </div>
+          <div class="h-64 flex items-center justify-center">
+            <Doughnut :data="breakdownChartData" :options="breakdownChartOptions" />
           </div>
         </div>
       </div>
 
       <!-- 3. Debt Tracking & Automated LINE Reminder Section -->
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
         <div class="p-5 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 class="font-bold text-slate-900 text-base">Overdue Debtors (รายการลูกหนี้ค้างชำระ)</h3>
@@ -140,8 +153,8 @@
 
           <button
             @click="showRemindModal = true"
-            :disabled="summary.debt?.debtors?.length === 0"
-            class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-rose-600/20 disabled:opacity-50 flex items-center gap-1.5"
+            :disabled="!summary.debt?.debtors || summary.debt?.debtors.length === 0"
+            class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs shadow-rose-600/20 disabled:opacity-50 flex items-center gap-1.5"
           >
             <span>📢 ส่ง LINE ทวงหนี้ (Remind Overdue)</span>
           </button>
@@ -169,7 +182,7 @@
                 </td>
                 <td class="p-3.5 font-mono text-xs">{{ inv.billingCycle }}</td>
                 <td class="p-3.5 font-mono text-xs text-rose-600 font-semibold">
-                  {{ new Date(inv.dueDate).toLocaleDateString('th-TH') }}
+                  {{ inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('th-TH') : '-' }}
                 </td>
                 <td class="p-3.5 font-mono font-bold text-rose-700">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
                 <td class="p-3.5">
@@ -234,44 +247,81 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
-import api from '@/utils/api';
+import { Bar, Doughnut } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale } from 'chart.js';
+import { useDashboardStore } from '@/stores/useDashboardStore';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);
 
-const loading = ref(true);
-const reminding = ref(false);
+const dashboardStore = useDashboardStore();
+const selectedCycle = ref('');
 const showRemindModal = ref(false);
-const summary = ref({
-  occupancy: {},
-  financial: { breakdown: {} },
-  debt: { debtors: [] }
-});
+const reminding = ref(false);
+
+const summary = computed(() => dashboardStore.summary);
+const revenueTrends = computed(() => dashboardStore.revenueTrends);
 
 onMounted(() => {
-  fetchSummaryData();
+  loadDashboardData();
 });
 
-const fetchSummaryData = async () => {
-  loading.value = true;
-  try {
-    const res = await api.get('/api/v1/dashboard/summary');
-    summary.value = res.data.data;
-  } catch (error) {
-    console.error('Failed to fetch dashboard summary:', error);
-  } finally {
-    loading.value = false;
+const loadDashboardData = async () => {
+  await dashboardStore.fetchSummary();
+  await dashboardStore.fetchRevenueTrend();
+  if (summary.value.financial?.currentCycle) {
+    selectedCycle.value = summary.value.financial.currentCycle;
   }
 };
 
-const chartData = computed(() => ({
+const handleExportCsv = async () => {
+  await dashboardStore.exportCsv(selectedCycle.value);
+};
+
+const handleExportPdf = async () => {
+  await dashboardStore.exportPdf(selectedCycle.value);
+};
+
+const handleRemindDebtors = async () => {
+  reminding.value = true;
+  try {
+    const res = await dashboardStore.remindDebtors();
+    alert(res.message || 'Debt reminder notifications sent successfully!');
+    showRemindModal.value = false;
+  } catch (error) {
+    alert(error.response?.data?.message || 'Failed to send debt reminders');
+  } finally {
+    reminding.value = false;
+  }
+};
+
+// 6-Month Trend Chart Data
+const trendChartData = computed(() => ({
+  labels: revenueTrends.value.map((t) => t.cycle),
+  datasets: [
+    {
+      label: 'Total Paid Revenue (บาท)',
+      backgroundColor: '#8b5cf6',
+      borderRadius: 8,
+      data: revenueTrends.value.map((t) => t.totalRevenue)
+    }
+  ]
+}));
+
+const trendChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: true, position: 'top' }
+  }
+};
+
+// Category Revenue Breakdown Chart Data
+const breakdownChartData = computed(() => ({
   labels: ['ค่าเช่าห้องพัก', 'ค่าน้ำประปา', 'ค่าไฟฟ้า', 'ค่าส่วนกลาง'],
   datasets: [
     {
-      label: 'รายรับตามหมวดหมู่ (บาท)',
       backgroundColor: ['#6366f1', '#06b6d4', '#eab308', '#10b981'],
-      borderRadius: 12,
+      borderWidth: 0,
       data: [
         summary.value.financial?.breakdown?.roomPrice || 0,
         summary.value.financial?.breakdown?.waterTotal || 0,
@@ -282,25 +332,11 @@ const chartData = computed(() => ({
   ]
 }));
 
-const chartOptions = {
+const breakdownChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { display: false }
-  }
-};
-
-const handleRemindDebtors = async () => {
-  reminding.value = true;
-  try {
-    const res = await api.post('/api/v1/dashboard/remind-debtors');
-    alert(res.data.message);
-    showRemindModal.value = false;
-    fetchSummaryData();
-  } catch (error) {
-    alert(error.response?.data?.message || 'Failed to send debt reminders');
-  } finally {
-    reminding.value = false;
+    legend: { display: true, position: 'right' }
   }
 };
 </script>
