@@ -89,6 +89,16 @@
               <span class="text-base">🚪</span>
               <span>จัดการห้องพัก</span>
             </router-link>
+
+            <router-link
+              to="/leases"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path === '/leases' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">📜</span>
+              <span>สัญญาเช่า & ประวัติ</span>
+            </router-link>
           </div>
         </div>
 
