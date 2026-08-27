@@ -212,6 +212,14 @@
             </form>
           </div>
         </div>
+        <!-- Move-Out Refund Accounting Wizard Modal -->
+        <MoveOutWizardModal
+          :show="showMoveOutWizard"
+          :lease="selectedLease"
+          :room="room"
+          @close="showMoveOutWizard = false"
+          @completed="handleMoveOutCompleted"
+        />
       </div>
     </div>
   </div>
@@ -221,6 +229,7 @@
 import { ref, reactive, computed, watch } from 'vue';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
+import MoveOutWizardModal from '@/components/MoveOutWizardModal.vue';
 
 const props = defineProps({
   show: Boolean,
@@ -231,16 +240,9 @@ const emit = defineEmits(['close', 'updated']);
 
 const activeTab = ref('current');
 const loading = ref(false);
-const terminating = ref(false);
 const leases = ref([]);
-const showTerminateModal = ref(false);
+const showMoveOutWizard = ref(false);
 const selectedLease = ref(null);
-
-const terminateForm = reactive({
-  actualEndDate: new Date().toISOString().split('T')[0],
-  moveOutReason: '',
-  adminNote: ''
-});
 
 const activeLease = computed(() => leases.value.find((l) => l.status === 'ACTIVE'));
 
@@ -269,10 +271,12 @@ watch(
 
 const openTerminateModal = (lease) => {
   selectedLease.value = lease;
-  terminateForm.actualEndDate = new Date().toISOString().split('T')[0];
-  terminateForm.moveOutReason = '';
-  terminateForm.adminNote = '';
-  showTerminateModal.value = true;
+  showMoveOutWizard.value = true;
+};
+
+const handleMoveOutCompleted = () => {
+  fetchHistory();
+  emit('updated');
 };
 
 const handleTerminateSubmit = async () => {
