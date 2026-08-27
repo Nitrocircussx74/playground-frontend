@@ -31,6 +31,7 @@
         </button>
 
         <button
+          id="tour-btn-import-excel"
           @click="showImportModal = true"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-md shadow-teal-600/20 cursor-pointer"
         >
@@ -201,8 +202,13 @@ const loadData = () => {
   meterStore.fetchMeterRecords(bId);
 };
 
+import { startTour } from '@/utils/tours';
+
 onMounted(() => {
   loadData();
+  setTimeout(() => {
+    startTour('meter');
+  }, 600);
 });
 
 watch(

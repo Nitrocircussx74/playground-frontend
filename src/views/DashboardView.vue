@@ -117,7 +117,7 @@
         </div>
       </div>
       <!-- 1. Top KPI Summary Cards (4 Cards) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div id="tour-kpi-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Card 1: Revenue -->
         <Card class="bg-gradient-to-br from-white to-purple-50/40 border border-slate-200/80 shadow-2xs">
           <CardHeader class="pb-2">
@@ -183,7 +183,7 @@
       </div>
 
       <!-- 2. Interactive Charts Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div id="tour-revenue-chart" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <!-- Stacked Bar Chart: 6-Month Revenue Trend -->
         <div class="lg:col-span-2 p-6 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-4">
           <div class="flex items-center justify-between">
@@ -216,7 +216,7 @@
       <!-- 3. Bottom Grid: 2-Column To-Do Lists (Overdue Debtors & Expiring Leases) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Left Column: Overdue Debtors -->
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden flex flex-col justify-between">
+        <div id="tour-overdue-debtors" class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden flex flex-col justify-between">
           <div>
             <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
@@ -271,7 +271,7 @@
         </div>
 
         <!-- Right Column: Expiring Leases in 30 Days -->
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden flex flex-col justify-between">
+        <div id="tour-expiring-leases" class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden flex flex-col justify-between">
           <div>
             <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
@@ -391,9 +391,14 @@ const selectBuilding = (buildingId) => {
   buildingStore.setActiveBuildingId(buildingId);
 };
 
-onMounted(() => {
+import { startTour } from '@/utils/tours';
+
+onMounted(async () => {
   buildingStore.fetchBuildings();
-  loadDashboardData();
+  await loadDashboardData();
+  setTimeout(() => {
+    startTour('dashboard');
+  }, 600);
 });
 
 watch(

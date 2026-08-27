@@ -26,7 +26,7 @@
     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
         <!-- Status Filter Tabs -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
+        <div id="tour-lease-status-tabs" class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button
             @click="selectedStatus = 'ALL'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Search Input -->
-      <div class="w-full md:w-72 relative">
+      <div id="tour-lease-search" class="w-full md:w-72 relative">
         <input
           v-model="searchQuery"
           type="text"
@@ -137,6 +137,7 @@
           </button>
 
           <button
+            id="tour-btn-move-out"
             v-if="item.status === 'ACTIVE'"
             @click="openMoveOutWizard(item)"
             class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer"
@@ -216,9 +217,14 @@ const fetchLeases = async () => {
   }
 };
 
+import { startTour } from '@/utils/tours';
+
 onMounted(() => {
   buildingStore.fetchBuildings();
   fetchLeases();
+  setTimeout(() => {
+    startTour('leases');
+  }, 600);
 });
 
 watch(

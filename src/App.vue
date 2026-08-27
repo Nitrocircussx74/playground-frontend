@@ -257,9 +257,20 @@
           </h2>
         </div>
 
-        <!-- Right Side: Building Switcher Dropdown -->
-        <div v-if="authStore.isAuthenticated" class="flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl shadow-2xs">
+        <!-- Right Side: Building Switcher Dropdown & Guided Tour Help Button -->
+        <div v-if="authStore.isAuthenticated" class="flex items-center gap-2 sm:gap-3">
+          <!-- Help Tour Button -->
+          <button
+            id="btn-help-tour"
+            @click="triggerHelpTour"
+            title="แนะนำการใช้งานหน้านี้ (Guided Tour)"
+            class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl border border-amber-300 text-xs font-bold transition-all shadow-2xs flex items-center gap-1 cursor-pointer"
+          >
+            <CircleHelp class="w-4 h-4 text-amber-600 shrink-0" />
+            <span class="hidden sm:inline">คู่มือใช้งาน</span>
+          </button>
+
+          <div id="tour-building-selector" class="flex items-center gap-2 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl shadow-2xs">
             <span class="text-xs font-bold text-purple-900 hidden sm:inline">🏢 เลือกตึก:</span>
             <select
               :value="buildingStore.activeBuildingId"
@@ -300,11 +311,24 @@ import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useRouter, useRoute } from 'vue-router';
 import { Button } from '@/components/ui/button';
+import { CircleHelp } from 'lucide-vue-next';
+import { startTour } from '@/utils/tours';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
 const router = useRouter();
 const route = useRoute();
+
+const triggerHelpTour = () => {
+  const path = route.path;
+  let tourKey = 'dashboard';
+  if (path.includes('meter')) tourKey = 'meter';
+  else if (path.includes('lease')) tourKey = 'leases';
+  else if (path.includes('maintenance')) tourKey = 'maintenance';
+  else tourKey = 'dashboard';
+
+  startTour(tourKey, true);
+};
 
 const isMobileMenuOpen = ref(false);
 

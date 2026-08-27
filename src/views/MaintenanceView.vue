@@ -33,7 +33,7 @@
     <!-- Kanban Board Grid (3 Columns) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
       <!-- Column 1: Pending (รอดำเนินการ) -->
-      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-pending" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <Clock class="w-4 h-4 text-amber-500" />
@@ -95,7 +95,7 @@
       </div>
 
       <!-- Column 2: In Progress (กำลังดำเนินการซ่อม) -->
-      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-inprogress" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <Zap class="w-4 h-4 text-blue-500" />
@@ -159,7 +159,7 @@
       </div>
 
       <!-- Column 3: Resolved (เสร็จสิ้น) -->
-      <div class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-resolved" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <CheckCircle2 class="w-4 h-4 text-emerald-500" />
@@ -477,7 +477,14 @@ const fetchData = async () => {
   requests.value = res.data || [];
 };
 
-onMounted(fetchData);
+import { startTour } from '@/utils/tours';
+
+onMounted(async () => {
+  await fetchData();
+  setTimeout(() => {
+    startTour('maintenance');
+  }, 600);
+});
 
 watch(
   () => buildingStore.activeBuildingId,
