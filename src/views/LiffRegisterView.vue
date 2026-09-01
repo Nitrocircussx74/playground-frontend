@@ -145,7 +145,6 @@ const verifying = ref(false);
 const errorMessage = ref('');
 const successData = ref(null);
 const verifiedRoom = ref(null);
-const lineUserId = ref('');
 
 const form = reactive({
   inviteCode: '',
@@ -162,15 +161,13 @@ onMounted(async () => {
     verifyCode();
   }
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-  try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      lineUserId.value = profile.userId;
+  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+  if (liffId) {
+    try {
+      await liff.init({ liffId });
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
   }
 });
 
@@ -202,10 +199,19 @@ const handleRegister = async () => {
   errorMessage.value = '';
 
   try {
-    const payload = {
-      ...form,
-      lineUserId: lineUserId.value || null
-    };
+    const payload = { ...form };
+
+    // ดึงโปรไฟล์ LINE (ชื่อ Display Name, รูปโปรไฟล์) หากเปิดผ่าน LINE LIFF
+    try {
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        payload.lineDisplayName = profile.displayName || null;
+        payload.linePictureUrl = profile.pictureUrl || null;
+        payload.lineStatusMessage = profile.statusMessage || null;
+      }
+    } catch (profileErr) {
+      console.warn('Could not read LINE profile:', profileErr);
+    }
 
     const res = await api.post('/api/v1/liff/register/invite', payload);
     successData.value = res.data.data;

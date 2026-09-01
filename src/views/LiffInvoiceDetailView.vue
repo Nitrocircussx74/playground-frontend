@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-100/90 py-6 px-4 font-sans text-slate-900">
-    <div class="max-w-md mx-auto space-y-5">
+  <div class="space-y-5 pb-6 font-sans text-slate-900">
+    <div class="space-y-5">
       <!-- Loading State -->
       <div v-if="loading" class="p-8 bg-white rounded-3xl shadow-sm text-center text-slate-500">
         <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
@@ -176,15 +176,17 @@ const mockQrUrl = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?
 
 onMounted(async () => {
   try {
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        lineUserId.value = profile.userId;
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+    if (liffId) {
+      try {
+        await liff.init({ liffId });
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile();
+          lineUserId.value = profile.userId;
+        }
+      } catch (liffErr) {
+        console.warn('LIFF init fallback mode:', liffErr.message);
       }
-    } catch (liffErr) {
-      console.warn('LIFF init fallback mode:', liffErr.message);
     }
 
     const res = await api.get(`/api/v1/liff/invoices/${invoiceId}`);

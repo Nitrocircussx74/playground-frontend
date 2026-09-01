@@ -143,6 +143,14 @@
 
         <!-- Card Action Buttons -->
         <div class="pt-2 border-t border-slate-100 flex gap-2">
+          <router-link
+            v-if="item.tenantId || item.tenant?.id"
+            :to="`/tenants/${item.tenantId || item.tenant?.id}`"
+            class="w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+          >
+            <span>👤 โปรไฟล์ 360°</span>
+          </router-link>
+
           <button
             @click="openRoomHistory(item.room)"
             class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"

@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-100/90 pb-28 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
-    <div class="max-w-md mx-auto px-4 py-6 space-y-5 relative z-10">
+  <div class="space-y-5 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
+    <div class="space-y-5 relative z-10">
       
       <!-- Header -->
       <div class="flex items-center justify-between">
@@ -274,15 +274,17 @@ const newVehicle = reactive({
 onMounted(async () => {
   featureStore.fetchFeatures();
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-  try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const lineProfile = await liff.getProfile();
-      lineUserId.value = lineProfile.userId;
+  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+  if (liffId) {
+    try {
+      await liff.init({ liffId });
+      if (liff.isLoggedIn()) {
+        const lineProfile = await liff.getProfile();
+        lineUserId.value = lineProfile.userId;
+      }
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
   }
 
   fetchProfile();

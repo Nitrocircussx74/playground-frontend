@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-100 py-6 px-4 font-sans text-slate-900">
-    <div class="max-w-md mx-auto space-y-5">
+  <div class="space-y-5 pb-6 font-sans text-slate-900">
+    <div class="space-y-5">
       <!-- Loading State -->
       <div v-if="loading" class="p-8 bg-white rounded-3xl shadow-sm text-center text-slate-500">
         <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
@@ -159,21 +159,18 @@ const invoice = ref({});
 const qrData = ref({});
 const selectedFile = ref(null);
 const previewUrl = ref('');
-const lineUserId = ref('');
 const declaredAmount = ref('');
 const verificationResult = ref(null);
 
 onMounted(async () => {
   try {
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        lineUserId.value = profile.userId;
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+    if (liffId) {
+      try {
+        await liff.init({ liffId });
+      } catch (liffError) {
+        console.warn('LIFF init fallback mode:', liffError.message);
       }
-    } catch (liffError) {
-      console.warn('LIFF init fallback mode:', liffError.message);
     }
 
     const response = await api.get(`/api/v1/liff/invoices/${invoiceId}`);
@@ -204,9 +201,6 @@ const handleUploadSlip = async () => {
     formData.append('file', selectedFile.value);
     if (declaredAmount.value) {
       formData.append('declaredAmount', declaredAmount.value);
-    }
-    if (lineUserId.value) {
-      formData.append('lineUserId', lineUserId.value);
     }
 
     const res = await api.post(`/api/v1/liff/invoices/${invoiceId}/slip`, formData, {

@@ -99,6 +99,16 @@
               <span class="text-base">📜</span>
               <span>สัญญาเช่า & ประวัติ</span>
             </router-link>
+
+            <router-link
+              to="/tenants"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+              :class="route.path.startsWith('/tenants') ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'"
+            >
+              <span class="text-base">👥</span>
+              <span>ทะเบียนผู้เช่า (CRM)</span>
+            </router-link>
           </div>
         </div>
 

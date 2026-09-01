@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-slate-100/90 pb-12 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
+  <div class="space-y-6 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white relative">
     <!-- Ambient Glassmorphism Soft Accent Blurs -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-200/50 rounded-full blur-3xl"></div>
       <div class="absolute top-1/3 -right-24 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 py-6 space-y-6 relative z-10">
+    <div class="space-y-6 relative z-10">
       <!-- 1. Header Section: Profile & Digital ID Card -->
       <div class="p-6 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white rounded-3xl shadow-xl shadow-indigo-600/20 relative overflow-hidden">
         <!-- Background Pattern Decor -->
@@ -231,7 +231,7 @@ const quickActionsConfig = [
     icon: Package,
     bgClass: 'bg-emerald-50',
     iconClass: 'text-emerald-600',
-    action: () => showWarning('ระบบพัสดุ', 'มีพัสดุรอรับที่ป้อม รปภ. 1 รายการ'),
+    route: '/liff/parcels',
     featureKey: 'ENABLE_PARCEL_NOTIFY'
   },
   {

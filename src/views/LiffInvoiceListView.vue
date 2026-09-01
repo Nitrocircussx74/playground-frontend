@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-100/90 py-6 px-4 font-sans text-slate-900">
-    <div class="max-w-md mx-auto space-y-6">
+  <div class="space-y-6 pb-6 font-sans text-slate-900">
+    <div class="space-y-6">
       <!-- Page Header -->
       <div class="flex items-center justify-between">
         <div>
@@ -139,15 +139,17 @@ const invoices = ref([]);
 const lineUserId = ref('');
 
 onMounted(async () => {
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-  try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      lineUserId.value = profile.userId;
+  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+  if (liffId) {
+    try {
+      await liff.init({ liffId });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        lineUserId.value = profile.userId;
+      }
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
   }
 
   fetchInvoices();

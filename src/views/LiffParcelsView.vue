@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-100 py-6 px-4 font-sans text-slate-900">
-    <div class="max-w-md mx-auto space-y-5">
+  <div class="space-y-5 pb-6 font-sans text-slate-900">
+    <div class="space-y-5">
       <!-- Feature Disabled State -->
       <div v-if="!isParcelFeatureEnabled" class="p-8 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
         <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto font-bold">
@@ -41,9 +41,10 @@
               <div class="text-xs text-orange-600 font-bold mt-0.5">รอรับพัสดุ {{ pendingParcels.length }} รายการ</div>
             </div>
 
-            <!-- Profile / Room QR Code Placeholder -->
-            <div class="w-16 h-16 bg-slate-900 text-white rounded-xl flex items-center justify-center p-1 font-mono text-[10px] text-center font-bold shrink-0">
-              <div class="text-2xl">📱</div>
+            <!-- Profile / Room QR Code -->
+            <div class="w-16 h-16 bg-slate-900 rounded-xl overflow-hidden p-1 shrink-0 flex items-center justify-center shadow-xs">
+              <img v-if="pickupQrUrl" :src="pickupQrUrl" alt="Pickup QR" class="w-full h-full object-contain bg-white rounded-lg" />
+              <div v-else class="text-2xl text-white">📱</div>
             </div>
           </div>
         </div>
@@ -113,6 +114,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import liff from '@line/liff';
+import QRCode from 'qrcode';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
 
@@ -122,6 +124,7 @@ const parcels = ref([]);
 const lineUserId = ref('');
 const tenantName = ref('');
 const tenantRoomNumber = ref('');
+const pickupQrUrl = ref('');
 
 const isParcelFeatureEnabled = computed(() => {
   return featureStore.isEnabled('ENABLE_PARCEL_NOTIFY');
@@ -129,24 +132,36 @@ const isParcelFeatureEnabled = computed(() => {
 
 const pendingParcels = computed(() => parcels.value.filter((p) => p.status === 'PENDING'));
 
+const generatePickupQr = async () => {
+  const qrText = `PARCEL-PICKUP:${tenantName.value || 'TENANT'}:${tenantRoomNumber.value || 'ROOM'}:${Date.now()}`;
+  try {
+    pickupQrUrl.value = await QRCode.toDataURL(qrText, { margin: 1, width: 200 });
+  } catch (err) {
+    console.warn('Could not generate pickup QR:', err);
+  }
+};
+
 onMounted(async () => {
   if (featureStore.features.length === 0) {
     await featureStore.fetchFeatures();
   }
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2000000000-mockliffid';
-  try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      lineUserId.value = profile.userId;
-      tenantName.value = profile.displayName;
+  const liffId = import.meta.env.VITE_LIFF_ID || import.meta.env.VITE_LINE_LIFF_ID || '';
+  if (liffId) {
+    try {
+      await liff.init({ liffId });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        lineUserId.value = profile.userId;
+        tenantName.value = profile.displayName;
+      }
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
   }
 
-  fetchParcels();
+  await fetchParcels();
+  await generatePickupQr();
 });
 
 const fetchParcels = async () => {

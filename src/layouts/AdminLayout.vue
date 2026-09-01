@@ -65,6 +65,16 @@
         </router-link>
 
         <router-link
+          to="/tenants"
+          @click="isMobileMenuOpen = false"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          :class="route.path.startsWith('/tenants') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <span>👥</span>
+          <span>ทะเบียนผู้เช่า (CRM)</span>
+        </router-link>
+
+        <router-link
           to="/meter-readings"
           @click="isMobileMenuOpen = false"
           class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors"

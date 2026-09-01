@@ -1,11 +1,15 @@
 import axios from 'axios';
+import liff from '@line/liff';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 
 // 1. สร้าง Axios Instance พร้อมกำหนด withCredentials: true เสมอ
 // เพื่อให้เบราว์เซอร์ส่งและรับ HTTP-Only Cookies (Refresh Token) อัตโนมัติ
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  baseURL: cleanBaseUrl,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -41,6 +45,28 @@ api.interceptors.request.use(
   }
 );
 
+// 2.1 Request Interceptor เฉพาะ LIFF: แนบ LINE ID Token ไปให้ Backend ตรวจสอบตัวตนจริง
+// (แทนที่การส่ง lineUserId เองทาง Query/Body ซึ่งฝั่ง Client ปลอมแปลงได้)
+api.interceptors.request.use(
+  async (config) => {
+    if (config.url && config.url.includes('/api/v1/liff')) {
+      try {
+        if (liff.isLoggedIn()) {
+          const idToken = liff.getIDToken();
+          if (idToken) {
+            config.headers['X-Line-Id-Token'] = idToken;
+          }
+        }
+      } catch {
+        // LIFF ยังไม่ได้ liff.init() สำเร็จในหน้านี้ — ปล่อยให้ Request ไปโดยไม่มี Token
+        // Backend จะตอบ 401 กลับมาเอง ดีกว่าปิดบัง error แบบเงียบ ๆ
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // 3. Response Interceptor: ดักจับ 401 Unauthorized และทำ Silent Refresh
 api.interceptors.response.use(
   (response) => response,
@@ -53,11 +79,14 @@ api.interceptors.response.use(
     }
 
     // ข้ามการทำ Silent Refresh สำหรับ Endpoint ที่ไม่จำเป็น (เช่น /auth/login หรือ /auth/refresh ที่ล้มเหลว)
+    // และสำหรับ LIFF Endpoint ทั้งหมด เพราะใช้ LINE ID Token คนละระบบกับ CMS JWT
+    // (ก่อนหน้านี้ 401 จาก LIFF จะหลุดไปเข้า Flow รีเฟรช Token ของ CMS แล้วพา router ไปหน้า /login ผิดที่)
     const isAuthRoute =
       originalRequest.url.includes('/auth/login') ||
       originalRequest.url.includes('/auth/refresh');
+    const isLiffRoute = originalRequest.url.includes('/api/v1/liff');
 
-    if (isAuthRoute) {
+    if (isAuthRoute || isLiffRoute) {
       return Promise.reject(error);
     }
 
@@ -86,7 +115,7 @@ api.interceptors.response.use(
     try {
       // ยิงย่อหน้าขอ Access Token ใหม่แบบ Silent Refresh ผ่าน HTTP-Only Cookie
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/auth/refresh`,
+        `${cleanBaseUrl}/auth/refresh`,
         {},
         { withCredentials: true }
       );

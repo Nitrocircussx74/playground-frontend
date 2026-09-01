@@ -39,6 +39,24 @@ const routes = [
     meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
+    path: '/tenants',
+    name: 'Tenants',
+    component: () => import('@/views/TenantsView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/tenants/:id',
+    name: 'TenantDetail',
+    component: () => import('@/views/TenantDetail.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/admin/tenants/:id',
+    name: 'TenantDetailAdmin',
+    component: () => import('@/views/TenantDetail.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
     path: '/buildings',
     name: 'Buildings',
     component: () => import('@/views/BuildingManagementView.vue'),
