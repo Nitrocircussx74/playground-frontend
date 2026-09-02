@@ -44,7 +44,10 @@
       </main>
 
       <!-- 3. Bottom Navigation (Footer Locked Pinned ชิดขอบล่าง สไตล์ Mobile App) -->
-      <nav class="h-16 shrink-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-30 flex items-center justify-around px-2 shadow-lg select-none sticky bottom-0 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+      <nav
+        v-if="showBottomNav"
+        class="h-16 shrink-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-30 flex items-center justify-around px-2 shadow-lg select-none sticky bottom-0 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+      >
         <router-link
           v-for="tab in navTabs"
           :key="tab.path"
@@ -96,6 +99,15 @@ const pageTitle = computed(() => {
 const showBackButton = computed(() => {
   const mainTabPaths = ['/liff', '/liff/profile', '/liff/receipts', '/liff/maintenance', '/liff/announcements'];
   return !mainTabPaths.includes(route.path);
+});
+
+/**
+ * 2.1 Logic แสดงแถบ Bottom Navigation Bar
+ * ซ่อนเมื่ออยู่ในหน้า Entry Gateway, Register, หรือ Onboarding เพื่อป้องกันผู้เช่าที่ยังไม่ได้ลงทะเบียนกดเมนูอื่น
+ */
+const showBottomNav = computed(() => {
+  const noNavPaths = ['/liff', '/liff/register', '/liff/onboarding'];
+  return !noNavPaths.includes(route.path);
 });
 
 /**
