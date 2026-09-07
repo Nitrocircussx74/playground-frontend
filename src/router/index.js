@@ -256,7 +256,28 @@ async function cmsNavigationGuard(to, from, next) {
 }
 
 async function liffNavigationGuard(to, from, next) {
-  console.log(`[LIFF Dedicated Guard] Routing to: ${to.path}`);
+  // 🔗 รองรับ LINE Deep Link ผ่าน liff.state query parameter
+  const liffState = to.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
+
+  if (liffState && to.path === '/liff') {
+    try {
+      const decodedState = decodeURIComponent(liffState);
+      let targetPath = decodedState.startsWith('/liff')
+        ? decodedState
+        : `/liff${decodedState.startsWith('/') ? '' : '/'}${decodedState}`;
+
+      const cleanQuery = { ...to.query };
+      delete cleanQuery['liff.state'];
+
+      if (targetPath !== to.path) {
+        console.log(`[LIFF Deep Link] Redirecting from /liff to: ${targetPath}`);
+        return next({ path: targetPath, query: cleanQuery });
+      }
+    } catch (err) {
+      console.warn('⚠️ ไม่สามารถ parse liff.state ได้:', err);
+    }
+  }
+
   next();
 }
 

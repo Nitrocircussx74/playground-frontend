@@ -122,9 +122,25 @@ onMounted(async () => {
     statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
     const res = await api.get('/api/v1/liff/check-status');
 
+    // ตรวจสอบ Deep Link Target จาก query / liff.state หรือ fallback ไปที่ /liff/profile
+    const liffState = route.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
+    const redirectQuery = route.query.redirect || route.query.path || route.query.target;
+    let targetPath = '/liff/profile';
+
+    if (liffState) {
+      try {
+        const decoded = decodeURIComponent(liffState);
+        targetPath = decoded.startsWith('/liff') ? decoded : `/liff${decoded.startsWith('/') ? '' : '/'}${decoded}`;
+      } catch {
+        targetPath = '/liff/profile';
+      }
+    } else if (redirectQuery) {
+      targetPath = redirectQuery.startsWith('/liff') ? redirectQuery : `/liff${redirectQuery.startsWith('/') ? '' : '/'}${redirectQuery}`;
+    }
+
     if (res.data.isRegistered) {
-      statusText.value = 'พบข้อมูลลูกบ้าน กำลังนำทางไปหน้าศูนย์กลางผู้เช่า...';
-      router.replace('/liff/profile');
+      statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าบริการ...';
+      router.replace(targetPath);
     } else {
       statusText.value = 'ยังไม่เคยลงทะเบียน กำลังนำทางไปหน้าลงทะเบียน...';
       router.replace('/liff/register');
