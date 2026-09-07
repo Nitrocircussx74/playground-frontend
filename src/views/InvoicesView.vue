@@ -87,7 +87,7 @@
             <tbody class="divide-y divide-slate-100">
               <tr v-for="inv in invoiceStore.invoices" :key="inv.id" class="hover:bg-slate-50/60 transition-colors">
                 <td class="p-3.5 font-mono text-xs font-bold text-purple-700">{{ inv.invoiceNumber }}</td>
-                <td class="p-3.5 font-bold text-slate-900">ห้อง {{ inv.room?.roomNumber }}</td>
+                <td class="p-3.5 font-bold text-slate-900">ห้อง {{ inv.room?.roomNumber }} {{ inv.room?.building?.name ? `(${inv.room.building.name})` : '' }}</td>
                 <td class="p-3.5 text-xs text-slate-600 font-medium">
                   <div class="flex items-center gap-1">
                     <span>{{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}</span>

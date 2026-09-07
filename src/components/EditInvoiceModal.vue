@@ -25,7 +25,7 @@
             >
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in rooms" :key="r.id" :value="r.id">
-                ห้อง {{ r.roomNumber }} (฿{{ Number(r.price).toLocaleString() }}/เดือน)
+                ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (฿{{ Number(r.price).toLocaleString() }}/เดือน)
               </option>
             </select>
           </div>

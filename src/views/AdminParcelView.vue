@@ -115,7 +115,7 @@
                   ไม่มีรูป
                 </div>
               </td>
-              <td class="p-3.5 font-bold text-slate-900">ห้อง {{ item.room?.roomNumber }}</td>
+              <td class="p-3.5 font-bold text-slate-900">ห้อง {{ item.room?.roomNumber }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</td>
               <td class="p-3.5 text-xs text-slate-600 font-medium">
                 {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : (item.room?.tenant ? `${item.room.tenant.firstName} ${item.room.tenant.lastName}` : 'N/A') }}
               </td>
@@ -187,7 +187,7 @@
             >
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in roomStore.rooms" :key="r.id" :value="r.id">
-                🚪 ห้อง {{ r.roomNumber }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
+                🚪 ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
               </option>
             </select>
           </div>

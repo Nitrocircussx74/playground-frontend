@@ -67,7 +67,7 @@
             >
               <option value="" disabled>-- Select Room --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
-                Room {{ room.roomNumber }} ({{ room.status }})
+                Room {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }} ({{ room.status }})
               </option>
             </select>
           </div>

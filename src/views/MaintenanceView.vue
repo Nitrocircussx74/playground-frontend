@@ -54,7 +54,7 @@
             <div class="flex items-center justify-between">
               <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
                 <DoorClosed class="w-3.5 h-3.5" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
               </span>
               <span class="text-[11px] text-slate-400 font-mono">
                 {{ new Date(item.createdAt).toLocaleDateString('th-TH') }}
@@ -116,7 +116,7 @@
             <div class="flex items-center justify-between">
               <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
                 <DoorClosed class="w-3.5 h-3.5" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
               </span>
               <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
                 <Zap class="w-3 h-3" />
@@ -180,7 +180,7 @@
             <div class="flex items-center justify-between">
               <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 font-mono flex items-center gap-1">
                 <DoorClosed class="w-3.5 h-3.5 text-slate-500" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }}</span>
+                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
               </span>
               <span class="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
                 <CheckCircle2 class="w-3 h-3" />
@@ -222,7 +222,7 @@
           <div class="flex items-center gap-2">
             <Edit3 class="w-5 h-5 text-purple-600" />
             <div>
-              <h3 class="text-base font-bold text-slate-900">จัดการตั๋วงานซ่อม (ห้อง {{ selectedTicket.room?.roomNumber }})</h3>
+              <h3 class="text-base font-bold text-slate-900">จัดการตั๋วงานซ่อม (ห้อง {{ selectedTicket.room?.roomNumber }} {{ selectedTicket.room?.building?.name || selectedTicket.building?.name ? `- ${selectedTicket.room?.building?.name || selectedTicket.building?.name}` : '' }})</h3>
               <p class="text-xs text-slate-500">อัปเดตสถานะ มอบหมายช่าง และกรอกค่าใช้จ่ายเพิ่มเติม</p>
             </div>
           </div>
@@ -360,7 +360,7 @@
             >
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
-                ห้อง {{ room.roomNumber }}
+                ห้อง {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }}
               </option>
             </select>
           </div>

@@ -100,7 +100,7 @@
               >
                 <option value="" disabled>-- กรุณาเลือกห้องพักที่ว่าง --</option>
                 <option v-for="r in availableRooms" :key="r.id" :value="r.id">
-                  {{ getUnitIcon(r.unitType) }} {{ r.roomNumber }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[📍 ${r.locationZone}]` : '' }}
+                  {{ getUnitIcon(r.unitType) }} {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[📍 ${r.locationZone}]` : '' }}
                 </option>
               </select>
             </div>
