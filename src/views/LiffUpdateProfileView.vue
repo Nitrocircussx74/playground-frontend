@@ -235,7 +235,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { showConfirm } from '@/utils/swal';
@@ -275,17 +275,16 @@ const newVehicle = reactive({
 onMounted(async () => {
   featureStore.fetchFeatures();
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const lineProfile = await liff.getProfile();
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const lineProfile = await getLiffProfile();
+      if (lineProfile?.userId) {
         lineUserId.value = lineProfile.userId;
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
   fetchProfile();

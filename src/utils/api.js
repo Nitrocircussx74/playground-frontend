@@ -1,5 +1,5 @@
 import axios from 'axios';
-import liff from '@line/liff';
+import { getLiffIdToken } from './liff';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 
@@ -51,15 +51,18 @@ api.interceptors.request.use(
   async (config) => {
     if (config.url && config.url.includes('/api/v1/liff')) {
       try {
-        if (liff.isLoggedIn()) {
-          const idToken = liff.getIDToken();
-          if (idToken) {
-            config.headers['X-Line-Id-Token'] = idToken;
-          }
+        const idToken = getLiffIdToken();
+        if (idToken) {
+          config.headers['X-Line-Id-Token'] = idToken;
+        }
+
+        // แนบ lineUserId fallback หากมีใน localStorage หรือ mock session สำหรับ Standalone Dev Mode
+        const devLineUserId = localStorage.getItem('dev_line_user_id');
+        if (devLineUserId && !config.headers['X-Line-User-Id']) {
+          config.headers['X-Line-User-Id'] = devLineUserId;
         }
       } catch {
-        // LIFF ยังไม่ได้ liff.init() สำเร็จในหน้านี้ — ปล่อยให้ Request ไปโดยไม่มี Token
-        // Backend จะตอบ 401 กลับมาเอง ดีกว่าปิดบัง error แบบเงียบ ๆ
+        // ละเว้นข้อผิดพลาด ปล่อยให้ Request ดำเนินการต่อตามปกติ
       }
     }
     return config;

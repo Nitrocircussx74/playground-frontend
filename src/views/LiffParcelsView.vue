@@ -69,7 +69,12 @@
                   🚚
                 </span>
                 <div>
-                  <div class="font-bold text-slate-900 text-sm leading-tight">{{ item.courier }}</div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-slate-900 text-sm leading-tight">{{ item.courier }}</span>
+                    <span v-if="item.room?.roomNumber" class="px-2 py-0.5 bg-orange-100 text-orange-800 font-bold text-[10px] rounded-full">
+                      ห้อง {{ item.room.roomNumber }}
+                    </span>
+                  </div>
                   <div class="text-xs font-mono text-indigo-700 font-semibold">{{ item.trackingNumber || 'ไม่ระบุเลขแทรคกิ้ง' }}</div>
                 </div>
               </div>
@@ -113,7 +118,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import QRCode from 'qrcode';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
@@ -146,18 +151,17 @@ onMounted(async () => {
     await featureStore.fetchFeatures();
   }
 
-  const liffId = import.meta.env.VITE_LIFF_ID || import.meta.env.VITE_LINE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
         lineUserId.value = profile.userId;
         tenantName.value = profile.displayName;
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
   await fetchParcels();

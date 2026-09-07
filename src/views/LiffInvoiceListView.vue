@@ -15,6 +15,26 @@
         </button>
       </div>
 
+      <!-- Room Filter Pills (Shown when invoices exist for multiple rooms) -->
+      <div v-if="distinctRooms.length > 1" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <button
+          @click="selectedRoomFilter = 'ALL'"
+          class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer"
+          :class="selectedRoomFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
+        >
+          ทั้งหมด (All Rooms)
+        </button>
+        <button
+          v-for="room in distinctRooms"
+          :key="room.id"
+          @click="selectedRoomFilter = room.id"
+          class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer"
+          :class="selectedRoomFilter === room.id ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
+        >
+          ห้อง {{ room.roomNumber }}
+        </button>
+      </div>
+
       <!-- Loading State -->
       <div v-if="loading" class="p-8 bg-white rounded-3xl text-center text-slate-500 shadow-xs">
         <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
@@ -29,13 +49,13 @@
               <span>⚠️ บิลค้างชำระ (Pending Payment)</span>
             </h2>
             <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-              {{ pendingInvoices.length }} รายการ
+              {{ filteredPendingInvoices.length }} รายการ
             </span>
           </div>
 
-          <div v-if="pendingInvoices.length > 0" class="space-y-3">
+          <div v-if="filteredPendingInvoices.length > 0" class="space-y-3">
             <div
-              v-for="inv in pendingInvoices"
+              v-for="inv in filteredPendingInvoices"
               :key="inv.id"
               @click="goToDetail(inv.id)"
               class="p-5 bg-white rounded-3xl border-2 border-amber-200/90 shadow-md hover:shadow-lg transition-all cursor-pointer space-y-3 relative overflow-hidden group"
@@ -43,8 +63,13 @@
               <!-- Card Header -->
               <div class="flex items-start justify-between">
                 <div>
-                  <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
-                  <div class="font-extrabold text-slate-900 text-base">รอบบิล {{ inv.billingCycle }}</div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
+                    <span v-if="inv.room?.roomNumber" class="px-2 py-0.5 bg-yellow-400 text-slate-950 font-black text-[10px] rounded-full shadow-2xs">
+                      ห้อง {{ inv.room.roomNumber }}
+                    </span>
+                  </div>
+                  <div class="font-extrabold text-slate-900 text-base mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
                 </div>
                 <!-- Status Badge -->
                 <span
@@ -86,17 +111,22 @@
             </h2>
           </div>
 
-          <div v-if="paidInvoices.length > 0" class="space-y-3">
+          <div v-if="filteredPaidInvoices.length > 0" class="space-y-3">
             <div
-              v-for="inv in paidInvoices"
+              v-for="inv in filteredPaidInvoices"
               :key="inv.id"
               @click="goToDetail(inv.id)"
               class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer space-y-3 group"
             >
               <div class="flex items-start justify-between">
                 <div>
-                  <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
-                  <div class="font-bold text-slate-900 text-sm sm:text-base">รอบบิล {{ inv.billingCycle }}</div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
+                    <span v-if="inv.room?.roomNumber" class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold text-[10px] rounded-full border border-slate-200">
+                      ห้อง {{ inv.room.roomNumber }}
+                    </span>
+                  </div>
+                  <div class="font-bold text-slate-900 text-sm sm:text-base mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
                 </div>
                 <!-- Status Badge -->
                 <span
@@ -130,7 +160,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 
 const router = useRouter();
@@ -138,19 +168,19 @@ const route = useRoute();
 const loading = ref(true);
 const invoices = ref([]);
 const lineUserId = ref('');
+const selectedRoomFilter = ref('ALL');
 
 onMounted(async () => {
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
         lineUserId.value = profile.userId;
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
   fetchInvoices();
@@ -167,6 +197,15 @@ const fetchInvoices = async () => {
 
     const res = await api.get('/api/v1/liff/invoices/history', { params });
     invoices.value = res.data.data || [];
+
+    if (route.query.roomId) {
+      selectedRoomFilter.value = route.query.roomId;
+    } else if (route.query.room) {
+      const match = invoices.value.find((i) => i.room?.roomNumber === route.query.room);
+      if (match?.room?.id) {
+        selectedRoomFilter.value = match.room.id;
+      }
+    }
   } catch (err) {
     console.error('Failed to fetch invoices:', err);
   } finally {
@@ -174,15 +213,44 @@ const fetchInvoices = async () => {
   }
 };
 
+const distinctRooms = computed(() => {
+  const roomMap = new Map();
+  invoices.value.forEach((inv) => {
+    if (inv.room && inv.room.id && !roomMap.has(inv.room.id)) {
+      roomMap.set(inv.room.id, {
+        id: inv.room.id,
+        roomNumber: inv.room.roomNumber
+      });
+    }
+  });
+  return Array.from(roomMap.values());
+});
+
+const filteredInvoices = computed(() => {
+  if (selectedRoomFilter.value === 'ALL') {
+    return invoices.value;
+  }
+  return invoices.value.filter((inv) => inv.roomId === selectedRoomFilter.value || inv.room?.id === selectedRoomFilter.value);
+});
+
 const pendingInvoices = computed(() => {
   return invoices.value.filter((i) => i.status === 'pending' || i.status === 'overdue');
+});
+
+const filteredPendingInvoices = computed(() => {
+  return filteredInvoices.value.filter((i) => i.status === 'pending' || i.status === 'overdue');
 });
 
 const paidInvoices = computed(() => {
   return invoices.value.filter((i) => i.status === 'paid' || i.status === 'reviewing');
 });
 
+const filteredPaidInvoices = computed(() => {
+  return filteredInvoices.value.filter((i) => i.status === 'paid' || i.status === 'reviewing');
+});
+
 const goToDetail = (id) => {
   router.push(`/liff/invoices/${id}`);
 };
 </script>
+

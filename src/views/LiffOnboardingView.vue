@@ -78,7 +78,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess } from '@/utils/swal';
 
@@ -95,22 +95,21 @@ const form = reactive({
   phoneLast4: ''
 });
 
-const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-
 onMounted(async () => {
   // Auto-fill invite code from URL query param if present
   if (route.query.code) {
     form.inviteCode = String(route.query.code).trim().toUpperCase();
   }
 
-  if (!liffId) return;
   try {
-    await liff.init({ liffId });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      lineDisplayName.value = profile.displayName || '';
-      linePictureUrl.value = profile.pictureUrl || '';
-      lineStatusMessage.value = profile.statusMessage || '';
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile) {
+        lineDisplayName.value = profile.displayName || '';
+        linePictureUrl.value = profile.pictureUrl || '';
+        lineStatusMessage.value = profile.statusMessage || '';
+      }
     }
   } catch (err) {
     console.warn('LIFF init fallback in LiffOnboarding:', err.message);

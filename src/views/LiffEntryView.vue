@@ -90,61 +90,61 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import liff from '@line/liff';
+import { useRouter, useRoute } from 'vue-router';
+import liff, { initLiff, isLiffLoggedIn } from '@/utils/liff';
 import api from '@/utils/api';
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(true);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
 const isStandaloneDevMode = ref(false);
 const liffErrorMessage = ref('');
 
-const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-
 onMounted(async () => {
-  if (!liffId) {
-    // ไม่ได้ตั้งค่า VITE_LIFF_ID เลย (เช่น รัน dev บนเครื่องโดยไม่ตั้ง .env) -> เข้าโหมดทดสอบตามปกติ ไม่ถือเป็น error
-    loading.value = false;
-    isStandaloneDevMode.value = true;
-    return;
-  }
-
   try {
     statusText.value = 'กำลังยืนยันตัวตนบัญชี LINE...';
-    await liff.init({ liffId });
+    await initLiff();
 
-    if (!liff.isLoggedIn()) {
+    if (isLiffLoggedIn()) {
+      statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
+      const res = await api.get('/api/v1/liff/check-status');
+
+      // ตรวจสอบ Deep Link Target จาก query / liff.state หรือ fallback ไปที่ /liff/profile
+      const liffState = route.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
+      const redirectQuery = route.query.redirect || route.query.path || route.query.target;
+      let targetPath = '/liff/profile';
+
+      if (liffState) {
+        try {
+          const decoded = decodeURIComponent(liffState);
+          targetPath = decoded.startsWith('/liff') ? decoded : `/liff${decoded.startsWith('/') ? '' : '/'}${decoded}`;
+        } catch {
+          targetPath = '/liff/profile';
+        }
+      } else if (redirectQuery) {
+        targetPath = redirectQuery.startsWith('/liff') ? redirectQuery : `/liff${redirectQuery.startsWith('/') ? '' : '/'}${redirectQuery}`;
+      }
+
+      if (res.data?.isRegistered) {
+        statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าบริการ...';
+        router.replace(targetPath);
+      } else {
+        statusText.value = 'ยังไม่เคยลงทะเบียน กำลังนำทางไปหน้าลงทะเบียน...';
+        router.replace('/liff/register');
+      }
+      return;
+    }
+
+    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login
+    if (typeof liff.isInClient === 'function' && liff.isInClient()) {
       liff.login();
       return;
     }
 
-    statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
-    const res = await api.get('/api/v1/liff/check-status');
-
-    // ตรวจสอบ Deep Link Target จาก query / liff.state หรือ fallback ไปที่ /liff/profile
-    const liffState = route.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
-    const redirectQuery = route.query.redirect || route.query.path || route.query.target;
-    let targetPath = '/liff/profile';
-
-    if (liffState) {
-      try {
-        const decoded = decodeURIComponent(liffState);
-        targetPath = decoded.startsWith('/liff') ? decoded : `/liff${decoded.startsWith('/') ? '' : '/'}${decoded}`;
-      } catch {
-        targetPath = '/liff/profile';
-      }
-    } else if (redirectQuery) {
-      targetPath = redirectQuery.startsWith('/liff') ? redirectQuery : `/liff${redirectQuery.startsWith('/') ? '' : '/'}${redirectQuery}`;
-    }
-
-    if (res.data.isRegistered) {
-      statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าบริการ...';
-      router.replace(targetPath);
-    } else {
-      statusText.value = 'ยังไม่เคยลงทะเบียน กำลังนำทางไปหน้าลงทะเบียน...';
-      router.replace('/liff/register');
-    }
+    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Mode)
+    loading.value = false;
+    isStandaloneDevMode.value = true;
   } catch (err) {
     console.error('LIFF Smart Entry init error:', err);
     liffErrorMessage.value = err?.message || 'ไม่สามารถยืนยันตัวตน LIFF ในเบราว์เซอร์ปกติได้';

@@ -136,7 +136,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff } from '@/utils/liff';
 import api from '@/utils/api';
 
 const route = useRoute();
@@ -161,13 +161,10 @@ onMounted(async () => {
     verifyCode();
   }
 
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
-    }
+  try {
+    await initLiff();
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 });
 

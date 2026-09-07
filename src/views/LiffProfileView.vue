@@ -8,13 +8,19 @@
 
     <div class="space-y-6 relative z-10">
       <!-- 1. Header Section: Profile & Digital ID Card -->
-      <div class="p-6 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white rounded-3xl shadow-xl shadow-indigo-600/20 relative overflow-hidden">
+      <div
+        class="p-6 text-white rounded-3xl shadow-xl relative overflow-hidden transition-all duration-500"
+        :style="{
+          background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
+          boxShadow: `0 20px 25px -5px ${themeColor}33, 0 8px 10px -6px ${themeColor}33`
+        }"
+      >
         <!-- Background Pattern Decor -->
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-start gap-4">
           <!-- Avatar จาก LINE Profile -->
-          <div class="relative">
+          <div class="relative shrink-0">
             <img
               :src="tenantProfile.avatarUrl || defaultAvatar"
               alt="Tenant Avatar"
@@ -24,53 +30,146 @@
           </div>
 
           <!-- ข้อมูลชื่อ และ Badge หมายเลขห้องพัก -->
-          <div class="space-y-1 flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <h1 class="font-extrabold text-lg sm:text-xl truncate text-white">
-                {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
-              </h1>
-              <span class="px-2.5 py-0.5 bg-yellow-400 text-slate-950 font-black text-[11px] rounded-full shadow-xs shrink-0">
-                ห้อง {{ tenantProfile.roomNumber }}
+          <div class="space-y-1.5 flex-1 min-w-0">
+            <h1 class="font-extrabold text-lg sm:text-xl truncate text-white">
+              {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
+            </h1>
+            <p class="text-xs text-indigo-100 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
+
+            <!-- Room Badges (Interactive Switcher) -->
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <template v-if="tenantProfile.rooms && tenantProfile.rooms.length > 0">
+                <button
+                  v-for="room in tenantProfile.rooms"
+                  :key="room.id"
+                  @click.stop="selectRoom(room)"
+                  class="px-2.5 py-1 text-[11px] font-black rounded-full shadow-xs inline-flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
+                  :class="room.id === selectedRoomId ? 'bg-yellow-400 text-slate-950 ring-2 ring-white scale-105 shadow-md' : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs'"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" :class="room.id === selectedRoomId ? 'bg-emerald-600' : 'bg-white/70'"></span>
+                  <span>ห้อง {{ room.roomNumber }}</span>
+                  <span v-if="room.buildingName" class="font-normal text-[10px]" :class="room.id === selectedRoomId ? 'text-slate-800' : 'text-indigo-100'">({{ room.buildingName }})</span>
+                </button>
+              </template>
+              <span v-else class="px-2.5 py-0.5 bg-yellow-400 text-slate-950 font-black text-[11px] rounded-full shadow-xs shrink-0">
+                ห้อง {{ tenantProfile.roomNumber || '-' }}
               </span>
             </div>
-            <p class="text-xs text-indigo-100 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
           </div>
         </div>
 
-        <!-- ปุ่มกดเปิด Modal QR Code สำหรับยืนยันตัวตนกับ รปภ. -->
-        <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between">
-          <span class="text-xs text-indigo-100 font-medium">Digital ID สำหรับยืนยันตัวตนกับ รปภ.</span>
+        <!-- Action Bar: Digital ID & Link More Rooms -->
+        <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between gap-2 flex-wrap">
+          <button
+            @click="showLinkRoomModal = true"
+            class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all border border-emerald-400/50 flex items-center gap-1.5 shadow-xs cursor-pointer"
+          >
+            <PlusCircle class="w-4 h-4" />
+            <span>ผูกห้องพักเพิ่ม</span>
+          </button>
+
           <button
             @click="showQrModal = true"
-            class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all border border-white/30 flex items-center gap-1.5 shadow-xs"
+            class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all border border-white/30 flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
             <QrCode class="w-4 h-4" />
-            <span>QR Code ของฉัน</span>
+            <span>Digital ID Card</span>
           </button>
         </div>
       </div>
 
-      <!-- 2. Dynamic Quick Actions Grid (เมนูด่วนใช้งานบ่อย 2x2 Grid) -->
-      <div class="space-y-2" v-if="availableQuickActions.length > 0">
+      <!-- 2. Multi-Room Summary Card & Interactive Switcher (Shown if > 1 room) -->
+      <div v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 bg-white rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🏢</span>
+              <span>ห้องพักที่คุณครอบครอง ({{ tenantProfile.rooms.length }} ห้อง)</span>
+            </h2>
+            <p class="text-[11px] text-slate-500 mt-0.5">แตะที่การ์ดเพื่อสลับห้องและเปลี่ยนธีมประจำตึกอัตโนมัติ</p>
+          </div>
+          <button
+            @click="showLinkRoomModal = true"
+            class="text-xs text-indigo-600 font-extrabold hover:text-indigo-800 transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <span>+ ผูกห้องเพิ่ม</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div
+            v-for="room in tenantProfile.rooms"
+            :key="room.id"
+            @click="selectRoom(room)"
+            class="p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-2.5 relative overflow-hidden active:scale-[0.99]"
+            :class="room.id === selectedRoomId
+              ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-50/50 border-2 border-indigo-500 shadow-md ring-2 ring-indigo-200/50'
+              : 'bg-slate-50/70 hover:bg-slate-100/80 border border-slate-200/80 hover:border-slate-300 shadow-2xs'"
+          >
+            <!-- Card Header: Room number on left, Status badge on right -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5 min-w-0 truncate">
+                <span
+                  class="w-2.5 h-2.5 rounded-full shrink-0"
+                  :class="room.id === selectedRoomId ? 'bg-indigo-600 ring-2 ring-indigo-300 animate-pulse' : 'bg-slate-300'"
+                ></span>
+                <span class="truncate">ห้อง {{ room.roomNumber }}</span>
+              </div>
+
+              <!-- Active Status Badge (Prevent wrap & perfectly aligned) -->
+              <span
+                v-if="room.id === selectedRoomId"
+                class="px-2 py-0.5 bg-indigo-600 text-white font-extrabold text-[10px] rounded-full shadow-2xs shrink-0 whitespace-nowrap inline-flex items-center gap-1"
+              >
+                <span>✓</span>
+                <span>กำลังเลือก</span>
+              </span>
+              <span
+                v-else
+                class="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap"
+              >
+                แตะเพื่อเลือก
+              </span>
+            </div>
+
+            <!-- Card Body: Building info & Floor -->
+            <div class="text-[11px] text-slate-600 font-medium truncate">
+              <span v-if="room.buildingName" class="font-semibold text-slate-700">ตึก {{ room.buildingName }} • </span>ชั้น {{ room.floor || '1' }}
+            </div>
+
+            <!-- Card Footer: Rent price -->
+            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between">
+              <span class="text-[10px] text-slate-400 font-medium">ค่าเช่ารายเดือน</span>
+              <div class="text-right font-mono">
+                <span class="text-sm font-black text-indigo-600">฿{{ Number(room.price || 0).toLocaleString() }}</span>
+                <span class="text-[10px] text-slate-400 font-sans ml-0.5">/เดือน</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Dynamic Quick Actions Grid (เมนูด่วนใช้งานบ่อย 2x2 Grid) -->
+      <div class="space-y-2.5" v-if="availableQuickActions.length > 0">
         <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
-          เมนูด่วน (Quick Actions - Dynamic Enabled)
+          เมนูด่วน (Quick Actions)
         </h2>
 
-        <div class="grid grid-cols-2 gap-3.5">
+        <div class="grid grid-cols-2 gap-3">
           <button
             v-for="menu in availableQuickActions"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="p-4 bg-white hover:bg-slate-50/80 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2"
+            class="p-4 bg-white hover:bg-slate-50/90 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
           >
             <div
-              class="w-10 h-10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"
+              class="w-10 h-10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs"
               :class="menu.bgClass"
             >
               <component :is="menu.icon" class="w-5 h-5" :class="menu.iconClass" />
             </div>
             <div>
-              <div class="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">
+              <div class="font-extrabold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">
                 {{ menu.title }}
               </div>
               <div class="text-[11px] text-slate-500 font-medium truncate">{{ menu.subtitle }}</div>
@@ -79,8 +178,8 @@
         </div>
       </div>
 
-      <!-- 3. Dynamic General Menus (List แนวตั้ง สไตล์ iOS Settings) -->
-      <div class="space-y-2" v-if="availableGeneralMenus.length > 0">
+      <!-- 4. Dynamic General Menus (List แนวตั้ง สไตล์ iOS Settings) -->
+      <div class="space-y-2.5" v-if="availableGeneralMenus.length > 0">
         <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
           เมนูทั่วไป (General Settings)
         </h2>
@@ -90,28 +189,25 @@
             v-for="menu in availableGeneralMenus"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group"
+            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group cursor-pointer"
             :class="menu.isDanger ? 'text-rose-600' : 'text-slate-800'"
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
-                :class="menu.isDanger ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-600'"
+                class="w-9 h-9 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105"
+                :class="menu.isDanger ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600'"
               >
                 <component :is="menu.icon" class="w-4 h-4" />
               </div>
-              <span class="text-sm font-semibold">{{ menu.title }}</span>
+              <span class="text-xs font-bold leading-tight">{{ menu.title }}</span>
             </div>
-            <ChevronRight
-              class="w-4 h-4 transition-transform group-hover:translate-x-0.5"
-              :class="menu.isDanger ? 'text-rose-400' : 'text-slate-400'"
-            />
+            <ChevronRight class="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
           </button>
         </div>
       </div>
     </div>
 
-    <!-- 4. Digital ID QR Code Modal Pop-up -->
+    <!-- 5. Digital ID QR Code Modal Pop-up -->
     <div v-if="showQrModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 text-center relative">
         <button @click="showQrModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
@@ -129,7 +225,7 @@
 
         <div class="p-3 bg-slate-50 rounded-2xl text-xs space-y-1 text-slate-600 font-mono">
           <div>ผู้เช่า: <span class="font-bold text-slate-900">{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span></div>
-          <div>ห้องพัก: <span class="font-bold text-indigo-600">ห้อง {{ tenantProfile.roomNumber }}</span></div>
+          <div>ห้องพัก: <span class="font-bold text-indigo-600">{{ formattedRooms }}</span></div>
         </div>
 
         <button
@@ -140,6 +236,57 @@
         </button>
       </div>
     </div>
+
+    <!-- 6. Link Another Room Modal Pop-up -->
+    <div v-if="showLinkRoomModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 relative">
+        <button @click="showLinkRoomModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+          <X class="w-5 h-5" />
+        </button>
+
+        <div class="space-y-1 pt-2 text-center">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-xl font-bold">
+            🔑
+          </div>
+          <h3 class="text-base font-bold text-slate-900">ผูกห้องพักเพิ่มเติม</h3>
+          <p class="text-xs text-slate-500">กรอกรหัสเชิญ (Invite Code) จากผู้ดูแลหอพักเพื่อผูกห้องเข้ากับ LINE ของคุณ</p>
+        </div>
+
+        <form @submit.prevent="handleLinkRoom" class="space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">รหัสเชิญห้องพัก (Invite Code)</label>
+            <input
+              v-model="inviteCodeInput"
+              type="text"
+              placeholder="e.g. ROOM-A102-XYZ"
+              required
+              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-mono tracking-wider text-center focus:outline-hidden focus:border-indigo-600"
+            />
+          </div>
+
+          <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-[11px] text-amber-800 leading-relaxed">
+            💡 คุณสามารถขอรับ Invite Code สำหรับห้องพักใหม่ได้จากเจ้าหน้าที่นิติบุคคล
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button
+              type="button"
+              @click="showLinkRoomModal = false"
+              class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-all"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              :disabled="linkingRoom"
+              class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold transition-all disabled:opacity-50"
+            >
+              {{ linkingRoom ? 'กำลังผูกห้อง...' : 'ยืนยันผูกห้อง' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -147,11 +294,12 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/utils/api';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
-import { showWarning } from '@/utils/swal';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
+import { showSuccess, showError, showWarning } from '@/utils/swal';
 
 import {
   CreditCard,
@@ -164,6 +312,7 @@ import {
   LogOut,
   QrCode,
   ChevronRight,
+  PlusCircle,
   X
 } from 'lucide-vue-next';
 
@@ -171,17 +320,45 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const featureStore = useFeatureStore();
+const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
 
 const showQrModal = ref(false);
+const showLinkRoomModal = ref(false);
+const inviteCodeInput = ref('');
+const linkingRoom = ref(false);
 const digitalIdQrUrl = ref('');
 const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+const currentLineUserId = ref('');
 
 const tenantProfile = reactive({
   firstName: '',
   lastName: '',
   roomNumber: '',
+  rooms: [],
   phone: '',
   avatarUrl: ''
+});
+
+const selectedRoomId = ref('');
+
+const selectedRoom = computed(() => {
+  if (!tenantProfile.rooms || tenantProfile.rooms.length === 0) return null;
+  return tenantProfile.rooms.find((r) => r.id === selectedRoomId.value) || tenantProfile.rooms[0];
+});
+
+const selectRoom = (room) => {
+  if (!room) return;
+  selectedRoomId.value = room.id;
+  localStorage.setItem('active_tenant_room_id', room.id);
+  tenantProfile.roomNumber = room.roomNumber;
+  applyTheme(room);
+};
+
+const formattedRooms = computed(() => {
+  if (tenantProfile.rooms && tenantProfile.rooms.length > 0) {
+    return tenantProfile.rooms.map((r) => `ห้อง ${r.roomNumber}`).join(', ');
+  }
+  return `ห้อง ${tenantProfile.roomNumber || '-'}`;
 });
 
 const fetchTenantProfile = async (lineUserId = '') => {
@@ -198,13 +375,50 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.firstName = data.firstName || 'ผู้เช่า';
       tenantProfile.lastName = data.lastName || '';
       tenantProfile.roomNumber = data.roomNumber || '-';
+      tenantProfile.rooms = data.rooms || [];
       tenantProfile.phone = data.phone || '';
       if (data.linePictureUrl) {
         tenantProfile.avatarUrl = data.linePictureUrl;
       }
+
+      // ตรวจสอบและเลือกห้องที่ Active
+      if (tenantProfile.rooms.length > 0) {
+        const storedRoomId = localStorage.getItem('active_tenant_room_id');
+        const matched = tenantProfile.rooms.find((r) => r.id === storedRoomId) || tenantProfile.rooms[0];
+        selectedRoomId.value = matched.id;
+        tenantProfile.roomNumber = matched.roomNumber;
+        applyTheme(matched);
+      } else {
+        applyTheme(data);
+      }
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
+  }
+};
+
+const handleLinkRoom = async () => {
+  if (!inviteCodeInput.value.trim()) return;
+  linkingRoom.value = true;
+  try {
+    const payload = {
+      inviteCode: inviteCodeInput.value.trim(),
+      lineUserId: currentLineUserId.value || undefined,
+      lineDisplayName: tenantProfile.firstName,
+      phone: tenantProfile.phone
+    };
+
+    const res = await api.post('/api/v1/liff/auth/register-invite', payload);
+    if (res.data?.success) {
+      await showSuccess('ผูกห้องพักสำเร็จ!', `เพิ่มห้องพักใหม่เข้าสู่บัญชีของคุณเรียบร้อยแล้ว`);
+      showLinkRoomModal.value = false;
+      inviteCodeInput.value = '';
+      await fetchTenantProfile(currentLineUserId.value);
+    }
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถผูกห้องพักได้ โปรดตรวจสอบรหัสเชิญ');
+  } finally {
+    linkingRoom.value = false;
   }
 };
 
@@ -258,7 +472,7 @@ const generalMenusConfig = [
     id: 'profile',
     title: 'จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)',
     icon: User,
-    route: '/liff/profile/edit', // 📌 Route ตรงไปยัง LiffUpdateProfileView.vue
+    route: '/liff/profile/edit',
     featureKey: null
   },
   {
@@ -303,23 +517,22 @@ const handleMenuClick = (menu) => {
   if (menu.action) {
     menu.action();
   } else if (menu.route) {
-    router.push(menu.route);
+    const query = {};
+    if (selectedRoom.value?.roomNumber) query.room = selectedRoom.value.roomNumber;
+    if (selectedRoom.value?.id) query.roomId = selectedRoom.value.id;
+    router.push({ path: menu.route, query });
   }
 };
 
 onMounted(async () => {
   featureStore.fetchFeatures();
-  await fetchTenantProfile();
 
-  const liffId = import.meta.env.VITE_LIFF_ID || import.meta.env.VITE_LINE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        if (profile.userId) {
-          await fetchTenantProfile(profile.userId);
-        }
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
+        currentLineUserId.value = profile.userId;
         if (profile.pictureUrl) tenantProfile.avatarUrl = profile.pictureUrl;
 
         // Auto-sync LINE profile in background to database
@@ -330,12 +543,15 @@ onMounted(async () => {
           lineStatusMessage: profile.statusMessage
         }).catch(() => {});
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
-  const payload = `TENANT-ID:${tenantProfile.firstName}-ROOM-${tenantProfile.roomNumber}-${Date.now()}`;
+  await fetchTenantProfile(currentLineUserId.value);
+
+  const payload = `TENANT-ID:${tenantProfile.firstName}-ROOMS-${tenantProfile.roomNumber}-${Date.now()}`;
   digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
 });
 </script>
+

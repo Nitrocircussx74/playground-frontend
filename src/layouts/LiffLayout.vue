@@ -1,10 +1,16 @@
 <template>
   <!-- App Shell: Viewport-locked Container with ambient background -->
-  <div class="h-[100dvh] w-full bg-slate-900/5 sm:bg-gradient-to-br sm:from-slate-100 sm:via-purple-50/30 sm:to-indigo-50/40 flex justify-center items-center overflow-hidden font-sans selection:bg-indigo-600 selection:text-white relative">
-    <!-- Desktop Background Ambience -->
+  <div class="h-[100dvh] w-full bg-slate-900/5 sm:bg-gradient-to-br sm:from-slate-100 sm:via-slate-50 sm:to-slate-100 flex justify-center items-center overflow-hidden font-sans selection:bg-primary selection:text-white relative">
+    <!-- Desktop Background Ambience with Dynamic Theme Color Accent -->
     <div class="hidden sm:block absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-32 -left-32 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-200/40 rounded-full blur-3xl"></div>
+      <div
+        class="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-25 transition-colors duration-500"
+        :style="{ backgroundColor: themeColor }"
+      ></div>
+      <div
+        class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20 transition-colors duration-500"
+        :style="{ backgroundColor: themeColor }"
+      ></div>
     </div>
 
     <!-- Mobile App Container Shell (กว้างสุด max-w-md สำหรับมือถือและมีกรอบจำลองสวยงามบน Desktop) -->
@@ -12,8 +18,8 @@
       
       <!-- 1. Top App Bar (Header Locked Pinned ชิดขอบบน ไม่เลื่อนหลุดจอ) -->
       <header class="h-14 shrink-0 bg-white/90 backdrop-blur-md border-b border-slate-200/80 z-30 flex items-center justify-between px-4 shadow-2xs select-none sticky top-0">
-        <!-- ฝั่งซ้าย: ปุ่มย้อนกลับ (Back Button) -->
-        <div class="w-10 flex items-center">
+        <!-- ฝั่งซ้าย: ปุ่มย้อนกลับ (Back Button) หรือ Building Logo -->
+        <div class="flex items-center gap-2">
           <button
             v-if="showBackButton"
             @click="handleBack"
@@ -22,6 +28,23 @@
           >
             <ChevronLeft class="w-5 h-5" />
           </button>
+          
+          <!-- Dynamic Building Logo / Icon -->
+          <div v-else class="flex items-center gap-2">
+            <img
+              v-if="logoUrl"
+              :src="logoUrl"
+              alt="Building Logo"
+              class="w-8 h-8 rounded-xl object-contain border border-slate-200 shadow-2xs bg-white p-0.5"
+            />
+            <div
+              v-else
+              class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-2xs transition-colors duration-300"
+              :style="{ backgroundColor: themeColor }"
+            >
+              🏢
+            </div>
+          </div>
         </div>
 
         <!-- ตรงกลาง: ชื่อหัวข้อหน้าจอ (Dynamic Page Title) -->
@@ -31,10 +54,17 @@
           </h1>
         </div>
 
-        <!-- ฝั่งขวา: Badge สถานะ LIFF -->
-        <div class="w-10 flex items-center justify-end">
-          <span class="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full font-mono shadow-2xs">
-            LIFF
+        <!-- ฝั่งขวา: Badge ชื่อตึก / LIFF -->
+        <div class="flex items-center justify-end">
+          <span
+            class="text-[10px] font-bold px-2 py-0.5 rounded-full font-sans shadow-2xs border transition-colors duration-300"
+            :style="{
+              backgroundColor: `${themeColor}15`,
+              borderColor: `${themeColor}40`,
+              color: themeColor
+            }"
+          >
+            {{ buildingName || 'LIFF' }}
           </span>
         </div>
       </header>
@@ -58,14 +88,16 @@
           :key="tab.path"
           :to="tab.path"
           class="flex-1 flex flex-col items-center justify-center py-1 group text-decoration-none transition-all duration-200 cursor-pointer"
-          :class="isTabActive(tab.path) ? 'text-indigo-600 font-bold scale-105' : 'text-slate-400 hover:text-slate-700 font-medium'"
+          :class="isTabActive(tab.path) ? 'font-bold scale-105' : 'text-slate-400 hover:text-slate-700 font-medium'"
+          :style="isTabActive(tab.path) ? { color: themeColor } : {}"
         >
           <div class="relative">
             <component :is="tab.icon" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
             <!-- Active Indicator Pill -->
             <span
               v-if="isTabActive(tab.path)"
-              class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"
+              class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-1 rounded-full transition-colors duration-300"
+              :style="{ backgroundColor: themeColor }"
             ></span>
           </div>
           <span class="text-[11px] mt-1.5 tracking-tight">{{ tab.name }}</span>
@@ -76,8 +108,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import {
   ChevronLeft,
   User,
@@ -88,6 +121,7 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const { themeColor, logoUrl, buildingName, fetchAndApplyTheme } = useDynamicTheme();
 
 /**
  * 1. Dynamic Page Title
@@ -139,6 +173,10 @@ const navTabs = [
 const isTabActive = (path) => {
   return route.path === path || route.path.startsWith(path + '/');
 };
+
+onMounted(() => {
+  fetchAndApplyTheme();
+});
 </script>
 
 <style scoped>
@@ -153,3 +191,4 @@ const isTabActive = (path) => {
   transform: translateY(4px);
 }
 </style>
+

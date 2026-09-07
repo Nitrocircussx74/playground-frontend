@@ -156,7 +156,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 
@@ -176,18 +176,18 @@ const mockQrUrl = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?
 
 onMounted(async () => {
   try {
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-    if (liffId) {
-      try {
-        await liff.init({ liffId });
-        if (liff.isLoggedIn()) {
-          const profile = await liff.getProfile();
-          lineUserId.value = profile.userId;
-        }
-      } catch (liffErr) {
-        console.warn('LIFF init fallback mode:', liffErr.message);
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
+        lineUserId.value = profile.userId;
       }
     }
+  } catch (liffErr) {
+    console.warn('LIFF init fallback mode:', liffErr.message);
+  }
+
+  try {
 
     const params = {};
     if (lineUserId.value) params.lineUserId = lineUserId.value;

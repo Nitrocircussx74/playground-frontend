@@ -145,7 +145,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import liff from '@line/liff';
+import { initLiff } from '@/utils/liff';
 import api from '@/utils/api';
 import { showError } from '@/utils/swal';
 
@@ -164,14 +164,7 @@ const verificationResult = ref(null);
 
 onMounted(async () => {
   try {
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-    if (liffId) {
-      try {
-        await liff.init({ liffId });
-      } catch (liffError) {
-        console.warn('LIFF init fallback mode:', liffError.message);
-      }
-    }
+    await initLiff();
 
     const response = await api.get(`/api/v1/liff/invoices/${invoiceId}`);
     invoice.value = response.data.data.invoice;

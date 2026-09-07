@@ -73,7 +73,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import liff from '@line/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { showError } from '@/utils/swal';
 
@@ -82,17 +82,16 @@ const paidInvoices = ref([]);
 const lineUserId = ref('');
 
 onMounted(async () => {
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
         lineUserId.value = profile.userId;
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
   fetchHistory();

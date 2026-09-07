@@ -30,6 +30,20 @@
 
       <!-- Tab 1: New Maintenance Request Form -->
       <div v-if="activeTab === 'new'" class="p-5 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <!-- Room Selector for Multi-room Tenants -->
+        <div v-if="tenantRooms && tenantRooms.length > 1" class="space-y-1">
+          <label class="block text-xs font-bold text-slate-700">เลือกห้องพักที่ต้องการแจ้งซ่อม <span class="text-rose-500">*</span></label>
+          <select
+            v-model="form.roomId"
+            required
+            class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3 py-2.5 text-sm text-slate-900 focus:outline-hidden font-medium"
+          >
+            <option v-for="room in tenantRooms" :key="room.id" :value="room.id">
+              ห้อง {{ room.roomNumber }} {{ room.buildingName ? `(ตึก ${room.buildingName})` : '' }}
+            </option>
+          </select>
+        </div>
+
         <!-- Quick Category Select -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">เลือกหมวดหมู่อุปกรณ์ที่ชำรุด</label>
@@ -134,12 +148,17 @@
             class="p-5 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-3"
           >
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-900 text-sm flex items-center gap-1">
-                <span>🔧</span>
-                <span>{{ item.title }}</span>
-              </span>
+              <div class="space-y-0.5">
+                <span class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                  <span>🔧</span>
+                  <span>{{ item.title }}</span>
+                </span>
+                <span v-if="item.room?.roomNumber" class="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 font-bold text-[10px] rounded-full border border-indigo-200">
+                  ห้อง {{ item.room.roomNumber }}
+                </span>
+              </div>
               <span
-                class="text-xs font-bold px-2.5 py-1 rounded-full border"
+                class="text-xs font-bold px-2.5 py-1 rounded-full border shrink-0"
                 :class="{
                   'bg-amber-50 border-amber-300 text-amber-800': item.status === 'pending',
                   'bg-blue-50 border-blue-300 text-blue-800': item.status === 'in_progress',
@@ -193,35 +212,38 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
 import api from '@/utils/api';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import { showSuccess, showError } from '@/utils/swal';
 
 const activeTab = ref('new');
 const loading = ref(false);
 const submitting = ref(false);
 const requests = ref([]);
+const tenantRooms = ref([]);
 const lineUserId = ref('');
 const selectedFile = ref(null);
 const previewUrl = ref('');
 
 const form = reactive({
   title: 'เครื่องปรับอากาศ / แอร์ไม่เย็น',
-  description: ''
+  description: '',
+  roomId: ''
 });
 
 onMounted(async () => {
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    try {
-      await liff.init({ liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
+  try {
+    await initLiff();
+    if (isLiffLoggedIn()) {
+      const profile = await getLiffProfile();
+      if (profile?.userId) {
         lineUserId.value = profile.userId;
       }
-    } catch (err) {
-      console.warn('LIFF init fallback mode:', err.message);
     }
+  } catch (err) {
+    console.warn('LIFF init fallback mode:', err.message);
   }
 
+  await fetchTenantProfile();
   fetchRequests();
 });
 
@@ -233,6 +255,26 @@ watch(activeTab, (newTab) => {
 
 const selectCategory = (catName) => {
   form.title = catName;
+};
+
+const fetchTenantProfile = async () => {
+  try {
+    const params = {};
+    if (lineUserId.value) params.lineUserId = lineUserId.value;
+    const res = await api.get('/api/v1/liff/profile', { params });
+    if (res.data?.success && res.data?.data) {
+      tenantRooms.value = res.data.data.rooms || [];
+      const targetRoomId = route.query.roomId || localStorage.getItem('active_tenant_room_id');
+      const matched = tenantRooms.value.find((r) => r.id === targetRoomId || r.roomNumber === route.query.room);
+      if (matched) {
+        form.roomId = matched.id;
+      } else if (tenantRooms.value.length > 0 && !form.roomId) {
+        form.roomId = tenantRooms.value[0].id;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch tenant profile for maintenance rooms:', err.message);
+  }
 };
 
 const fetchRequests = async () => {
@@ -263,6 +305,9 @@ const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
+    if (form.roomId) {
+      formData.append('roomId', form.roomId);
+    }
     if (selectedFile.value) {
       formData.append('file', selectedFile.value);
     }
@@ -296,3 +341,4 @@ const formatStatus = (status) => {
   return map[status] || status;
 };
 </script>
+

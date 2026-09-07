@@ -129,24 +129,222 @@
                 />
               </div>
 
-              <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-700">URL รูปภาพหน้าปกตึก (Cover Image URL)</label>
-                <Input
-                  v-model="form.coverImageUrl"
-                  :disabled="isReadOnly"
-                  placeholder="https://example.com/cover.jpg"
-                  class="bg-white"
-                />
+              <!-- 🎨 LIFF App Dynamic Theming & Branding Section -->
+              <div class="pt-4 border-t border-slate-100 space-y-4">
+                <div>
+                  <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎨</span>
+                    <span>ธีมสีและโลโก้ประจำตึก (LIFF App Dynamic Branding)</span>
+                  </h4>
+                  <p class="text-[11px] text-slate-500 mt-0.5">
+                    กำหนดธีมสีและโลโก้ที่ลูกบ้านในตึกนี้จะเห็นเมื่อเปิด LINE LIFF App
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Theme Color Picker & Presets -->
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-700 block">ธีมสีหลักประจำตึก (Theme Color)</label>
+                    <div class="flex items-center gap-3">
+                      <input
+                        type="color"
+                        v-model="form.themeColor"
+                        :disabled="isReadOnly"
+                        class="w-10 h-10 rounded-xl cursor-pointer border border-slate-300 p-0.5 bg-white shrink-0"
+                      />
+                      <Input
+                        v-model="form.themeColor"
+                        :disabled="isReadOnly"
+                        placeholder="#3B82F6"
+                        class="bg-white font-mono uppercase text-xs"
+                      />
+                    </div>
+
+                    <!-- Quick Preset Palette Chips -->
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                      <button
+                        v-for="color in presetColors"
+                        :key="color.hex"
+                        type="button"
+                        @click="form.themeColor = color.hex"
+                        :disabled="isReadOnly"
+                        class="px-2 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer"
+                        :class="form.themeColor?.toLowerCase() === color.hex.toLowerCase() ? 'ring-2 ring-purple-600 border-transparent shadow-xs bg-purple-50 text-purple-800' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'"
+                      >
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: color.hex }"></span>
+                        <span>{{ color.name }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Building Logo Upload & Preview -->
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-700 block">โลโก้ประจำตึก (Building Logo)</label>
+                    <div class="flex items-start gap-4">
+                      <!-- Logo preview box / avatar -->
+                      <div class="relative group shrink-0">
+                        <div class="w-16 h-16 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shadow-2xs">
+                          <img
+                            v-if="form.logoUrl"
+                            :src="form.logoUrl"
+                            alt="Building Logo"
+                            class="w-full h-full object-contain p-1"
+                          />
+                          <span v-else class="text-2xl text-slate-400">🏢</span>
+                        </div>
+                        <button
+                          v-if="form.logoUrl && !isReadOnly"
+                          type="button"
+                          @click="form.logoUrl = ''"
+                          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow-xs cursor-pointer"
+                          title="ลบรูปโลโก้"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div class="flex-1 space-y-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <label
+                            v-if="!isReadOnly"
+                            class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold rounded-xl transition-all shadow-2xs hover:shadow-xs"
+                            :class="{ 'opacity-50 pointer-events-none': isUploadingLogo }"
+                          >
+                            <span v-if="isUploadingLogo" class="animate-spin w-3.5 h-3.5 border-2 border-purple-600 border-t-transparent rounded-full"></span>
+                            <span v-else>📷</span>
+                            <span>{{ isUploadingLogo ? 'กำลังอัปโหลด...' : (form.logoUrl ? 'เปลี่ยนรูปโลโก้' : 'อัปโหลดรูปโลโก้') }}</span>
+                            <input
+                              type="file"
+                              accept="image/png, image/jpeg, image/jpg, image/webp"
+                              class="hidden"
+                              @change="handleLogoUpload"
+                              :disabled="isUploadingLogo"
+                            />
+                          </label>
+
+                          <button
+                            v-if="form.logoUrl && !isReadOnly"
+                            type="button"
+                            @click="form.logoUrl = ''"
+                            class="px-2.5 py-2 text-rose-600 hover:bg-rose-50 border border-rose-200 text-xs font-medium rounded-xl transition-colors cursor-pointer"
+                          >
+                            ลบรูป
+                          </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-tight">รองรับไฟล์ JPG, PNG, WebP (ขนาดไม่เกิน 5MB) จะแสดงบนแถบหัว LIFF</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live LIFF App Header Preview -->
+                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/80 space-y-2">
+                  <div class="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                    <span>📱</span>
+                    <span>ตัวอย่างการแสดงผลบน LINE LIFF App ของลูกบ้านตึกนี้ (Live Preview):</span>
+                  </div>
+                  <div
+                    class="p-4 rounded-2xl text-white shadow-md relative overflow-hidden transition-all duration-300"
+                    :style="{
+                      background: `linear-gradient(135deg, ${form.themeColor || '#3B82F6'}, ${adjustBrightness(form.themeColor || '#3B82F6', -25)})`,
+                      boxShadow: `0 10px 15px -3px ${form.themeColor || '#3B82F6'}40`
+                    }"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-3">
+                        <img
+                          v-if="form.logoUrl"
+                          :src="form.logoUrl"
+                          alt="Logo Preview"
+                          class="w-10 h-10 rounded-xl object-contain bg-white p-0.5 border border-white/40 shadow-xs"
+                        />
+                        <div v-else class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg">
+                          🏢
+                        </div>
+                        <div>
+                          <div class="font-extrabold text-sm">{{ form.name || 'ชื่ออาคาร/ตึก' }}</div>
+                          <div class="text-[10px] opacity-80">ธีมสีที่ลูกบ้านจะมองเห็นบนหน้าแรกและบิลค่าเช่า</div>
+                        </div>
+                      </div>
+                      <span class="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-bold border border-white/30">
+                        ห้อง 101
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <!-- Cover Image Preview -->
-              <div v-if="form.coverImageUrl" class="mt-3">
-                <label class="text-xs font-bold text-slate-500 block mb-1">ตัวอย่างรูปภาพหน้าปก:</label>
-                <img
-                  :src="form.coverImageUrl"
-                  alt="Building Cover Preview"
-                  class="w-full h-48 object-cover rounded-xl border border-slate-200 shadow-2xs"
-                />
+              <!-- Cover Image Upload & Preview -->
+              <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label class="text-xs font-bold text-slate-700 block">รูปภาพหน้าปกตึก (Building Cover Image)</label>
+                
+                <div v-if="form.coverImageUrl" class="relative group rounded-2xl overflow-hidden border border-slate-200 shadow-xs">
+                  <img
+                    :src="form.coverImageUrl"
+                    alt="Building Cover Preview"
+                    class="w-full h-48 sm:h-56 object-cover"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-90"></div>
+                  <div class="absolute bottom-3 right-3 flex items-center gap-2">
+                    <label
+                      v-if="!isReadOnly"
+                      class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md text-xs font-bold rounded-xl shadow-md transition-all"
+                      :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
+                    >
+                      <span v-if="isUploadingCover" class="animate-spin w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full"></span>
+                      <span v-else>📷</span>
+                      <span>{{ isUploadingCover ? 'กำลังอัปโหลด...' : 'เปลี่ยนรูปหน้าปก' }}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        class="hidden"
+                        @change="handleCoverUpload"
+                        :disabled="isUploadingCover"
+                      />
+                    </label>
+
+                    <button
+                      v-if="!isReadOnly"
+                      type="button"
+                      @click="form.coverImageUrl = ''"
+                      class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-700 text-white backdrop-blur-md text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                    >
+                      ลบรูปหน้าปก
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Dropzone / Empty State for Cover Image -->
+                <div
+                  v-else
+                  class="p-6 border-2 border-dashed border-slate-200 hover:border-purple-300 rounded-2xl bg-slate-50/50 hover:bg-purple-50/20 text-center transition-all"
+                >
+                  <div class="max-w-xs mx-auto space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mx-auto shadow-2xs">
+                      🖼️
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold text-slate-700">อัปโหลดรูปภาพหน้าปกตึก</p>
+                      <p class="text-[11px] text-slate-400 mt-0.5">ไฟล์ JPG, PNG หรือ WebP ขนาดไม่เกิน 5MB</p>
+                    </div>
+                    <label
+                      v-if="!isReadOnly"
+                      class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-purple-600/20"
+                      :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
+                    >
+                      <span v-if="isUploadingCover" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
+                      <span v-else>📷</span>
+                      <span>{{ isUploadingCover ? 'กำลังอัปโหลด...' : 'เลือกรูปภาพหน้าปก' }}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        class="hidden"
+                        @change="handleCoverUpload"
+                        :disabled="isUploadingCover"
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -436,6 +634,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { adjustBrightness } from '@/composables/useDynamicTheme';
 import uploadService from '@/services/uploadService';
 import api from '@/utils/api';
 
@@ -452,13 +651,29 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isGeneratingQr = ref(false);
 const isUploadingQr = ref(false);
+const isUploadingLogo = ref(false);
+const isUploadingCover = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+
+// Preset Palette for LIFF Dynamic Theming
+const presetColors = [
+  { name: 'น้ำเงิน (Blue)', hex: '#3B82F6' },
+  { name: 'แดง (Ruby)', hex: '#EF4444' },
+  { name: 'เขียว (Emerald)', hex: '#10B981' },
+  { name: 'ม่วง (Indigo)', hex: '#8B5CF6' },
+  { name: 'ส้ม (Amber)', hex: '#F97316' },
+  { name: 'ฟ้า (Sky)', hex: '#0EA5E9' },
+  { name: 'ชมพู (Rose)', hex: '#F43F5E' },
+  { name: 'เทาเข้ม (Slate)', hex: '#475569' }
+];
 
 // Reactive Form Data
 const form = ref({
   name: '',
   address: '',
+  themeColor: '#3B82F6',
+  logoUrl: '',
   phone: '',
   coverImageUrl: '',
   paymentQrUrl: '',
@@ -509,6 +724,52 @@ const generatePromptPayQr = async () => {
 };
 
 /**
+ * Handle Direct File Upload for Logo
+ */
+const handleLogoUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  isUploadingLogo.value = true;
+  errorMessage.value = '';
+  try {
+    const res = await uploadService.uploadFile(file);
+    const url = res.data?.url || res.fileUrl || res.url;
+    if (url) {
+      form.value.logoUrl = url;
+    }
+  } catch (err) {
+    errorMessage.value = 'ไม่สามารถอัปโหลดไฟล์รูปโลโก้ได้ (รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5MB)';
+  } finally {
+    isUploadingLogo.value = false;
+    e.target.value = '';
+  }
+};
+
+/**
+ * Handle Direct File Upload for Cover Image
+ */
+const handleCoverUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  isUploadingCover.value = true;
+  errorMessage.value = '';
+  try {
+    const res = await uploadService.uploadFile(file);
+    const url = res.data?.url || res.fileUrl || res.url;
+    if (url) {
+      form.value.coverImageUrl = url;
+    }
+  } catch (err) {
+    errorMessage.value = 'ไม่สามารถอัปโหลดไฟล์รูปภาพหน้าปกได้ (รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5MB)';
+  } finally {
+    isUploadingCover.value = false;
+    e.target.value = '';
+  }
+};
+
+/**
  * Handle Direct File Upload for PromptPay QR Code Image
  */
 const handleQrUpload = async (e) => {
@@ -516,15 +777,18 @@ const handleQrUpload = async (e) => {
   if (!file) return;
 
   isUploadingQr.value = true;
+  errorMessage.value = '';
   try {
     const res = await uploadService.uploadFile(file);
-    if (res.fileUrl) {
-      form.value.paymentQrUrl = res.fileUrl;
+    const url = res.data?.url || res.fileUrl || res.url;
+    if (url) {
+      form.value.paymentQrUrl = url;
     }
   } catch (err) {
     errorMessage.value = 'ไม่สามารถอัปโหลดไฟล์ QR Code ได้';
   } finally {
     isUploadingQr.value = false;
+    e.target.value = '';
   }
 };
 
@@ -562,6 +826,8 @@ const fetchBuildingSettings = async () => {
     form.value = {
       name: buildingData.name || '',
       address: buildingData.address || '',
+      themeColor: buildingData.themeColor || '#3B82F6',
+      logoUrl: buildingData.logoUrl || '',
       phone: settingData.phone || '',
       coverImageUrl: settingData.coverImageUrl || '',
       paymentQrUrl: settingData.paymentQrUrl || '',
