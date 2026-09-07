@@ -77,11 +77,12 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
 import { showSuccess } from '@/utils/swal';
 
+const route = useRoute();
 const router = useRouter();
 const lineDisplayName = ref('');
 const linePictureUrl = ref('');
@@ -97,6 +98,11 @@ const form = reactive({
 const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
 
 onMounted(async () => {
+  // Auto-fill invite code from URL query param if present
+  if (route.query.code) {
+    form.inviteCode = String(route.query.code).trim().toUpperCase();
+  }
+
   if (!liffId) return;
   try {
     await liff.init({ liffId });

@@ -145,7 +145,8 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import api from '@/utils/api';
 import liff from '@line/liff';
 import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
@@ -167,6 +168,7 @@ import {
 } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const featureStore = useFeatureStore();
 
@@ -175,23 +177,27 @@ const digitalIdQrUrl = ref('');
 const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
 
 const tenantProfile = reactive({
-  firstName: 'ผู้เช่า',
+  firstName: '',
   lastName: '',
-  roomNumber: '101',
+  roomNumber: '',
   phone: '',
   avatarUrl: ''
 });
 
 const fetchTenantProfile = async (lineUserId = '') => {
   try {
-    const res = await api.get('/api/v1/liff/profile', {
-      params: lineUserId ? { lineUserId } : {}
-    });
+    const params = {};
+    if (lineUserId) params.lineUserId = lineUserId;
+    if (route.query.room) params.room = route.query.room;
+    if (route.query.roomNumber) params.roomNumber = route.query.roomNumber;
+    if (route.query.tenantId) params.tenantId = route.query.tenantId;
+
+    const res = await api.get('/api/v1/liff/profile', { params });
     if (res.data?.success && res.data?.data) {
       const data = res.data.data;
-      tenantProfile.firstName = data.firstName || '';
+      tenantProfile.firstName = data.firstName || 'ผู้เช่า';
       tenantProfile.lastName = data.lastName || '';
-      tenantProfile.roomNumber = data.roomNumber || '101';
+      tenantProfile.roomNumber = data.roomNumber || '-';
       tenantProfile.phone = data.phone || '';
       if (data.linePictureUrl) {
         tenantProfile.avatarUrl = data.linePictureUrl;

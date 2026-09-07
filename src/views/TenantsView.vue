@@ -12,12 +12,20 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2.5">
+        <button
+          @click="showCheckinModal = true"
+          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <UserPlus class="w-4 h-4" />
+          <span>+ เพิ่มผู้เช่าใหม่ (Walk-in)</span>
+        </button>
+
         <button
           @click="fetchTenants"
           class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
         >
-          <span>🔄</span>
+          <RefreshCw class="w-3.5 h-3.5 text-slate-500" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรชข้อมูล</span>
         </button>
       </div>
@@ -194,6 +202,13 @@
       <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้เช่า</div>
       <p class="text-xs">ลองค้นหาด้วยคำค้นอื่น หรือสลับตัวกรองสถานะ</p>
     </div>
+    <!-- Manual Walk-in Check-in Modal -->
+    <ManualTenantCheckinModal
+      :show="showCheckinModal"
+      :rooms="roomStore.rooms"
+      @close="showCheckinModal = false"
+      @created="handleTenantCreated"
+    />
   </div>
 </template>
 
@@ -201,23 +216,30 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import tenantService from '@/services/tenantService';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { useRoomStore } from '@/stores/useRoomStore';
+import ManualTenantCheckinModal from '@/components/ManualTenantCheckinModal.vue';
+import { UserPlus, RefreshCw } from 'lucide-vue-next';
 
 const buildingStore = useBuildingStore();
+const roomStore = useRoomStore();
 
 const loading = ref(true);
 const tenants = ref([]);
 const searchQuery = ref('');
 const selectedFilter = ref('ALL');
+const showCheckinModal = ref(false);
 
 onMounted(() => {
   fetchTenants();
+  roomStore.fetchRooms(buildingStore.activeBuildingId);
 });
 
 // Re-fetch automatically when admin changes the selected building
 watch(
   () => buildingStore.activeBuildingId,
-  () => {
+  (newBuildingId) => {
     fetchTenants();
+    roomStore.fetchRooms(newBuildingId);
   }
 );
 
@@ -237,6 +259,11 @@ const fetchTenants = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const handleTenantCreated = () => {
+  fetchTenants();
+  roomStore.fetchRooms(buildingStore.activeBuildingId);
 };
 
 const isTenantActive = (tenant) => {

@@ -142,6 +142,20 @@
                   🏠 {{ r.building?.name || 'อาคาร' }} - ห้อง {{ r.roomNumber }} (ชั้น {{ r.floor }})
                 </span>
               </div>
+
+              <!-- LINE Linking Action for Non-LINE / Walk-in Tenants -->
+              <div v-if="!tenant.lineUserId" class="pt-2 flex flex-wrap items-center gap-2">
+                <button
+                  @click="openLineLinkModal"
+                  class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer active:scale-95"
+                >
+                  <span>💬</span>
+                  <span>สร้างรหัส/QR เชื่อมต่อบัญชี LINE</span>
+                </button>
+                <span class="text-[11px] text-slate-300">
+                  (สำหรับผู้เช่าที่ลงทะเบียนแบบ Walk-in แล้วต้องการผูก LINE ภายหลัง)
+                </span>
+              </div>
             </div>
           </div>
 
@@ -609,12 +623,73 @@
         </TabsContent>
       </Tabs>
     </div>
+
+    <!-- LINE Account Linking Modal for Existing Tenant -->
+    <div v-if="showLineLinkModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 border border-slate-200 text-slate-900 relative">
+        <button
+          @click="showLineLinkModal = false"
+          class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+        >
+          ✕
+        </button>
+
+        <div class="text-center space-y-2">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-2xs">
+            💬
+          </div>
+          <h3 class="text-lg font-extrabold text-slate-900 tracking-tight">เชื่อมต่อบัญชี LINE ให้ผู้เช่า</h3>
+          <p class="text-xs text-slate-500">
+            ผู้เช่า: <span class="font-bold text-slate-800">{{ tenant?.firstName }} {{ tenant?.lastName }}</span>
+          </p>
+        </div>
+
+        <div v-if="loadingInvite" class="py-12 text-center text-slate-500 space-y-2">
+          <div class="animate-spin w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
+          <div class="text-xs">กำลังสร้างรหัสเชื่อมต่อ...</div>
+        </div>
+
+        <div v-else class="space-y-4">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-2">
+            <div class="text-[11px] font-bold text-slate-500 uppercase">รหัสเชิญ 6 หลัก (Invite Code)</div>
+            <div class="text-3xl font-black font-mono tracking-widest text-emerald-600">
+              {{ generatedInviteCode }}
+            </div>
+            <div class="text-[11px] text-slate-400">
+              หมดอายุใน 7 วัน (ใช้คู่กับเบอร์โทรศัพท์ 4 ตัวท้าย: <span class="font-mono font-bold text-slate-700">{{ (tenant?.phone || '').slice(-4) }}</span>)
+            </div>
+          </div>
+
+          <div v-if="qrCodeDataUrl" class="text-center space-y-2">
+            <div class="text-xs font-bold text-slate-600">หรือให้ลูกบ้านสแกน QR Code เพื่อเปิด LINE LIFF:</div>
+            <img :src="qrCodeDataUrl" alt="LINE Onboarding QR" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200 shadow-xs" />
+          </div>
+
+          <div class="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-[11px] text-emerald-900 space-y-1">
+            <div class="font-bold">📱 วิธีการเชื่อมต่อสำหรับลูกบ้าน:</div>
+            <ol class="list-decimal pl-4 space-y-0.5 text-emerald-800">
+              <li>เปิด LINE ของหอพัก และเข้าเมนู "ผูกบัญชีลูกบ้าน"</li>
+              <li>กรอกรหัส 6 หลัก และเบอร์โทร 4 ตัวท้าย</li>
+              <li>ระบบจะเชื่อมข้อมูลห้องพักและบิลเข้า LINE ทันที</li>
+            </ol>
+          </div>
+
+          <button
+            @click="showLineLinkModal = false"
+            class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+          >
+            ปิดหน้าต่าง (Close)
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import QRCode from 'qrcode';
 import { showSuccess, showError } from '@/utils/swal';
 import tenantService from '@/services/tenantService';
 import { useAuthStore } from '@/stores/auth';
@@ -632,6 +707,12 @@ const loading = ref(true);
 const error = ref(null);
 const tenant = ref(null);
 const activeTab = ref('overview');
+
+// LINE Account Linking State
+const showLineLinkModal = ref(false);
+const loadingInvite = ref(false);
+const generatedInviteCode = ref('');
+const qrCodeDataUrl = ref('');
 
 // Notes form state
 const savingNotes = ref(false);
@@ -828,5 +909,29 @@ const getInvoicePaymentBehavior = (inv) => {
     }
   }
   return { isLate: false, daysLate: 0 };
+};
+
+const openLineLinkModal = async () => {
+  showLineLinkModal.value = true;
+  loadingInvite.value = true;
+  try {
+    const res = await tenantService.generateTenantInvite(tenantId.value);
+    if (res.success && res.data) {
+      generatedInviteCode.value = res.data.inviteCode;
+      // Generate QR Code containing LIFF Onboarding URL with prefilled code
+      const liffUrl = `${window.location.origin}/liff/onboarding?code=${res.data.inviteCode}`;
+      qrCodeDataUrl.value = await QRCode.toDataURL(liffUrl, {
+        width: 300,
+        margin: 2,
+        color: { dark: '#065f46', light: '#ffffff' }
+      });
+    }
+  } catch (err) {
+    console.error('Failed to generate invite code for LINE linking:', err);
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถสร้างรหัสเชื่อมต่อ LINE ได้');
+    showLineLinkModal.value = false;
+  } finally {
+    loadingInvite.value = false;
+  }
 };
 </script>

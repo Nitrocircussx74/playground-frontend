@@ -234,7 +234,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
 import { useFeatureStore } from '@/stores/useFeatureStore';
@@ -242,6 +242,7 @@ import { showConfirm } from '@/utils/swal';
 import { Trash2, X } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const featureStore = useFeatureStore();
 
 const loading = ref(true);
@@ -254,11 +255,11 @@ const showAddVehicleModal = ref(false);
 
 const profile = reactive({
   id: '',
-  firstName: 'สมชาย',
-  lastName: 'ใจดี',
-  phone: '0812345678',
-  roomNumber: '101',
-  contractEndDate: '31 ธันวาคม 2026'
+  firstName: '',
+  lastName: '',
+  phone: '',
+  roomNumber: '',
+  contractEndDate: ''
 });
 
 const vehicles = ref([
@@ -295,16 +296,19 @@ const fetchProfile = async () => {
   try {
     const params = {};
     if (lineUserId.value) params.lineUserId = lineUserId.value;
+    if (route.query.room) params.room = route.query.room;
+    if (route.query.roomNumber) params.roomNumber = route.query.roomNumber;
+    if (route.query.tenantId) params.tenantId = route.query.tenantId;
 
     const res = await api.get('/api/v1/liff/profile', { params });
     const data = res.data.data;
 
     profile.id = data.id || '';
-    profile.firstName = data.firstName || 'สมชาย';
-    profile.lastName = data.lastName || 'ใจดี';
-    profile.phone = data.phone || '0812345678';
-    profile.roomNumber = data.roomNumber || '101';
-    profile.contractEndDate = data.contractEndDate || '31 ธันวาคม 2026';
+    profile.firstName = data.firstName || '';
+    profile.lastName = data.lastName || '';
+    profile.phone = data.phone || '';
+    profile.roomNumber = data.roomNumber || '-';
+    profile.contractEndDate = data.contractEndDate || '-';
   } catch (err) {
     console.error('Failed to fetch profile:', err);
   } finally {

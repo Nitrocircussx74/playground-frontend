@@ -26,6 +26,16 @@ export default {
     return response.data;
   },
 
+  async remindInvoice(invoiceId) {
+    const response = await api.post(`/api/v1/invoices/${invoiceId}/remind`);
+    return response.data;
+  },
+
+  async remindBulkInvoices(payload = {}) {
+    const response = await api.post('/api/v1/invoices/remind-bulk', payload);
+    return response.data;
+  },
+
   async exportPdf(invoiceId) {
     const response = await api.get(`/api/v1/invoices/${invoiceId}/export`, {
       responseType: 'blob'

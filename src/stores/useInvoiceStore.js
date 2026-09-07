@@ -90,6 +90,34 @@ export const useInvoiceStore = defineStore('invoice', {
       }
     },
 
+    async remindInvoice(invoiceId) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      try {
+        const response = await invoiceService.remindInvoice(invoiceId);
+        return response;
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to send LINE reminder';
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async remindBulkInvoices(payload = {}) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      try {
+        const response = await invoiceService.remindBulkInvoices(payload);
+        return response;
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Failed to send bulk LINE reminder';
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async exportPdf(invoiceId, invoiceNumber) {
       this.isLoading = true;
       try {

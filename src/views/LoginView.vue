@@ -1,80 +1,123 @@
 <template>
-  <div class="flex items-center justify-center min-h-[75vh] px-4 py-8">
-    <Card class="w-full max-w-md border-slate-200 bg-white/95 backdrop-blur-xl shadow-2xl shadow-purple-900/10">
-      <CardHeader class="space-y-2 text-center pb-6">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 text-purple-600 mx-auto mb-2 shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <CardTitle class="text-2xl font-bold tracking-tight text-slate-900">Sign In to Portal</CardTitle>
-        <CardDescription class="text-slate-500 text-sm">
-          Enter credentials to authenticate with JWT & HTTP-Only Cookie
-        </CardDescription>
-      </CardHeader>
+  <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-900 font-sans selection:bg-purple-600 selection:text-white">
+    <!-- Ambient Glow Background Meshes -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-600/30 rounded-full blur-[100px]"></div>
+      <div class="absolute top-1/2 -right-40 w-[30rem] h-[30rem] bg-indigo-600/25 rounded-full blur-[120px]"></div>
+      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/20 rounded-full blur-[100px]"></div>
+    </div>
 
-      <CardContent>
-        <form @submit.prevent="handleLogin" class="space-y-4">
-          <div class="space-y-1.5">
-            <label for="email" class="text-xs font-bold uppercase tracking-wider text-slate-600">Email Address</label>
-            <Input
-              id="email"
-              v-model="email"
-              type="email"
-              placeholder="developer@example.com"
-              required
-              data-testid="email-input"
-              :disabled="authStore.loading"
-            />
-          </div>
-
-          <div class="space-y-1.5">
-            <label for="password" class="text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
-            <Input
-              id="password"
-              v-model="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              data-testid="password-input"
-              :disabled="authStore.loading"
-            />
-          </div>
-
-          <div v-if="errorMessage" data-testid="error-message" class="p-3.5 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg text-center font-medium shadow-sm">
-            {{ errorMessage }}
-          </div>
-
-          <Button
-            type="submit"
-            data-testid="login-button"
-            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-purple-600/25 h-10 mt-2 transition-all duration-200"
-            :disabled="authStore.loading"
-          >
-            <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
-              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Authenticating...
+    <!-- Login Card Container -->
+    <div class="w-full max-w-md relative z-10">
+      <Card class="border-slate-800/80 bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-950/50 rounded-3xl overflow-hidden text-slate-100">
+        <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
+          <div class="relative mx-auto inline-flex">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-xl shadow-purple-600/40">
+              <Building2 class="w-7 h-7" />
+            </div>
+            <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-purple-500 border-2 border-slate-900"></span>
             </span>
-            <span v-else>Sign In</span>
-          </Button>
-        </form>
-      </CardContent>
-
-      <CardFooter>
-        <div class="w-full p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs space-y-2">
-          <div class="flex items-center gap-1.5 text-purple-700 font-bold">
-            <span>💡 Demo Credentials & Security</span>
           </div>
-          <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-            <li><strong>Access Token:</strong> Saved strictly in Pinia State (Memory ONLY)</li>
-            <li><strong>Refresh Token:</strong> Set as HTTP-Only Cookie by Backend</li>
-          </ul>
-        </div>
-      </CardFooter>
-    </Card>
+
+          <div>
+            <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
+              ระบบจัดการหอพัก
+            </CardTitle>
+            <p class="text-xs font-medium text-purple-300 mt-1">
+              Dormitory Management Portal
+            </p>
+          </div>
+          <CardDescription class="text-slate-400 text-xs">
+            ลงชื่อเข้าใช้งานสำหรับเจ้าของหอพักและผู้ดูแลระบบ
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent class="px-6 sm:px-8 pt-6">
+          <form @submit.prevent="handleLogin" class="space-y-4">
+            <div class="space-y-1.5">
+              <label for="email" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <Mail class="w-3.5 h-3.5 text-purple-400" />
+                <span>อีเมล (Email Address)</span>
+              </label>
+              <Input
+                id="email"
+                v-model="email"
+                type="email"
+                placeholder="developer@example.com"
+                required
+                data-testid="email-input"
+                :disabled="authStore.loading"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="password" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <Lock class="w-3.5 h-3.5 text-purple-400" />
+                <span>รหัสผ่าน (Password)</span>
+              </label>
+              <Input
+                id="password"
+                v-model="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                data-testid="password-input"
+                :disabled="authStore.loading"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all"
+              />
+            </div>
+
+            <div v-if="errorMessage" data-testid="error-message" class="p-3.5 text-xs text-rose-300 bg-rose-950/50 border border-rose-800/60 rounded-xl text-center font-medium shadow-sm flex items-center justify-center gap-2">
+              <AlertCircle class="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{{ errorMessage }}</span>
+            </div>
+
+            <!-- Quick Demo Credential Autofill (User-Friendly helper) -->
+            <div class="pt-1 flex items-center justify-between gap-2">
+              <span class="text-[11px] text-slate-400">กรอกข้อมูลทดสอบ:</span>
+              <button
+                type="button"
+                @click="fillDemoAccount"
+                class="text-[11px] font-bold text-purple-400 hover:text-purple-300 underline underline-offset-2 transition-colors cursor-pointer"
+              >
+                ⚡ Developer Account
+              </button>
+            </div>
+
+            <Button
+              type="submit"
+              data-testid="login-button"
+              class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-purple-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
+              :disabled="authStore.loading"
+            >
+              <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
+                <Loader2 class="w-4 h-4 animate-spin" />
+                กำลังตรวจสอบสิทธิ์...
+              </span>
+              <span v-else class="flex items-center justify-center gap-2">
+                <LogIn class="w-4 h-4" />
+                <span>เข้าสู่ระบบ (Sign In)</span>
+              </span>
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter class="px-6 sm:px-8 pb-8 pt-4">
+          <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-2">
+            <div class="flex items-center gap-1.5 text-purple-300 font-bold">
+              <ShieldCheck class="w-4 h-4 text-purple-400 shrink-0" />
+              <span>ความปลอดภัยระดับองค์กร (Enterprise Security)</span>
+            </div>
+            <div class="text-slate-400 leading-relaxed">
+              ปกป้องข้อมูลด้วย JWT ในหน่วยความจำ RAM และ Silent Refresh ผ่าน HTTP-Only Cookies ป้องกันการโจมตีแบบ XSS & CSRF
+            </div>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -92,6 +135,15 @@ import {
   CardContent,
   CardFooter
 } from '@/components/ui/card';
+import {
+  Building2,
+  Mail,
+  Lock,
+  LogIn,
+  Loader2,
+  AlertCircle,
+  ShieldCheck
+} from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -101,6 +153,11 @@ const email = ref('developer@example.com');
 const password = ref('password123');
 const errorMessage = ref('');
 
+const fillDemoAccount = () => {
+  email.value = 'developer@example.com';
+  password.value = 'password123';
+};
+
 const handleLogin = async () => {
   errorMessage.value = '';
   try {
@@ -109,7 +166,7 @@ const handleLogin = async () => {
     router.push(redirectPath);
   } catch (error) {
     errorMessage.value =
-      error.response?.data?.message || 'Login failed. Please check your network connection.';
+      error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบอีเมลและรหัสผ่าน';
   }
 };
 </script>

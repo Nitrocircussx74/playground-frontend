@@ -189,7 +189,12 @@ onMounted(async () => {
       }
     }
 
-    const res = await api.get(`/api/v1/liff/invoices/${invoiceId}`);
+    const params = {};
+    if (lineUserId.value) params.lineUserId = lineUserId.value;
+    if (route.query.room) params.room = route.query.room;
+    if (route.query.tenantId) params.tenantId = route.query.tenantId;
+
+    const res = await api.get(`/api/v1/liff/invoices/${invoiceId}`, { params });
     invoice.value = res.data.data.invoice;
     qrData.value = res.data.data.qrData || {};
   } catch (err) {

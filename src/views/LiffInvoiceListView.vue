@@ -129,11 +129,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import liff from '@line/liff';
 import api from '@/utils/api';
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(true);
 const invoices = ref([]);
 const lineUserId = ref('');
@@ -160,9 +161,12 @@ const fetchInvoices = async () => {
   try {
     const params = {};
     if (lineUserId.value) params.lineUserId = lineUserId.value;
+    if (route.query.room) params.room = route.query.room;
+    if (route.query.roomNumber) params.roomNumber = route.query.roomNumber;
+    if (route.query.tenantId) params.tenantId = route.query.tenantId;
 
     const res = await api.get('/api/v1/liff/invoices/history', { params });
-    invoices.value = res.data.data;
+    invoices.value = res.data.data || [];
   } catch (err) {
     console.error('Failed to fetch invoices:', err);
   } finally {

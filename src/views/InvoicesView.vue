@@ -22,13 +22,29 @@
         </button>
       </div>
 
-      <button
-        v-if="activeTab === 'all-invoices'"
-        @click="openCreateModal"
-        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
-      >
-        <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          v-if="activeTab === 'all-invoices'"
+          @click="handleRemindBulk"
+          :disabled="unpaidCount === 0 || sendingBulkReminder"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
+          title="ส่ง LINE Flex Message แจ้งเตือนไปยังลูกบ้านที่ค้างชำระทั้งหมด"
+        >
+          <span>💬</span>
+          <span>ส่ง LINE เตือนยอดค้างทั้งหมด</span>
+          <span v-if="unpaidCount > 0" class="px-1.5 py-0.2 bg-emerald-800 text-white text-[11px] rounded-full font-bold ml-0.5">
+            {{ unpaidCount }}
+          </span>
+        </button>
+
+        <button
+          v-if="activeTab === 'all-invoices'"
+          @click="openCreateModal"
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
+        </button>
+      </div>
     </div>
 
     <!-- Tab 2: Draft Invoice Review (InvoiceReview.vue) -->
@@ -40,7 +56,12 @@
     <div v-else class="space-y-6">
       <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
         <div class="p-4 border-b border-slate-200 flex items-center justify-between no-print">
-          <h3 class="font-bold text-slate-900 text-sm">All Invoices & Payments</h3>
+          <div class="flex items-center gap-3">
+            <h3 class="font-bold text-slate-900 text-sm">All Invoices & Payments</h3>
+            <span v-if="unpaidCount > 0" class="px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+              ค้างชำระ {{ unpaidCount }} รายการ
+            </span>
+          </div>
           <button @click="invoiceStore.fetchInvoices()" class="text-xs text-indigo-600 hover:underline font-semibold cursor-pointer">🔄 Refresh</button>
         </div>
 
@@ -68,7 +89,10 @@
                 <td class="p-3.5 font-mono text-xs font-bold text-purple-700">{{ inv.invoiceNumber }}</td>
                 <td class="p-3.5 font-bold text-slate-900">ห้อง {{ inv.room?.roomNumber }}</td>
                 <td class="p-3.5 text-xs text-slate-600 font-medium">
-                  {{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}
+                  <div class="flex items-center gap-1">
+                    <span>{{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}</span>
+                    <span v-if="inv.tenant?.lineUserId" class="text-[10px] text-emerald-600 bg-emerald-50 px-1 rounded border border-emerald-200" title="ผูกบัญชี LINE แล้ว">LINE</span>
+                  </div>
                 </td>
                 <td class="p-3.5 font-mono text-xs text-slate-600">{{ inv.billingCycle }}</td>
                 <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.roomPrice).toLocaleString() }}</td>
@@ -115,6 +139,17 @@
                   </span>
                 </td>
                 <td class="p-3.5 text-right space-x-1.5">
+                  <!-- LINE Reminder Button (For Non-Paid Invoices) -->
+                  <button
+                    v-if="inv.status !== 'paid'"
+                    @click="handleRemindSingle(inv)"
+                    :disabled="sendingReminderId === inv.id"
+                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+                    :title="inv.tenant?.lineUserId ? 'ส่ง LINE แจ้งเตือนบิลค้างชำระ' : 'ลูกบ้านยังไม่ผูก LINE'"
+                  >
+                    <span>{{ sendingReminderId === inv.id ? '⏳ กำลังส่ง...' : '💬 เตือน LINE' }}</span>
+                  </button>
+
                   <!-- Manual Record Payment Button (For Non-Paid Invoices) -->
                   <button
                     v-if="inv.status !== 'paid'"
@@ -373,7 +408,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
@@ -396,6 +431,13 @@ const recordingPayment = ref(false);
 
 const showPrintModal = ref(false);
 const printingInvoice = ref(null);
+
+const sendingReminderId = ref(null);
+const sendingBulkReminder = ref(false);
+
+const unpaidCount = computed(() => {
+  return invoiceStore.invoices.filter((i) => i.status !== 'paid').length;
+});
 
 const paymentForm = reactive({
   paymentMethod: 'CASH',
@@ -471,6 +513,68 @@ const handleUploadSlip = async (invoiceId, event) => {
     await showSuccess('สำเร็จ!', 'อัปโหลดสลิปโอนเงินเรียบร้อยแล้ว');
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to upload slip');
+  }
+};
+
+const handleRemindSingle = async (inv) => {
+  const roomNum = inv.room?.roomNumber || 'N/A';
+  const tenantName = inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'ผู้เช่า';
+  const amountStr = Number(inv.grandTotal).toLocaleString();
+
+  if (!inv.tenant?.lineUserId) {
+    showError(
+      'ไม่สามารถส่ง LINE ได้',
+      `ผู้เช่าห้อง ${roomNum} (${tenantName}) ยังไม่ได้ผูกบัญชี LINE OA จึงไม่สามารถส่งข้อความแจ้งเตือนได้`
+    );
+    return;
+  }
+
+  const confirmed = await showConfirm(
+    'ส่ง LINE แจ้งเตือนบิลค้างชำระ?',
+    `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนยอดค้างชำระบิล ${inv.invoiceNumber} (ยอด ฿${amountStr}) ไปยังห้อง ${roomNum} (${tenantName}) ใช่หรือไม่?`,
+    '💬 ส่ง LINE แจ้งเตือน',
+    'ยกเลิก'
+  );
+
+  if (!confirmed) return;
+
+  sendingReminderId.value = inv.id;
+  try {
+    const res = await invoiceStore.remindInvoice(inv.id);
+    await showSuccess('ส่ง LINE สำเร็จ!', res.message || `ส่งข้อความแจ้งเตือนบิลห้อง ${roomNum} เรียบร้อยแล้ว`);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถส่งข้อความ LINE ได้');
+  } finally {
+    sendingReminderId.value = null;
+  }
+};
+
+const handleRemindBulk = async () => {
+  const currentUnpaidCount = unpaidCount.value;
+  if (currentUnpaidCount === 0) {
+    showError('แจ้งเตือน', 'ไม่มีบิลที่ค้างชำระในรายการปัจจุบัน');
+    return;
+  }
+
+  const confirmed = await showConfirm(
+    'ส่ง LINE เตือนยอดค้างทั้งหมด?',
+    `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนไปยังห้องที่ค้างชำระทั้งหมด ${currentUnpaidCount} รายการ ใช่หรือไม่?`,
+    '💬 ส่ง LINE เตือนทั้งหมด',
+    'ยกเลิก'
+  );
+
+  if (!confirmed) return;
+
+  sendingBulkReminder.value = true;
+  try {
+    const res = await invoiceStore.remindBulkInvoices({
+      buildingId: buildingStore.activeBuildingId
+    });
+    await showSuccess('ส่งการแจ้งเตือนสำเร็จ!', res.message || 'ส่ง LINE แจ้งเตือนบิลค้างชำระเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถส่งแจ้งเตือนกลุ่มได้');
+  } finally {
+    sendingBulkReminder.value = false;
   }
 };
 
