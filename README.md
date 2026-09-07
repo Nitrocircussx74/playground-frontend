@@ -1,67 +1,160 @@
-# ⚡ Vue 3 Clean Architecture Auth Frontend (JWT + HTTP-Only Cookie)
+# 🏢 Dormitory Management System - Frontend (Vue 3 + Vite + Tailwind CSS + LINE LIFF)
 
-โปรเจกต์ Frontend พัฒนาด้วย **Vue 3 (Vite)** ตามหลัก **Clean Architecture** เชื่อมต่อกับระบบ Node.js Express API ที่ใช้มาตรฐานรักษาความปลอดภัยด้วย **JWT Access Token (In-Memory)** และ **HTTP-Only Cookie (Refresh Token)**
-
----
-
-## 🌟 คุณสมบัติเด่น (Features)
-
-1. **🔒 Secure Access Token Storage (XSS Protection)**: เก็บ Access Token ไว้ใน Memory (Pinia State) เท่านั้น ห้ามเก็บลง `localStorage`
-2. **🍪 HTTP-Only Cookie Integration**: ตั้งค่า Axios Instance ด้วย `withCredentials: true` เพื่อส่งและรับ Refresh Token Cookie โดยอัตโนมัติ
-3. **🔄 Silent Refresh & Request Queueing**: Response Interceptor ดักจับ 401 Unauthorized และยิงขอ Access Token ใหม่แบบ Silent Refresh พร้อมระบบคิว (`failedQueue`)
-4. **🏢 Multi-System Single Repo**: สถาปัตยกรรม 1 Repo รองรับ 2 ระบบ (1. Admin Portal `/admin` กับ 2. LINE LIFF Tenant App `/liff`)
-5. **💬 LINE LIFF SDK Integration**: ติดตั้ง `@line/liff` SDK ดึงข้อมูล LINE User Profile (`userId`, `displayName`, `pictureUrl`) อัตโนมัติเมื่อเปิดผ่านแอป LINE
-6. **🎨 Tailwind CSS & Shadcn Vue Components**: ดีไซน์สไตล์ Light Mode สวยงาม สะอาดตา ด้วย Tailwind CSS v3 และ Shadcn Vue Components
+เว็บแอปพลิเคชันระบบบริหารจัดการหอพักและอพาร์ตเมนต์ครบวงจร พัฒนาด้วย **Vue 3 (Composition API / `<script setup>`)**, **Vite**, **Pinia**, **Vue Router**, **Tailwind CSS v3** และ **LINE LIFF SDK (`@line/liff`)** ออกแบบตามสถาปัตยกรรมระดับองค์กร รองรับทั้งระบบผู้ดูแล (Admin Backoffice) และระบบลูกบ้านผ่านแอป LINE (LINE LIFF Tenant Portal) ใน Repository เดียวกัน
 
 ---
 
-## 📁 โครงสร้างไดเรกทอรี (Directory Structure)
+## 🌟 ภาพรวมฟีเจอร์ของระบบทั้งหมด (Comprehensive Feature List)
+
+### 🏢 1. ระบบจัดการสำหรับผู้ดูแลและนิติบุคคล (Admin Backoffice CMS)
+- **📊 Business Analytics & Executive Dashboard (`/dashboard`)**:
+  - สรุปอัตราการเช่าห้องพัก (Occupancy Rate) พร้อมการกระจายสถานะห้องแบบ Real-time
+  - สรุปรายรับประจำเดือน และอัตราการเติบโต MoM (Month-over-Month)
+  - ติดตามยอดหนี้ค้างชำระ (Debt Tracking) และรายชื่อห้องที่ค้างชำระ
+  - แจ้งเตือนสัญญาเช่าที่ใกล้หมดอายุใน 30 วันล่วงหน้า (Expiring Leases)
+  - สรุปจำนวนรายการแจ้งซ่อมที่รอดำเนินการ (Pending Maintenance)
+  - กราฟแนวโน้มรายรับย้อนหลัง 6 เดือน (Revenue Trend Chart)
+  - ตัวเลือกสลับดูสถิติรายอาคาร หรือภาพรวมทุกอาคาร (Multi-Building Consolidated View)
+  - ส่งออกรายงานสรุปงบการเงินเป็นไฟล์ PDF (ภาษาไทย Sarabun) และรายงานใบแจ้งหนี้เป็นไฟล์ CSV (UTF-8 BOM)
+- **🏢 Multi-Building Management (`/buildings`)**:
+  - จัดการรายชื่ออาคารและสาขาในระบบเดียว
+  - กำหนดอัตราค่าน้ำ ค่าไฟ วันครบกำหนดชำระ ค่าปรับรายวัน และ PromptPay QR Code ประจำแต่ละอาคาร
+  - สวิตช์สลับอาคารทำงานได้สะดวกรวดเร็วจาก Topbar
+- **🏠 ระบบจัดการห้องพัก & ผู้เช่า (`/rooms`)**:
+  - ผังแสดงห้องพักแบบ Interactive Grid พร้อมตัวกรองสถานะ (ว่าง, มีผู้เช่า, ปิดปรับปรุง)
+  - ออกรหัสเชิญลงทะเบียนเข้าพัก 6 หลัก (Invite Code 48 ชม.) พร้อม QR Code ให้ผู้เช่าสแกน
+  - ระบบลงทะเบียนผู้เช่าเข้าห้องพักแบบ Manual (Check-in Modal)
+  - ดูประวัติผู้เช่าย้อนหลังรายห้อง (Room Tenancy History Modal)
+  - จัดการสัญญาเช่า และระบบบันทึกการย้ายออกพร้อมคำนวณคืนเงินมัดจำ (Move-Out Inspection & Deposit Settlement)
+- **⚡ ระบบบันทึกมิเตอร์น้ำ-ไฟ (`/meters`)**:
+  - ตารางบันทึกเลขมิเตอร์น้ำ-ไฟประจำรอบบิล พร้อมคำนวณหน่วยที่ใช้และยอดเงินอัตโนมัติ
+  - ระบบ Anomaly Detection แจ้งเตือนเมื่อตัวเลขมิเตอร์ผิดปกติหรือน้อยกว่าเดือนก่อน
+  - นำเข้าข้อมูลมิเตอร์จากไฟล์ Excel / CSV
+- **🧾 ระบบใบแจ้งหนี้ & การชำระเงิน (`/invoices`)**:
+  - ออกบิลค่าเช่าประจำรอบบิลอัตโนมัติแบบรวม
+  - ออกบิลปรับแต่งรายห้อง (Custom Invoice) ปรับค่าน้ำ ค่าไฟ ละเว้นค่าส่วนกลาง และเพิ่มค่าบริการอื่นๆ
+  - ตรวจทานและแก้ไขบิล Draft (Review & Publish) ก่อนเผยแพร่ให้ผู้เช่าเห็น
+  - **ระบบส่ง LINE ทวงถามยอดค้างชำระ**:
+    - ปุ่มส่ง LINE แจ้งเตือนรายห้อง (`💬 เตือน LINE`) สำหรับบิลค้างชำระ
+    - ปุ่มส่ง LINE แจ้งเตือนยอดค้างชำระทั้งหมดในคลิกเดียว (`💬 ส่ง LINE เตือนยอดค้างทั้งหมด`) พร้อม Real-time Badge แสดงจำนวนบิล
+  - บันทึกรับชำระเงินสดหรือโอนเงินผ่านเคาน์เตอร์ (Manual Payment)
+  - พรีวิวและสั่งพิมพ์ใบแจ้งหนี้/ใบเสร็จรับเงิน (Print Preview & Browser Print)
+  - ส่งออกใบแจ้งหนี้ PDF และใบเสร็จรับเงิน PDF พร้อมภาษาไทยถูกต้อง 100%
+- **🔧 ระบบจัดการงานแจ้งซ่อม (`/maintenance`)**:
+  - รายการงานแจ้งซ่อมแบบ Kanban / List แยกตามระดับความเร่งด่วนและสถานะ
+  - ดูรูปถ่ายจุดที่ชำรุด มอบหมายช่าง บันทึกค่าซ่อม และอัปเดตสถานะงาน
+  - แจ้งเตือน LINE อัตโนมัติไปยังลูกบ้านเมื่อสถานะงานซ่อมเปลี่ยนแปลง
+- **📢 ระบบประกาศข่าวสาร (`/announcements`)**:
+  - สร้างและเผยแพร่ข่าวสารหอพักพร้อมแนบรูปภาพ
+  - ส่ง LINE Flex Message Broadcast / Multicast แจ้งเตือนลูกบ้านทุกคน
+- **📦 ระบบจัดการพัสดุ (`/parcels`)**:
+  - บันทึกรับพัสดุ ถ่ายรูปกล่อง ระบุบริษัทขนส่งและเลข Tracking
+  - ส่ง LINE Flex Message แจ้งเตือนลูกบ้านทันทีเมื่อพัสดุมาถึง
+  - สแกน QR Code เพื่อบันทึกการรับพัสดุ (Claimed)
+- **🛡️ ระบบความปลอดภัย & ผู้ใช้งาน (`/users`, `/audit-logs`)**:
+  - จัดการรายชื่อผู้ดูแล กำหนดบทบาท (Super Admin, Owner, Manager, Admin)
+  - บันทึกประวัติการแก้ไขข้อมูลสำคัญ (Audit Logs Viewer)
+
+---
+
+### 📱 2. ระบบพอร์ทัลลูกบ้านผ่าน LINE (LINE LIFF Tenant Portal)
+- **🔑 ลงทะเบียน & ผูกบัญชี (`/liff/onboarding`, `/liff/link-room`)**:
+  - ลงทะเบียนเข้าพักใหม่ผ่าน Invite Code 6 หลัก
+  - ผูกบัญชี LINE กับห้องพักเดิมด้วยเบอร์โทรศัพท์ 4 ตัวท้าย
+  - Auto-Sync ข้อมูลโปรไฟล์ LINE (ชื่อ, รูปภาพ)
+  - ส่ง Welcome Flex Message ต้อนรับเมื่อผูกบัญชีสำเร็จ
+- **🆔 บัตรประจำตัวลูกบ้านดิจิทัล (`/liff/profile`)**:
+  - Digital Tenant ID QR Code สำหรับยืนยันตัวตนกับ รปภ.
+  - ดูรายละเอียดสัญญาเช่า หมายเลขห้องพัก และข้อมูลติดต่อหอพัก
+- **💳 บิลค่าเช่า & ชำระเงินออนไลน์ (`/liff/invoices`)**:
+  - ตรวจสอบบิลค้างชำระ (Pending / Overdue) และประวัติบิลที่ชำระแล้ว (Paid / Reviewing)
+  - Dynamic PromptPay QR Code สแกนชำระเงินตามยอดจริงสุทธิ
+  - อัปโหลดสลิปโอนเงินผ่านมือถือ
+  - Auto Slip Verification ตรวจสอบยอดเงินอัตโนมัติและปรับสถานะเป็นชำระแล้วทันที
+  - ดาวน์โหลดใบเสร็จรับเงินอิเล็กทรอนิกส์ (E-Receipt PDF)
+- **🔧 แจ้งซ่อมออนไลน์ (`/liff/maintenance`)**:
+  - สร้างคำขอแจ้งซ่อม ถ่ายรูปแนบจุดที่ชำรุด และติดตามสถานะแบบ Real-time
+- **📦 พัสดุของฉัน (`/liff/parcels`)**:
+  - ตรวจสอบรายการพัสดุที่รอรับ พร้อมรูปถ่ายและเลข Tracking
+- **📢 ข่าวสาร & ประกาศ (`/liff/announcements`)**:
+  - อ่านข่าวสารและประกาศย้อนหลังของหอพัก
+
+---
+
+## 📁 โครงสร้างโปรเจกต์ (Directory Structure)
 
 ```text
 playground-frontend/
-├── .env                          # ตั้งค่า API Base URL (http://localhost:3000)
-├── package.json                  # Dependencies (axios, pinia, vue-router)
-├── vite.config.js                # Vite Config + Alias (@ -> /src)
+├── .env                          # ตั้งค่า API Base URL & LINE LIFF ID
+├── index.html                    # Root HTML Template (Google Fonts: Sarabun & Inter)
+├── package.json                  # Dependencies (Vue 3, Vite, Axios, Pinia, Tailwind CSS)
+├── vite.config.js                # Vite Configuration
 └── src/
-    ├── main.js                   # Entry Point ของ Vue App
-    ├── App.vue                   # Root Component & Layout
+    ├── main.js                   # Application Entry Point & Library Initialization
+    ├── App.vue                   # Root Vue Component
     ├── assets/
-    │   └── main.css              # Style หลัก (Glassmorphic Modern UI)
-    ├── utils/
-    │   └── api.js                # Axios Instance & Silent Refresh Interceptor
-    ├── services/
-    │   └── authService.js        # Auth API Service Layer
-    ├── stores/
-    │   └── auth.js               # Pinia Auth State Store
+    │   └── main.css              # Global Tailwind CSS & Custom Theme Tokens
+    ├── components/
+    │   ├── common/               # Modal, Button, Badge, DataTable, Card, Alert
+    │   └── layout/               # Sidebar, Topbar, LiffHeader, LiffBottomNav
+    ├── composables/              # Reusable Composables (useToast, useConfirmModal)
     ├── router/
-    │   └── index.js              # Vue Router & Navigation Guard (beforeEach)
+    │   └── index.js              # Vue Router + Role-based & LIFF Auth Guards
+    ├── services/                 # Axios Service Layer
+    │   ├── api.js                # Axios Instance with Silent Refresh Interceptors
+    │   ├── authService.js        # Authentication & Session Management
+    │   ├── buildingService.js    # Multi-building CRUD & Settings
+    │   ├── dashboardService.js   # Analytics, Charts, Export PDF/CSV
+    │   ├── invoiceService.js     # Billing, LINE Reminders, PDF/Receipt
+    │   ├── liffService.js        # LIFF SDK Integration & Tenant APIs
+    │   ├── maintenanceService.js # Maintenance Tickets & Statuses
+    │   ├── meterService.js       # Utility Meter Readings & Import
+    │   ├── parcelService.js      # Parcel Logging & QR Claiming
+    │   └── roomService.js        # Room Status, Invites, Check-in/out
+    ├── stores/
+    │   ├── auth.js               # Pinia Auth State (In-Memory Access Token)
+    │   └── building.js           # Selected Building Store
     └── views/
-        ├── LoginView.vue         # หน้า เข้าสู่ระบบ
-        ├── DashboardView.vue     # หน้า Dashboard (Protected Route & API Test)
-        └── ProfileView.vue       # หน้า ข้อมูลผู้ใช้ (Protected Route)
+        ├── admin/                # Views สำหรับ Admin Backoffice
+        │   ├── DashboardView.vue
+        │   ├── RoomsView.vue
+        │   ├── InvoicesView.vue
+        │   ├── MetersView.vue
+        │   ├── MaintenanceView.vue
+        │   ├── ParcelsView.vue
+        │   ├── AnnouncementsView.vue
+        │   ├── BuildingsView.vue
+        │   ├── UsersView.vue
+        │   └── AuditLogsView.vue
+        └── liff/                 # Views สำหรับ LINE LIFF Tenant Portal
+            ├── LiffHomeView.vue
+            ├── LiffInvoiceListView.vue
+            ├── LiffInvoiceDetailView.vue
+            ├── LiffMaintenanceView.vue
+            ├── LiffParcelListView.vue
+            ├── LiffAnnouncementListView.vue
+            ├── LiffProfileView.vue
+            ├── LiffOnboardingView.vue
+            └── LiffLinkRoomView.vue
 ```
 
 ---
 
-## 🛠️ ขั้นตอนการรันโปรเจกต์ (Getting Started)
+## 🛠️ การติดตั้งและรันโปรเจกต์ (Getting Started)
 
 ```bash
-# 1. ติดตั้ง Dependencies ด้วย Yarn
+# 1. ติดตั้ง Dependencies
 yarn install
 
-# 2. รันโหมดพัฒนา (Development Mode)
+# 2. ตั้งค่า Environment Variables
+cp .env.example .env
+
+# 3. รันในโหมดพัฒนา
 yarn dev
 
-# 3. ประกอบระบบเพื่อใช้งานจริง (Production Build)
+# 4. รันพร้อมเปิด Cloudflare Tunnel สำหรับทดสอบ LINE LIFF บนอุปกรณ์จริง
+yarn dev:tunnel
+
+# 5. ตรวจสอบการ Build สำหรับ Production
 yarn build
 ```
-
----
-
-## 🤖 ข้อมูล AI Agents & Guidelines
-
-โปรเจกต์นี้มีคู่มือและข้อตกลงการทำงานร่วมกันสำหรับ AI Assistants ในไฟล์:
-- [AGENTS.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/AGENTS.md)
-- [GEMINI.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/GEMINI.md)
-- [CLAUDE.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/CLAUDE.md)
-- [docs/ACTIVITY_LOG.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/docs/ACTIVITY_LOG.md)
