@@ -57,9 +57,19 @@
           </h1>
         </div>
 
-        <!-- ฝั่งขวา: Badge LINE LIFF -->
-        <div class="flex items-center justify-end">
+        <!-- ฝั่งขวา: ปุ่ม Logout หรือ Badge LINE LIFF -->
+        <div class="flex items-center justify-end gap-1.5">
+          <button
+            v-if="showLogoutButton"
+            @click="handleTenantLogout"
+            class="px-2.5 py-1 text-[11px] font-extrabold text-rose-600 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 border border-rose-200 rounded-xl transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
+            title="ออกจากระบบ"
+          >
+            <LogOut class="w-3.5 h-3.5" />
+            <span>ออก</span>
+          </button>
           <span
+            v-else
             class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full font-sans shadow-2xs border bg-[#06C755]/10 border-[#06C755]/30 text-[#06C755]"
           >
             LINE LIFF
@@ -108,18 +118,52 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
+import { showConfirm, showSuccess } from '@/utils/swal';
 import {
   ChevronLeft,
   User,
   Receipt,
   Wrench,
-  Megaphone
+  Megaphone,
+  LogOut
 } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const { themeColor, logoUrl, buildingName, fetchAndApplyTheme } = useDynamicTheme();
+
+const showLogoutButton = computed(() => {
+  const loggedInPaths = ['/liff/profile', '/liff/receipts', '/liff/maintenance', '/liff/announcements', '/liff/parcels', '/liff/invoices'];
+  return loggedInPaths.includes(route.path);
+});
+
+const handleTenantLogout = async () => {
+  const isConfirmed = await showConfirm(
+    'ยืนยันออกจากระบบ',
+    'คุณต้องการออกจากระบบและลบเซสชันการใช้งานในอุปกรณ์นี้ใช่หรือไม่?',
+    'ออกจากระบบ',
+    'ยกเลิก'
+  );
+  if (!isConfirmed) return;
+
+  try {
+    await authStore.logout();
+    await showSuccess('ออกจากระบบสำเร็จ', 'ลบข้อมูลการเข้าใช้งานเรียบร้อยแล้ว');
+
+    const liffModule = await import('@/utils/liff');
+    if (liffModule?.default && typeof liffModule.default.isInClient === 'function' && liffModule.default.isInClient()) {
+      liffModule.default.closeWindow();
+    } else {
+      router.replace('/liff');
+    }
+  } catch (err) {
+    console.error('Tenant logout error:', err);
+    router.replace('/liff');
+  }
+};
 
 /**
  * 1. Dynamic Page Title

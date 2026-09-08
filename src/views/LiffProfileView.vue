@@ -41,6 +41,16 @@
         <!-- Background Pattern Decor -->
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
+        <!-- Quick Logout button on Profile Card -->
+        <button
+          @click.stop="handleTenantLogout"
+          class="absolute top-3.5 right-3.5 px-2.5 py-1 bg-white/15 hover:bg-rose-600 active:bg-rose-700 text-white rounded-xl text-[11px] font-bold transition-all border border-white/20 flex items-center gap-1 backdrop-blur-xs cursor-pointer shadow-xs active:scale-95 z-10"
+          title="ออกจากระบบ"
+        >
+          <LogOut class="w-3.5 h-3.5" />
+          <span>ออกจากระบบ</span>
+        </button>
+
         <div class="flex items-start gap-4">
           <!-- Avatar จาก LINE Profile -->
           <div class="relative shrink-0">
@@ -235,6 +245,17 @@
             <ChevronRight class="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
           </button>
         </div>
+      </div>
+
+      <!-- 5. Standalone Logout Action Button at Bottom -->
+      <div class="pt-1 pb-4">
+        <button
+          @click="handleTenantLogout"
+          class="w-full py-3 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-600 border border-rose-200/90 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
+        >
+          <LogOut class="w-4 h-4" />
+          <span>ออกจากระบบ (Logout)</span>
+        </button>
       </div>
     </div>
 
