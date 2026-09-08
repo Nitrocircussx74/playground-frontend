@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getLiffIdToken } from './liff';
+import { getLiffIdToken, initLiff, isLiffLoggedIn, loginLiff } from './liff';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 
@@ -16,53 +16,77 @@ const api = axios.create({
   }
 });
 
-// ตัวแปรสำหรับจัดการ Silent Refresh และคิวของ Request กรณีโดน 401 พร้อมกันหลายตัว
-let isRefreshing = false;
-let failedQueue = [];
+// ==========================================
+// 1. CMS Admin Token Refresh Queue & Lock
+// ==========================================
+let isCmsRefreshing = false;
+let cmsFailedQueue = [];
 
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
+const processCmsQueue = (error, token = null) => {
+  cmsFailedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
       prom.resolve(token);
     }
   });
-  failedQueue = [];
+  cmsFailedQueue = [];
 };
 
-// 2. Request Interceptor: แนบ Access Token ไปใน Header Authorization (Bearer)
+// ==========================================
+// 2. LIFF Silent Re-Authentication Queue & Lock
+// ==========================================
+let isLiffRefreshing = false;
+let liffFailedQueue = [];
+
+const processLiffQueue = (error, token = null) => {
+  liffFailedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  liffFailedQueue = [];
+};
+
+// ==========================================
+// 3. Request Interceptors
+// ==========================================
+
+// 3.1 Attach JWT Access Token (Authorization: Bearer)
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore();
-    if (authStore.accessToken) {
-      config.headers.Authorization = `Bearer ${authStore.accessToken}`;
+    const liffToken = localStorage.getItem('liff_token');
+    const token = authStore.accessToken || liffToken;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// 2.1 Request Interceptor เฉพาะ LIFF: แนบ LINE ID Token ไปให้ Backend ตรวจสอบตัวตนจริง
-// (แทนที่การส่ง lineUserId เองทาง Query/Body ซึ่งฝั่ง Client ปลอมแปลงได้)
+// 3.2 Attach LINE ID Token for LIFF Endpoints
 api.interceptors.request.use(
   async (config) => {
-    if (config.url && config.url.includes('/api/v1/liff')) {
+    const isLiff = config.url && (config.url.includes('/api/v1/liff') || config.url.includes('/api/liff'));
+    if (isLiff) {
       try {
         const idToken = getLiffIdToken();
         if (idToken) {
           config.headers['X-Line-Id-Token'] = idToken;
         }
 
-        // แนบ lineUserId fallback หากมีใน localStorage หรือ mock session สำหรับ Standalone Dev Mode
+        // Attach lineUserId fallback for Standalone Dev Mode
         const devLineUserId = localStorage.getItem('dev_line_user_id');
         if (devLineUserId && !config.headers['X-Line-User-Id']) {
           config.headers['X-Line-User-Id'] = devLineUserId;
         }
       } catch {
-        // ละเว้นข้อผิดพลาด ปล่อยให้ Request ดำเนินการต่อตามปกติ
+        // Continue request even if token extraction fails
       }
     }
     return config;
@@ -70,38 +94,139 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 3. Response Interceptor: ดักจับ 401 Unauthorized และทำ Silent Refresh
+// ==========================================
+// 4. Response Interceptor (Dual Silent Refresh)
+// ==========================================
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // หากไม่มี response หรือ error ไม่ใช่ status 401 ให้ reject ต่อ
-    if (!error.response || error.response.status !== 401) {
+    // หากไม่มี response หรือ error ไม่ใช่ status 401 ให้ reject ต่อทันที
+    if (!error.response || error.response.status !== 401 || !originalRequest) {
       return Promise.reject(error);
     }
 
-    // ข้ามการทำ Silent Refresh สำหรับ Endpoint ที่ไม่จำเป็น (เช่น /auth/login หรือ /auth/refresh ที่ล้มเหลว)
-    // และสำหรับ LIFF Endpoint ทั้งหมด เพราะใช้ LINE ID Token คนละระบบกับ CMS JWT
-    // (ก่อนหน้านี้ 401 จาก LIFF จะหลุดไปเข้า Flow รีเฟรช Token ของ CMS แล้วพา router ไปหน้า /login ผิดที่)
-    const isAuthRoute =
-      originalRequest.url.includes('/auth/login') ||
-      originalRequest.url.includes('/auth/refresh');
-    const isLiffRoute = originalRequest.url.includes('/api/v1/liff');
+    const url = originalRequest.url || '';
+    const isLiffRoute = url.includes('/api/v1/liff') || url.includes('/api/liff');
+    const isLiffSilentAuthRoute = url.includes('/auth/silent-login');
+    const isCmsAuthRoute = url.includes('/auth/login') || url.includes('/auth/refresh');
 
-    if (isAuthRoute || isLiffRoute) {
+    // ------------------------------------------------------------------------
+    // CASE A: LIFF Silent Re-Authentication (สำหรับลูกบ้านใน LINE LIFF)
+    // ------------------------------------------------------------------------
+    if (isLiffRoute) {
+      // หากเป็น silent-login เองที่ตอบ 401 ให้เข้า Fallback ทันที ป้องกัน Infinite Loop
+      if (isLiffSilentAuthRoute) {
+        const authStore = useAuthStore();
+        authStore.clearAuth();
+        localStorage.removeItem('liff_token');
+        return Promise.reject(error);
+      }
+
+      // หาก Request นี้เคย Retry แล้วแต่ยังคงได้ 401 ให้ Fallback
+      if (originalRequest._retry) {
+        return Promise.reject(error);
+      }
+
+      // [QUEUEING SYSTEM]: หากกำลังทำการ Silent Re-Auth อยู่ ให้ Request อื่นเข้าคิวรอ Promise
+      if (isLiffRefreshing) {
+        return new Promise((resolve, reject) => {
+          liffFailedQueue.push({ resolve, reject });
+        })
+          .then((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            const idToken = getLiffIdToken();
+            if (idToken) originalRequest.headers['X-Line-Id-Token'] = idToken;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      // [LOCKING]: ล็อกไม่ให้ยิงขอ Silent Login ซ้ำซ้อน
+      originalRequest._retry = true;
+      isLiffRefreshing = true;
+
+      try {
+        await initLiff();
+        const idToken = getLiffIdToken();
+
+        // ยิง Silent Re-Auth API ขอ JWT ตัวใหม่จาก LINE ID Token
+        const silentRes = await axios.post(
+          `${cleanBaseUrl}/api/v1/liff/auth/silent-login`,
+          { lineIdToken: idToken },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(idToken ? { 'X-Line-Id-Token': idToken } : {})
+            },
+            withCredentials: true
+          }
+        );
+
+        const newAccessToken = silentRes.data?.accessToken || silentRes.data?.token || silentRes.data?.data?.accessToken;
+        if (!newAccessToken) {
+          throw new Error('ไม่ได้รับ JWT Token ใหม่จากการต่ออายุเซสชัน LIFF');
+        }
+
+        // บันทึก Token ใหม่ลง Pinia Store และ LocalStorage
+        const authStore = useAuthStore();
+        authStore.setAccessToken(newAccessToken);
+        if (silentRes.data?.data?.tenant) {
+          authStore.setUser(silentRes.data.data.tenant);
+        }
+        localStorage.setItem('liff_token', newAccessToken);
+
+        // อัปเดต Authorization Header ให้ Request เดิม
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        if (idToken) {
+          originalRequest.headers['X-Line-Id-Token'] = idToken;
+        }
+
+        // ปล่อย Request ทุกตัวที่รออยู่ใน Queue ให้ทำงานต่อด้วย Token ใหม่
+        processLiffQueue(null, newAccessToken);
+
+        // ยิง Request เดิมซ้ำ (Retry)
+        return api(originalRequest);
+      } catch (refreshError) {
+        // [FALLBACK / EDGE CASE]: ต่ออายุไม่สำเร็จ (เช่น เปลี่ยน LINE Account หรือสิทธิ์หลุด)
+        processLiffQueue(refreshError, null);
+
+        const authStore = useAuthStore();
+        authStore.clearAuth();
+        localStorage.removeItem('liff_token');
+        localStorage.removeItem('dev_line_user_id');
+
+        // หากทำงานอยู่ใน LINE App หรือรองรับ LINE Login ให้เปิด Consent / Re-Login
+        if (typeof window !== 'undefined') {
+          try {
+            await loginLiff(window.location.href);
+          } catch (loginErr) {
+            console.warn('Fallback loginLiff error:', loginErr);
+          }
+        }
+
+        return Promise.reject(refreshError);
+      } finally {
+        isLiffRefreshing = false;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // CASE B: CMS Admin Silent Refresh (สำหรับผู้ดูแลระบบผ่าน Cookies)
+    // ------------------------------------------------------------------------
+    if (isCmsAuthRoute) {
       return Promise.reject(error);
     }
 
-    // หาก Request นี้เคย Retry แล้ว แต่ยังได้ 401 ให้หลุดออกเพื่อป้องกัน Infinite Loop
     if (originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    // หากกำลังทำการ Refresh Token อยู่ ให้นำ Request ใหม่นี้เข้าคิวรอ
-    if (isRefreshing) {
+    // [QUEUEING SYSTEM]: สำหรับ CMS Admin Request
+    if (isCmsRefreshing) {
       return new Promise((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
+        cmsFailedQueue.push({ resolve, reject });
       })
         .then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -111,39 +236,36 @@ api.interceptors.response.use(
     }
 
     originalRequest._retry = true;
-    isRefreshing = true;
+    isCmsRefreshing = true;
 
     const authStore = useAuthStore();
 
     try {
-      // ยิงย่อหน้าขอ Access Token ใหม่แบบ Silent Refresh ผ่าน HTTP-Only Cookie
+      // ขอ Access Token ใหม่ผ่าน HTTP-Only Cookie
       const response = await axios.post(
         `${cleanBaseUrl}/auth/refresh`,
         {},
         { withCredentials: true }
       );
 
-      const newAccessToken = response.data.accessToken;
+      const newAccessToken = response.data?.accessToken;
+      if (!newAccessToken) {
+        throw new Error('No access token returned from CMS refresh');
+      }
 
-      // อัปเดต Token ใน Pinia Store (In-Memory)
       authStore.setAccessToken(newAccessToken);
-
-      // แนบ Header Token ใหม่ให้ Request เดิม
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-      // ปล่อย Request ที่ค้างอยู่ใน Queue ทั้งหมดพร้อมแนบ Token ใหม่
-      processQueue(null, newAccessToken);
+      processCmsQueue(null, newAccessToken);
 
-      // รัน Request เดิมซ้ำอีกครั้ง
       return api(originalRequest);
     } catch (refreshError) {
-      // กรณี Refresh Token หมดอายุหรือ Cookie ถูก Revoke
-      processQueue(refreshError, null);
+      processCmsQueue(refreshError, null);
       authStore.clearAuth();
       router.push('/login');
       return Promise.reject(refreshError);
     } finally {
-      isRefreshing = false;
+      isCmsRefreshing = false;
     }
   }
 );
