@@ -104,6 +104,14 @@
             <RotateCw v-else class="w-3.5 h-3.5 text-slate-500" />
             <span>{{ checkingFriendship ? 'กำลังตรวจสอบ...' : 'ฉันเพิ่มเพื่อนแล้ว (ตรวจสอบอีกครั้ง)' }}</span>
           </button>
+
+          <button
+            type="button"
+            @click="bypassFriendshipAndContinue"
+            class="w-full py-2 px-3 text-slate-400 hover:text-slate-600 text-[11px] font-medium transition-colors cursor-pointer"
+          >
+            เพิ่มเพื่อนแล้ว / ดำเนินการต่อเข้าสู่ระบบ ➔
+          </button>
         </div>
       </div>
 
@@ -350,13 +358,62 @@ const checkEntryFriendship = async () => {
   }
 };
 
+const continueToSmartEntry = async () => {
+  loading.value = true;
+  needsAddFriend.value = false;
+  try {
+    statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
+
+    // 2. ดึง LINE Profile สดจาก LINE SDK
+    lineProfile.value = await getLiffProfile();
+
+    // 3. เช็คสถานะการผูกห้องพักและการตั้งค่า PIN ในฐานข้อมูล
+    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
+    let statusRes = null;
+    if (idToken) {
+      try {
+        statusRes = await authService.checkLiffStatus(idToken);
+      } catch (e) {
+        console.warn('Check status fallback:', e.message);
+      }
+    }
+
+    const isLinked = statusRes?.isLinked || statusRes?.isRegistered || statusRes?.data?.isLinked;
+    const hasPin = statusRes?.hasPin || statusRes?.data?.hasPin;
+
+    if (isLinked) {
+      if (!hasPin) {
+        // [CASE 1: ลูกบ้านที่ผูกแล้วแต่ยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
+        statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN 6 หลัก...';
+        router.replace('/liff/setup-pin');
+      } else {
+        // [CASE 2: ลูกบ้านที่มี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
+        statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าระบุ PIN...';
+        router.replace('/liff/pin-login');
+      }
+    } else {
+      // [CASE 3: ลูกบ้านใหม่ / ยังไม่เคยผูกห้อง] -> แสดงหน้าสำหรับลูกบ้านใหม่
+      loading.value = false;
+      showPhoneVerifyForm.value = true;
+    }
+  } catch (err) {
+    console.error('Continue entry error:', err);
+    loading.value = false;
+    showPhoneVerifyForm.value = true;
+  }
+};
+
+const bypassFriendshipAndContinue = async () => {
+  await continueToSmartEntry();
+};
+
 const recheckFriendshipInEntry = async () => {
   checkingFriendship.value = true;
   try {
     const isFriend = await checkEntryFriendship();
     if (isFriend) {
       await showSuccess('ยินดีต้อนรับ!', 'ตรวจสอบพบการเพิ่มเพื่อนเรียบร้อยแล้ว');
-      window.location.reload();
+      await continueToSmartEntry();
     } else {
       showWarning('ยังไม่พบการเพิ่มเพื่อน', 'กรุณากดปุ่ม "กดเพิ่มเพื่อน" เพื่อเพิ่มเพื่อนกับ LINE Official Account ก่อนเข้าใช้งานนะครับ');
     }
@@ -377,47 +434,18 @@ onMounted(async () => {
         return;
       }
 
-      statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
-
-      // 2. ดึง LINE Profile สดจาก LINE SDK
-      lineProfile.value = await getLiffProfile();
-
-      // 3. เช็คสถานะการผูกห้องพักและการตั้งค่า PIN ในฐานข้อมูล
-      const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
-      let statusRes = null;
-      if (idToken) {
-        try {
-          statusRes = await authService.checkLiffStatus(idToken);
-        } catch (e) {
-          console.warn('Check status fallback:', e.message);
-        }
-      }
-
-      const isLinked = statusRes?.isLinked || statusRes?.isRegistered || statusRes?.data?.isLinked;
-      const hasPin = statusRes?.hasPin || statusRes?.data?.hasPin;
-
-      if (isLinked) {
-        if (!hasPin) {
-          // [CASE 1: ลูกบ้านที่ผูกแล้วแต่ยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
-          statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN 6 หลัก...';
-          router.replace('/liff/setup-pin');
-        } else {
-          // [CASE 2: ลูกบ้านที่มี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
-          statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าระบุ PIN...';
-          router.replace('/liff/pin-login');
-        }
-      } else {
-        // [CASE 3: ลูกบ้านใหม่ / ยังไม่เคยผูกห้อง] -> แสดงหน้าสำหรับลูกบ้านใหม่
-        loading.value = false;
-        showPhoneVerifyForm.value = true;
-      }
+      await continueToSmartEntry();
       return;
     }
 
-    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติพร้อม prompt เพิ่มเพื่อน
+    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติพร้อม prompt เพิ่มเพื่อน (จำกัด 1 ครั้งต่อ Session ป้องกัน Loop)
     if (typeof liff.isInClient === 'function' && liff.isInClient()) {
-      loginLiff(undefined, 'aggressive');
-      return;
+      const loginAttempted = sessionStorage.getItem('liff_auto_login_attempted');
+      if (!loginAttempted) {
+        sessionStorage.setItem('liff_auto_login_attempted', 'true');
+        loginLiff(undefined, 'aggressive');
+        return;
+      }
     }
 
     // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Browser)

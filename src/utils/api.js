@@ -119,18 +119,15 @@ api.interceptors.response.use(
 
     const url = originalRequest.url || '';
     const isLiffRoute = url.includes('/api/v1/liff') || url.includes('/api/liff');
-    const isLiffSilentAuthRoute = url.includes('/auth/silent-login');
+    const isAuthEndpoint = url.includes('/auth/') || url.includes('/invites/verify') || url.includes('/silent-login');
     const isCmsAuthRoute = url.includes('/auth/login') || url.includes('/auth/refresh');
 
     // ------------------------------------------------------------------------
     // CASE A: LIFF Silent Re-Authentication (สำหรับลูกบ้านใน LINE LIFF)
     // ------------------------------------------------------------------------
     if (isLiffRoute) {
-      // หากเป็น silent-login เองที่ตอบ 401 ให้เข้า Fallback ทันที ป้องกัน Infinite Loop
-      if (isLiffSilentAuthRoute) {
-        const authStore = useAuthStore();
-        authStore.clearAuth();
-        localStorage.removeItem('liff_token');
+      // หากเป็น Endpoint เกี่ยวกับ Auth หรือ Verification ให้ Reject ทันที ป้องกัน Infinite Loop
+      if (isAuthEndpoint) {
         return Promise.reject(error);
       }
 
@@ -161,6 +158,10 @@ api.interceptors.response.use(
         await initLiff();
         const idToken = getLiffIdToken();
 
+        if (!idToken) {
+          throw new Error('ไม่พบ LINE ID Token สำหรับต่ออายุเซสชัน');
+        }
+
         // ยิง Silent Re-Auth API ขอ JWT ตัวใหม่จาก LINE ID Token
         const silentRes = await axios.post(
           `${cleanBaseUrl}/api/v1/liff/auth/silent-login`,
@@ -168,7 +169,7 @@ api.interceptors.response.use(
           {
             headers: {
               'Content-Type': 'application/json',
-              ...(idToken ? { 'X-Line-Id-Token': idToken } : {})
+              'X-Line-Id-Token': idToken
             },
             withCredentials: true
           }
@@ -186,9 +187,7 @@ api.interceptors.response.use(
 
         // อัปเดต Authorization Header ให้ Request เดิม
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        if (idToken) {
-          originalRequest.headers['X-Line-Id-Token'] = idToken;
-        }
+        originalRequest.headers['X-Line-Id-Token'] = idToken;
 
         // ปล่อย Request ทุกตัวที่รออยู่ใน Queue ให้ทำงานต่อด้วย Token ใหม่
         processLiffQueue(null, newAccessToken);
@@ -202,15 +201,6 @@ api.interceptors.response.use(
         const authStore = useAuthStore();
         authStore.clearLiffAuth();
         localStorage.removeItem('dev_line_user_id');
-
-        // หากทำงานอยู่ใน LINE App หรือรองรับ LINE Login ให้เปิด Consent / Re-Login
-        if (typeof window !== 'undefined') {
-          try {
-            await loginLiff(window.location.href);
-          } catch (loginErr) {
-            console.warn('Fallback loginLiff error:', loginErr);
-          }
-        }
 
         return Promise.reject(refreshError);
       } finally {
