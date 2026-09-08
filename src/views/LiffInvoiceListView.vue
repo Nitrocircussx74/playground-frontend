@@ -15,6 +15,29 @@
         </button>
       </div>
 
+      <!-- Session Expired Warning Banner -->
+      <div v-if="sessionExpired" class="p-4 bg-amber-50 border border-amber-200 rounded-3xl space-y-3 shadow-md">
+        <div class="flex items-center justify-between text-xs font-bold text-amber-900">
+          <div class="flex items-center gap-2">
+            <span>🔑</span>
+            <span>เซสชัน LINE หมดอายุ</span>
+          </div>
+          <span class="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+            Session Expired
+          </span>
+        </div>
+        <p class="text-[11px] text-amber-800 leading-relaxed">
+          กรุณายืนยันตัวตนผ่าน LINE อีกครั้งเพื่อดูรายการบิลของคุณ
+        </p>
+        <button
+          @click="loginLiff()"
+          class="w-full py-2.5 px-4 bg-[#06C755] hover:bg-[#05B34C] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>💬</span>
+          <span>เข้าสู่ระบบด้วย LINE เพื่อดูบิล (Verify LINE)</span>
+        </button>
+      </div>
+
       <!-- Room Filter Pills (Shown when invoices exist for multiple rooms) -->
       <div v-if="distinctRooms.length > 1" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         <button
@@ -160,12 +183,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
 import api from '@/utils/api';
 
 const router = useRouter();
 const route = useRoute();
 const loading = ref(true);
+const sessionExpired = ref(false);
 const invoices = ref([]);
 const lineUserId = ref('');
 const selectedRoomFilter = ref('ALL');
@@ -196,6 +220,7 @@ const fetchInvoices = async () => {
     if (route.query.tenantId) params.tenantId = route.query.tenantId;
 
     const res = await api.get('/api/v1/liff/invoices/history', { params });
+    sessionExpired.value = false;
     invoices.value = res.data.data || [];
 
     if (route.query.roomId) {
@@ -208,6 +233,9 @@ const fetchInvoices = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch invoices:', err);
+    if (err.response?.status === 401 || !isLiffLoggedIn()) {
+      sessionExpired.value = true;
+    }
   } finally {
     loading.value = false;
   }

@@ -33,36 +33,49 @@
         <p class="text-xs font-bold text-slate-700">{{ statusText }}</p>
       </div>
 
-      <!-- Standalone Dev Mode Selector (Bright, Beautiful Card) -->
+      <!-- Standalone Dev Mode / Session Expired Selector (Bright, Beautiful Card) -->
       <div v-else-if="isStandaloneDevMode" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-4 text-left shadow-xl shadow-slate-200/60 backdrop-blur-md">
         <!-- Dev Mode Header Tag -->
-        <div class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-3.5 py-2 rounded-2xl flex items-center gap-2 shadow-2xs">
-          <span class="text-sm">🛠️</span>
-          <span>โหมดทดสอบภายนอก LINE App (Standalone Mode)</span>
+        <div class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-3.5 py-2 rounded-2xl flex items-center justify-between shadow-2xs">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🔑</span>
+            <span>ยืนยันตัวตนบัญชี LINE</span>
+          </div>
+          <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+            {{ isLiffLoggedIn() ? 'เข้าสู่ระบบแล้ว' : 'เซสชันหมดอายุ' }}
+          </span>
         </div>
 
-        <!-- Dev / Connection Notice (Clean and bright) -->
-        <div v-if="liffErrorMessage" class="p-3 bg-rose-50 border border-rose-200/80 rounded-2xl space-y-1">
-          <p class="text-[11px] font-bold text-rose-700 flex items-center gap-1.5">
-            <span>⚠️</span>
-            <span>แจ้งเตือนสถานะ LINE LIFF SDK:</span>
-          </p>
-          <p class="text-[11px] text-rose-600 font-mono break-all">{{ liffErrorMessage }}</p>
-          <p class="text-[10px] text-slate-500 pt-0.5">
-            (เปิดทดสอบบนเบราว์เซอร์ปกติ สามารถเลือกเมนูเข้าใช้งานจำลองด้านล่างได้เลยครับ)
-          </p>
-        </div>
+        <!-- LINE Login Direct Action Button (Primary Green) -->
+        <button
+          @click="handleLineLogin('/liff/profile')"
+          :disabled="isLoggingIn"
+          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-600/30 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+        >
+          <div class="flex items-center gap-2.5">
+            <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs font-black text-[#06C755] shadow-xs">
+              💬
+            </div>
+            <div class="text-left">
+              <div class="leading-tight">{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE (Verify LINE Login)' }}</div>
+              <div class="text-[10px] text-white/80 font-normal">สำหรับลูกบ้านที่เซสชันหมดอายุ หรือเปิดผ่านเบราว์เซอร์</div>
+            </div>
+          </div>
+          <span class="text-base font-extrabold">➔</span>
+        </button>
 
-        <p class="text-xs text-slate-600 font-medium leading-relaxed">
-          ตรวจพบการเปิดใช้งานผ่านเว็บบราวเซอร์ เลือกหน้าที่ต้องการทดสอบได้ทันที:
-        </p>
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">หรือเลือกเมนูใช้งาน</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
 
         <!-- Navigation Buttons -->
-        <div class="space-y-3 pt-1">
-          <!-- Button 1: Profile Hub (Green Gradient) -->
+        <div class="space-y-2.5">
+          <!-- Button 1: Profile Hub (Emerald Gradient) -->
           <button
             @click="goTo('/liff/profile')"
-            class="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+            class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
           >
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
@@ -74,7 +87,7 @@
           <!-- Button 2: Register Invite (Purple Gradient) -->
           <button
             @click="goTo('/liff/register')"
-            class="w-full py-3.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+            class="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
           >
             <div class="flex items-center gap-2">
               <span>📝</span>
@@ -91,12 +104,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff, { initLiff, isLiffLoggedIn } from '@/utils/liff';
+import liff, { initLiff, isLiffLoggedIn, loginLiff } from '@/utils/liff';
 import api from '@/utils/api';
 
 const router = useRouter();
 const route = useRoute();
 const loading = ref(true);
+const isLoggingIn = ref(false);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
 const isStandaloneDevMode = ref(false);
 const liffErrorMessage = ref('');
@@ -136,13 +150,13 @@ onMounted(async () => {
       return;
     }
 
-    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login
+    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติ
     if (typeof liff.isInClient === 'function' && liff.isInClient()) {
       liff.login();
       return;
     }
 
-    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Mode)
+    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Mode / Session Expired)
     loading.value = false;
     isStandaloneDevMode.value = true;
   } catch (err) {
@@ -153,7 +167,33 @@ onMounted(async () => {
   }
 });
 
-const goTo = (path) => {
+const handleLineLogin = async (redirectPath = '/liff/profile') => {
+  isLoggingIn.value = true;
+  try {
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+    if (liffId) {
+      const targetUri = window.location.origin + redirectPath;
+      await loginLiff(targetUri);
+    } else {
+      router.push(redirectPath);
+    }
+  } catch (err) {
+    console.error('LINE Login error:', err);
+    router.push(redirectPath);
+  } finally {
+    isLoggingIn.value = false;
+  }
+};
+
+const goTo = async (path) => {
+  // หากยังไม่ได้ล็อกอิน LINE และมี LIFF ID ให้ Verify/Login ผ่าน LINE ก่อน
+  if (!isLiffLoggedIn()) {
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+    if (liffId) {
+      handleLineLogin(path);
+      return;
+    }
+  }
   router.push(path);
 };
 </script>

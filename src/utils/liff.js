@@ -78,4 +78,36 @@ export async function getLiffProfile() {
   return null;
 }
 
+/**
+ * ดำเนินการเข้าสู่ระบบผ่าน LINE Login เพื่อ Verify ตัวตน หรือต่ออายุ Session ที่หมดอายุ
+ */
+export async function loginLiff(redirectUri) {
+  try {
+    await initLiff();
+    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+    if (liffId && typeof liff.login === 'function') {
+      const uri = redirectUri || (typeof window !== 'undefined' ? window.location.href : undefined);
+      liff.login({ redirectUri: uri });
+      return true;
+    }
+  } catch (err) {
+    console.error('Failed to trigger liff.login():', err);
+  }
+  return false;
+}
+
+/**
+ * ล็อกเอาต์ออกจาก LINE LIFF
+ */
+export function logoutLiff() {
+  try {
+    if (isLiffLoggedIn() && typeof liff.logout === 'function') {
+      liff.logout();
+    }
+    localStorage.removeItem('dev_line_user_id');
+  } catch (err) {
+    console.warn('Error during liff.logout():', err);
+  }
+}
+
 export default liff;

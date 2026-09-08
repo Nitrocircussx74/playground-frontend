@@ -7,6 +7,29 @@
     </div>
 
     <div class="space-y-6 relative z-10">
+      <!-- Session Expired / Not Verified Warning Card -->
+      <div v-if="sessionExpired" class="p-4 bg-amber-50 border border-amber-200/90 rounded-3xl space-y-3 shadow-md">
+        <div class="flex items-center justify-between text-xs font-bold text-amber-900">
+          <div class="flex items-center gap-2">
+            <span>🔑</span>
+            <span>เซสชัน LINE หมดอายุ หรือยังไม่ได้ยืนยันตัวตน</span>
+          </div>
+          <span class="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+            Session Expired
+          </span>
+        </div>
+        <p class="text-[11px] text-amber-800 leading-relaxed">
+          ไม่พบการเข้าสู่ระบบ LINE หรือ Token หมดอายุ กรุณากดปุ่มด้านล่างเพื่อยืนยันตัวตนผ่าน LINE บัญชีของคุณ
+        </p>
+        <button
+          @click="loginLiff()"
+          class="w-full py-3 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span class="text-sm">💬</span>
+          <span>เข้าสู่ระบบด้วย LINE เพื่อต่ออายุเซสชัน (Verify LINE)</span>
+        </button>
+      </div>
+
       <!-- 1. Header Section: Profile & Digital ID Card -->
       <div
         class="p-6 text-white rounded-3xl shadow-xl relative overflow-hidden transition-all duration-500"
@@ -294,7 +317,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/utils/api';
-import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
 import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
@@ -324,6 +347,7 @@ const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
 
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
+const sessionExpired = ref(false);
 const inviteCodeInput = ref('');
 const linkingRoom = ref(false);
 const digitalIdQrUrl = ref('');
@@ -371,6 +395,7 @@ const fetchTenantProfile = async (lineUserId = '') => {
 
     const res = await api.get('/api/v1/liff/profile', { params });
     if (res.data?.success && res.data?.data) {
+      sessionExpired.value = false;
       const data = res.data.data;
       tenantProfile.firstName = data.firstName || 'ผู้เช่า';
       tenantProfile.lastName = data.lastName || '';
@@ -394,6 +419,9 @@ const fetchTenantProfile = async (lineUserId = '') => {
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
+    if (err.response?.status === 401 || !isLiffLoggedIn()) {
+      sessionExpired.value = true;
+    }
   }
 };
 
