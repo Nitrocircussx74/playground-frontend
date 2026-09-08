@@ -26,30 +26,61 @@
               ระบบจัดการหอพัก
             </CardTitle>
             <p class="text-xs font-medium text-purple-300 mt-1">
-              Dormitory Management Portal
+              Hybrid Authentication Portal
             </p>
           </div>
           <CardDescription class="text-slate-400 text-xs">
-            ลงชื่อเข้าใช้งานสำหรับเจ้าของหอพักและผู้ดูแลระบบ
+            เข้าสู่ระบบสำหรับลูกบ้าน ผู้ดูแลระบบ และเจ้าของหอพัก
           </CardDescription>
         </CardHeader>
 
-        <CardContent class="px-6 sm:px-8 pt-6">
-          <form @submit.prevent="handleLogin" class="space-y-4">
+        <CardContent class="px-6 sm:px-8 pt-6 space-y-5">
+          <!-- SECTION 1: LINE SSO Login (Top Primary Button) -->
+          <div class="space-y-2">
+            <button
+              type="button"
+              @click="handleLineSSO"
+              :disabled="authStore.loading || isLineLoggingIn"
+              class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            >
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-sm font-black text-[#06C755] shadow-xs">
+                  💬
+                </div>
+                <div class="text-left">
+                  <div class="font-extrabold">{{ isLineLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'ล็อกอินด้วย LINE (LINE SSO)' }}</div>
+                  <div class="text-[10px] text-white/80 font-normal">สำหรับลูกบ้านที่ผูกบัญชี LINE ไว้แล้ว</div>
+                </div>
+              </div>
+              <span class="text-base font-extrabold">➔</span>
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="relative flex py-1 items-center">
+            <div class="flex-grow border-t border-slate-800"></div>
+            <span class="flex-shrink mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">หรือ เข้าสู่ระบบด้วยรหัสผ่าน</span>
+            <div class="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <!-- SECTION 2: Local Password Login (Phone Number / Email + Password) -->
+          <form @submit.prevent="handleLocalLogin" class="space-y-4">
             <div class="space-y-1.5">
-              <label for="email" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Mail class="w-3.5 h-3.5 text-purple-400" />
-                <span>อีเมล (Email Address)</span>
+              <label for="identifier" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <User class="w-3.5 h-3.5 text-purple-400" />
+                  <span>เบอร์โทรศัพท์ หรือ อีเมล</span>
+                </div>
               </label>
               <Input
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="developer@example.com"
+                id="identifier"
+                v-model="identifier"
+                type="text"
+                placeholder="เช่น 0898765432 หรือ email@example.com"
                 required
-                data-testid="email-input"
+                data-testid="identifier-input"
                 :disabled="authStore.loading"
-                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all text-xs"
               />
             </div>
 
@@ -66,7 +97,7 @@
                 required
                 data-testid="password-input"
                 :disabled="authStore.loading"
-                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all text-xs"
               />
             </div>
 
@@ -75,7 +106,7 @@
               <span>{{ errorMessage }}</span>
             </div>
 
-            <!-- Quick Demo Credential Autofill (User-Friendly helper) -->
+            <!-- Quick Demo Credential Autofill Helper -->
             <div class="pt-1 flex items-center justify-between gap-2">
               <span class="text-[11px] text-slate-400">กรอกข้อมูลทดสอบ:</span>
               <button
@@ -83,7 +114,7 @@
                 @click="fillDemoAccount"
                 class="text-[11px] font-bold text-purple-400 hover:text-purple-300 underline underline-offset-2 transition-colors cursor-pointer"
               >
-                ⚡ Developer Account
+                ⚡ แอดมิน Demo
               </button>
             </div>
 
@@ -105,14 +136,14 @@
           </form>
         </CardContent>
 
-        <CardFooter class="px-6 sm:px-8 pb-8 pt-4">
+        <CardFooter class="px-6 sm:px-8 pb-8 pt-2">
           <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-2">
             <div class="flex items-center gap-1.5 text-purple-300 font-bold">
               <ShieldCheck class="w-4 h-4 text-purple-400 shrink-0" />
-              <span>ความปลอดภัยระดับองค์กร (Enterprise Security)</span>
+              <span>Hybrid Authentication Security</span>
             </div>
             <div class="text-slate-400 leading-relaxed">
-              ปกป้องข้อมูลด้วย JWT ในหน่วยความจำ RAM และ Silent Refresh ผ่าน HTTP-Only Cookies ป้องกันการโจมตีแบบ XSS & CSRF
+              รองรับทั้ง LINE Single Sign-On (SSO) สำหรับลูกบ้าน และรหัสผ่านที่เข้ารหัสด้วย Bcrypt สำหรับการเข้าใช้งานผ่านเบราว์เซอร์
             </div>
           </div>
         </CardFooter>
@@ -122,9 +153,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
+import { initLiff, isLiffLoggedIn, loginLiff, getLiffIdToken } from '@/utils/liff';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -137,7 +169,7 @@ import {
 } from '@/components/ui/card';
 import {
   Building2,
-  Mail,
+  User,
   Lock,
   LogIn,
   Loader2,
@@ -149,24 +181,72 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const email = ref('developer@example.com');
+const identifier = ref('developer@example.com');
 const password = ref('password123');
 const errorMessage = ref('');
+const isLineLoggingIn = ref(false);
+
+onMounted(async () => {
+  try {
+    await initLiff();
+  } catch (err) {
+    console.warn('LIFF init on login view:', err);
+  }
+});
 
 const fillDemoAccount = () => {
-  email.value = 'developer@example.com';
+  identifier.value = 'developer@example.com';
   password.value = 'password123';
 };
 
-const handleLogin = async () => {
+const handleLineSSO = async () => {
+  errorMessage.value = '';
+  isLineLoggingIn.value = true;
+  try {
+    await initLiff();
+
+    if (isLiffLoggedIn()) {
+      const idToken = getLiffIdToken();
+      if (idToken) {
+        const res = await authStore.loginLine(idToken);
+        if (res.user?.role === 'tenant') {
+          router.push('/liff/profile');
+        } else {
+          router.push('/dashboard');
+        }
+        return;
+      }
+    }
+
+    // หากยังไม่ได้ล็อกอิน LINE ให้เรียก loginLiff()
+    const redirectUri = window.location.origin + (route.query.redirect || '/liff/profile');
+    await loginLiff(redirectUri);
+  } catch (error) {
+    console.error('LINE SSO Error:', error);
+    errorMessage.value = error.response?.data?.message || 'ไม่สามารถเข้าสู่ระบบด้วย LINE ได้';
+  } finally {
+    isLineLoggingIn.value = false;
+  }
+};
+
+const handleLocalLogin = async () => {
   errorMessage.value = '';
   try {
-    await authStore.login(email.value, password.value);
-    const redirectPath = route.query.redirect || '/dashboard';
+    const rawInput = identifier.value.trim();
+    const isEmail = rawInput.includes('@');
+
+    let res;
+    if (isEmail) {
+      res = await authStore.login(rawInput, password.value);
+    } else {
+      res = await authStore.loginLocal(rawInput, password.value);
+    }
+
+    const redirectPath = route.query.redirect || (res.user?.role === 'tenant' ? '/liff/profile' : '/dashboard');
     router.push(redirectPath);
   } catch (error) {
     errorMessage.value =
-      error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบอีเมลและรหัสผ่าน';
+      error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบข้อมูลและรหัสผ่าน';
   }
 };
 </script>

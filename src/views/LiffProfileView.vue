@@ -318,6 +318,70 @@
         </form>
       </div>
     </div>
+
+    <!-- 7. Setup Web Password Modal Pop-up -->
+    <div v-if="showPasswordModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 relative">
+        <button @click="showPasswordModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+          <X class="w-5 h-5" />
+        </button>
+
+        <div class="space-y-1 pt-2 text-center">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-xl font-bold">
+            <Lock class="w-6 h-6" />
+          </div>
+          <h3 class="text-base font-bold text-slate-900">ตั้งรหัสผ่านสำหรับเบราว์เซอร์</h3>
+          <p class="text-xs text-slate-500">ใช้เบอร์โทรศัพท์ของคุณคู่กับรหัสผ่านนี้เพื่อล็อกอินบนคอมพิวเตอร์หรือเบราว์เซอร์ทั่วไป</p>
+        </div>
+
+        <form @submit.prevent="handleSavePassword" class="space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label>
+            <input
+              v-model="newPasswordInput"
+              type="password"
+              placeholder="••••••••"
+              minlength="6"
+              required
+              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-indigo-600 focus:bg-white"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่อีกครั้ง</label>
+            <input
+              v-model="confirmPasswordInput"
+              type="password"
+              placeholder="••••••••"
+              minlength="6"
+              required
+              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-indigo-600 focus:bg-white"
+            />
+          </div>
+
+          <div class="p-3 bg-indigo-50/70 rounded-2xl border border-indigo-100 text-[11px] text-indigo-900 leading-relaxed">
+            📱 เบอร์โทรสำหรับล็อกอินของคุณคือ: <span class="font-bold">{{ tenantProfile.phone || 'เบอร์ที่ลงทะเบียนไว้' }}</span>
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button
+              type="button"
+              @click="showPasswordModal = false"
+              class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-all"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              :disabled="savingPassword"
+              class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold transition-all disabled:opacity-50"
+            >
+              {{ savingPassword ? 'กำลังบันทึก...' : 'บันทึกรหัสผ่าน' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -344,6 +408,7 @@ import {
   QrCode,
   ChevronRight,
   PlusCircle,
+  Lock,
   X
 } from 'lucide-vue-next';
 
@@ -355,6 +420,10 @@ const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
 
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
+const showPasswordModal = ref(false);
+const newPasswordInput = ref('');
+const confirmPasswordInput = ref('');
+const savingPassword = ref(false);
 const sessionExpired = ref(false);
 const imageLoadError = ref(false);
 const inviteCodeInput = ref('');
@@ -476,6 +545,38 @@ const handleLinkRoom = async () => {
   }
 };
 
+const handleSavePassword = async () => {
+  if (!newPasswordInput.value) {
+    showError('ข้อผิดพลาด', 'กรุณาระบุรหัสผ่าน');
+    return;
+  }
+  if (newPasswordInput.value.length < 6) {
+    showError('ข้อผิดพลาด', 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
+    return;
+  }
+  if (newPasswordInput.value !== confirmPasswordInput.value) {
+    showError('ข้อผิดพลาด', 'รหัสผ่านทั้งสองช่องไม่ตรงกัน');
+    return;
+  }
+
+  savingPassword.value = true;
+  try {
+    const res = await authStore.setupPassword(newPasswordInput.value);
+    if (res.success) {
+      await showSuccess('บันทึกสำเร็จ!', 'คุณสามารถใช้เบอร์โทรศัพท์และรหัสผ่านนี้เพื่อเข้าสู่ระบบผ่านเบราว์เซอร์ได้ทันที');
+      showPasswordModal.value = false;
+      newPasswordInput.value = '';
+      confirmPasswordInput.value = '';
+    } else {
+      showError('ไม่สำเร็จ', res.message || 'ไม่สามารถตั้งรหัสผ่านได้');
+    }
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถตั้งรหัสผ่านได้');
+  } finally {
+    savingPassword.value = false;
+  }
+};
+
 // 1. เมนูด่วน (Quick Actions Grid)
 const quickActionsConfig = [
   {
@@ -522,6 +623,15 @@ const quickActionsConfig = [
 
 // 2. เมนูทั่วไป (General Settings List)
 const generalMenusConfig = [
+  {
+    id: 'password',
+    title: 'ตั้งรหัสผ่านเข้าใช้งานบนเว็บ (Web Password)',
+    icon: Lock,
+    action: () => {
+      showPasswordModal.value = true;
+    },
+    featureKey: null
+  },
   {
     id: 'profile',
     title: 'จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)',

@@ -5,12 +5,39 @@ const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000').
 
 export const authService = {
   /**
-   * เข้าสู่ระบบด้วย Email
-   * @param {Object} credentials - { email: string }
+   * เข้าสู่ระบบด้วย Email (Admin / CMS)
+   * @param {Object} credentials - { email: string, password?: string }
    */
   async login(credentials) {
     const response = await api.post('/auth/login', credentials);
     return response.data; // { success: true, accessToken, user }
+  },
+
+  /**
+   * เข้าสู่ระบบด้วย LINE SSO ID Token (LIFF / ลูกบ้าน)
+   * @param {string} idToken
+   */
+  async loginLine(idToken) {
+    const response = await api.post('/api/auth/login/line', { idToken });
+    return response.data; // { success: true, accessToken, user, tenant }
+  },
+
+  /**
+   * เข้าสู่ระบบด้วยเบอร์โทรศัพท์และรหัสผ่าน (Local Password)
+   * @param {Object} credentials - { phoneNumber: string, password: string }
+   */
+  async loginLocal(credentials) {
+    const response = await api.post('/api/auth/login/local', credentials);
+    return response.data; // { success: true, accessToken, user, tenant }
+  },
+
+  /**
+   * ตั้งค่ารหัสผ่านใหม่หรือเปลี่ยนรหัสผ่าน
+   * @param {Object} payload - { newPassword: string, oldPassword?: string }
+   */
+  async setupPassword(payload) {
+    const response = await api.post('/api/auth/setup-password', payload);
+    return response.data; // { success: true, message }
   },
 
   /**
