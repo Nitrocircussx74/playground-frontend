@@ -394,7 +394,7 @@ import QRCode from 'qrcode';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
-import { showSuccess, showError, showWarning } from '@/utils/swal';
+import { showSuccess, showError, showWarning, showConfirm } from '@/utils/swal';
 
 import {
   CreditCard,
@@ -405,6 +405,7 @@ import {
   Car,
   Receipt,
   LogOut,
+  DoorOpen,
   QrCode,
   ChevronRight,
   PlusCircle,
@@ -664,12 +665,45 @@ const generalMenusConfig = [
   {
     id: 'moveout',
     title: 'แจ้งย้ายออกล่วงหน้า',
+    icon: DoorOpen,
+    isDanger: false,
+    action: () => showWarning('แจ้งย้ายออก', 'กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
+    featureKey: null
+  },
+  {
+    id: 'logout',
+    title: 'ออกจากระบบ (Logout)',
     icon: LogOut,
     isDanger: true,
-    action: () => showWarning('แจ้งย้ายออก', 'กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
+    action: () => handleTenantLogout(),
     featureKey: null
   }
 ];
+
+const handleTenantLogout = async () => {
+  const isConfirmed = await showConfirm(
+    'ยืนยันออกจากระบบ',
+    'คุณต้องการออกจากระบบและลบเซสชันการใช้งานในอุปกรณ์นี้ใช่หรือไม่?',
+    'ออกจากระบบ',
+    'ยกเลิก'
+  );
+  if (!isConfirmed) return;
+
+  try {
+    await authStore.logout();
+    await showSuccess('ออกจากระบบสำเร็จ', 'ลบข้อมูลการเข้าใช้งานเรียบร้อยแล้ว');
+
+    const liffModule = await import('@/utils/liff');
+    if (liffModule?.default && typeof liffModule.default.isInClient === 'function' && liffModule.default.isInClient()) {
+      liffModule.default.closeWindow();
+    } else {
+      router.replace('/liff');
+    }
+  } catch (err) {
+    console.error('Tenant logout error:', err);
+    router.replace('/liff');
+  }
+};
 
 const availableQuickActions = computed(() => {
   return quickActionsConfig.filter((menu) => {
