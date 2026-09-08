@@ -41,16 +41,6 @@
         <!-- Background Pattern Decor -->
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
-        <!-- Quick Logout button on Profile Card -->
-        <button
-          @click.stop="handleTenantLogout"
-          class="absolute top-3.5 right-3.5 px-2.5 py-1 bg-white/15 hover:bg-rose-600 active:bg-rose-700 text-white rounded-xl text-[11px] font-bold transition-all border border-white/20 flex items-center gap-1 backdrop-blur-xs cursor-pointer shadow-xs active:scale-95 z-10"
-          title="ออกจากระบบ"
-        >
-          <LogOut class="w-3.5 h-3.5" />
-          <span>ออกจากระบบ</span>
-        </button>
-
         <div class="flex items-start gap-4">
           <!-- Avatar จาก LINE Profile -->
           <div class="relative shrink-0">
@@ -628,88 +618,6 @@ const quickActionsConfig = [
     featureKey: null
   }
 ];
-
-// 2. เมนูทั่วไป (General Settings List)
-const generalMenusConfig = [
-  {
-    id: 'change-pin',
-    title: 'เปลี่ยนรหัส PIN 6 หลัก (Change PIN)',
-    icon: KeyRound,
-    route: '/liff/change-pin',
-    featureKey: null
-  },
-  {
-    id: 'password',
-    title: 'ตั้งรหัสผ่านเข้าใช้งานบนเว็บ (Web Password)',
-    icon: Lock,
-    action: () => {
-      showPasswordModal.value = true;
-    },
-    featureKey: null
-  },
-  {
-    id: 'profile',
-    title: 'จัดการข้อมูลส่วนตัว (เบอร์โทร, บัตรประชาชน)',
-    icon: User,
-    route: '/liff/profile/edit',
-    featureKey: null
-  },
-  {
-    id: 'vehicles',
-    title: 'ยานพาหนะของฉัน (ป้ายทะเบียนรถ)',
-    icon: Car,
-    route: '/liff/profile/edit',
-    featureKey: 'ENABLE_VEHICLE_MANAGEMENT'
-  },
-  {
-    id: 'receipts',
-    title: 'ประวัติใบเสร็จรับเงิน (E-Receipt)',
-    icon: Receipt,
-    route: '/liff/receipts',
-    featureKey: null
-  },
-  {
-    id: 'moveout',
-    title: 'แจ้งย้ายออกล่วงหน้า',
-    icon: DoorOpen,
-    isDanger: false,
-    action: () => showWarning('แจ้งย้ายออก', 'กรุณาติดต่อแอดมินล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
-    featureKey: null
-  },
-  {
-    id: 'logout',
-    title: 'ออกจากระบบ (Logout)',
-    icon: LogOut,
-    isDanger: true,
-    action: () => handleTenantLogout(),
-    featureKey: null
-  }
-];
-
-const handleTenantLogout = async () => {
-  const isConfirmed = await showConfirm(
-    'ยืนยันออกจากระบบ',
-    'คุณต้องการออกจากระบบและลบเซสชันการใช้งานในอุปกรณ์นี้ใช่หรือไม่?',
-    'ออกจากระบบ',
-    'ยกเลิก'
-  );
-  if (!isConfirmed) return;
-
-  try {
-    await authStore.logout();
-    await showSuccess('ออกจากระบบสำเร็จ', 'ลบข้อมูลการเข้าใช้งานเรียบร้อยแล้ว');
-
-    const liffModule = await import('@/utils/liff');
-    if (liffModule?.default && typeof liffModule.default.isInClient === 'function' && liffModule.default.isInClient()) {
-      liffModule.default.closeWindow();
-    } else {
-      router.replace('/liff');
-    }
-  } catch (err) {
-    console.error('Tenant logout error:', err);
-    router.replace('/liff');
-  }
-};
 
 const availableQuickActions = computed(() => {
   return quickActionsConfig.filter((menu) => {

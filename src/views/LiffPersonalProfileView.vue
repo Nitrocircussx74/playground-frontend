@@ -329,15 +329,6 @@ const generalMenusConfig = [
     isDanger: false,
     action: () => showWarning('แจ้งย้ายออก', 'กรุณาติดต่อแอดมินหรือสำนักงานหอพักล่วงหน้าอย่างน้อย 30 วันก่อนวันย้ายออก'),
     featureKey: null
-  },
-  {
-    id: 'logout',
-    title: 'ออกจากระบบ (Logout)',
-    subtitle: 'ออกจากระบบและลบเซสชันในอุปกรณ์นี้',
-    icon: LogOut,
-    isDanger: true,
-    action: () => handleTenantLogout(),
-    featureKey: null
   }
 ];
 
