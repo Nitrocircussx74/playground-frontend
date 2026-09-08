@@ -448,14 +448,21 @@ const handleLinkRoom = async () => {
   if (!inviteCodeInput.value.trim()) return;
   linkingRoom.value = true;
   try {
+    const rawName = tenantProfile.name || `${tenantProfile.firstName || ''} ${tenantProfile.lastName || ''}`.trim() || 'ลูกบ้าน';
+    const nameParts = rawName.split(' ');
+    const firstName = tenantProfile.firstName || nameParts[0] || 'ลูกบ้าน';
+    const lastName = tenantProfile.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '-');
+
     const payload = {
-      inviteCode: inviteCodeInput.value.trim(),
-      lineUserId: currentLineUserId.value || undefined,
-      lineDisplayName: tenantProfile.firstName,
-      phone: tenantProfile.phone
+      inviteCode: inviteCodeInput.value.trim().toUpperCase(),
+      firstName,
+      lastName,
+      phone: tenantProfile.phone || '0800000000',
+      lineDisplayName: tenantProfile.lineDisplayName || firstName,
+      linePictureUrl: tenantProfile.linePictureUrl || undefined
     };
 
-    const res = await api.post('/api/v1/liff/auth/register-invite', payload);
+    const res = await api.post('/api/v1/liff/register/invite', payload);
     if (res.data?.success) {
       await showSuccess('ผูกห้องพักสำเร็จ!', `เพิ่มห้องพักใหม่เข้าสู่บัญชีของคุณเรียบร้อยแล้ว`);
       showLinkRoomModal.value = false;
