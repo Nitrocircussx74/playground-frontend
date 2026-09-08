@@ -124,8 +124,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff, { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile } from '@/utils/liff';
+import liff, { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile, getLiffIdToken } from '@/utils/liff';
 import api from '@/utils/api';
+import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
 import { showSuccess } from '@/utils/swal';
 
@@ -154,12 +155,14 @@ onMounted(async () => {
       lineProfile.value = await getLiffProfile();
 
       // 2. เช็คสถานะการผูกห้องพักและการตั้งค่า PIN ในฐานข้อมูล
-      const idToken = getLiffIdToken() || localStorage.getItem('dev_line_user_id') || 'U_mock_tenant_user_1';
+      const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
       let statusRes = null;
-      try {
-        statusRes = await authService.checkLiffStatus(idToken);
-      } catch (e) {
-        console.warn('Check status fallback:', e.message);
+      if (idToken) {
+        try {
+          statusRes = await authService.checkLiffStatus(idToken);
+        } catch (e) {
+          console.warn('Check status fallback:', e.message);
+        }
       }
 
       const isLinked = statusRes?.isLinked || statusRes?.isRegistered || statusRes?.data?.isLinked;
@@ -214,12 +217,9 @@ const handleVerifyByPhone = async () => {
 
     if (res.data?.success) {
       const accessToken = res.data.accessToken || res.data.data?.accessToken;
+      const tenantData = res.data.data?.tenant || res.data.tenant;
       if (accessToken) {
-        authStore.setAccessToken(accessToken);
-        localStorage.setItem('liff_token', accessToken);
-      }
-      if (res.data.data?.tenant) {
-        authStore.setUser(res.data.data.tenant);
+        authStore.setLiffAuth(accessToken, tenantData);
       }
 
       await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว');

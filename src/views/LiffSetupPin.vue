@@ -201,12 +201,9 @@ const submitSetupPin = async () => {
 
     if (res?.success) {
       const token = res.accessToken || res.token || res.data?.accessToken;
+      const tenantData = res.user || res.tenant || res.data?.tenant || res.data?.user;
       if (token) {
-        authStore.setAccessToken(token);
-        localStorage.setItem('liff_token', token);
-      }
-      if (res.user || res.tenant || res.data?.user) {
-        authStore.setUser(res.user || res.tenant || res.data?.user);
+        authStore.setLiffAuth(token, tenantData);
       }
 
       await showSuccess('ตั้งรหัส PIN สำเร็จ!', 'คุณสามารถใช้รหัส PIN นี้เข้าใช้งานหอพักได้ทันที');

@@ -3,10 +3,14 @@ import authService from '@/services/authService';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // เก็บไว้ใน Memory (Pinia State) เท่านั้น ห้ามเก็บลง LocalStorage เด็ดขาด
+    // CMS Admin Authentication State (Memory-only)
     user: null,
     accessToken: null,
     isInitialized: false,
+
+    // LIFF Tenant Authentication State
+    tenant: null,
+    liffToken: typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null,
     isLiffReady: false,
     liffProfile: null,
     loading: false
@@ -15,16 +19,47 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
     currentUser: (state) => state.user,
+    currentTenant: (state) => state.tenant,
+    isTenantAuthenticated: (state) => !!state.liffToken,
     ready: (state) => state.isLiffReady
   },
 
   actions: {
+    // CMS Admin Actions
     setAccessToken(token) {
       this.accessToken = token;
     },
 
     setUser(userData) {
       this.user = userData;
+    },
+
+    clearAuth() {
+      this.user = null;
+      this.accessToken = null;
+    },
+
+    // LIFF Tenant Actions
+    setLiffAuth(token, tenantData = null) {
+      this.liffToken = token;
+      if (token && typeof window !== 'undefined') {
+        localStorage.setItem('liff_token', token);
+      }
+      if (tenantData) {
+        this.tenant = tenantData;
+      }
+    },
+
+    setTenant(tenantData) {
+      this.tenant = tenantData;
+    },
+
+    clearLiffAuth() {
+      this.tenant = null;
+      this.liffToken = null;
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('liff_token');
+      }
     },
 
     setLiffReady(ready, profile = null) {
@@ -34,11 +69,6 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    clearAuth() {
-      this.user = null;
-      this.accessToken = null;
-    },
-
     /**
      * Action เข้าสู่ระบบด้วย LINE Seamless PIN 6 หลัก
      */
@@ -46,13 +76,10 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       try {
         const data = await authService.loginPin(lineIdToken, pin);
-        const token = data.accessToken || data.token;
+        const token = data.accessToken || data.token || data.data?.accessToken;
+        const tenantData = data.user || data.tenant || data.data?.tenant || data.data?.user;
         if (token) {
-          this.setAccessToken(token);
-          localStorage.setItem('liff_token', token);
-        }
-        if (data.user || data.tenant) {
-          this.setUser(data.user || data.tenant);
+          this.setLiffAuth(token, tenantData);
         }
         return data;
       } finally {
@@ -67,6 +94,11 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       try {
         const data = await authService.setupPin({ pin, lineIdToken });
+        const token = data.accessToken || data.token || data.data?.accessToken;
+        const tenantData = data.user || data.tenant || data.data?.tenant;
+        if (token) {
+          this.setLiffAuth(token, tenantData);
+        }
         return data;
       } finally {
         this.loading = false;
@@ -129,13 +161,10 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       try {
         const data = await authService.loginLine(idToken);
-        const token = data.accessToken || data.token;
+        const token = data.accessToken || data.token || data.data?.accessToken;
+        const tenantData = data.user || data.tenant || data.data?.tenant || data.data?.user;
         if (token) {
-          this.setAccessToken(token);
-          localStorage.setItem('liff_token', token);
-        }
-        if (data.user || data.tenant) {
-          this.setUser(data.user || data.tenant);
+          this.setLiffAuth(token, tenantData);
         }
         return data;
       } finally {
@@ -150,13 +179,10 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       try {
         const data = await authService.loginLocal({ phoneNumber, password });
-        const token = data.accessToken || data.token;
+        const token = data.accessToken || data.token || data.data?.accessToken;
+        const tenantData = data.user || data.tenant || data.data?.tenant || data.data?.user;
         if (token) {
-          this.setAccessToken(token);
-          localStorage.setItem('liff_token', token);
-        }
-        if (data.user || data.tenant) {
-          this.setUser(data.user || data.tenant);
+          this.setLiffAuth(token, tenantData);
         }
         return data;
       } finally {
@@ -189,8 +215,8 @@ export const useAuthStore = defineStore('auth', {
       } finally {
         // 1. เคลียร์ State ใน Pinia และ LocalStorage
         this.clearAuth();
+        this.clearLiffAuth();
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('liff_token');
           localStorage.removeItem('dev_line_user_id');
         }
 

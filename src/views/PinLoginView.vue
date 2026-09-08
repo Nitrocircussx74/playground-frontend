@@ -201,12 +201,9 @@ const submitPinLogin = async () => {
     if (res?.success) {
       triggerHaptic([30, 50, 30]);
       const token = res.accessToken || res.token || res.data?.accessToken;
+      const tenantData = res.user || res.tenant || res.data?.tenant || res.data?.user;
       if (token) {
-        authStore.setAccessToken(token);
-        localStorage.setItem('liff_token', token);
-      }
-      if (res.user || res.tenant || res.data?.user) {
-        authStore.setUser(res.user || res.tenant || res.data?.user);
+        authStore.setLiffAuth(token, tenantData);
       }
 
       const redirect = route.query.redirect || '/liff/profile';

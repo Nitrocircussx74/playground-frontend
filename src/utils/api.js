@@ -58,11 +58,21 @@ const processLiffQueue = (error, token = null) => {
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore();
-    const liffToken = localStorage.getItem('liff_token');
-    const token = authStore.accessToken || liffToken;
+    const url = config.url || '';
+    const isLiff = url.includes('/api/v1/liff') || url.includes('/api/liff') || url.includes('/liff');
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (isLiff) {
+      // 1. LIFF Tenant Token (Isolated from CMS Admin)
+      const liffToken = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null);
+      if (liffToken) {
+        config.headers.Authorization = `Bearer ${liffToken}`;
+      }
+    } else {
+      // 2. CMS Admin Token (Memory-only from Pinia)
+      const adminToken = authStore.accessToken;
+      if (adminToken) {
+        config.headers.Authorization = `Bearer ${adminToken}`;
+      }
     }
     return config;
   },
@@ -171,11 +181,8 @@ api.interceptors.response.use(
 
         // บันทึก Token ใหม่ลง Pinia Store และ LocalStorage
         const authStore = useAuthStore();
-        authStore.setAccessToken(newAccessToken);
-        if (silentRes.data?.data?.tenant) {
-          authStore.setUser(silentRes.data.data.tenant);
-        }
-        localStorage.setItem('liff_token', newAccessToken);
+        const tenantData = silentRes.data?.data?.tenant || silentRes.data?.tenant;
+        authStore.setLiffAuth(newAccessToken, tenantData);
 
         // อัปเดต Authorization Header ให้ Request เดิม
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -193,8 +200,7 @@ api.interceptors.response.use(
         processLiffQueue(refreshError, null);
 
         const authStore = useAuthStore();
-        authStore.clearAuth();
-        localStorage.removeItem('liff_token');
+        authStore.clearLiffAuth();
         localStorage.removeItem('dev_line_user_id');
 
         // หากทำงานอยู่ใน LINE App หรือรองรับ LINE Login ให้เปิด Consent / Re-Login
