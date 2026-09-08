@@ -185,14 +185,49 @@
         </div>
 
         <!-- 5. Paid State Message Box -->
-        <div v-else-if="invoice.status === 'paid'" class="p-5 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-center space-y-2.5">
+        <div v-else-if="invoice.status === 'paid'" class="p-5 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-center space-y-1.5">
           <h3 class="text-xs font-bold text-emerald-900">ชำระเงินเรียบร้อยแล้ว (Paid)</h3>
-          <button
-            @click="downloadReceiptPdf"
-            class="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer active:scale-95"
-          >
-            ดาวน์โหลดใบเสร็จ (E-Receipt PDF)
-          </button>
+          <p class="text-[11px] text-emerald-700 leading-relaxed">
+            ขอบคุณสำหรับการชำระเงิน คุณสามารถดาวน์โหลดใบเสร็จรับเงินหรือใบแจ้งหนี้ได้ด้านล่างนี้ครับ
+          </p>
+        </div>
+
+        <!-- 6. Document Downloads Action Box (Always accessible) -->
+        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <FileText class="w-3.5 h-3.5 text-indigo-600" />
+              <span>เอกสารดาวน์โหลด (PDF)</span>
+            </h3>
+            <span class="text-[10px] text-slate-400 font-mono">{{ invoice.invoiceNumber }}</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <!-- Download Invoice PDF -->
+            <button
+              type="button"
+              :disabled="downloadingInvoice"
+              @click="downloadInvoicePdf"
+              class="w-full py-2.5 px-3 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 rounded-xl text-xs font-semibold transition-all border border-indigo-200/70 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+            >
+              <span v-if="downloadingInvoice" class="animate-spin w-3.5 h-3.5 border-2 border-indigo-600 border-t-transparent rounded-full"></span>
+              <Download v-else class="w-3.5 h-3.5" />
+              <span>{{ downloadingInvoice ? 'กำลังสร้างไฟล์ PDF...' : 'ดาวน์โหลดใบแจ้งหนี้ (PDF)' }}</span>
+            </button>
+
+            <!-- Download Receipt PDF (Only if paid) -->
+            <button
+              v-if="invoice.status === 'paid'"
+              type="button"
+              :disabled="downloadingReceipt"
+              @click="downloadReceiptPdf"
+              class="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-700 rounded-xl text-xs font-semibold transition-all border border-emerald-200/70 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+            >
+              <span v-if="downloadingReceipt" class="animate-spin w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full"></span>
+              <Receipt v-else class="w-3.5 h-3.5" />
+              <span>{{ downloadingReceipt ? 'กำลังสร้างใบเสร็จ...' : 'ดาวน์โหลดใบเสร็จ (E-Receipt)' }}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -203,10 +238,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/utils/liff';
 import { downloadOrSharePdf } from '@/utils/downloadHelper';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
+import { FileText, Download, Receipt } from 'lucide-vue-next';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -214,6 +250,8 @@ const invoiceId = route.params.id;
 
 const loading = ref(true);
 const submitting = ref(false);
+const downloadingInvoice = ref(false);
+const downloadingReceipt = ref(false);
 const errorMessage = ref('');
 const invoice = ref({});
 const qrData = ref({});
@@ -237,7 +275,6 @@ onMounted(async () => {
   }
 
   try {
-
     const params = {};
     if (lineUserId.value) params.lineUserId = lineUserId.value;
     if (route.query.room) params.room = route.query.room;
@@ -308,7 +345,7 @@ const handleUploadSlip = async () => {
       }
     });
 
-    // อัปเดตสถานะเป็๋น reviewing ทันทีโดยไม่ต้องโหลดใหม่
+    // อัปเดตสถานะเป็น reviewing ทันทีโดยไม่ต้องโหลดใหม่
     invoice.value.status = 'reviewing';
     await showSuccess('สำเร็จ!', 'ส่งสลิปโอนเงินเรียบร้อยแล้ว! แอดมินกำลังทำการตรวจสอบยอดเงินครับ');
   } catch (err) {
@@ -318,7 +355,30 @@ const handleUploadSlip = async () => {
   }
 };
 
+const downloadInvoicePdf = async () => {
+  downloadingInvoice.value = true;
+  try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/invoice-pdf?token=${encodeURIComponent(token)}`;
+
+    const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/invoice-pdf`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([res.data], { type: 'application/pdf' });
+    const filename = `Invoice-${invoice.value.invoiceNumber || invoiceId}.pdf`;
+
+    await downloadOrSharePdf(blob, filename, directUrl);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบแจ้งหนี้ได้');
+  } finally {
+    downloadingInvoice.value = false;
+  }
+};
+
 const downloadReceiptPdf = async () => {
+  downloadingReceipt.value = true;
   try {
     const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
     const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
@@ -334,6 +394,8 @@ const downloadReceiptPdf = async () => {
     await downloadOrSharePdf(blob, filename, directUrl);
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
+  } finally {
+    downloadingReceipt.value = false;
   }
 };
 </script>

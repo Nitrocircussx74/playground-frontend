@@ -121,12 +121,24 @@
                     (รวมค่าปรับ ฿{{ Number(inv.lateFeeCharge).toLocaleString() }})
                   </div>
                 </div>
-                <div class="text-right">
+                <div class="text-right space-y-1">
                   <div class="text-[10px] text-slate-400 font-medium">ยอดรวมสุทธิ</div>
                   <div class="text-lg font-bold text-slate-900 font-mono">
                     ฿{{ Number(inv.grandTotal).toLocaleString() }}
                   </div>
                 </div>
+              </div>
+
+              <!-- Quick Download Button -->
+              <div class="pt-1 border-t border-slate-50 flex items-center justify-end">
+                <button
+                  type="button"
+                  @click.stop="downloadInvoicePdf(inv.id, inv.invoiceNumber)"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                >
+                  <Download class="w-3.5 h-3.5" />
+                  <span>ดาวน์โหลดใบแจ้งหนี้ (PDF)</span>
+                </button>
               </div>
             </div>
           </div>
@@ -178,6 +190,27 @@
                   ฿{{ Number(inv.grandTotal).toLocaleString() }}
                 </span>
               </div>
+
+              <!-- Quick Download Buttons for Paid Invoices -->
+              <div class="pt-1 border-t border-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  @click.stop="downloadInvoicePdf(inv.id, inv.invoiceNumber)"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                >
+                  <FileText class="w-3.5 h-3.5" />
+                  <span>ใบแจ้งหนี้</span>
+                </button>
+                <button
+                  v-if="inv.status === 'paid'"
+                  type="button"
+                  @click.stop="downloadReceiptPdf(inv.id, inv.invoiceNumber)"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                >
+                  <Receipt class="w-3.5 h-3.5" />
+                  <span>ใบเสร็จ</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -193,11 +226,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { downloadOrSharePdf } from '@/utils/downloadHelper';
+import { useAuthStore } from '@/stores/auth';
 import api from '@/utils/api';
+import { showError } from '@/utils/swal';
+import { Download, FileText, Receipt } from 'lucide-vue-next';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
 const loading = ref(true);
 const sessionExpired = ref(false);
 const invoices = ref([]);
@@ -271,16 +309,8 @@ const filteredInvoices = computed(() => {
   return invoices.value.filter((inv) => inv.roomId === selectedRoomFilter.value || inv.room?.id === selectedRoomFilter.value);
 });
 
-const pendingInvoices = computed(() => {
-  return invoices.value.filter((i) => i.status === 'pending' || i.status === 'overdue');
-});
-
 const filteredPendingInvoices = computed(() => {
   return filteredInvoices.value.filter((i) => i.status === 'pending' || i.status === 'overdue');
-});
-
-const paidInvoices = computed(() => {
-  return invoices.value.filter((i) => i.status === 'paid' || i.status === 'reviewing');
 });
 
 const filteredPaidInvoices = computed(() => {
@@ -289,6 +319,44 @@ const filteredPaidInvoices = computed(() => {
 
 const goToDetail = (id) => {
   router.push(`/liff/invoices/${id}`);
+};
+
+const downloadInvoicePdf = async (invoiceId, invoiceNumber) => {
+  try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/invoice-pdf?token=${encodeURIComponent(token)}`;
+
+    const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/invoice-pdf`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([res.data], { type: 'application/pdf' });
+    const filename = `Invoice-${invoiceNumber || invoiceId}.pdf`;
+
+    await downloadOrSharePdf(blob, filename, directUrl);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบแจ้งหนี้ได้');
+  }
+};
+
+const downloadReceiptPdf = async (invoiceId, invoiceNumber) => {
+  try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/receipt-pdf?token=${encodeURIComponent(token)}`;
+
+    const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/receipt-pdf`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([res.data], { type: 'application/pdf' });
+    const filename = `Official-Receipt-REC-${invoiceNumber || invoiceId}.pdf`;
+
+    await downloadOrSharePdf(blob, filename, directUrl);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
+  }
 };
 </script>
 
