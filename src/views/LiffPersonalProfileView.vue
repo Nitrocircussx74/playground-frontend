@@ -431,6 +431,10 @@ const fetchProfile = async () => {
       if (lineProfile) {
         tenantProfile.avatarUrl = lineProfile.pictureUrl || '';
       }
+    } else if (!authStore.liffToken && !localStorage.getItem('dev_line_user_id')) {
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+      return;
     }
 
     const res = await api.get('/api/v1/liff/profile');
@@ -457,6 +461,10 @@ const fetchProfile = async () => {
     }
   } catch (err) {
     console.error('Fetch profile error:', err);
+    if (err.response?.status === 401 || err.response?.status === 403 || !isLiffLoggedIn()) {
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+    }
   } finally {
     loading.value = false;
   }

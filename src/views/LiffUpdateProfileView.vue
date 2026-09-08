@@ -257,10 +257,12 @@ import {
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { useFeatureStore } from '@/stores/useFeatureStore';
+import { useAuthStore } from '@/stores/auth';
 import { showConfirm } from '@/utils/swal';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
 const featureStore = useFeatureStore();
 
 const loading = ref(true);
@@ -300,6 +302,10 @@ onMounted(async () => {
       if (lineProfile?.userId) {
         lineUserId.value = lineProfile.userId;
       }
+    } else if (!authStore.liffToken && !localStorage.getItem('dev_line_user_id')) {
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+      return;
     }
   } catch (err) {
     console.warn('LIFF init fallback mode:', err.message);
@@ -328,6 +334,10 @@ const fetchProfile = async () => {
     profile.contractEndDate = data.contractEndDate || '-';
   } catch (err) {
     console.error('Failed to fetch profile:', err);
+    if (err.response?.status === 401 || err.response?.status === 403 || !isLiffLoggedIn()) {
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+    }
   } finally {
     loading.value = false;
   }

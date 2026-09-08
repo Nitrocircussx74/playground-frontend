@@ -442,8 +442,11 @@ const fetchTenantProfile = async (lineUserId = '') => {
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
-    if (err.response?.status === 401 || !isLiffLoggedIn()) {
+    if (err.response?.status === 401 || err.response?.status === 403 || !isLiffLoggedIn()) {
       sessionExpired.value = true;
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+      return;
     }
   } finally {
     loading.value = false;
@@ -556,6 +559,10 @@ onMounted(async () => {
           imageLoadError.value = false;
         }
       }
+    } else if (!authStore.liffToken && !localStorage.getItem('dev_line_user_id')) {
+      authStore.clearLiffAuth();
+      router.replace('/liff');
+      return;
     }
   } catch (err) {
     console.warn('LIFF init fallback mode:', err.message);

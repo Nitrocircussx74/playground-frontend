@@ -51,7 +51,10 @@
     </header>
 
     <!-- 2. Main Fluid Content Area -->
-    <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+    <main
+      class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6"
+      :class="showBottomNav ? 'pb-24 sm:pb-20' : ''"
+    >
       <router-view v-slot="{ Component }">
         <transition name="page-fade" mode="out-in">
           <component :is="Component" />
@@ -59,12 +62,12 @@
       </router-view>
     </main>
 
-    <!-- 3. Bottom Navigation -->
+    <!-- 3. Bottom Navigation (Fixed immovable footer) -->
     <nav
       v-if="showBottomNav"
-      class="h-16 bg-white/95 backdrop-blur-md border-t border-slate-100 z-30 sticky bottom-0 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+      class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-lg pb-[max(0.25rem,env(safe-area-inset-bottom))]"
     >
-      <div class="max-w-4xl mx-auto h-full flex items-center justify-around px-2">
+      <div class="max-w-4xl mx-auto h-16 flex items-center justify-around px-2">
         <router-link
           v-for="tab in navTabs"
           :key="tab.path"
