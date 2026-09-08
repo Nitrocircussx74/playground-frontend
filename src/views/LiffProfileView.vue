@@ -197,77 +197,191 @@
         </div>
       </div>
 
-      <!-- 2.5 Unread Announcements Notification Card (แสดงเมื่อมีข่าวสารใหม่ที่ยังไม่ได้อ่าน) -->
-      <div v-if="latestUnreadAnnouncements.length > 0" class="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+      <!-- 2.5 Live Action Hub & Smart Notifications (ศูนย์รวมการแจ้งเตือนและสถานะที่ต้องดำเนินการ) -->
+      <div class="space-y-2.5 animate-in fade-in duration-300">
+        <!-- Section Header -->
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <span class="relative flex h-2.5 w-2.5">
+            <span v-if="hasAnyActionItems" class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
             </span>
+            <span v-else class="w-2 h-2 rounded-full bg-emerald-500"></span>
             <h2 class="text-xs font-bold text-slate-800 tracking-tight">
-              ข่าวสาร & ประกาศใหม่ ({{ latestUnreadAnnouncements.length }})
+              สถานะ & การแจ้งเตือนห้องพัก
             </h2>
           </div>
-          <router-link
-            to="/liff/announcements"
-            class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
-          >
-            <span>ดูทั้งหมด</span>
-            <ChevronRight class="w-3.5 h-3.5" />
-          </router-link>
+          <span v-if="!hasAnyActionItems" class="text-[11px] font-medium text-emerald-600 inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+            <CheckCircle2 class="w-3 h-3 text-emerald-600" />
+            <span>ทุกอย่างเรียบร้อยดี</span>
+          </span>
         </div>
 
-        <div class="space-y-2">
+        <!-- Action Items List (เมื่อมีรายการที่ต้องทำ) -->
+        <div v-if="hasAnyActionItems" class="space-y-2.5">
+          <!-- 1. บิลค่าเช่าค้างชำระ / รอชำระ (Pending Invoices) -->
           <div
-            v-for="announcement in latestUnreadAnnouncements.slice(0, 2)"
-            :key="announcement.id"
-            @click="openAnnouncementModal(announcement)"
-            class="p-4 bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white rounded-2xl border border-emerald-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+            v-if="unpaidInvoices.length > 0"
+            @click="goToPayment(unpaidInvoices[0])"
+            class="p-4 bg-gradient-to-r from-rose-50/95 via-amber-50/40 to-white rounded-2xl border border-rose-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
-            <div class="flex items-start gap-3.5">
-              <!-- Cover Image or Megaphone Icon -->
-              <div
-                v-if="announcement.imageUrl"
-                class="w-13 h-13 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-emerald-100 shadow-2xs"
-              >
-                <img
-                  :src="announcement.imageUrl"
-                  :alt="announcement.title"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div
-                v-else
-                class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform"
-              >
-                <Megaphone class="w-5 h-5" />
-              </div>
-
-              <!-- Content Preview -->
-              <div class="min-w-0 flex-1 space-y-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse">
-                    ใหม่
-                  </span>
-                  <span class="text-[10px] text-slate-400 font-mono">
-                    {{ formatDate(announcement.createdAt) }}
-                  </span>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-500/20 group-hover:scale-105 transition-transform">
+                  <CreditCard class="w-5 h-5" />
                 </div>
-                <h3 class="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
-                  {{ announcement.title }}
-                </h3>
-                <p class="text-[11px] text-slate-500 line-clamp-1 leading-snug">
-                  {{ announcement.content }}
-                </p>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-700">
+                      รอชำระเงิน ({{ unpaidInvoices.length }} บิล)
+                    </span>
+                    <span v-if="unpaidInvoices[0].dueDate" class="text-[10px] text-slate-400 font-medium">
+                      ครบกำหนด {{ formatDate(unpaidInvoices[0].dueDate) }}
+                    </span>
+                  </div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5 truncate">
+                    ยอดรวมค้างชำระ: <span class="text-rose-600 font-mono font-extrabold text-sm">฿{{ Number(totalUnpaidAmount).toLocaleString() }}</span>
+                  </div>
+                </div>
               </div>
 
-              <!-- Action Chevron -->
-              <div class="self-center pl-1 shrink-0">
-                <div class="w-7 h-7 rounded-xl bg-white/90 border border-emerald-200 text-emerald-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="hidden sm:inline text-xs font-bold text-rose-600">ชำระเงิน</span>
+                <div class="w-7 h-7 rounded-xl bg-white border border-rose-200 text-rose-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
                   <ChevronRight class="w-4 h-4" />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- 2. พัสดุมาถึงรอรับ (Pending Parcels) -->
+          <div
+            v-if="pendingParcels.length > 0"
+            @click="router.push('/liff/parcels')"
+            class="p-4 bg-gradient-to-r from-orange-50/95 via-amber-50/40 to-white rounded-2xl border border-orange-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+                  <Package class="w-5 h-5" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">
+                      พัสดุมาถึงห้อง ({{ pendingParcels.length }} ชิ้น)
+                    </span>
+                    <span v-if="pendingParcels[0].courier" class="text-[10px] text-slate-400 font-medium">
+                      {{ pendingParcels[0].courier }}
+                    </span>
+                  </div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5 truncate">
+                    รหัสรับของ: <span class="font-mono text-orange-600 font-semibold">{{ pendingParcels[0].trackingNumber || pendingParcels[0].packageCode || 'พร้อมรับที่นิติบุคคล' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="hidden sm:inline text-xs font-bold text-orange-600">ดูพัสดุ</span>
+                <div class="w-7 h-7 rounded-xl bg-white border border-orange-200 text-orange-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ChevronRight class="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. รายการแจ้งซ่อมกำลังดำเนินการ (Active Maintenance) -->
+          <div
+            v-if="activeMaintenance.length > 0"
+            @click="router.push('/liff/maintenance')"
+            class="p-4 bg-gradient-to-r from-sky-50/95 via-indigo-50/40 to-white rounded-2xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+                  <Wrench class="w-5 h-5" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-sky-100 text-sky-700">
+                      กำลังดำเนินการซ่อม ({{ activeMaintenance.length }} งาน)
+                    </span>
+                    <span class="text-[10px] text-slate-400 font-medium">
+                      {{ formatMaintenanceStatus(activeMaintenance[0].status) }}
+                    </span>
+                  </div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5 truncate">
+                    {{ activeMaintenance[0].title || 'รายการแจ้งซ่อมห้องพัก' }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="hidden sm:inline text-xs font-bold text-sky-600">ติดตามงาน</span>
+                <div class="w-7 h-7 rounded-xl bg-white border border-sky-200 text-sky-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ChevronRight class="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. ข่าวสารใหม่ที่ยังไม่ได้อ่าน (Unread Announcements) -->
+          <div
+            v-if="latestUnreadAnnouncements.length > 0"
+            @click="openAnnouncementModal(latestUnreadAnnouncements[0])"
+            class="p-4 bg-gradient-to-r from-emerald-50/95 via-teal-50/40 to-white rounded-2xl border border-emerald-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  v-if="latestUnreadAnnouncements[0].imageUrl"
+                  class="w-11 h-11 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-emerald-200 shadow-2xs"
+                >
+                  <img :src="latestUnreadAnnouncements[0].imageUrl" class="w-full h-full object-cover" />
+                </div>
+                <div
+                  v-else
+                  class="w-11 h-11 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform"
+                >
+                  <Megaphone class="w-5 h-5" />
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">
+                      ข่าวใหม่ ({{ latestUnreadAnnouncements.length }})
+                    </span>
+                    <span class="text-[10px] text-slate-400 font-mono">
+                      {{ formatDate(latestUnreadAnnouncements[0].createdAt) }}
+                    </span>
+                  </div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5 truncate">
+                    {{ latestUnreadAnnouncements[0].title }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="hidden sm:inline text-xs font-bold text-emerald-600">อ่านข่าว</span>
+                <div class="w-7 h-7 rounded-xl bg-white border border-emerald-200 text-emerald-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ChevronRight class="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. All Clear Status Card (กรณีไม่มีรายการค้างชำระ/ตกค้าง) -->
+        <div
+          v-else
+          class="p-4 bg-white rounded-2xl border border-slate-100/90 shadow-2xs flex items-center justify-between gap-3"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <CheckCircle2 class="w-5 h-5" />
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800">ไม่มีรายการค้างชำระหรือพัสดุตกค้าง</div>
+              <div class="text-[11px] text-slate-400">สถานะห้องพักและบัญชีของคุณเป็นปัจจุบันเรียบร้อยครับ</div>
             </div>
           </div>
         </div>
@@ -291,13 +405,34 @@
               :class="menu.bgClass"
             >
               <component :is="menu.icon" class="w-4.5 h-4.5" :class="menu.iconClass" />
-              <!-- Unread badge on Announcement quick action -->
+              <!-- Badges on Quick Actions -->
               <span
-                v-if="menu.id === 'announcements' && latestUnreadAnnouncements.length > 0"
+                v-if="menu.id === 'invoices' && unpaidInvoices.length > 0"
                 class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
               >
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 border border-white"></span>
+              </span>
+              <span
+                v-else-if="menu.id === 'parcels' && pendingParcels.length > 0"
+                class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+              >
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500 border border-white"></span>
+              </span>
+              <span
+                v-else-if="menu.id === 'maintenance' && activeMaintenance.length > 0"
+                class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+              >
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500 border border-white"></span>
+              </span>
+              <span
+                v-else-if="menu.id === 'announcements' && latestUnreadAnnouncements.length > 0"
+                class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+              >
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white"></span>
               </span>
             </div>
             <div>
@@ -508,7 +643,8 @@ import {
   PlusCircle,
   X,
   DoorClosed,
-  Check
+  Check,
+  CheckCircle2
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -528,6 +664,81 @@ const linkingRoom = ref(false);
 const digitalIdQrUrl = ref('');
 const currentLineUserId = ref('');
 const selectedAnnouncement = ref(null);
+
+const unpaidInvoices = ref([]);
+const pendingParcels = ref([]);
+const activeMaintenance = ref([]);
+
+const totalUnpaidAmount = computed(() => {
+  return unpaidInvoices.value.reduce((sum, inv) => sum + Number(inv.grandTotal || 0), 0);
+});
+
+const hasAnyActionItems = computed(() => {
+  return (
+    unpaidInvoices.value.length > 0 ||
+    pendingParcels.value.length > 0 ||
+    activeMaintenance.value.length > 0 ||
+    latestUnreadAnnouncements.value.length > 0
+  );
+});
+
+const formatMaintenanceStatus = (status) => {
+  const map = {
+    pending: 'รอดำเนินการ',
+    in_progress: 'กำลังเข้าซ่อม',
+    assigned: 'มอบหมายช่างแล้ว',
+    resolved: 'เสร็จสิ้น',
+    completed: 'เสร็จสิ้น'
+  };
+  return map[status] || status || 'กำลังดำเนินการ';
+};
+
+const goToPayment = (invoice) => {
+  if (invoice?.id) {
+    router.push(`/liff/pay/${invoice.id}`);
+  } else {
+    router.push('/liff/invoices');
+  }
+};
+
+const fetchLiveActionMetrics = async (lineUserId = '') => {
+  try {
+    const params = {};
+    if (lineUserId) params.lineUserId = lineUserId;
+
+    const [invoicesRes, parcelsRes, maintenanceRes] = await Promise.allSettled([
+      api.get('/api/v1/liff/invoices/history', { params }),
+      api.get('/api/v1/liff/parcels', { params }),
+      api.get('/api/v1/liff/maintenance', { params })
+    ]);
+
+    // 1. Unpaid Invoices
+    if (invoicesRes.status === 'fulfilled') {
+      const invList = invoicesRes.value.data?.data || [];
+      unpaidInvoices.value = invList.filter((i) =>
+        ['unpaid', 'issued', 'overdue', 'pending_payment', 'partially_paid'].includes((i.status || '').toLowerCase())
+      );
+    }
+
+    // 2. Pending Parcels
+    if (parcelsRes.status === 'fulfilled') {
+      const parcelList = parcelsRes.value.data?.data || [];
+      pendingParcels.value = parcelList.filter((p) =>
+        ['pending', 'arrived'].includes((p.status || '').toLowerCase())
+      );
+    }
+
+    // 3. Active Maintenance
+    if (maintenanceRes.status === 'fulfilled') {
+      const mList = maintenanceRes.value.data?.data || [];
+      activeMaintenance.value = mList.filter((m) =>
+        ['pending', 'in_progress', 'assigned'].includes((m.status || '').toLowerCase())
+      );
+    }
+  } catch (err) {
+    console.warn('Live action metrics fetch warning:', err);
+  }
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -751,7 +962,10 @@ onMounted(async () => {
   }
 
   await fetchTenantProfile(currentLineUserId.value);
-  await checkUnread(currentLineUserId.value);
+  await Promise.allSettled([
+    checkUnread(currentLineUserId.value),
+    fetchLiveActionMetrics(currentLineUserId.value)
+  ]);
 
   if (currentLineUserId.value || tenantProfile.phone) {
     api.patch('/api/v1/liff/auth/sync-profile', {
