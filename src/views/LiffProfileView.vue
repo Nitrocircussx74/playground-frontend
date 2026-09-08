@@ -67,23 +67,14 @@
             </h1>
             <p class="text-xs text-indigo-100 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
 
-            <!-- Room Badges (Interactive Switcher) -->
-            <div class="flex flex-wrap gap-1.5 pt-1">
-              <template v-if="tenantProfile.rooms && tenantProfile.rooms.length > 0">
-                <button
-                  v-for="room in tenantProfile.rooms"
-                  :key="room.id"
-                  @click.stop="selectRoom(room)"
-                  class="px-2.5 py-1 text-[11px] font-black rounded-full shadow-xs inline-flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
-                  :class="room.id === selectedRoomId ? 'bg-yellow-400 text-slate-950 ring-2 ring-white scale-105 shadow-md' : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs'"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full" :class="room.id === selectedRoomId ? 'bg-emerald-600' : 'bg-white/70'"></span>
-                  <span>ห้อง {{ room.roomNumber }}</span>
-                  <span v-if="room.buildingName" class="font-normal text-[10px]" :class="room.id === selectedRoomId ? 'text-slate-800' : 'text-indigo-100'">({{ room.buildingName }})</span>
-                </button>
-              </template>
-              <span v-else class="px-2.5 py-0.5 bg-yellow-400 text-slate-950 font-black text-[11px] rounded-full shadow-xs shrink-0">
-                ห้อง {{ tenantProfile.roomNumber || '-' }}
+            <!-- Current Active Room Badge -->
+            <div class="pt-1">
+              <span class="px-2.5 py-1 bg-yellow-400 text-slate-950 font-black text-[11px] rounded-full shadow-xs inline-flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                <span>ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber || '-' }}</span>
+                <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="font-bold text-[10px] text-slate-800">
+                  ({{ selectedRoom?.buildingName || tenantProfile.buildingName }})
+                </span>
               </span>
             </div>
           </div>
