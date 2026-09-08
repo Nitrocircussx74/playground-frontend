@@ -82,6 +82,10 @@
             <span>📝</span>
             <span>กฎระเบียบ</span>
           </TabsTrigger>
+          <TabsTrigger value="line" class="flex items-center gap-2">
+            <span class="text-emerald-500">💬</span>
+            <span>LINE Official Account</span>
+          </TabsTrigger>
         </TabsList>
 
         <!-- 🏢 Tab 1: ข้อมูลทั่วไป (General Info) -->
@@ -727,6 +731,154 @@
             </CardContent>
           </Card>
         </TabsContent>
+
+        <!-- 💬 Tab 5: LINE Official Account & LIFF (การตั้งค่า LINE OA ประจำตึก) -->
+        <TabsContent value="line">
+          <Card class="border-slate-200 shadow-xs rounded-2xl">
+            <CardHeader class="border-b border-slate-100 bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-white">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <CardTitle class="text-base sm:text-lg flex items-center gap-2 text-slate-900">
+                    <span class="text-emerald-600">💬</span>
+                    <span>การตั้งค่า LINE Official Account & LIFF ประจำตึก</span>
+                  </CardTitle>
+                  <CardDescription>
+                    กำหนด Channel Access Token, Secret และ LIFF ID เฉพาะของตึกนี้ เพื่อส่งข้อความแจ้งเตือนบิล/พัสดุ และเปิด Web App แยกตาม LINE OA รายสาขา
+                  </CardDescription>
+                </div>
+                <div class="shrink-0">
+                  <span
+                    v-if="form.lineChannelAccessToken || form.lineOaId"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>ใช้งาน LINE OA ประจำตึกนี้</span>
+                  </span>
+                  <span
+                    v-else
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200"
+                  >
+                    <span>🌐</span>
+                    <span>ใช้การตั้งค่าส่วนกลาง (.env)</span>
+                  </span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent class="space-y-6 pt-6">
+              <!-- Info Callout Banner -->
+              <div class="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl text-xs text-emerald-950 space-y-2">
+                <div class="font-bold flex items-center gap-2 text-emerald-800 text-sm">
+                  <span>💡</span>
+                  <span>คำแนะนำการเชื่อมต่อ LINE Official Account แบบแยกรายตึก</span>
+                </div>
+                <p class="leading-relaxed text-emerald-900/90 text-xs">
+                  หากตึกนี้มี LINE Official Account เป็นของตัวเอง ให้กรอกข้อมูลจาก <strong>LINE Developers Console</strong> ด้านล่าง 
+                  ระบบจะใช้ Token และ LIFF ID นี้ในการส่งแจ้งเตือนบิล ใบเสร็จ และพัสดุไปยังลูกบ้านของตึกนี้โดยตรง 
+                  (หากเว้นว่างไว้ ระบบจะใช้ค่าเริ่มต้นจาก Environment Variables ของระบบส่วนกลางโดยอัตโนมัติ)
+                </p>
+              </div>
+
+              <!-- General LINE OA Information -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>LINE OA Basic ID / Account Name</span>
+                    <span class="text-[10px] font-normal text-slate-400">เช่น @horhub_a</span>
+                  </label>
+                  <Input
+                    v-model="form.lineOaId"
+                    :disabled="isReadOnly"
+                    placeholder="เช่น @horhub_building_a"
+                    class="bg-white font-mono text-xs"
+                  />
+                  <p class="text-[11px] text-slate-400">ID บัญชี LINE OA สำหรับแสดงและค้นหา</p>
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>ลิงก์กดเพิ่มเพื่อน (LINE Add Friend URL)</span>
+                    <span class="text-[10px] font-normal text-slate-400">https://lin.ee/...</span>
+                  </label>
+                  <Input
+                    v-model="form.lineAddFriendUrl"
+                    :disabled="isReadOnly"
+                    placeholder="เช่น https://line.me/R/ti/p/@horhub_a หรือ https://lin.ee/xxxxx"
+                    class="bg-white text-xs"
+                  />
+                  <p class="text-[11px] text-slate-400">สำหรับสร้างปุ่มกดเพิ่มเพื่อนในหน้าต้อนรับลูกบ้านใหม่</p>
+                </div>
+              </div>
+
+              <!-- Messaging API & Security Credentials Section -->
+              <div class="p-5 bg-slate-50/80 rounded-2xl border border-slate-200/90 space-y-4">
+                <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>🔐</span>
+                  <span>ข้อมูลความปลอดภัยและการเชื่อมต่อ (Messaging API & LIFF)</span>
+                </h4>
+
+                <!-- 1. LIFF ID -->
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>LINE LIFF ID ประจำตึก</span>
+                    <span class="text-[10px] font-normal text-slate-400">LIFF App ID</span>
+                  </label>
+                  <Input
+                    v-model="form.lineLiffId"
+                    :disabled="isReadOnly"
+                    placeholder="เช่น 2011289517-SB8YziXL"
+                    class="bg-white font-mono text-xs"
+                  />
+                  <p class="text-[11px] text-slate-400">รหัส LIFF ID สำหรับเปิด Web App ของตึกนี้ผ่านห้องแชต LINE</p>
+                </div>
+
+                <!-- 2. Channel Secret -->
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>Channel Secret</span>
+                    <button
+                      type="button"
+                      @click="showSecret = !showSecret"
+                      class="text-[11px] text-purple-600 hover:text-purple-800 font-semibold cursor-pointer"
+                    >
+                      {{ showSecret ? 'ซ่อน' : 'แสดง' }}
+                    </button>
+                  </label>
+                  <Input
+                    :type="showSecret ? 'text' : 'password'"
+                    v-model="form.lineChannelSecret"
+                    :disabled="isReadOnly"
+                    placeholder="กรอก Channel Secret (32 ตัวอักษร)"
+                    class="bg-white font-mono text-xs"
+                  />
+                  <p class="text-[11px] text-slate-400">ใช้สำหรับตรวจสอบ Signature ความปลอดภัยของ Webhook</p>
+                </div>
+
+                <!-- 3. Channel Access Token (Long-Lived) -->
+                <div class="space-y-1.5">
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>Messaging API Channel Access Token (Long-Lived)</span>
+                    <button
+                      type="button"
+                      @click="showToken = !showToken"
+                      class="text-[11px] text-purple-600 hover:text-purple-800 font-semibold cursor-pointer"
+                    >
+                      {{ showToken ? 'ซ่อน' : 'แสดง' }}
+                    </button>
+                  </label>
+                  <textarea
+                    v-model="form.lineChannelAccessToken"
+                    :disabled="isReadOnly"
+                    :rows="showToken ? 3 : 2"
+                    :class="{ 'font-sans blur-xs select-none': !showToken }"
+                    placeholder="กรอก Channel Access Token (v2.1) ที่ออกให้จาก LINE Developers Console..."
+                    class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500 font-mono transition-all"
+                  ></textarea>
+                  <p class="text-[11px] text-slate-400">ใช้สำหรับสั่ง Push Flex Message แจ้งเตือนค่าน้ำ-ไฟ บิลชำระเงิน และพัสดุเข้าห้องพัก</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
 
@@ -778,6 +930,8 @@ const isGeneratingQr = ref(false);
 const isUploadingQr = ref(false);
 const isUploadingLogo = ref(false);
 const isUploadingCover = ref(false);
+const showSecret = ref(false);
+const showToken = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
@@ -816,7 +970,12 @@ const form = ref({
   gracePeriodDays: 0,
   depositMonths: 2,
   advanceMonths: 1,
-  termsAndConditions: ''
+  termsAndConditions: '',
+  lineOaId: '',
+  lineChannelAccessToken: '',
+  lineChannelSecret: '',
+  lineLiffId: '',
+  lineAddFriendUrl: ''
 });
 
 /**
@@ -973,7 +1132,12 @@ const fetchBuildingSettings = async () => {
       gracePeriodDays: settingData.gracePeriodDays != null ? parseInt(settingData.gracePeriodDays, 10) : 0,
       depositMonths: settingData.depositMonths ? parseInt(settingData.depositMonths, 10) : 2,
       advanceMonths: settingData.advanceMonths ? parseInt(settingData.advanceMonths, 10) : 1,
-      termsAndConditions: settingData.termsAndConditions || ''
+      termsAndConditions: settingData.termsAndConditions || '',
+      lineOaId: settingData.lineOaId || '',
+      lineChannelAccessToken: settingData.lineChannelAccessToken || '',
+      lineChannelSecret: settingData.lineChannelSecret || '',
+      lineLiffId: settingData.lineLiffId || '',
+      lineAddFriendUrl: settingData.lineAddFriendUrl || ''
     };
   } catch (err) {
     errorMessage.value = err.response?.data?.message || 'ไม่สามารถดึงข้อมูลการตั้งค่าตึกได้';

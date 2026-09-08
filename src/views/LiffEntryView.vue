@@ -181,8 +181,28 @@
               />
             </div>
 
-            <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-medium">
-              {{ phoneErrorMessage }}
+            <!-- ลืมรหัส PIN -->
+            <div class="flex items-center justify-end px-1">
+              <button
+                type="button"
+                @click="handleForgotPin"
+                class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
+              >
+                ลืมรหัส PIN?
+              </button>
+            </div>
+
+            <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-medium space-y-1.5">
+              <div>{{ phoneErrorMessage }}</div>
+              <div class="pt-0.5">
+                <button
+                  type="button"
+                  @click="handleForgotPin"
+                  class="font-bold text-rose-700 underline hover:text-rose-900 cursor-pointer"
+                >
+                  คลิกที่นี่เพื่อตั้งรหัส PIN ใหม่
+                </button>
+              </div>
             </div>
 
             <button
@@ -307,7 +327,7 @@ import liff, { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile, getLiffIdTok
 import api from '@/utils/api';
 import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
-import { showSuccess, showWarning } from '@/utils/swal';
+import { showSuccess, showWarning, showConfirm } from '@/utils/swal';
 import {
   UserPlus,
   RotateCw,
@@ -541,6 +561,27 @@ const handleLinkAndLogin = async () => {
     phoneErrorMessage.value = err.response?.data?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
   } finally {
     verifyingPhone.value = false;
+  }
+};
+
+const handleForgotPin = async () => {
+  const phone = verifyPhoneInput.value?.trim();
+  const confirmed = await showConfirm(
+    'ลืมรหัส PIN?',
+    `ต้องการตั้งรหัส PIN ใหม่สำหรับเบอร์ ${phone} ใช่หรือไม่?`,
+    'ตั้งรหัส PIN ใหม่',
+    'ยกเลิก'
+  );
+
+  if (confirmed) {
+    router.push({
+      path: '/liff/setup-pin',
+      query: {
+        phone: phone || undefined,
+        name: existingUserName.value || undefined,
+        mode: 'reset'
+      }
+    });
   }
 };
 

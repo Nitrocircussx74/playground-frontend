@@ -3,20 +3,54 @@
     
     <!-- 1. Header & Step Instructions -->
     <header class="w-full flex flex-col items-center pt-2 space-y-2 text-center shrink-0">
+      <!-- Back / Cancel Button if coming with mode or redirect -->
+      <div v-if="isResetMode || hasCancelOption" class="w-full flex justify-start -mb-2">
+        <button
+          type="button"
+          @click="handleCancel"
+          class="text-xs text-slate-400 hover:text-slate-600 font-medium flex items-center gap-1 cursor-pointer transition-colors"
+        >
+          <span>← ย้อนกลับ</span>
+        </button>
+      </div>
+
       <!-- Icon Badge -->
-      <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-        <ShieldCheck class="w-6 h-6" />
+      <div
+        class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+        :class="isResetMode ? 'bg-amber-50 border border-amber-100 text-amber-600' : 'bg-indigo-50 border border-indigo-100 text-indigo-600'"
+      >
+        <KeyRound v-if="isResetMode" class="w-6 h-6" />
+        <ShieldCheck v-else class="w-6 h-6" />
+      </div>
+
+      <!-- User Info Pill (if resetting with phone/name) -->
+      <div v-if="userInfoText" class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-[11px] font-medium text-slate-600 border border-slate-200/60">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span class="truncate max-w-[200px]">{{ userInfoText }}</span>
       </div>
 
       <div class="space-y-1">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
-          ขั้นตอนที่ {{ step }} จาก 2
+        <span
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border"
+          :class="isResetMode ? 'bg-amber-50 text-amber-700 border-amber-200/80' : 'bg-indigo-50 text-indigo-600 border-indigo-100'"
+        >
+          {{ isResetMode ? 'รีเซ็ตรหัส PIN • ' : '' }}ขั้นตอนที่ {{ step }} จาก 2
         </span>
         <h1 class="text-base font-bold tracking-tight text-slate-800">
-          {{ step === 1 ? 'ตั้งรหัส PIN 6 หลัก' : 'ยืนยันรหัส PIN อีกครั้ง' }}
+          <template v-if="isResetMode">
+            {{ step === 1 ? 'ตั้งรหัส PIN 6 หลักใหม่' : 'ยืนยันรหัส PIN ใหม่อีกครั้ง' }}
+          </template>
+          <template v-else>
+            {{ step === 1 ? 'ตั้งรหัส PIN 6 หลัก' : 'ยืนยันรหัส PIN อีกครั้ง' }}
+          </template>
         </h1>
         <p class="text-xs text-slate-400 font-medium max-w-xs mx-auto">
-          {{ step === 1 ? 'สร้างรหัสผ่าน 6 หลักเพื่อใช้เข้าสู่ระบบอย่างรวดเร็ว' : 'กรอกรหัส PIN เดิมอีกครั้งเพื่อยืนยันความถูกต้อง' }}
+          <template v-if="isResetMode">
+            {{ step === 1 ? 'สร้างรหัสผ่าน 6 หลักใหม่เพื่อเข้าใช้งานระบบอย่างปลอดภัย' : 'กรอกรหัส PIN ใหม่อีกครั้งเพื่อยืนยันความถูกต้อง' }}
+          </template>
+          <template v-else>
+            {{ step === 1 ? 'สร้างรหัสผ่าน 6 หลักเพื่อใช้เข้าสู่ระบบอย่างรวดเร็ว' : 'กรอกรหัส PIN เดิมอีกครั้งเพื่อยืนยันความถูกต้อง' }}
+          </template>
         </p>
       </div>
     </header>
@@ -33,7 +67,7 @@
           class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
           :class="[
             index <= enteredPin.length
-              ? 'bg-indigo-600 scale-110 shadow-sm shadow-indigo-300/40 ring-4 ring-indigo-100/70'
+              ? (isResetMode ? 'bg-amber-500 scale-110 shadow-sm shadow-amber-300/40 ring-4 ring-amber-100/70' : 'bg-indigo-600 scale-110 shadow-sm shadow-indigo-300/40 ring-4 ring-indigo-100/70')
               : 'bg-slate-200/60 border border-slate-200'
           ]"
         ></div>
@@ -44,9 +78,9 @@
         <div v-if="errorMessage" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
           <span>{{ errorMessage }}</span>
         </div>
-        <div v-else-if="isLoading" class="text-xs font-medium text-indigo-600 mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
-          <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-ping"></span>
-          <span>กำลังบันทึกรหัส PIN...</span>
+        <div v-else-if="isLoading" class="text-xs font-medium mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse" :class="isResetMode ? 'text-amber-600' : 'text-indigo-600'">
+          <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="isResetMode ? 'bg-amber-600' : 'bg-indigo-600'"></span>
+          <span>{{ isResetMode ? 'กำลังรีเซ็ตรหัส PIN...' : 'กำลังบันทึกรหัส PIN...' }}</span>
         </div>
         <div v-else class="h-5 mt-2"></div>
       </transition>
@@ -103,16 +137,27 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/services/authService';
 import { getLiffIdToken } from '@/utils/liff';
 import { showSuccess, showError } from '@/utils/swal';
-import { ShieldCheck, Delete } from 'lucide-vue-next';
+import { ShieldCheck, KeyRound, Delete } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
+
+// Reset Mode Detection
+const isResetMode = computed(() => route.query.mode === 'reset');
+const hasCancelOption = computed(() => Boolean(route.query.phone || route.query.mode));
+const userInfoText = computed(() => {
+  const name = route.query.name ? String(route.query.name).trim() : '';
+  const phone = route.query.phone ? String(route.query.phone).trim() : '';
+  if (name && phone) return `${name} (${phone})`;
+  return name || phone || '';
+});
 
 // Step Management: 1 = ตั้งรหัส PIN, 2 = ยืนยันรหัส PIN
 const step = ref(1);
@@ -121,6 +166,10 @@ const enteredPin = ref('');
 const isLoading = ref(false);
 const isShaking = ref(false);
 const errorMessage = ref('');
+
+const handleCancel = () => {
+  router.back();
+};
 
 const pressKey = (num) => {
   if (isLoading.value || enteredPin.value.length >= 6) return;
@@ -192,11 +241,17 @@ const submitSetupPin = async () => {
   errorMessage.value = '';
 
   try {
-    const idToken = getLiffIdToken() || localStorage.getItem('dev_line_user_id') || 'U_mock_tenant_user_1';
-    const res = await authService.setupPin({
+    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null) || 'U_mock_tenant_user_1';
+    const phoneParam = route.query.phone ? String(route.query.phone).trim() : undefined;
+
+    const payload = {
       lineIdToken: idToken,
-      newPin: firstPin.value
-    });
+      phone: phoneParam,
+      newPin: firstPin.value,
+      pin: firstPin.value
+    };
+
+    const res = await authService.setupPin(payload);
 
     if (res?.success) {
       const token = res.accessToken || res.token || res.data?.accessToken;
@@ -205,8 +260,14 @@ const submitSetupPin = async () => {
         authStore.setLiffAuth(token, tenantData);
       }
 
-      await showSuccess('ตั้งรหัส PIN สำเร็จ!', 'คุณสามารถใช้รหัส PIN นี้เข้าใช้งานหอพักได้ทันที');
-      router.push('/liff/profile');
+      const successTitle = isResetMode.value ? 'รีเซ็ตรหัส PIN สำเร็จ! 🎉' : 'ตั้งรหัส PIN สำเร็จ! 🎉';
+      const successText = isResetMode.value
+        ? 'คุณสามารถใช้รหัส PIN ใหม่นี้เข้าใช้งานหอพักได้ทันที'
+        : 'คุณสามารถใช้รหัส PIN นี้เข้าใช้งานหอพักได้ทันที';
+
+      await showSuccess(successTitle, successText);
+      const redirect = route.query.redirect || '/liff/profile';
+      router.push(redirect);
     } else {
       showError('ไม่สำเร็จ', res?.message || 'ไม่สามารถตั้งค่า PIN ได้');
       triggerMismatchFeedback();

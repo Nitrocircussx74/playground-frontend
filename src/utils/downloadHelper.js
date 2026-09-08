@@ -1,62 +1,42 @@
 import { initLiff, isInLiffClient, openExternalWindow } from '@/utils/liff';
+import html2canvas from 'html2canvas';
+import customSwal, { showToast } from '@/utils/swal';
 
 /**
- * Universal PDF Downloader & Native Share Sheet for LINE LIFF / Mobile & Desktop
- *
- * เหตุผลที่บน Android และ iOS ใน LINE In-App Browser ดาวน์โหลดไฟล์ผ่าน blob ปกติไม่ได้:
- * 1. WKWebView (iOS) และ Android WebView ใน LINE ปิดกั้น/ไม่รองรับการดาวน์โหลดผ่านแท็ก <a download="blob:...">
- * 2. ทางแก้ที่ได้ผล 100% บนมือถือ:
- *    - ลำดับที่ 1: ใช้ Web Share API (navigator.share) ส่ง File PDF เข้า Native Share Sheet ของเครื่อง (Save to Files / Save to Downloads / AirDrop / LINE / Google Drive)
- *    - ลำดับที่ 2: หากอยู่ใน LINE และต้องการดาวน์โหลดผ่าน Browser หลัก ให้เปิดผ่าน External Browser (Safari/Chrome) ด้วย liff.openWindow({ url, external: true })
- *    - ลำดับที่ 3: Fallback สำหรับ Desktop/ทั่วไปด้วย <a download> และ window.open()
+ * Universal Direct PDF Downloader for LINE LIFF / Mobile & Desktop
+ * ดาวน์โหลดไฟล์ PDF ลงเครื่องโดยตรง (ไม่เปิด Native Share Sheet)
+ * 
+ * @param {Blob} blob - ไฟล์ PDF ในรูปแบบ Blob
+ * @param {string} filename - ชื่อไฟล์ที่ต้องการบันทึก เช่น Official-Receipt-REC-001.pdf
+ * @param {string} fallbackDirectUrl - URL ตรงของไฟล์ PDF สำหรับเปิดดาวน์โหลดบน External Browser
  */
-export async function downloadOrSharePdf(blob, filename, fallbackDirectUrl = '') {
+export async function downloadPdf(blob, filename = 'document.pdf', fallbackDirectUrl = '') {
   try {
-    // 1. ตรวจสอบและใช้งาน Web Share API กับ Native File (รองรับ iOS 15+, Safari, Chrome Mobile, LINE WebView รุ่นใหม่)
-    if (typeof navigator !== 'undefined' && navigator.canShare && typeof File !== 'undefined') {
-      try {
-        const file = new File([blob], filename, { type: 'application/pdf' });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: filename.replace('.pdf', ''),
-            text: 'ใบเสร็จรับเงิน / ใบแจ้งหนี้ (Official Receipt)',
-            files: [file]
-          });
-          return true;
-        }
-      } catch (shareErr) {
-        // หากผู้ใช้กดยกเลิกใน Share Sheet (AbortError) ถือว่าทำงานปกติ
-        if (shareErr.name === 'AbortError') {
-          return true;
-        }
-        console.warn('⚠️ Web Share API fallback:', shareErr);
-      }
-    }
-
-    // 2. หากทำงานอยู่ใน LINE App Client และมี Direct URL ให้เปิดใน External Browser (Safari / Chrome)
+    // 1. กรณีเปิดบน LINE App Client และมี Direct Download URL -> ให้เปิดดาวน์โหลดผ่าน External Browser (Safari / Chrome) เพื่อเซฟไฟล์ลงเครื่องได้ทันที
     await initLiff();
     if (isInLiffClient() && fallbackDirectUrl) {
       openExternalWindow(fallbackDirectUrl);
       return true;
     }
 
-    // 3. Fallback สำหรับ Desktop และ Standard Web Browsers
+    // 2. ดาวน์โหลดตรงผ่าน Blob Object URL และ Anchor Element สำหรับ Desktop และ Mobile Web
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', filename);
-    link.target = '_blank';
+    link.setAttribute('target', '_blank');
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
 
     setTimeout(() => {
       link.remove();
       window.URL.revokeObjectURL(url);
-    }, 2000);
+    }, 2500);
 
     return true;
   } catch (err) {
-    console.error('Download/Share PDF error:', err);
+    console.error('Direct PDF Download error:', err);
     if (fallbackDirectUrl) {
       window.open(fallbackDirectUrl, '_blank');
       return true;
@@ -66,55 +46,155 @@ export async function downloadOrSharePdf(blob, filename, fallbackDirectUrl = '')
 }
 
 /**
- * Universal Image Downloader & Share Sheet for PromptPay QR Code
+ * แสดง Popup รูปภาพพร้อมวิธีบันทึกรูปภาพลงเครื่องสำหรับ Mobile / LINE LIFF
+ * รองรับทั้งการ แตะค้างเพื่อบันทึกรูป (Long-press to save) และ Native Save Dialog
  */
-export async function downloadOrShareImage(dataUrlOrBlob, filename = 'promptpay-qr.png') {
+export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.png') {
+  let file = null;
   try {
-    let blob = dataUrlOrBlob;
-    if (typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')) {
-      const res = await fetch(dataUrlOrBlob);
-      blob = await res.blob();
-    }
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    file = new File([blob], filename, { type: 'image/png' });
+  } catch (e) {
+    console.warn('Could not create File object for share:', e);
+  }
 
-    // 1. Web Share API with File (Works on iOS / Android in LINE In-App Browser for Saving to Photos/Files)
-    if (typeof navigator !== 'undefined' && navigator.canShare && typeof File !== 'undefined') {
-      try {
-        const file = new File([blob], filename, { type: 'image/png' });
-        if (navigator.canShare({ files: [file] })) {
+  const canNativeShare = Boolean(
+    file &&
+    typeof navigator !== 'undefined' &&
+    typeof navigator.canShare === 'function' &&
+    navigator.canShare({ files: [file] })
+  );
+
+  return customSwal.fire({
+    title: 'บันทึกรูปภาพ QR Code',
+    html: `
+      <div class="space-y-3 text-center">
+        <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-2xl inline-block shadow-inner max-w-full">
+          <img src="${dataUrl}" alt="PromptPay QR" class="max-h-72 sm:max-h-80 mx-auto rounded-xl shadow-xs pointer-events-auto" style="-webkit-touch-callout: default !important; user-select: auto !important;" />
+        </div>
+        <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-900 text-xs text-left space-y-1 shadow-2xs">
+          <div class="font-bold flex items-center gap-1">
+            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรีรูปภาพ:</span>
+          </div>
+          <p class="text-[11px] leading-relaxed text-indigo-800">
+            แตะค้างที่รูปภาพด้านบน แล้วเลือก <b>"บันทึกรูปภาพ" (Save Image)</b> หรือกดปุ่มด้านล่างเพื่อบันทึกลงเครื่อง
+          </p>
+        </div>
+      </div>
+    `,
+    showConfirmButton: true,
+    confirmButtonText: canNativeShare ? '📥 บันทึกลงอัลบั้มรูป' : 'เสร็จสิ้น',
+    showCancelButton: canNativeShare,
+    cancelButtonText: 'ปิด',
+    customClass: {
+      popup: 'rounded-3xl border border-slate-100 shadow-2xl p-5 font-sans max-w-xs sm:max-w-sm w-full',
+      confirmButton: 'w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all mt-2 cursor-pointer',
+      cancelButton: 'w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all mt-1 cursor-pointer'
+    },
+    preConfirm: async () => {
+      if (canNativeShare && file) {
+        try {
           await navigator.share({
-            title: 'PromptPay QR Code',
-            text: 'คิวอาร์โค้ดพร้อมเพย์สำหรับชำระเงินค่าเช่า',
-            files: [file]
+            files: [file],
+            title: 'PromptPay QR Code'
           });
-          return true;
+        } catch (shareErr) {
+          if (shareErr.name !== 'AbortError') {
+            console.warn('Native share error:', shareErr);
+          }
         }
-      } catch (shareErr) {
-        if (shareErr.name === 'AbortError') return true;
-        console.warn('⚠️ Image Share API fallback:', shareErr);
       }
     }
+  });
+}
 
-    // 2. Standard Download Anchor Fallback
-    const url = typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')
-      ? dataUrlOrBlob
-      : window.URL.createObjectURL(blob);
+/**
+ * Universal Direct Image Downloader for PromptPay QR Code & Images
+ * ดาวน์โหลดรูปภาพ QR Code / สลิป ลงเครื่องโดยตรง
+ * 
+ * @param {string|Blob} dataUrlOrBlob - Data URL (base64) หรือ Blob ของรูปภาพ
+ * @param {string} filename - ชื่อไฟล์รูป เช่น promptpay-qr.png
+ */
+export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png') {
+  try {
+    let downloadHref = '';
+    let isCreatedBlobUrl = false;
+
+    if (typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')) {
+      downloadHref = dataUrlOrBlob;
+    } else {
+      let blob = dataUrlOrBlob;
+      if (typeof dataUrlOrBlob === 'string' && (dataUrlOrBlob.startsWith('http://') || dataUrlOrBlob.startsWith('https://') || dataUrlOrBlob.startsWith('/'))) {
+        const res = await fetch(dataUrlOrBlob);
+        blob = await res.blob();
+      }
+      downloadHref = window.URL.createObjectURL(blob);
+      isCreatedBlobUrl = true;
+    }
+
+    // สร้าง Element ลิงก์ดาวน์โหลดและ trigger click
     const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.target = '_blank';
+    link.href = downloadHref;
+    link.setAttribute('download', filename);
+    link.setAttribute('target', '_blank');
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
 
     setTimeout(() => {
       link.remove();
-      if (typeof dataUrlOrBlob !== 'string' || !dataUrlOrBlob.startsWith('data:')) {
-        window.URL.revokeObjectURL(url);
+      if (isCreatedBlobUrl) {
+        window.URL.revokeObjectURL(downloadHref);
       }
-    }, 2000);
+    }, 2500);
+
+    // ตรวจสอบว่าเป็น Mobile หรือ LINE LIFF หรือไม่
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
+    if (isMobile || isInLiffClient()) {
+      await showQrImagePreviewModal(downloadHref, filename);
+    } else {
+      showToast('บันทึกรูปภาพเรียบร้อยแล้ว', 'success');
+    }
 
     return true;
   } catch (err) {
-    console.error('Download/Share Image error:', err);
+    console.error('Direct Image Download error:', err);
     throw err;
   }
 }
+
+/**
+ * Capture เฉพาะส่วนการ์ด QR Code (DOM Element) แล้วดาวน์โหลดเป็นรูปภาพลงเครื่อง (รองรับทั้ง iOS และ Android)
+ * @param {HTMLElement} element - DOM Element ที่ต้องการ Capture เช่น การ์ด PromptPay
+ * @param {string} filename - ชื่อไฟล์รูป เช่น promptpay-qr-card.png
+ */
+export async function captureAndDownloadElement(element, filename = 'promptpay-qr-card.png') {
+  if (!element) {
+    throw new Error('ไม่พบ Element สำหรับ Capture');
+  }
+
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 3, // High-res retina quality
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      ignoreElements: (el) => {
+        // ละเว้นปุ่มดาวน์โหลดหรือปุ่มที่ไม่ต้องการให้ติดในรูป
+        return Boolean(el.classList && el.classList.contains('no-capture'));
+      }
+    });
+
+    const dataUrl = canvas.toDataURL('image/png', 1.0);
+    return await downloadImage(dataUrl, filename);
+  } catch (err) {
+    console.error('Capture and download element error:', err);
+    throw err;
+  }
+}
+
+// Backward-Compatibility Aliases
+export const downloadOrSharePdf = downloadPdf;
+export const downloadOrShareImage = downloadImage;

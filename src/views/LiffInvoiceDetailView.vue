@@ -142,7 +142,7 @@
         <!-- 3. Payment Section: PromptPay QR Code & Slip Upload -->
         <div v-if="invoice.status === 'pending' || invoice.status === 'overdue'" class="space-y-3">
           <!-- PromptPay QR Box -->
-          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
+          <div ref="qrCardRef" class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
             <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
               <QrCode class="w-3.5 h-3.5" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
@@ -168,8 +168,8 @@
               <div>ยอดเงิน: <span class="font-bold text-emerald-600 text-base font-mono">฿{{ Number(paymentAmount).toLocaleString() }}</span></div>
             </div>
 
-            <!-- ปุ่มบันทึกรูปภาพ QR Code ลงเครื่อง -->
-            <div v-if="qrData.qrDataUrl" class="pt-1">
+            <!-- ปุ่มบันทึกรูปภาพ QR Code ลงเครื่อง (ไม่ติดในรูปภาพที่แคป) -->
+            <div v-if="qrData.qrDataUrl" class="pt-1 no-capture">
               <button
                 type="button"
                 @click="handleSaveQrCode"
@@ -275,7 +275,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/utils/liff';
-import { downloadOrSharePdf, downloadOrShareImage } from '@/utils/downloadHelper';
+import { downloadOrSharePdf, captureAndDownloadElement, downloadImage } from '@/utils/downloadHelper';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 import { FileText, Download, Receipt, QrCode } from 'lucide-vue-next';
@@ -284,6 +284,7 @@ const route = useRoute();
 const authStore = useAuthStore();
 const invoiceId = route.params.id;
 
+const qrCardRef = ref(null);
 const loading = ref(true);
 const submitting = ref(false);
 const downloadingInvoice = ref(false);
@@ -345,7 +346,7 @@ const copyPromptPayNumber = async () => {
 
 const handleSaveQrCode = async () => {
   const dataUrl = qrData.value?.qrDataUrl || mockQrUrl;
-  if (!dataUrl) {
+  if (!dataUrl && !qrCardRef.value) {
     showError('ไม่สามารถบันทึกได้', 'ไม่พบรูปภาพ QR Code');
     return;
   }
@@ -353,9 +354,22 @@ const handleSaveQrCode = async () => {
   savingQr.value = true;
   try {
     const filename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
-    await downloadOrShareImage(dataUrl, filename);
-    await showSuccess('บันทึกสำเร็จ!', 'บันทึกรูปภาพ QR Code ลงเครื่องเรียบร้อยแล้ว');
+    if (qrCardRef.value) {
+      await captureAndDownloadElement(qrCardRef.value, filename);
+    } else {
+      await downloadImage(dataUrl, filename);
+    }
   } catch (err) {
+    console.error('Save QR error:', err);
+    try {
+      if (dataUrl) {
+        const fallbackFilename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
+        await downloadImage(dataUrl, fallbackFilename);
+        return;
+      }
+    } catch (fallbackErr) {
+      console.error('Fallback save error:', fallbackErr);
+    }
     showError('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกรูปภาพ QR Code ได้');
   } finally {
     savingQr.value = false;

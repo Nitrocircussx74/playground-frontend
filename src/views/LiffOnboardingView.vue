@@ -72,13 +72,33 @@
                 autofocus
                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 font-mono font-bold text-xl text-center tracking-[0.3em] text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
               />
-              <p class="text-[11px] text-slate-400 text-center pt-0.5">ระบบจะเชื่อมต่อบัญชีเข้ากับตึกนี้ทันที</p>
+              <div class="flex items-center justify-between pt-0.5">
+                <p class="text-[11px] text-slate-400">ระบบจะเชื่อมต่อบัญชีเข้ากับตึกนี้ทันที</p>
+                <button
+                  type="button"
+                  @click="handleForgotPin"
+                  class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
+                >
+                  ลืมรหัส PIN?
+                </button>
+              </div>
             </div>
 
             <!-- Alert Error Message -->
-            <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2">
-              <AlertCircle class="w-4 h-4 shrink-0" />
-              <span>{{ errorMessage }}</span>
+            <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium space-y-1.5">
+              <div class="flex items-center gap-2">
+                <AlertCircle class="w-4 h-4 shrink-0" />
+                <span>{{ errorMessage }}</span>
+              </div>
+              <div class="pt-0.5 text-right">
+                <button
+                  type="button"
+                  @click="handleForgotPin"
+                  class="text-[11px] font-bold text-rose-700 underline hover:text-rose-900 cursor-pointer"
+                >
+                  คลิกที่นี่เพื่อตั้งรหัส PIN ใหม่
+                </button>
+              </div>
             </div>
 
             <!-- Submit Button -->
@@ -194,7 +214,7 @@ import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/util
 import api from '@/utils/api';
 import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
-import { showSuccess } from '@/utils/swal';
+import { showSuccess, showConfirm } from '@/utils/swal';
 
 const route = useRoute();
 const router = useRouter();
@@ -312,6 +332,27 @@ const handleLinkAndLogin = async () => {
     errorMessage.value = err.response?.data?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
   } finally {
     submitting.value = false;
+  }
+};
+
+const handleForgotPin = async () => {
+  const cleanPhone = phoneInput.value?.trim();
+  const confirmed = await showConfirm(
+    'ลืมรหัส PIN?',
+    `ต้องการตั้งรหัส PIN ใหม่สำหรับเบอร์ ${cleanPhone} ใช่หรือไม่?`,
+    'ตั้งรหัส PIN ใหม่',
+    'ยกเลิก'
+  );
+
+  if (confirmed) {
+    router.push({
+      path: '/liff/setup-pin',
+      query: {
+        phone: cleanPhone || undefined,
+        name: existingUserName.value || undefined,
+        mode: 'reset'
+      }
+    });
   }
 };
 

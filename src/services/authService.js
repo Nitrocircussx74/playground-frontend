@@ -52,10 +52,19 @@ export const authService = {
 
   /**
    * ตั้งค่ารหัส PIN 6 หลักครั้งแรก
-   * @param {Object} payload - { pin: string, newPin?: string, lineIdToken?: string }
+   * @param {Object} payload - { pin: string, newPin?: string, lineIdToken?: string, phone?: string }
    */
   async setupPin(payload) {
     const response = await api.post('/api/liff/auth/setup-pin', payload);
+    return response.data; // { success: true, message, accessToken, user }
+  },
+
+  /**
+   * รีเซ็ตรหัส PIN 6 หลัก (Forgot PIN / Reset PIN)
+   * @param {Object} payload - { newPin: string, phone?: string, lineIdToken?: string }
+   */
+  async resetPin(payload) {
+    const response = await api.post('/api/liff/auth/reset-pin', payload);
     return response.data; // { success: true, message, accessToken, user }
   },
 

@@ -118,11 +118,18 @@
         </button>
       </div>
 
-      <!-- สลับไปใช้การล็อกอินด้วยเบอร์โทร/รหัสผ่านปกติ -->
-      <div class="text-center pt-3 sm:pt-4">
+      <!-- ตัวเลือกลืมรหัส PIN และสลับไปใช้การล็อกอินด้วยเบอร์โทร/รหัสผ่านปกติ -->
+      <div class="flex flex-col items-center gap-2 pt-3 sm:pt-4">
+        <button
+          type="button"
+          @click="handleForgotPin"
+          class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
+        >
+          ลืมรหัส PIN?
+        </button>
         <router-link
           to="/login"
-          class="text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
+          class="text-[11px] sm:text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors"
         >
           เข้าสู่ระบบด้วยเบอร์โทรศัพท์ / รหัสผ่าน
         </router-link>
@@ -137,6 +144,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/services/authService';
 import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/utils/liff';
+import { showConfirm } from '@/utils/swal';
 import { Delete } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -238,6 +246,22 @@ const triggerErrorFeedback = (msg) => {
     isShaking.value = false;
     enteredPin.value = '';
   }, 500);
+};
+
+const handleForgotPin = async () => {
+  const confirmed = await showConfirm(
+    'ลืมรหัส PIN?',
+    'ต้องการตั้งรหัส PIN ใหม่ผ่านบัญชี LINE ของคุณใช่หรือไม่?',
+    'ตั้งรหัส PIN ใหม่',
+    'ยกเลิก'
+  );
+
+  if (confirmed) {
+    router.push({
+      path: '/liff/setup-pin',
+      query: { mode: 'reset' }
+    });
+  }
 };
 
 const handleKeyDown = (e) => {
