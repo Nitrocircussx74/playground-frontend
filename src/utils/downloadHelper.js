@@ -64,3 +64,57 @@ export async function downloadOrSharePdf(blob, filename, fallbackDirectUrl = '')
     throw err;
   }
 }
+
+/**
+ * Universal Image Downloader & Share Sheet for PromptPay QR Code
+ */
+export async function downloadOrShareImage(dataUrlOrBlob, filename = 'promptpay-qr.png') {
+  try {
+    let blob = dataUrlOrBlob;
+    if (typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')) {
+      const res = await fetch(dataUrlOrBlob);
+      blob = await res.blob();
+    }
+
+    // 1. Web Share API with File (Works on iOS / Android in LINE In-App Browser for Saving to Photos/Files)
+    if (typeof navigator !== 'undefined' && navigator.canShare && typeof File !== 'undefined') {
+      try {
+        const file = new File([blob], filename, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: 'PromptPay QR Code',
+            text: 'คิวอาร์โค้ดพร้อมเพย์สำหรับชำระเงินค่าเช่า',
+            files: [file]
+          });
+          return true;
+        }
+      } catch (shareErr) {
+        if (shareErr.name === 'AbortError') return true;
+        console.warn('⚠️ Image Share API fallback:', shareErr);
+      }
+    }
+
+    // 2. Standard Download Anchor Fallback
+    const url = typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')
+      ? dataUrlOrBlob
+      : window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      link.remove();
+      if (typeof dataUrlOrBlob !== 'string' || !dataUrlOrBlob.startsWith('data:')) {
+        window.URL.revokeObjectURL(url);
+      }
+    }, 2000);
+
+    return true;
+  } catch (err) {
+    console.error('Download/Share Image error:', err);
+    throw err;
+  }
+}

@@ -112,7 +112,18 @@
               <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
             </div>
 
-            <div v-if="Number(invoice.otherFee) > 0" class="flex justify-between items-center pt-2">
+            <!-- รายการค่าใช้จ่ายอื่นๆ (Other Fees / Itemized Additional Charges) -->
+            <template v-if="parsedOtherFees.length > 0">
+              <div
+                v-for="(item, idx) in parsedOtherFees"
+                :key="idx"
+                class="flex justify-between items-center pt-2"
+              >
+                <span class="text-slate-600">{{ item.note || 'ค่าบริการอื่นๆ' }}</span>
+                <span class="font-bold text-slate-800 font-mono">฿{{ Number(item.amount || 0).toLocaleString() }}</span>
+              </div>
+            </template>
+            <div v-else-if="Number(invoice.otherFee) > 0" class="flex justify-between items-center pt-2">
               <span class="text-slate-600">ค่าบริการอื่นๆ {{ invoice.otherFeeNote ? `(${invoice.otherFeeNote})` : '' }}</span>
               <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.otherFee).toLocaleString() }}</span>
             </div>
@@ -131,18 +142,43 @@
         <!-- 3. Payment Section: PromptPay QR Code & Slip Upload -->
         <div v-if="invoice.status === 'pending' || invoice.status === 'overdue'" class="space-y-3">
           <!-- PromptPay QR Box -->
-          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-2.5">
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
             <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
+              <QrCode class="w-3.5 h-3.5" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
             <div class="py-1">
-              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-100 shadow-2xs" />
+              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
             </div>
 
-            <div class="text-xs text-slate-600 space-y-0.5 font-mono">
-              <div>หมายเลขพร้อมเพย์: <span class="font-bold text-slate-800">{{ qrData.promptpayNumber || '081-234-5678' }}</span></div>
-              <div>ยอดเงิน: <span class="font-bold text-emerald-600 text-sm">฿{{ Number(invoice.grandTotal).toLocaleString() }}</span></div>
+            <div class="text-xs text-slate-600 space-y-1 font-mono">
+              <div class="flex items-center justify-center gap-2">
+                <span>พร้อมเพย์:</span>
+                <span class="font-bold text-slate-800">{{ qrData.promptpayNumber || '081-234-5678' }}</span>
+                <button
+                  v-if="qrData.promptpayNumber"
+                  type="button"
+                  @click="copyPromptPayNumber"
+                  class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
+                >
+                  {{ isCopied ? 'คัดลอกแล้ว ✓' : 'คัดลอก' }}
+                </button>
+              </div>
+              <div>ยอดเงิน: <span class="font-bold text-emerald-600 text-base font-mono">฿{{ Number(paymentAmount).toLocaleString() }}</span></div>
+            </div>
+
+            <!-- ปุ่มบันทึกรูปภาพ QR Code ลงเครื่อง -->
+            <div v-if="qrData.qrDataUrl" class="pt-1">
+              <button
+                type="button"
+                @click="handleSaveQrCode"
+                :disabled="savingQr"
+                class="w-full sm:w-auto px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 border border-indigo-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                <Download class="w-4 h-4 text-indigo-600" />
+                <span>{{ savingQr ? 'กำลังบันทึกภาพ...' : 'บันทึกรูป QR Code ลงเครื่อง' }}</span>
+              </button>
             </div>
           </div>
 
@@ -239,10 +275,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/utils/liff';
-import { downloadOrSharePdf } from '@/utils/downloadHelper';
+import { downloadOrSharePdf, downloadOrShareImage } from '@/utils/downloadHelper';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
-import { FileText, Download, Receipt } from 'lucide-vue-next';
+import { FileText, Download, Receipt, QrCode } from 'lucide-vue-next';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -252,6 +288,8 @@ const loading = ref(true);
 const submitting = ref(false);
 const downloadingInvoice = ref(false);
 const downloadingReceipt = ref(false);
+const savingQr = ref(false);
+const isCopied = ref(false);
 const errorMessage = ref('');
 const invoice = ref({});
 const qrData = ref({});
@@ -260,6 +298,69 @@ const previewUrl = ref('');
 const lineUserId = ref('');
 
 const mockQrUrl = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=400&q=80';
+
+const paymentAmount = computed(() => {
+  const qrAmt = Number(qrData.value?.amount);
+  if (!isNaN(qrAmt) && qrAmt > 0) return qrAmt;
+  const invAmt = Number(invoice.value?.grandTotal);
+  if (!isNaN(invAmt) && invAmt > 0) return invAmt;
+  return 0;
+});
+
+const parsedOtherFees = computed(() => {
+  const note = invoice.value?.otherFeeNote;
+  const totalOther = Number(invoice.value?.otherFee || 0);
+
+  if (note && typeof note === 'string' && note.trim().startsWith('[')) {
+    try {
+      const list = JSON.parse(note);
+      if (Array.isArray(list) && list.length > 0) {
+        return list;
+      }
+    } catch {
+      // fallback
+    }
+  }
+
+  if (totalOther > 0) {
+    return [{ note: note || 'ค่าบริการอื่นๆ', amount: totalOther }];
+  }
+
+  return [];
+});
+
+const copyPromptPayNumber = async () => {
+  const num = qrData.value?.promptpayNumber;
+  if (!num) return;
+  try {
+    await navigator.clipboard.writeText(num);
+    isCopied.value = true;
+    setTimeout(() => {
+      isCopied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.warn('Clipboard write error:', err);
+  }
+};
+
+const handleSaveQrCode = async () => {
+  const dataUrl = qrData.value?.qrDataUrl || mockQrUrl;
+  if (!dataUrl) {
+    showError('ไม่สามารถบันทึกได้', 'ไม่พบรูปภาพ QR Code');
+    return;
+  }
+
+  savingQr.value = true;
+  try {
+    const filename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
+    await downloadOrShareImage(dataUrl, filename);
+    await showSuccess('บันทึกสำเร็จ!', 'บันทึกรูปภาพ QR Code ลงเครื่องเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกรูปภาพ QR Code ได้');
+  } finally {
+    savingQr.value = false;
+  }
+};
 
 onMounted(async () => {
   try {

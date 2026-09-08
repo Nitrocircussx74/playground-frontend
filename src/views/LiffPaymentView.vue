@@ -63,36 +63,88 @@
             <div class="space-y-2 text-xs divide-y divide-slate-100">
               <div class="flex justify-between text-slate-600 pt-1">
                 <span>ค่าเช่าห้องพัก</span>
-                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.roomPrice).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.roomPrice || 0).toLocaleString() }}</span>
               </div>
               <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าน้ำประปา</span>
-                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.waterTotal || 0).toLocaleString() }}</span>
               </div>
               <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าไฟฟ้า</span>
-                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.electricTotal || 0).toLocaleString() }}</span>
               </div>
               <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าส่วนกลาง</span>
-                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.commonFee || 0).toLocaleString() }}</span>
+              </div>
+
+              <!-- รายการค่าใช้จ่ายอื่นๆ (Other Fees / Itemized Additional Charges) -->
+              <template v-if="parsedOtherFees.length > 0">
+                <div
+                  v-for="(item, idx) in parsedOtherFees"
+                  :key="idx"
+                  class="flex justify-between text-slate-600 pt-2"
+                >
+                  <span class="text-slate-700">
+                    {{ item.note || 'ค่าบริการอื่นๆ' }}
+                  </span>
+                  <span class="font-mono text-slate-800 font-bold">฿{{ Number(item.amount || 0).toLocaleString() }}</span>
+                </div>
+              </template>
+              <div v-else-if="Number(invoice.otherFee) > 0" class="flex justify-between text-slate-600 pt-2">
+                <span class="text-slate-700">ค่าบริการอื่นๆ {{ invoice.otherFeeNote ? `(${invoice.otherFeeNote})` : '' }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.otherFee).toLocaleString() }}</span>
+              </div>
+
+              <!-- ค่าปรับชำระล่าช้า (Late Fee) -->
+              <div v-if="Number(invoice.lateFeeCharge) > 0" class="flex justify-between items-center pt-2 text-rose-600 font-bold bg-rose-50/60 p-2 rounded-xl border border-rose-100 mt-1">
+                <span class="flex items-center gap-1.5">
+                  <span>⚠️</span>
+                  <span>ค่าปรับชำระล่าช้า (Late Fee)</span>
+                </span>
+                <span class="font-mono text-sm font-extrabold">+฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</span>
               </div>
             </div>
           </div>
 
           <!-- PromptPay QR Code Box -->
-          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-2.5">
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
             <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
-              <span>PromptPay QR Code</span>
+              <QrCode class="w-3.5 h-3.5" />
+              <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
-            <div class="py-1">
-              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-100 shadow-2xs" />
+            <div v-if="qrData.qrDataUrl" class="py-1">
+              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
             </div>
 
-            <div class="text-xs text-slate-600 space-y-0.5 font-mono">
-              <div>พร้อมเพย์: <span class="font-bold text-slate-800">{{ qrData.promptpayNumber }}</span></div>
-              <div>ยอดชำระ: <span class="font-bold text-emerald-600 text-sm">฿{{ Number(qrData.amount).toLocaleString() }}</span></div>
+            <div class="text-xs text-slate-600 space-y-1 font-mono">
+              <div class="flex items-center justify-center gap-2">
+                <span>พร้อมเพย์:</span>
+                <span class="font-bold text-slate-800">{{ qrData.promptpayNumber || '-' }}</span>
+                <button
+                  v-if="qrData.promptpayNumber"
+                  type="button"
+                  @click="copyPromptPayNumber"
+                  class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
+                >
+                  {{ isCopied ? 'คัดลอกแล้ว ✓' : 'คัดลอก' }}
+                </button>
+              </div>
+              <div>ยอดชำระ: <span class="font-bold text-emerald-600 text-base font-mono">฿{{ Number(paymentAmount).toLocaleString() }}</span></div>
+            </div>
+
+            <!-- ปุ่มบันทึกรูปภาพ QR Code ลงเครื่อง -->
+            <div v-if="qrData.qrDataUrl" class="pt-1">
+              <button
+                type="button"
+                @click="handleSaveQrCode"
+                :disabled="savingQr"
+                class="w-full sm:w-auto px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 border border-indigo-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                <Download class="w-4 h-4 text-indigo-600" />
+                <span>{{ savingQr ? 'กำลังบันทึกภาพ...' : 'บันทึกรูป QR Code ลงเครื่อง' }}</span>
+              </button>
             </div>
           </div>
 
@@ -113,12 +165,12 @@
 
               <!-- Optional Amount Override for Testing Auto Verification -->
               <div>
-                <label class="block text-[11px] font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อทดสอบ Auto Verification)</label>
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อยืนยันยอดชำระ)</label>
                 <input
                   v-model="declaredAmount"
                   type="number"
                   step="0.01"
-                  :placeholder="`฿${invoice.grandTotal}`"
+                  :placeholder="`฿${invoice.grandTotal || 0}`"
                   class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-mono text-slate-800 focus:outline-hidden focus:bg-white focus:ring-1 focus:ring-indigo-400"
                 />
               </div>
@@ -143,17 +195,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { initLiff } from '@/utils/liff';
 import api from '@/utils/api';
-import { showError } from '@/utils/swal';
+import { showError, showSuccess } from '@/utils/swal';
+import { downloadOrShareImage } from '@/utils/downloadHelper';
+import { Download, QrCode } from 'lucide-vue-next';
 
 const route = useRoute();
 const invoiceId = route.params.invoiceId;
 
 const loading = ref(true);
 const submitting = ref(false);
+const savingQr = ref(false);
+const isCopied = ref(false);
 const errorMessage = ref('');
 const invoice = ref({});
 const qrData = ref({});
@@ -162,13 +218,43 @@ const previewUrl = ref('');
 const declaredAmount = ref('');
 const verificationResult = ref(null);
 
+const paymentAmount = computed(() => {
+  const qrAmt = Number(qrData.value?.amount);
+  if (!isNaN(qrAmt) && qrAmt > 0) return qrAmt;
+  const invAmt = Number(invoice.value?.grandTotal);
+  if (!isNaN(invAmt) && invAmt > 0) return invAmt;
+  return 0;
+});
+
+const parsedOtherFees = computed(() => {
+  const note = invoice.value?.otherFeeNote;
+  const totalOther = Number(invoice.value?.otherFee || 0);
+
+  if (note && typeof note === 'string' && note.trim().startsWith('[')) {
+    try {
+      const list = JSON.parse(note);
+      if (Array.isArray(list) && list.length > 0) {
+        return list;
+      }
+    } catch {
+      // fallback to single entry
+    }
+  }
+
+  if (totalOther > 0) {
+    return [{ note: note || 'ค่าบริการอื่นๆ', amount: totalOther }];
+  }
+
+  return [];
+});
+
 onMounted(async () => {
   try {
     await initLiff();
 
     const response = await api.get(`/api/v1/liff/invoices/${invoiceId}`);
     invoice.value = response.data.data.invoice;
-    qrData.value = response.data.data.qrData;
+    qrData.value = response.data.data.qrData || {};
     declaredAmount.value = invoice.value.grandTotal;
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'ไม่สามารถดึงข้อมูลบิลได้';
@@ -183,6 +269,37 @@ const handleFileChange = (e) => {
 
   selectedFile.value = file;
   previewUrl.value = URL.createObjectURL(file);
+};
+
+const copyPromptPayNumber = async () => {
+  if (!qrData.value?.promptpayNumber) return;
+  try {
+    await navigator.clipboard.writeText(qrData.value.promptpayNumber);
+    isCopied.value = true;
+    setTimeout(() => {
+      isCopied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.warn('Clipboard write error:', err);
+  }
+};
+
+const handleSaveQrCode = async () => {
+  if (!qrData.value?.qrDataUrl) {
+    showError('ไม่สามารถบันทึกได้', 'ไม่พบรูปภาพ QR Code');
+    return;
+  }
+
+  savingQr.value = true;
+  try {
+    const filename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
+    await downloadOrShareImage(qrData.value.qrDataUrl, filename);
+    await showSuccess('บันทึกสำเร็จ!', 'บันทึกรูปภาพ QR Code ลงเครื่องเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกรูปภาพ QR Code ได้ กรุณาลองใหม่อีกครั้ง');
+  } finally {
+    savingQr.value = false;
+  }
 };
 
 const handleUploadSlip = async () => {
