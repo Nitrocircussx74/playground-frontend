@@ -153,31 +153,30 @@ onMounted(async () => {
       // 1. ดึง LINE Profile สดจาก LINE SDK
       lineProfile.value = await getLiffProfile();
 
-      // 2. เช็คสถานะการผูกห้องพักในฐานข้อมูล
-      const res = await api.get('/api/v1/liff/check-status');
-
-      // ตรวจสอบ Deep Link Target
-      const liffState = route.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
-      const redirectQuery = route.query.redirect || route.query.path || route.query.target;
-      let targetPath = '/liff/profile';
-
-      if (liffState) {
-        try {
-          const decoded = decodeURIComponent(liffState);
-          targetPath = decoded.startsWith('/liff') ? decoded : `/liff${decoded.startsWith('/') ? '' : '/'}${decoded}`;
-        } catch {
-          targetPath = '/liff/profile';
-        }
-      } else if (redirectQuery) {
-        targetPath = redirectQuery.startsWith('/liff') ? redirectQuery : `/liff${redirectQuery.startsWith('/') ? '' : '/'}${redirectQuery}`;
+      // 2. เช็คสถานะการผูกห้องพักและการตั้งค่า PIN ในฐานข้อมูล
+      const idToken = getLiffIdToken() || localStorage.getItem('dev_line_user_id') || 'U_mock_tenant_user_1';
+      let statusRes = null;
+      try {
+        statusRes = await authService.checkLiffStatus(idToken);
+      } catch (e) {
+        console.warn('Check status fallback:', e.message);
       }
 
-      if (res.data?.isRegistered) {
-        // [CASE A: ลูกบ้านที่ผูกบัญชีแล้ว] -> เข้าหน้าบริการทันทีแบบ Zero-Click!
-        statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าบริการ...';
-        router.replace(targetPath);
+      const isLinked = statusRes?.isLinked || statusRes?.isRegistered || statusRes?.data?.isLinked;
+      const hasPin = statusRes?.hasPin || statusRes?.data?.hasPin;
+
+      if (isLinked) {
+        if (!hasPin) {
+          // [CASE 1: ลูกบ้านยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
+          statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN ครั้งแรก...';
+          router.replace('/liff/setup-pin');
+        } else {
+          // [CASE 2: ลูกบ้านมี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
+          statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าระบุ PIN...';
+          router.replace('/liff/pin-login');
+        }
       } else {
-        // [CASE B: ลูกบ้านใหม่/ยังไม่เคยผูก] -> แสดงฟอร์มกรอกเบอร์โทรศัพท์
+        // [CASE 3: ลูกบ้านใหม่/ยังไม่เคยผูก] -> แสดงฟอร์มกรอกเบอร์โทรศัพท์
         loading.value = false;
         showPhoneVerifyForm.value = true;
       }

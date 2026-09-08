@@ -32,21 +32,39 @@ export const authService = {
   },
 
   /**
+   * ตรวจสอบสถานะการผูกบัญชีและการตั้งค่า PIN ของลูกบ้าน
+   * @param {string} lineIdToken
+   */
+  async checkLiffStatus(lineIdToken) {
+    const response = await api.post('/api/liff/auth/check-status', { lineIdToken });
+    return response.data; // { success: true, isLinked: boolean, hasPin: boolean, data }
+  },
+
+  /**
    * เข้าสู่ระบบด้วย LINE PIN 6 หลัก (LIFF Seamless PIN Auto-Login)
    * @param {string} lineIdToken
    * @param {string} pin
    */
   async loginPin(lineIdToken, pin) {
-    const response = await api.post('/api/auth/liff/pin-login', { lineIdToken, pin });
+    const response = await api.post('/api/liff/auth/pin-login', { lineIdToken, pin });
     return response.data; // { success: true, accessToken, user, tenant }
   },
 
   /**
-   * ตั้งค่าหรือเปลี่ยนรหัส PIN 6 หลัก
-   * @param {Object} payload - { pin: string, lineIdToken?: string }
+   * ตั้งค่ารหัส PIN 6 หลักครั้งแรก
+   * @param {Object} payload - { pin: string, newPin?: string, lineIdToken?: string }
    */
   async setupPin(payload) {
-    const response = await api.post('/api/auth/liff/setup-pin', payload);
+    const response = await api.post('/api/liff/auth/setup-pin', payload);
+    return response.data; // { success: true, message, accessToken, user }
+  },
+
+  /**
+   * เปลี่ยนรหัส PIN ของลูกบ้าน (ต้องแนบ Bearer Token)
+   * @param {Object} payload - { oldPin: string, newPin: string }
+   */
+  async changePin(payload) {
+    const response = await api.post('/api/liff/profile/change-pin', payload);
     return response.data; // { success: true, message }
   },
 

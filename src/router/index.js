@@ -15,8 +15,20 @@ const routes = [
   {
     path: '/pin-login',
     name: 'PinLogin',
-    component: () => import('@/views/PinLoginView.vue'),
+    component: () => import('@/views/LiffPinLogin.vue'),
     meta: { isLiff: true, title: 'เข้าสู่ระบบด้วยรหัส PIN' }
+  },
+  {
+    path: '/setup-pin',
+    name: 'SetupPin',
+    component: () => import('@/views/LiffSetupPin.vue'),
+    meta: { isLiff: true, title: 'ตั้งรหัส PIN 6 หลัก' }
+  },
+  {
+    path: '/change-pin',
+    name: 'ChangePin',
+    component: () => import('@/views/LiffChangePin.vue'),
+    meta: { isLiff: true, title: 'เปลี่ยนรหัส PIN' }
   },
 
   // 🏢 1. CMS Admin Backoffice Routes (ต้องการสิทธิ์ Admin JWT Authentication)
@@ -150,8 +162,20 @@ const routes = [
       {
         path: 'pin-login',
         name: 'LiffPinLogin',
-        component: () => import('@/views/PinLoginView.vue'),
+        component: () => import('@/views/LiffPinLogin.vue'),
         meta: { isLiff: true, title: 'เข้าสู่ระบบด้วยรหัส PIN' }
+      },
+      {
+        path: 'setup-pin',
+        name: 'LiffSetupPin',
+        component: () => import('@/views/LiffSetupPin.vue'),
+        meta: { isLiff: true, title: 'ตั้งรหัส PIN 6 หลัก' }
+      },
+      {
+        path: 'change-pin',
+        name: 'LiffChangePin',
+        component: () => import('@/views/LiffChangePin.vue'),
+        meta: { isLiff: true, title: 'เปลี่ยนรหัส PIN' }
       },
       {
         path: 'profile',

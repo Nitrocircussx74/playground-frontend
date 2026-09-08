@@ -409,6 +409,7 @@ import {
   ChevronRight,
   PlusCircle,
   Lock,
+  KeyRound,
   X
 } from 'lucide-vue-next';
 
@@ -623,6 +624,13 @@ const quickActionsConfig = [
 
 // 2. เมนูทั่วไป (General Settings List)
 const generalMenusConfig = [
+  {
+    id: 'change-pin',
+    title: 'เปลี่ยนรหัส PIN 6 หลัก (Change PIN)',
+    icon: KeyRound,
+    route: '/liff/change-pin',
+    featureKey: null
+  },
   {
     id: 'password',
     title: 'ตั้งรหัสผ่านเข้าใช้งานบนเว็บ (Web Password)',
