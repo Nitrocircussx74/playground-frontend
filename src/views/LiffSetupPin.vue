@@ -2,29 +2,29 @@
   <div class="w-full min-h-full flex flex-col justify-between items-center px-4 sm:px-6 py-2 sm:py-4 select-none font-sans max-w-md mx-auto">
     
     <!-- 1. Header & Step Instructions -->
-    <header class="w-full flex flex-col items-center pt-1 sm:pt-2 space-y-2 sm:space-y-3 text-center shrink-0">
+    <header class="w-full flex flex-col items-center pt-2 space-y-2 text-center shrink-0">
       <!-- Icon Badge -->
-      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50 border border-indigo-100/80 shadow-xs flex items-center justify-center text-indigo-600 transition-transform">
-        <ShieldCheck class="w-6 h-6 sm:w-7 sm:h-7" />
+      <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+        <ShieldCheck class="w-6 h-6" />
       </div>
 
-      <div class="space-y-1 sm:space-y-1.5">
-        <span class="inline-flex items-center px-2.5 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-indigo-50 text-indigo-600 border border-indigo-100 tracking-wide">
+      <div class="space-y-1">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
           ขั้นตอนที่ {{ step }} จาก 2
         </span>
-        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">
+        <h1 class="text-base font-bold tracking-tight text-slate-800">
           {{ step === 1 ? 'ตั้งรหัส PIN 6 หลัก' : 'ยืนยันรหัส PIN อีกครั้ง' }}
         </h1>
-        <p class="text-[11px] sm:text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
+        <p class="text-xs text-slate-400 font-medium max-w-xs mx-auto">
           {{ step === 1 ? 'สร้างรหัสผ่าน 6 หลักเพื่อใช้เข้าสู่ระบบอย่างรวดเร็ว' : 'กรอกรหัส PIN เดิมอีกครั้งเพื่อยืนยันความถูกต้อง' }}
         </p>
       </div>
     </header>
 
     <!-- 2. PIN Indicator Dots (6 จุด พร้อม Animation สั่นเมื่อไม่ตรงกัน) -->
-    <main class="w-full flex flex-col items-center my-auto py-3 sm:py-6 shrink-0">
+    <main class="w-full flex flex-col items-center my-auto py-4 shrink-0">
       <div
-        class="flex items-center justify-center gap-3 sm:gap-4 py-1 sm:py-2"
+        class="flex items-center justify-center gap-3.5 py-1"
         :class="{ 'animate-shake': isShaking }"
       >
         <div
@@ -33,28 +33,27 @@
           class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
           :class="[
             index <= enteredPin.length
-              ? 'bg-indigo-600 scale-110 shadow-md shadow-indigo-300/60 ring-3 sm:ring-4 ring-indigo-100'
-              : 'bg-slate-200/80 border border-slate-300'
+              ? 'bg-indigo-600 scale-110 shadow-sm shadow-indigo-300/40 ring-4 ring-indigo-100/70'
+              : 'bg-slate-200/60 border border-slate-200'
           ]"
         ></div>
       </div>
 
       <!-- Feedback / Error Message -->
       <transition name="fade">
-        <div v-if="errorMessage" class="text-xs font-bold text-rose-500 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1">
-          <span>⚠️</span>
+        <div v-if="errorMessage" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
           <span>{{ errorMessage }}</span>
         </div>
-        <div v-else-if="isLoading" class="text-xs font-bold text-indigo-600 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
-          <span class="w-2 h-2 rounded-full bg-indigo-600 animate-ping"></span>
+        <div v-else-if="isLoading" class="text-xs font-medium text-indigo-600 mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-ping"></span>
           <span>กำลังบันทึกรหัส PIN...</span>
         </div>
-        <div v-else class="h-5 mt-2 sm:mt-3"></div>
+        <div v-else class="h-5 mt-2"></div>
       </transition>
     </main>
 
     <!-- 3. Minimalist iOS-Style Numpad Grid (0-9, Clear, Backspace) -->
-    <footer class="w-full pb-2 sm:pb-4 shrink-0">
+    <footer class="w-full pb-2 shrink-0">
       <div class="grid grid-cols-3 gap-y-2.5 sm:gap-y-3.5 gap-x-4 sm:gap-x-6 justify-items-center max-w-[260px] sm:max-w-[280px] mx-auto">
         <!-- แถวที่ 1 ถึง 3: ตัวเลข 1 ถึง 9 -->
         <button
@@ -63,7 +62,7 @@
           type="button"
           :disabled="isLoading"
           @click="pressKey(num)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/90 text-slate-800 text-xl sm:text-2xl font-bold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-100 text-slate-700 text-xl font-semibold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
         >
           {{ num }}
         </button>
@@ -73,9 +72,9 @@
           type="button"
           :disabled="isLoading || enteredPin.length === 0"
           @click="clearCurrentPin"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-xs font-extrabold text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-0 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-xs font-bold text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-0 touch-manipulation"
         >
-          ล้างค่า
+          ล้าง
         </button>
 
         <!-- ตัวเลข 0 -->
@@ -83,7 +82,7 @@
           type="button"
           :disabled="isLoading"
           @click="pressKey(0)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/90 text-slate-800 text-xl sm:text-2xl font-bold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-100 text-slate-700 text-xl font-semibold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
         >
           0
         </button>
@@ -96,7 +95,7 @@
           class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-30 touch-manipulation"
           aria-label="ลบตัวเลข"
         >
-          <Delete class="w-5 h-5 sm:w-6 sm:h-6" />
+          <Delete class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
         </button>
       </div>
     </footer>

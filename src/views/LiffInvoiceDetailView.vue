@@ -1,35 +1,35 @@
 <template>
-  <div class="space-y-5 pb-6 font-sans text-slate-900">
-    <div class="space-y-5">
+  <div class="space-y-4 pb-6 font-sans text-slate-800">
+    <div class="space-y-4">
       <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-3xl shadow-sm text-center text-slate-500">
-        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div v-if="loading" class="p-8 bg-white rounded-2xl shadow-xs border border-slate-100 text-center text-slate-400 text-xs">
+        <div class="animate-spin w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2.5"></div>
         กำลังโหลดรายละเอียดบิล...
       </div>
 
       <!-- Error State -->
-      <div v-else-if="errorMessage" class="p-5 bg-rose-50 border border-rose-200 text-rose-700 rounded-3xl text-sm text-center font-medium">
+      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
 
-      <div v-else class="space-y-5">
+      <div v-else class="space-y-4">
         <!-- 1. Header Card (ยอดสุทธิ & สถานะบิล) -->
-        <div class="p-6 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white rounded-3xl shadow-xl relative overflow-hidden space-y-3">
-          <div class="flex items-center justify-between text-xs opacity-90">
+        <div class="p-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl shadow-md relative overflow-hidden space-y-2.5">
+          <div class="flex items-center justify-between text-xs text-indigo-100">
             <span>รอบบิล {{ invoice.billingCycle }}</span>
-            <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-[11px]">{{ invoice.invoiceNumber }}</span>
+            <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{{ invoice.invoiceNumber }}</span>
           </div>
 
           <div>
-            <div class="text-xs text-indigo-100">ห้องพักหมายเลข</div>
-            <div class="text-2xl font-black">ห้อง {{ invoice.room?.roomNumber }}</div>
+            <div class="text-[11px] text-indigo-100/90 font-medium">ห้องพักหมายเลข</div>
+            <div class="text-xl font-bold">ห้อง {{ invoice.room?.roomNumber }}</div>
           </div>
 
-          <div class="pt-3 border-t border-white/20 flex items-center justify-between">
+          <div class="pt-2.5 border-t border-white/20 flex items-center justify-between">
             <div>
-              <div class="text-[10px] text-indigo-100">สถานะชำระเงิน</div>
+              <div class="text-[10px] text-indigo-100/80">สถานะชำระเงิน</div>
               <span
-                class="inline-block mt-0.5 text-xs font-bold px-2.5 py-0.5 rounded-full border shadow-2xs"
+                class="inline-block mt-0.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs"
                 :class="statusBadgeClass"
               >
                 {{ statusBadgeText }}
@@ -37,90 +37,90 @@
             </div>
 
             <div class="text-right">
-              <div class="text-[10px] text-indigo-100">ยอดชำระสุทธิ</div>
-              <div class="text-2xl font-black font-mono">฿{{ Number(invoice.grandTotal).toLocaleString() }}</div>
+              <div class="text-[10px] text-indigo-100/80">ยอดชำระสุทธิ</div>
+              <div class="text-xl font-bold font-mono">฿{{ Number(invoice.grandTotal).toLocaleString() }}</div>
             </div>
           </div>
         </div>
 
         <!-- 2. Bill Breakdown Table (แจกแจงค่าเช่า, ค่าน้ำ, ค่าไฟ, ค่าส่วนกลาง) -->
-        <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-          <h3 class="text-xs uppercase font-extrabold text-slate-400 tracking-wider">แจกแจงรายละเอียดค่าใช้จ่าย (Bill Breakdown)</h3>
+        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">รายละเอียดค่าใช้จ่าย (Bill Breakdown)</h3>
 
-          <div class="space-y-2.5 text-sm divide-y divide-slate-100">
+          <div class="space-y-2 text-xs divide-y divide-slate-100">
             <div class="flex justify-between items-center pt-1">
               <span class="text-slate-600">ค่าเช่าห้องพัก</span>
-              <span class="font-bold text-slate-900 font-mono">฿{{ Number(invoice.roomPrice).toLocaleString() }}</span>
+              <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.roomPrice).toLocaleString() }}</span>
             </div>
 
-            <div class="pt-2 space-y-1">
+            <div class="pt-2 space-y-0.5">
               <div class="flex justify-between items-center">
                 <span class="text-slate-600">ค่าน้ำประปา</span>
-                <span class="font-bold text-slate-900 font-mono">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
+                <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
               </div>
-              <div class="text-[11px] text-slate-400 font-mono pl-2">
-                มิเตอร์: {{ invoice.waterPrevious || 100 }} ➔ {{ invoice.waterCurrent || 115 }} (ใช้ไป {{ (invoice.waterCurrent || 115) - (invoice.waterPrevious || 100) }} หน่วย)
+              <div class="text-[10px] text-slate-400 font-mono">
+                มิเตอร์: {{ invoice.waterPrevious || 100 }} ➔ {{ invoice.waterCurrent || 115 }} ({{ (invoice.waterCurrent || 115) - (invoice.waterPrevious || 100) }} หน่วย)
               </div>
             </div>
 
-            <div class="pt-2 space-y-1">
+            <div class="pt-2 space-y-0.5">
               <div class="flex justify-between items-center">
                 <span class="text-slate-600">ค่าไฟฟ้า</span>
-                <span class="font-bold text-slate-900 font-mono">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
+                <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
               </div>
-              <div class="text-[11px] text-slate-400 font-mono pl-2">
-                มิเตอร์: {{ invoice.electricPrevious || 1000 }} ➔ {{ invoice.electricCurrent || 1080 }} (ใช้ไป {{ (invoice.electricCurrent || 1080) - (invoice.electricPrevious || 1000) }} หน่วย)
+              <div class="text-[10px] text-slate-400 font-mono">
+                มิเตอร์: {{ invoice.electricPrevious || 1000 }} ➔ {{ invoice.electricCurrent || 1080 }} ({{ (invoice.electricCurrent || 1080) - (invoice.electricPrevious || 1000) }} หน่วย)
               </div>
             </div>
 
             <div class="flex justify-between items-center pt-2">
               <span class="text-slate-600">ค่าส่วนกลาง</span>
-              <span class="font-bold text-slate-900 font-mono">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
+              <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
             </div>
           </div>
         </div>
 
-        <!-- 3. Payment Section: PromptPay QR Code & Slip Upload (แสดงเฉพาะเมื่อ status = pending หรือ overdue) -->
-        <div v-if="invoice.status === 'pending' || invoice.status === 'overdue'" class="space-y-4">
+        <!-- 3. Payment Section: PromptPay QR Code & Slip Upload -->
+        <div v-if="invoice.status === 'pending' || invoice.status === 'overdue'" class="space-y-3">
           <!-- PromptPay QR Box -->
-          <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-xs text-center space-y-3">
-            <div class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-200">
-              <span>📲 PromptPay QR Code (สแกนชำระเงิน)</span>
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-2.5">
+            <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
+              <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
-            <div class="py-2">
-              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-56 h-56 mx-auto rounded-2xl border border-slate-200 shadow-xs" />
+            <div class="py-1">
+              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-100 shadow-2xs" />
             </div>
 
-            <div class="text-xs text-slate-600 space-y-1 font-mono">
-              <div>หมายเลขพร้อมเพย์: <span class="font-bold text-slate-900">{{ qrData.promptpayNumber || '081-234-5678' }}</span></div>
+            <div class="text-xs text-slate-600 space-y-0.5 font-mono">
+              <div>หมายเลขพร้อมเพย์: <span class="font-bold text-slate-800">{{ qrData.promptpayNumber || '081-234-5678' }}</span></div>
               <div>ยอดเงิน: <span class="font-bold text-emerald-600 text-sm">฿{{ Number(invoice.grandTotal).toLocaleString() }}</span></div>
             </div>
           </div>
 
           <!-- Slip Upload Form -->
-          <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
-            <h3 class="text-sm font-bold text-slate-900">แนบสลิปโอนเงิน (Upload Payment Slip)</h3>
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+            <h3 class="text-xs font-bold text-slate-800">แนบสลิปโอนเงิน (Upload Slip)</h3>
 
-            <form @submit.prevent="handleUploadSlip" class="space-y-4">
+            <form @submit.prevent="handleUploadSlip" class="space-y-3">
               <div>
                 <input
                   type="file"
                   accept="image/png, image/jpeg, image/jpg"
                   required
                   @change="handleFileChange"
-                  class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 cursor-pointer"
                 />
               </div>
 
               <div v-if="previewUrl" class="text-center">
-                <img :src="previewUrl" class="h-44 mx-auto object-cover rounded-2xl border border-slate-200 shadow-xs" />
+                <img :src="previewUrl" class="h-40 mx-auto object-cover rounded-xl border border-slate-100 shadow-xs" />
               </div>
 
               <button
                 type="submit"
                 :disabled="submitting || !selectedFile"
-                class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all shadow-xs disabled:opacity-50 cursor-pointer active:scale-[0.99]"
               >
                 {{ submitting ? 'กำลังส่งข้อมูลสลิป...' : 'ส่งสลิปโอนเงิน (Submit Slip)' }}
               </button>
@@ -128,24 +128,22 @@
           </div>
         </div>
 
-        <!-- 4. Reviewing State Message Box (แสดงเมื่ออัปโหลดสลิปแล้ว รอแอดมินอนุมัติ) -->
-        <div v-else-if="invoice.status === 'reviewing'" class="p-6 bg-blue-50 border border-blue-200 rounded-3xl text-center space-y-2">
-          <div class="text-2xl">🔍</div>
-          <h3 class="text-sm font-bold text-blue-900">กำลังอยู่ระหว่างการตรวจสอบสลิปโอนเงิน</h3>
-          <p class="text-xs text-blue-700 leading-relaxed">
-            ระบบได้รับสลิปโอนเงินเรียบร้อยแล้ว แอดมินกำลังทำการตรวจสอบยอดเงินครับ
+        <!-- 4. Reviewing State Message Box -->
+        <div v-else-if="invoice.status === 'reviewing'" class="p-5 bg-sky-50/80 border border-sky-100 rounded-2xl text-center space-y-1.5">
+          <h3 class="text-xs font-bold text-sky-900">กำลังอยู่ระหว่างการตรวจสอบสลิป</h3>
+          <p class="text-[11px] text-sky-700 leading-relaxed">
+            ระบบได้รับสลิปโอนเงินเรียบร้อยแล้ว เจ้าหน้าที่กำลังดำเนินการตรวจสอบครับ
           </p>
         </div>
 
-        <!-- 5. Paid State Message Box (ชำระแล้วเรียบร้อยพร้อมปุ่มโหลด E-Receipt PDF) -->
-        <div v-else-if="invoice.status === 'paid'" class="p-6 bg-emerald-50 border border-emerald-200 rounded-3xl text-center space-y-3">
-          <div class="text-2xl">✅</div>
-          <h3 class="text-sm font-bold text-emerald-900">ชำระเงินเรียบร้อยแล้ว (PAID)</h3>
+        <!-- 5. Paid State Message Box -->
+        <div v-else-if="invoice.status === 'paid'" class="p-5 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-center space-y-2.5">
+          <h3 class="text-xs font-bold text-emerald-900">ชำระเงินเรียบร้อยแล้ว (Paid)</h3>
           <button
             @click="downloadReceiptPdf"
-            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+            class="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer active:scale-95"
           >
-            📄 ดาวน์โหลดใบเสร็จรับเงิน (E-Receipt PDF)
+            ดาวน์โหลดใบเสร็จ (E-Receipt PDF)
           </button>
         </div>
       </div>

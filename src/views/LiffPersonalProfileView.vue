@@ -2,56 +2,56 @@
   <div class="space-y-5 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white relative">
     <!-- Ambient Light Background Ornaments -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/2 -right-24 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-100/30 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 -right-24 w-80 h-80 bg-emerald-100/25 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="space-y-5 relative z-10">
+    <div class="space-y-4 relative z-10">
       <!-- 1. Profile Header Card -->
       <div
-        class="p-5 text-white rounded-3xl shadow-xl relative overflow-hidden transition-all duration-500"
+        class="p-5 text-white rounded-3xl shadow-lg relative overflow-hidden transition-all duration-500"
         :style="{
           background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
-          boxShadow: `0 20px 25px -5px ${themeColor}33, 0 8px 10px -6px ${themeColor}33`
+          boxShadow: `0 14px 20px -5px ${themeColor}25, 0 6px 8px -6px ${themeColor}25`
         }"
       >
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3.5">
           <!-- Avatar จาก LINE หรือ Initials -->
           <div class="relative shrink-0">
             <img
               v-if="tenantProfile.avatarUrl && !imageLoadError"
               :src="tenantProfile.avatarUrl"
               alt="Tenant Avatar"
-              class="w-16 h-16 rounded-full object-cover border-2 border-white/80 shadow-md bg-white/20"
+              class="w-15 h-15 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
               @error="imageLoadError = true"
             />
             <div
               v-else
-              class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-md flex items-center justify-center text-2xl font-black text-white select-none"
+              class="w-15 h-15 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-bold text-white select-none"
             >
               {{ tenantInitial }}
             </div>
-            <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
+            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
           </div>
 
           <!-- ชื่อ และ เบอร์โทร -->
           <div class="space-y-1 flex-1 min-w-0">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <h1 class="font-black text-lg truncate text-white">
+              <h1 class="font-bold text-base sm:text-lg truncate text-white">
                 {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
               </h1>
-              <span class="px-2 py-0.5 text-[10px] font-extrabold bg-white/20 text-white rounded-full backdrop-blur-xs border border-white/30">
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-white/20 text-white rounded-full backdrop-blur-xs border border-white/30">
                 ลูกบ้าน
               </span>
             </div>
-            <p class="text-xs text-indigo-100 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
+            <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
             <div class="flex items-center gap-2 pt-0.5">
-              <span class="text-[11px] font-bold text-yellow-300">
+              <span class="text-[11px] font-semibold text-yellow-300">
                 ห้อง {{ tenantProfile.roomNumber || '-' }}
               </span>
-              <span v-if="tenantProfile.buildingName" class="text-[11px] text-indigo-200">
+              <span v-if="tenantProfile.buildingName" class="text-[11px] text-indigo-100/80">
                 • ตึก {{ tenantProfile.buildingName }}
               </span>
             </div>
@@ -60,13 +60,13 @@
 
         <!-- Digital ID & Quick Status -->
         <div class="mt-4 pt-3.5 border-t border-white/20 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 text-xs text-indigo-100">
+          <div class="flex items-center gap-1.5 text-xs text-indigo-100/90">
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span>LINE Verified</span>
           </div>
           <button
             @click="showQrModal = true"
-            class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all border border-white/30 flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95"
+            class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-all border border-white/30 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
           >
             <QrCode class="w-3.5 h-3.5" />
             <span>Digital ID</span>
@@ -74,51 +74,46 @@
         </div>
       </div>
 
-      <!-- 2. เมนูทั่วไป (GENERAL SETTINGS) - Exactly matching user requirements -->
-      <div class="space-y-2.5">
-        <div class="flex items-center justify-between px-1">
-          <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
-            เมนูทั่วไป (GENERAL SETTINGS)
-          </h2>
-        </div>
+      <!-- 2. เมนูทั่วไป (GENERAL SETTINGS) - Minimal iOS Group List -->
+      <div class="space-y-2">
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
+          เมนูทั่วไป (General Settings)
+        </h2>
 
-        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden divide-y divide-slate-100">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden divide-y divide-slate-100">
           <button
             v-for="menu in availableGeneralMenus"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 active:bg-slate-100 transition-colors text-left group cursor-pointer"
-            :class="menu.isDanger ? 'text-rose-600' : 'text-slate-800'"
+            class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50/80 active:bg-slate-100/80 transition-colors text-left group cursor-pointer"
           >
-            <div class="flex items-center gap-3.5">
+            <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-2xs shrink-0"
-                :class="menu.isDanger ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-600'"
+                class="w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600"
               >
-                <component :is="menu.icon" class="w-4.5 h-4.5" />
+                <component :is="menu.icon" class="w-4 h-4" />
               </div>
               <div class="min-w-0 flex-1">
-                <div class="text-xs font-bold leading-snug" :class="menu.isDanger ? 'text-rose-600' : 'text-slate-900'">
+                <div class="text-xs font-semibold leading-snug text-slate-800">
                   {{ menu.title }}
                 </div>
-                <div v-if="menu.subtitle" class="text-[10px] text-slate-400 mt-0.5 truncate">
+                <div v-if="menu.subtitle" class="text-[10px] text-slate-400 mt-0.5 truncate font-normal">
                   {{ menu.subtitle }}
                 </div>
               </div>
             </div>
             <ChevronRight
-              class="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all shrink-0"
-              :class="menu.isDanger ? 'group-hover:text-rose-500' : ''"
+              class="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0"
             />
           </button>
         </div>
       </div>
 
       <!-- 3. Big Standalone Logout Button at Bottom -->
-      <div class="pt-2 pb-4">
+      <div class="pt-2 pb-2">
         <button
           @click="handleTenantLogout"
-          class="w-full py-3.5 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-600 border border-rose-200/90 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
+          class="w-full py-3 bg-rose-50/80 hover:bg-rose-100/80 active:bg-rose-200/80 text-rose-600 border border-rose-100 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs active:scale-[0.99]"
         >
           <LogOut class="w-4 h-4" />
           <span>ออกจากระบบ (Logout)</span>

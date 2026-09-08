@@ -1,29 +1,26 @@
 <template>
-  <div class="space-y-6 pb-6 font-sans text-slate-900">
-    <div class="space-y-6">
+  <div class="space-y-4 pb-6 font-sans text-slate-800">
+    <div class="space-y-4">
       <!-- Page Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-xl font-bold text-slate-900 tracking-tight">🧾 บิลค่าเช่าทั้งหมด (Tenant Invoices)</h1>
-          <p class="text-xs text-slate-500">ตรวจสอบยอดค่าใช้จ่ายและแนบสลิปชำระเงิน</p>
+          <h1 class="text-lg font-bold text-slate-800 tracking-tight">บิลค่าเช่าทั้งหมด</h1>
+          <p class="text-xs text-slate-400">ตรวจสอบยอดค่าใช้จ่ายและแนบสลิปชำระเงิน</p>
         </div>
         <button
           @click="fetchInvoices"
-          class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
+          class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
         >
           รีเฟรช
         </button>
       </div>
 
       <!-- Session Expired Warning Banner -->
-      <div v-if="sessionExpired" class="p-4 bg-amber-50 border border-amber-200 rounded-3xl space-y-3 shadow-md">
+      <div v-if="sessionExpired" class="p-4 bg-amber-50/90 border border-amber-200/70 rounded-2xl space-y-2 shadow-xs">
         <div class="flex items-center justify-between text-xs font-bold text-amber-900">
-          <div class="flex items-center gap-2">
-            <span>🔑</span>
-            <span>เซสชัน LINE หมดอายุ</span>
-          </div>
-          <span class="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
-            Session Expired
+          <span>เซสชัน LINE หมดอายุ</span>
+          <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+            Expired
           </span>
         </div>
         <p class="text-[11px] text-amber-800 leading-relaxed">
@@ -31,10 +28,9 @@
         </p>
         <button
           @click="loginLiff()"
-          class="w-full py-2.5 px-4 bg-[#06C755] hover:bg-[#05B34C] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
+          class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>💬</span>
-          <span>เข้าสู่ระบบด้วย LINE เพื่อดูบิล (Verify LINE)</span>
+          <span>เข้าสู่ระบบด้วย LINE</span>
         </button>
       </div>
 
@@ -42,69 +38,69 @@
       <div v-if="distinctRooms.length > 1" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         <button
           @click="selectedRoomFilter = 'ALL'"
-          class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoomFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
+          class="px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer"
+          :class="selectedRoomFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
         >
-          ทั้งหมด (All Rooms)
+          ทั้งหมด
         </button>
         <button
           v-for="room in distinctRooms"
           :key="room.id"
           @click="selectedRoomFilter = room.id"
-          class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoomFilter === room.id ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
+          class="px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer"
+          :class="selectedRoomFilter === room.id ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
         >
           ห้อง {{ room.roomNumber }}
         </button>
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-3xl text-center text-slate-500 shadow-xs">
-        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div v-if="loading" class="p-8 bg-white rounded-2xl text-center text-slate-400 text-xs shadow-xs border border-slate-100">
+        <div class="animate-spin w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2.5"></div>
         กำลังโหลดรายการบิลค่าเช่า...
       </div>
 
-      <div v-else class="space-y-6">
+      <div v-else class="space-y-4">
         <!-- 1. Category 1: Current Unpaid Invoices (Pending & Overdue) -->
-        <div class="space-y-3">
+        <div class="space-y-2.5">
           <div class="flex items-center justify-between px-1">
-            <h2 class="text-xs font-extrabold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-              <span>⚠️ บิลค้างชำระ (Pending Payment)</span>
+            <h2 class="text-xs font-bold text-amber-800 tracking-wide">
+              บิลค้างชำระ (Pending Payment)
             </h2>
-            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/70">
               {{ filteredPendingInvoices.length }} รายการ
             </span>
           </div>
 
-          <div v-if="filteredPendingInvoices.length > 0" class="space-y-3">
+          <div v-if="filteredPendingInvoices.length > 0" class="space-y-2.5">
             <div
               v-for="inv in filteredPendingInvoices"
               :key="inv.id"
               @click="goToDetail(inv.id)"
-              class="p-5 bg-white rounded-3xl border-2 border-amber-200/90 shadow-md hover:shadow-lg transition-all cursor-pointer space-y-3 relative overflow-hidden group"
+              class="p-4 bg-white rounded-2xl border border-amber-200/80 shadow-xs hover:border-amber-300 transition-all cursor-pointer space-y-2.5 relative overflow-hidden group active:scale-[0.99]"
             >
               <!-- Card Header -->
               <div class="flex items-start justify-between">
                 <div>
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-1.5">
                     <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
-                    <span v-if="inv.room?.roomNumber" class="px-2 py-0.5 bg-yellow-400 text-slate-950 font-black text-[10px] rounded-full shadow-2xs">
+                    <span v-if="inv.room?.roomNumber" class="px-1.5 py-0.2 bg-amber-50 text-amber-800 font-bold text-[10px] rounded-full border border-amber-200">
                       ห้อง {{ inv.room.roomNumber }}
                     </span>
                   </div>
-                  <div class="font-extrabold text-slate-900 text-base mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
                 </div>
                 <!-- Status Badge -->
                 <span
-                  class="text-xs font-extrabold px-3 py-1 rounded-full border shadow-2xs"
-                  :class="inv.status === 'overdue' ? 'bg-rose-50 border-rose-300 text-rose-700' : 'bg-amber-50 border-amber-300 text-amber-800'"
+                  class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border"
+                  :class="inv.status === 'overdue' ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-amber-50 border-amber-200 text-amber-800'"
                 >
-                  {{ inv.status === 'overdue' ? '🚨 เกินกำหนดชำระ' : '⏳ รอชำระเงิน' }}
+                  {{ inv.status === 'overdue' ? 'เกินกำหนดชำระ' : 'รอชำระเงิน' }}
                 </span>
               </div>
 
               <!-- Amount & Due Date -->
-              <div class="pt-3 border-t border-slate-100 flex items-end justify-between">
+              <div class="pt-2.5 border-t border-slate-100 flex items-end justify-between">
                 <div>
                   <div class="text-[10px] text-slate-400 font-medium">วันครบกำหนดชำระ</div>
                   <div class="text-xs font-bold text-rose-600">
@@ -113,7 +109,7 @@
                 </div>
                 <div class="text-right">
                   <div class="text-[10px] text-slate-400 font-medium">ยอดรวมสุทธิ</div>
-                  <div class="text-xl font-black text-slate-900 font-mono">
+                  <div class="text-lg font-bold text-slate-900 font-mono">
                     ฿{{ Number(inv.grandTotal).toLocaleString() }}
                   </div>
                 </div>
@@ -121,42 +117,42 @@
             </div>
           </div>
 
-          <div v-else class="p-6 bg-emerald-50/60 rounded-3xl border border-emerald-100 text-center text-xs text-emerald-800">
-            🎉 ไม่มีบิลค้างชำระ! คุณชำระเงินครบถ้วนแล้ว
+          <div v-else class="p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-center text-xs text-emerald-700">
+            ไม่มีบิลค้างชำระ ชำระเงินครบถ้วนแล้ว
           </div>
         </div>
 
         <!-- 2. Category 2: Paid & Reviewing Invoices History -->
-        <div class="space-y-3">
+        <div class="space-y-2.5 pt-1">
           <div class="flex items-center justify-between px-1">
-            <h2 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
-              📜 ประวัติบิลที่ชำระแล้ว & รอตรวจสอบ (History)
+            <h2 class="text-xs font-bold text-slate-500 tracking-wide">
+              ประวัติบิลที่ชำระแล้ว (History)
             </h2>
           </div>
 
-          <div v-if="filteredPaidInvoices.length > 0" class="space-y-3">
+          <div v-if="filteredPaidInvoices.length > 0" class="space-y-2.5">
             <div
               v-for="inv in filteredPaidInvoices"
               :key="inv.id"
               @click="goToDetail(inv.id)"
-              class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer space-y-3 group"
+              class="p-4 bg-white rounded-2xl border border-slate-100 shadow-2xs hover:border-slate-200 transition-all cursor-pointer space-y-2.5 group active:scale-[0.99]"
             >
               <div class="flex items-start justify-between">
                 <div>
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-1.5">
                     <span class="text-[10px] font-mono text-slate-400">{{ inv.invoiceNumber }}</span>
-                    <span v-if="inv.room?.roomNumber" class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold text-[10px] rounded-full border border-slate-200">
+                    <span v-if="inv.room?.roomNumber" class="px-1.5 py-0.2 bg-slate-50 text-slate-600 font-medium text-[10px] rounded-full border border-slate-200">
                       ห้อง {{ inv.room.roomNumber }}
                     </span>
                   </div>
-                  <div class="font-bold text-slate-900 text-sm sm:text-base mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5">รอบบิล {{ inv.billingCycle }}</div>
                 </div>
                 <!-- Status Badge -->
                 <span
-                  class="text-xs font-extrabold px-3 py-1 rounded-full border"
-                  :class="inv.status === 'paid' ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-blue-50 border-blue-300 text-blue-700'"
+                  class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border"
+                  :class="inv.status === 'paid' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-sky-50 border-sky-200 text-sky-700'"
                 >
-                  {{ inv.status === 'paid' ? '✓ PAID (ชำระแล้ว)' : '🔍 กำลังตรวจสอบสลิป' }}
+                  {{ inv.status === 'paid' ? 'ชำระแล้ว' : 'กำลังตรวจสอบสลิป' }}
                 </span>
               </div>
 

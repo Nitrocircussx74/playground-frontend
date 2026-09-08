@@ -1,213 +1,222 @@
 <template>
-  <div class="space-y-5 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
-    <div class="space-y-5 relative z-10">
-      
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div class="space-y-1">
-          <h1 class="text-xl font-bold text-slate-900 tracking-tight">✏️ แก้ไขข้อมูลส่วนตัวลูกบ้าน</h1>
-          <p class="text-xs text-slate-500">อัปเดตข้อมูลติดต่อและยานพาหนะที่ลงทะเบียนในหอพัก</p>
+  <div class="space-y-5 pb-6 font-sans text-slate-800">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight">แก้ไขข้อมูลส่วนตัว</h1>
+        <p class="text-xs text-slate-500 mt-0.5">อัปเดตข้อมูลติดต่อและยานพาหนะ</p>
+      </div>
+
+      <!-- Top Save Header Button -->
+      <button
+        type="button"
+        @click="saveProfile"
+        :disabled="isSubmitting || !!phoneError"
+        class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold transition-colors shadow-xs disabled:opacity-50 shrink-0 flex items-center gap-1.5"
+      >
+        <Save class="w-3.5 h-3.5" />
+        <span>{{ isSubmitting ? 'บันทึก...' : 'บันทึก' }}</span>
+      </button>
+    </div>
+
+    <!-- Toast Feedback Banner -->
+    <div
+      v-if="toastMessage"
+      class="p-3.5 rounded-2xl text-xs font-medium shadow-xs transition-all flex items-center justify-between border"
+      :class="toastType === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200/80' : 'bg-rose-50 text-rose-800 border-rose-200/80'"
+    >
+      <span>{{ toastMessage }}</span>
+      <button @click="toastMessage = ''" class="text-slate-400 hover:text-slate-700 p-1">
+        <X class="w-3.5 h-3.5" />
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="p-8 bg-white rounded-2xl border border-slate-100/80 text-center text-slate-400 text-xs shadow-xs">
+      <div class="animate-spin w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
+      กำลังโหลดข้อมูลส่วนตัว...
+    </div>
+
+    <form v-else @submit.prevent="saveProfile" class="space-y-4">
+      <!-- Section 1: Read-Only Tenant Info -->
+      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-3.5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <Shield class="w-4 h-4 text-slate-400" />
+            <h3 class="text-xs font-bold text-slate-700">ข้อมูลสัญญาหอพัก</h3>
+          </div>
+          <span class="text-[10px] bg-slate-100 text-slate-500 font-medium px-2 py-0.5 rounded-full">ไม่สามารถแก้ไขได้</span>
         </div>
 
-        <!-- Top Save Header Button -->
-        <button
-          type="button"
-          @click="saveProfile"
-          :disabled="isSubmitting || !!phoneError"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 shrink-0"
-        >
-          {{ isSubmitting ? 'บันทึก...' : 'บันทึก' }}
-        </button>
-      </div>
-
-      <!-- Toast Feedback Banner -->
-      <div
-        v-if="toastMessage"
-        class="p-4 rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-between"
-        :class="toastType === 'success' ? 'bg-emerald-600 text-white shadow-emerald-600/20' : 'bg-rose-600 text-white shadow-rose-600/20'"
-      >
-        <span>{{ toastMessage }}</span>
-        <button @click="toastMessage = ''" class="text-white/80 hover:text-white font-bold text-sm">✕</button>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-3xl text-center text-slate-500 shadow-xs">
-        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
-        กำลังโหลดข้อมูลส่วนตัว...
-      </div>
-
-      <form v-else @submit.prevent="saveProfile" class="space-y-5">
-        <!-- Section 1: Read-Only Tenant Info (ข้อมูลที่ไม่สามารถแก้ไขได้) -->
-        <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="text-xs uppercase font-extrabold text-slate-400 tracking-wider">ส่วนที่ 1: ข้อมูลสัญญาหอพัก (Read-Only)</h3>
-            <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">🔒 ห้ามแก้ไข</span>
+        <div class="space-y-3">
+          <div class="space-y-1">
+            <label class="block text-xs font-medium text-slate-600">ชื่อ-นามสกุล ผู้เช่า</label>
+            <input
+              type="text"
+              :value="`${profile.firstName} ${profile.lastName}`"
+              disabled
+              class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed"
+            />
           </div>
 
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล ผู้เช่า</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-slate-600">ห้องพัก</label>
               <input
                 type="text"
-                :value="`${profile.firstName} ${profile.lastName}`"
+                :value="`ห้อง ${profile.roomNumber}`"
                 disabled
-                class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-500 font-medium cursor-not-allowed"
+                class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-bold cursor-not-allowed"
               />
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">หมายเลขห้องพัก</label>
-                <input
-                  type="text"
-                  :value="`ห้อง ${profile.roomNumber}`"
-                  disabled
-                  class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-700 font-bold cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">วันหมดอายุสัญญา</label>
-                <input
-                  type="text"
-                  :value="profile.contractEndDate"
-                  disabled
-                  class="w-full bg-slate-100 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-slate-500 font-medium cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            <p class="text-[11px] text-slate-400 italic">
-              ℹ️ หากต้องการเปลี่ยนแปลงชื่อผู้เช่าหรือย้ายห้องพัก กรุณาติดต่อแอดมินหอพักโดยตรง
-            </p>
-          </div>
-        </div>
-
-        <!-- Section 2: Contact Info (ข้อมูลติดต่อ - Editable) -->
-        <div class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
-          <h3 class="text-xs uppercase font-extrabold text-indigo-700 tracking-wider">ส่วนที่ 2: ข้อมูลติดต่อ (Editable)</h3>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">
-              เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span>
-            </label>
-            <input
-              v-model="profile.phone"
-              type="tel"
-              maxlength="10"
-              placeholder="e.g. 0812345678"
-              required
-              @input="validatePhone"
-              class="w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              :class="phoneError ? 'border-rose-400 focus:border-rose-500' : 'border-slate-300 focus:border-indigo-500'"
-            />
-            <span v-if="phoneError" class="text-xs font-semibold text-rose-500 mt-1 block">
-              {{ phoneError }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Section 3: Vehicle Management (จัดการยานพาหนะ - Controlled by Feature Flag ENABLE_VEHICLE_MANAGEMENT) -->
-        <div
-          v-if="featureStore.isEnabled('ENABLE_VEHICLE_MANAGEMENT')"
-          class="p-5 bg-white rounded-3xl border border-indigo-200 shadow-xs space-y-4"
-        >
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs uppercase font-extrabold text-indigo-800 tracking-wider">
-              ส่วนที่ 3: จัดการยานพาหนะ (Vehicle Management)
-            </h3>
-            <button
-              type="button"
-              @click="showAddVehicleModal = true"
-              class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-            >
-              <span>+ เพิ่มยานพาหนะ</span>
-            </button>
-          </div>
-
-          <!-- Registered Vehicles List -->
-          <div v-if="vehicles.length > 0" class="space-y-2.5">
-            <div
-              v-for="v in vehicles"
-              :key="v.id"
-              class="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-center justify-between"
-            >
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <span class="text-base">{{ v.type === 'car' ? '🚗' : '🛵' }}</span>
-                  <span class="font-mono font-bold text-sm text-slate-900">{{ v.licensePlate }}</span>
-                </div>
-                <div class="text-xs text-slate-500">{{ v.brandModel }}</div>
-              </div>
-
-              <button
-                type="button"
-                @click="removeVehicle(v.id)"
-                class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
-                title="ลบยานพาหนะ"
-              >
-                <Trash2 class="w-4 h-4" />
-              </button>
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-slate-600">วันสิ้นสุดสัญญา</label>
+              <input
+                type="text"
+                :value="profile.contractEndDate"
+                disabled
+                class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-xs text-slate-500 font-medium cursor-not-allowed"
+              />
             </div>
           </div>
 
-          <div v-else class="p-4 bg-slate-50 rounded-2xl text-center text-xs text-slate-400">
-            ยังไม่มียานพาหนะที่ลงทะเบียนในระบบ
-          </div>
+          <p class="text-[11px] text-slate-400">
+            หากต้องการเปลี่ยนแปลงชื่อผู้เช่าหรือย้ายห้องพัก กรุณาติดต่อสำนักงานหอพัก
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 2: Contact Info (Editable) -->
+      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-3.5">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+          <Phone class="w-4 h-4 text-indigo-500" />
+          <h3 class="text-xs font-bold text-slate-800">ข้อมูลติดต่อ</h3>
         </div>
 
-        <!-- Inline Main Submit Button (ปุ่มบันทึกข้อมูลส่วนตัว) -->
-        <div class="pt-2">
+        <div class="space-y-1">
+          <label class="block text-xs font-medium text-slate-700">
+            เบอร์โทรศัพท์ <span class="text-rose-500">*</span>
+          </label>
+          <input
+            v-model="profile.phone"
+            type="tel"
+            maxlength="10"
+            placeholder="เช่น 0812345678"
+            required
+            @input="validatePhone"
+            class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-100"
+            :class="phoneError ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200 focus:border-indigo-400'"
+          />
+          <span v-if="phoneError" class="text-[11px] font-medium text-rose-500 block pt-0.5">
+            {{ phoneError }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Section 3: Vehicle Management -->
+      <div
+        v-if="featureStore.isEnabled('ENABLE_VEHICLE_MANAGEMENT')"
+        class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-3.5"
+      >
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <Car class="w-4 h-4 text-indigo-500" />
+            <h3 class="text-xs font-bold text-slate-800">จัดการยานพาหนะ</h3>
+          </div>
           <button
-            type="submit"
-            :disabled="isSubmitting || !!phoneError"
-            class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 disabled:opacity-50"
+            type="button"
+            @click="showAddVehicleModal = true"
+            class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
           >
-            <div v-if="isSubmitting" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-            <span>{{ isSubmitting ? 'กำลังบันทึกข้อมูล...' : '💾 บันทึกข้อมูลส่วนตัว (Save Profile)' }}</span>
+            <Plus class="w-3.5 h-3.5" />
+            <span>เพิ่มยานพาหนะ</span>
           </button>
         </div>
-      </form>
-    </div>
+
+        <!-- Registered Vehicles List -->
+        <div v-if="vehicles.length > 0" class="space-y-2">
+          <div
+            v-for="v in vehicles"
+            :key="v.id"
+            class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between"
+          >
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <component :is="v.type === 'car' ? Car : Bike" class="w-4 h-4 text-slate-500" />
+                <span class="font-mono font-bold text-xs text-slate-800">{{ v.licensePlate }}</span>
+              </div>
+              <div class="text-[11px] text-slate-500">{{ v.brandModel }}</div>
+            </div>
+
+            <button
+              type="button"
+              @click="removeVehicle(v.id)"
+              class="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+              title="ลบยานพาหนะ"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-400">
+          ยังไม่มียานพาหนะที่ลงทะเบียนในระบบ
+        </div>
+      </div>
+
+      <!-- Main Submit Button -->
+      <div class="pt-2">
+        <button
+          type="submit"
+          :disabled="isSubmitting || !!phoneError"
+          class="w-full py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50"
+        >
+          <div v-if="isSubmitting" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></div>
+          <Save v-else class="w-3.5 h-3.5" />
+          <span>{{ isSubmitting ? 'กำลังบันทึกข้อมูล...' : 'บันทึกข้อมูลส่วนตัว' }}</span>
+        </button>
+      </div>
+    </form>
 
     <!-- Modal เพิ่มยานพาหนะ -->
-    <div v-if="showAddVehicleModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 relative">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-base font-bold text-slate-900">ลงทะเบียนยานพาหนะใหม่</h3>
-          <button @click="showAddVehicleModal = false" class="text-slate-400 hover:text-slate-700">
-            <X class="w-5 h-5" />
+    <div v-if="showAddVehicleModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl p-5 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 relative">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <h3 class="text-sm font-bold text-slate-900">ลงทะเบียนยานพาหนะ</h3>
+          <button @click="showAddVehicleModal = false" class="text-slate-400 hover:text-slate-700 p-1">
+            <X class="w-4 h-4" />
           </button>
         </div>
 
         <form @submit.prevent="addVehicle" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">ประเภทพาหนะ</label>
-            <select v-model="newVehicle.type" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900">
-              <option value="motorcycle">🛵 รถจักรยานยนต์ / มอเตอร์ไซค์</option>
-              <option value="car">🚗 รถยนต์</option>
+          <div class="space-y-1">
+            <label class="block font-medium text-slate-700">ประเภทพาหนะ</label>
+            <select v-model="newVehicle.type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-indigo-400">
+              <option value="motorcycle">รถจักรยานยนต์</option>
+              <option value="car">รถยนต์</option>
             </select>
           </div>
 
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">เลขทะเบียนรถ <span class="text-rose-500">*</span></label>
+          <div class="space-y-1">
+            <label class="block font-medium text-slate-700">เลขทะเบียนรถ <span class="text-rose-500">*</span></label>
             <input
               v-model="newVehicle.licensePlate"
               type="text"
-              placeholder="e.g. 1กข-9999 กทม"
+              placeholder="เช่น 1กข-9999 กทม"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:border-indigo-400"
             />
           </div>
 
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">ยี่ห้อ / รุ่น <span class="text-rose-500">*</span></label>
+          <div class="space-y-1">
+            <label class="block font-medium text-slate-700">ยี่ห้อ / รุ่น <span class="text-rose-500">*</span></label>
             <input
               v-model="newVehicle.brandModel"
               type="text"
-              placeholder="e.g. Honda CBR / Toyota Yaris"
+              placeholder="เช่น Honda Click / Toyota Yaris"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-indigo-400"
             />
           </div>
 
@@ -215,15 +224,15 @@
             <button
               type="button"
               @click="showAddVehicleModal = false"
-              class="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold"
+              class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
-              class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-xs"
+              class="flex-1 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold shadow-xs transition-colors"
             >
-              เพิ่มยานพาหนะ
+              เพิ่ม
             </button>
           </div>
         </form>
@@ -235,11 +244,20 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import {
+  Shield,
+  Phone,
+  Car,
+  Bike,
+  Plus,
+  Trash2,
+  Save,
+  X
+} from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { showConfirm } from '@/utils/swal';
-import { Trash2, X } from 'lucide-vue-next';
 
 const router = useRouter();
 const route = useRoute();
@@ -346,7 +364,7 @@ const saveProfile = async () => {
       tenantId: profile.id
     });
 
-    showToast('อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว!', 'success');
+    showToast('อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว', 'success');
 
     setTimeout(() => {
       router.push('/liff/profile');

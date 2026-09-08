@@ -4,27 +4,27 @@
     <!-- 1. Header & Step Instructions -->
     <header class="w-full flex flex-col items-center pt-1 sm:pt-2 space-y-2 sm:space-y-3 text-center shrink-0">
       <!-- Icon Badge -->
-      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50 border border-indigo-100/80 shadow-xs flex items-center justify-center text-indigo-600 transition-transform">
-        <KeyRound class="w-6 h-6 sm:w-7 sm:h-7" />
+      <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600">
+        <KeyRound class="w-5 h-5" />
       </div>
 
-      <div class="space-y-1 sm:space-y-1.5">
-        <span class="inline-flex items-center px-2.5 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-indigo-50 text-indigo-600 border border-indigo-100 tracking-wide">
+      <div class="space-y-1">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100">
           ขั้นตอนที่ {{ step }} จาก 3
         </span>
-        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">
+        <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">
           {{ stepTitle }}
         </h1>
-        <p class="text-[11px] sm:text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
+        <p class="text-xs text-slate-500 max-w-xs mx-auto">
           {{ stepSubtitle }}
         </p>
       </div>
     </header>
 
-    <!-- 2. PIN Indicator Dots (6 จุด พร้อม Animation สั่นเมื่อกรอกผิด) -->
+    <!-- 2. PIN Indicator Dots -->
     <main class="w-full flex flex-col items-center my-auto py-3 sm:py-6 shrink-0">
       <div
-        class="flex items-center justify-center gap-3 sm:gap-4 py-1 sm:py-2"
+        class="flex items-center justify-center gap-3 sm:gap-4 py-2"
         :class="{ 'animate-shake': isShaking }"
       >
         <div
@@ -33,62 +33,61 @@
           class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
           :class="[
             index <= enteredPin.length
-              ? 'bg-indigo-600 scale-110 shadow-md shadow-indigo-300/60 ring-3 sm:ring-4 ring-indigo-100'
-              : 'bg-slate-200/80 border border-slate-300'
+              ? 'bg-indigo-500 scale-110 shadow-xs ring-4 ring-indigo-50'
+              : 'bg-slate-200/70 border border-slate-300/50'
           ]"
         ></div>
       </div>
 
       <!-- Feedback / Error Message -->
       <transition name="fade">
-        <div v-if="errorMessage" class="text-xs font-bold text-rose-500 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1">
-          <span>⚠️</span>
+        <div v-if="errorMessage" class="text-xs font-medium text-rose-500 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5">
+          <AlertCircle class="w-3.5 h-3.5 shrink-0" />
           <span>{{ errorMessage }}</span>
         </div>
-        <div v-else-if="isLoading" class="text-xs font-bold text-indigo-600 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
-          <span class="w-2 h-2 rounded-full bg-indigo-600 animate-ping"></span>
+        <div v-else-if="isLoading" class="text-xs font-medium text-indigo-600 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
           <span>กำลังเปลี่ยนรหัส PIN...</span>
         </div>
         <div v-else class="h-5 mt-2 sm:mt-3"></div>
       </transition>
     </main>
 
-    <!-- 3. Minimalist iOS-Style Numpad Grid (0-9, Clear, Backspace) -->
+    <!-- 3. Minimalist iOS-Style Numpad Grid -->
     <footer class="w-full pb-2 sm:pb-4 shrink-0">
       <div class="grid grid-cols-3 gap-y-2.5 sm:gap-y-3.5 gap-x-4 sm:gap-x-6 justify-items-center max-w-[260px] sm:max-w-[280px] mx-auto">
-        <!-- แถวที่ 1 ถึง 3: ตัวเลข 1 ถึง 9 -->
         <button
           v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
           :key="num"
           type="button"
           :disabled="isLoading"
           @click="pressKey(num)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/90 text-slate-800 text-xl sm:text-2xl font-bold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/80 text-slate-800 text-xl sm:text-2xl font-semibold shadow-xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
         >
           {{ num }}
         </button>
 
-        <!-- แถวที่ 4: ปุ่มล้างค่า (Clear) -->
+        <!-- Clear Button -->
         <button
           type="button"
           :disabled="isLoading || enteredPin.length === 0"
           @click="clearCurrentPin"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-xs font-extrabold text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-0 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-xs font-semibold text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-0 touch-manipulation"
         >
-          ล้างค่า
+          ล้าง
         </button>
 
-        <!-- ตัวเลข 0 -->
+        <!-- Zero Button -->
         <button
           type="button"
           :disabled="isLoading"
           @click="pressKey(0)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/90 text-slate-800 text-xl sm:text-2xl font-bold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
+          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/80 text-slate-800 text-xl sm:text-2xl font-semibold shadow-xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
         >
           0
         </button>
 
-        <!-- ปุ่มลบทีละตัว (Backspace) -->
+        <!-- Backspace Button -->
         <button
           type="button"
           :disabled="isLoading || enteredPin.length === 0"
@@ -108,7 +107,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { authService } from '@/services/authService';
 import { showSuccess, showError } from '@/utils/swal';
-import { KeyRound, Delete } from 'lucide-vue-next';
+import { KeyRound, Delete, AlertCircle } from 'lucide-vue-next';
 
 const router = useRouter();
 
@@ -122,7 +121,7 @@ const isShaking = ref(false);
 const errorMessage = ref('');
 
 const stepTitle = computed(() => {
-  if (step.value === 1) return 'กรอกรหัส PIN เดิมของคุณ';
+  if (step.value === 1) return 'กรอกรหัส PIN เดิม';
   if (step.value === 2) return 'ตั้งรหัส PIN ใหม่ 6 หลัก';
   return 'ยืนยันรหัส PIN ใหม่อีกครั้ง';
 });
@@ -161,15 +160,9 @@ const triggerHaptic = (pattern = 25) => {
   }
 };
 
-/**
- * =========================================================================
- * Multi-Step Watcher: จัดการ Flow 3 ขั้นตอนในการเปลี่ยนรหัส PIN
- * =========================================================================
- */
 watch(enteredPin, async (newVal) => {
   if (newVal.length === 6 && !isLoading.value) {
     if (step.value === 1) {
-      // Step 1: เก็บ oldPin -> เปลี่ยนไป Step 2
       oldPin.value = newVal;
       triggerHaptic([30, 30]);
       setTimeout(() => {
@@ -177,7 +170,6 @@ watch(enteredPin, async (newVal) => {
         step.value = 2;
       }, 150);
     } else if (step.value === 2) {
-      // Step 2: เก็บ newPin -> เปลี่ยนไป Step 3
       newPin.value = newVal;
       triggerHaptic([30, 30]);
       setTimeout(() => {
@@ -185,7 +177,6 @@ watch(enteredPin, async (newVal) => {
         step.value = 3;
       }, 150);
     } else if (step.value === 3) {
-      // Step 3: ยืนยัน newPin
       if (newVal !== newPin.value) {
         triggerMismatchFeedback('รหัส PIN ใหม่ไม่ตรงกัน กรุณาตั้งใหม่', 2);
       } else {
@@ -224,7 +215,7 @@ const submitChangePin = async () => {
     });
 
     if (res?.success) {
-      await showSuccess('เปลี่ยนรหัสผ่านสำเร็จ!', 'คุณสามารถใช้รหัส PIN ใหม่ในการเข้าสู่ระบบครั้งถัดไป');
+      await showSuccess('เปลี่ยนรหัส PIN สำเร็จ', 'คุณสามารถใช้รหัส PIN ใหม่ในการเข้าสู่ระบบครั้งถัดไป');
       router.push('/liff/profile');
     } else {
       showError('ไม่สำเร็จ', res?.message || 'รหัส PIN เดิมไม่ถูกต้อง');
@@ -290,3 +281,4 @@ onUnmounted(() => {
   opacity: 0;
 }
 </style>
+

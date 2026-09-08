@@ -2,20 +2,17 @@
   <div class="space-y-6 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white relative">
     <!-- Ambient Glassmorphism Soft Accent Blurs -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-200/50 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/3 -right-24 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/3 -right-24 w-80 h-80 bg-indigo-100/30 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="space-y-6 relative z-10">
+    <div class="space-y-5 relative z-10">
       <!-- Session Expired / Not Verified Warning Card -->
-      <div v-if="sessionExpired" class="p-4 bg-amber-50 border border-amber-200/90 rounded-3xl space-y-3 shadow-md">
+      <div v-if="sessionExpired" class="p-4 bg-amber-50/90 border border-amber-200/70 rounded-3xl space-y-3 shadow-xs">
         <div class="flex items-center justify-between text-xs font-bold text-amber-900">
-          <div class="flex items-center gap-2">
-            <span>🔑</span>
-            <span>เซสชัน LINE หมดอายุ หรือยังไม่ได้ยืนยันตัวตน</span>
-          </div>
-          <span class="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
-            Session Expired
+          <span>เซสชัน LINE หมดอายุ หรือยังไม่ได้ยืนยันตัวตน</span>
+          <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+            Expired
           </span>
         </div>
         <p class="text-[11px] text-amber-800 leading-relaxed">
@@ -23,56 +20,55 @@
         </p>
         <button
           @click="loginLiff()"
-          class="w-full py-3 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer"
+          class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
         >
-          <span class="text-sm">💬</span>
-          <span>เข้าสู่ระบบด้วย LINE เพื่อต่ออายุเซสชัน (Verify LINE)</span>
+          <span>เข้าสู่ระบบด้วย LINE เพื่อต่ออายุเซสชัน</span>
         </button>
       </div>
 
       <!-- 1. Header Section: Profile & Digital ID Card -->
       <div
-        class="p-6 text-white rounded-3xl shadow-xl relative overflow-hidden transition-all duration-500"
+        class="p-5 text-white rounded-3xl shadow-lg relative overflow-hidden transition-all duration-500"
         :style="{
           background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
-          boxShadow: `0 20px 25px -5px ${themeColor}33, 0 8px 10px -6px ${themeColor}33`
+          boxShadow: `0 14px 20px -5px ${themeColor}25, 0 6px 8px -6px ${themeColor}25`
         }"
       >
         <!-- Background Pattern Decor -->
         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
 
-        <div class="flex items-start gap-4">
+        <div class="flex items-start gap-3.5">
           <!-- Avatar จาก LINE Profile -->
           <div class="relative shrink-0">
             <img
               v-if="tenantProfile.avatarUrl && !imageLoadError"
               :src="tenantProfile.avatarUrl"
               alt="Tenant Avatar"
-              class="w-16 h-16 rounded-full object-cover border-2 border-white/80 shadow-md bg-white/20"
+              class="w-15 h-15 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
               @error="handleAvatarError"
             />
             <div
               v-else
-              class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-md flex items-center justify-center text-2xl font-black text-white select-none"
+              class="w-15 h-15 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-black text-white select-none"
             >
               {{ tenantInitial }}
             </div>
-            <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-400 border-2 border-white rounded-full"></span>
+            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full"></span>
           </div>
 
           <!-- ข้อมูลชื่อ และ Badge หมายเลขห้องพัก -->
-          <div class="space-y-1.5 flex-1 min-w-0">
-            <h1 class="font-extrabold text-lg sm:text-xl truncate text-white">
+          <div class="space-y-1 flex-1 min-w-0">
+            <h1 class="font-bold text-base sm:text-lg truncate text-white">
               {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
             </h1>
-            <p class="text-xs text-indigo-100 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
+            <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
 
             <!-- Current Active Room Badge -->
-            <div class="pt-1">
-              <span class="px-2.5 py-1 bg-yellow-400 text-slate-950 font-black text-[11px] rounded-full shadow-xs inline-flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+            <div class="pt-0.5">
+              <span class="px-2.5 py-0.5 bg-white/20 backdrop-blur-xs text-white font-bold text-[11px] rounded-full border border-white/30 inline-flex items-center gap-1.5 shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span>ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber || '-' }}</span>
-                <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="font-bold text-[10px] text-slate-800">
+                <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="font-medium text-[10px] text-white/80">
                   ({{ selectedRoom?.buildingName || tenantProfile.buildingName }})
                 </span>
               </span>
@@ -81,40 +77,39 @@
         </div>
 
         <!-- Action Bar: Digital ID & Link More Rooms -->
-        <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between gap-2 flex-wrap">
+        <div class="mt-4 pt-3.5 border-t border-white/20 flex items-center justify-between gap-2 flex-wrap">
           <button
             @click="showLinkRoomModal = true"
-            class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all border border-emerald-400/50 flex items-center gap-1.5 shadow-xs cursor-pointer"
+            class="px-3 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-xs font-semibold transition-all border border-white/20 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
           >
-            <PlusCircle class="w-4 h-4" />
+            <PlusCircle class="w-3.5 h-3.5" />
             <span>ผูกห้องพักเพิ่ม</span>
           </button>
 
           <button
             @click="showQrModal = true"
-            class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all border border-white/30 flex items-center gap-1.5 shadow-xs cursor-pointer"
+            class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-all border border-white/30 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
           >
-            <QrCode class="w-4 h-4" />
-            <span>Digital ID Card</span>
+            <QrCode class="w-3.5 h-3.5" />
+            <span>Digital ID</span>
           </button>
         </div>
       </div>
 
       <!-- 2. Multi-Room Summary Card & Interactive Switcher (Shown if > 1 room) -->
-      <div v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 bg-white rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+      <div v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏢</span>
-              <span>ห้องพักที่คุณครอบครอง ({{ tenantProfile.rooms.length }} ห้อง)</span>
+            <h2 class="text-xs font-bold text-slate-700 tracking-wide">
+              ห้องพักที่คุณครอบครอง ({{ tenantProfile.rooms.length }} ห้อง)
             </h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">แตะที่การ์ดเพื่อสลับห้องและเปลี่ยนธีมประจำตึกอัตโนมัติ</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">แตะที่การ์ดเพื่อสลับห้องและเปลี่ยนธีม</p>
           </div>
           <button
             @click="showLinkRoomModal = true"
-            class="text-xs text-indigo-600 font-extrabold hover:text-indigo-800 transition-colors flex items-center gap-1 cursor-pointer"
+            class="text-xs text-indigo-600 font-bold hover:text-indigo-700 transition-colors cursor-pointer"
           >
-            <span>+ ผูกห้องเพิ่ม</span>
+            + ผูกห้องเพิ่ม
           </button>
         </div>
 
@@ -123,48 +118,47 @@
             v-for="room in tenantProfile.rooms"
             :key="room.id"
             @click="selectRoom(room)"
-            class="p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-2.5 relative overflow-hidden active:scale-[0.99]"
+            class="p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-2 relative overflow-hidden active:scale-[0.99]"
             :class="room.id === selectedRoomId
-              ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-50/50 border-2 border-indigo-500 shadow-md ring-2 ring-indigo-200/50'
-              : 'bg-slate-50/70 hover:bg-slate-100/80 border border-slate-200/80 hover:border-slate-300 shadow-2xs'"
+              ? 'bg-indigo-50/50 border-indigo-300 shadow-xs'
+              : 'bg-slate-50/60 hover:bg-slate-50 border-slate-200/70 shadow-2xs'"
           >
-            <!-- Card Header: Room number on left, Status badge on right -->
+            <!-- Card Header -->
             <div class="flex items-center justify-between gap-2">
-              <div class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5 min-w-0 truncate">
+              <div class="font-bold text-xs sm:text-sm text-slate-800 flex items-center gap-1.5 min-w-0 truncate">
                 <span
-                  class="w-2.5 h-2.5 rounded-full shrink-0"
-                  :class="room.id === selectedRoomId ? 'bg-indigo-600 ring-2 ring-indigo-300 animate-pulse' : 'bg-slate-300'"
+                  class="w-2 h-2 rounded-full shrink-0"
+                  :class="room.id === selectedRoomId ? 'bg-indigo-600' : 'bg-slate-300'"
                 ></span>
                 <span class="truncate">ห้อง {{ room.roomNumber }}</span>
               </div>
 
-              <!-- Active Status Badge (Prevent wrap & perfectly aligned) -->
+              <!-- Active Status Badge -->
               <span
                 v-if="room.id === selectedRoomId"
-                class="px-2 py-0.5 bg-indigo-600 text-white font-extrabold text-[10px] rounded-full shadow-2xs shrink-0 whitespace-nowrap inline-flex items-center gap-1"
+                class="px-2 py-0.5 bg-indigo-600 text-white font-bold text-[10px] rounded-full shadow-2xs shrink-0 whitespace-nowrap"
               >
-                <span>✓</span>
-                <span>กำลังเลือก</span>
+                กำลังเลือก
               </span>
               <span
                 v-else
-                class="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap"
+                class="text-[10px] font-medium text-slate-400 shrink-0 whitespace-nowrap"
               >
                 แตะเพื่อเลือก
               </span>
             </div>
 
-            <!-- Card Body: Building info & Floor -->
-            <div class="text-[11px] text-slate-600 font-medium truncate">
-              <span v-if="room.buildingName" class="font-semibold text-slate-700">ตึก {{ room.buildingName }} • </span>ชั้น {{ room.floor || '1' }}
+            <!-- Card Body: Building info -->
+            <div class="text-[11px] text-slate-500 font-medium truncate">
+              <span v-if="room.buildingName" class="font-semibold text-slate-600">ตึก {{ room.buildingName }} • </span>ชั้น {{ room.floor || '1' }}
             </div>
 
             <!-- Card Footer: Rent price -->
-            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-              <span class="text-[10px] text-slate-400 font-medium">ค่าเช่ารายเดือน</span>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[10px] text-slate-400 font-medium">ค่าเช่า</span>
               <div class="text-right font-mono">
-                <span class="text-sm font-black text-indigo-600">฿{{ Number(room.price || 0).toLocaleString() }}</span>
-                <span class="text-[10px] text-slate-400 font-sans ml-0.5">/เดือน</span>
+                <span class="text-xs font-bold text-indigo-600">฿{{ Number(room.price || 0).toLocaleString() }}</span>
+                <span class="text-[10px] text-slate-400 font-sans ml-0.5">/ด.</span>
               </div>
             </div>
           </div>
@@ -172,29 +166,29 @@
       </div>
 
       <!-- 3. Dynamic Quick Actions Grid (เมนูด่วนใช้งานบ่อย 2x2 Grid) -->
-      <div class="space-y-2.5" v-if="availableQuickActions.length > 0">
-        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
+      <div class="space-y-2" v-if="availableQuickActions.length > 0">
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
           เมนูด่วน (Quick Actions)
         </h2>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2.5">
           <button
             v-for="menu in availableQuickActions"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="p-4 bg-white hover:bg-slate-50/90 rounded-3xl border border-slate-200/80 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-28 space-y-2 cursor-pointer hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
+            class="p-3.5 bg-white hover:bg-slate-50/80 rounded-2xl border border-slate-100 shadow-xs text-left transition-all duration-200 group flex flex-col justify-between h-24 space-y-1.5 cursor-pointer active:scale-[0.98]"
           >
             <div
-              class="w-10 h-10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs"
+              class="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
               :class="menu.bgClass"
             >
-              <component :is="menu.icon" class="w-5 h-5" :class="menu.iconClass" />
+              <component :is="menu.icon" class="w-4.5 h-4.5" :class="menu.iconClass" />
             </div>
             <div>
-              <div class="font-extrabold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">
+              <div class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition-colors">
                 {{ menu.title }}
               </div>
-              <div class="text-[11px] text-slate-500 font-medium truncate">{{ menu.subtitle }}</div>
+              <div class="text-[10px] text-slate-400 font-medium truncate">{{ menu.subtitle }}</div>
             </div>
           </button>
         </div>
@@ -203,24 +197,24 @@
       <!-- 4. Personal Profile & Settings Banner / Card -->
       <router-link
         to="/liff/settings"
-        class="p-4 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-3xl border border-slate-200/90 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
+        class="p-3.5 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
       >
-        <div class="flex items-center gap-3.5 min-w-0">
-          <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform shadow-2xs shrink-0">
-            <User class="w-5 h-5" />
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <User class="w-4.5 h-4.5" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5 flex-wrap">
+            <div class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5 flex-wrap">
               <span>โปรไฟล์และการตั้งค่าส่วนตัว</span>
-              <span class="px-2 py-0.5 text-[9px] font-extrabold bg-indigo-100 text-indigo-700 rounded-full">Profile & Settings</span>
+              <span class="px-1.5 py-0.2 text-[9px] font-bold bg-indigo-50 text-indigo-600 rounded-full border border-indigo-100">Settings</span>
             </div>
-            <div class="text-[11px] text-slate-400 font-medium mt-0.5 truncate">
+            <div class="text-[10px] text-slate-400 font-medium mt-0.5 truncate">
               เปลี่ยน PIN, ตั้งรหัสเว็บ, ข้อมูลผู้เช่า, ประวัติใบเสร็จ
             </div>
           </div>
         </div>
-        <div class="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-indigo-100 group-hover:text-indigo-600 flex items-center justify-center transition-all text-slate-400 shrink-0 ml-2">
-          <ChevronRight class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        <div class="w-7 h-7 rounded-full bg-slate-50 group-hover:bg-indigo-50 group-hover:text-indigo-600 flex items-center justify-center transition-all text-slate-400 shrink-0 ml-2">
+          <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </div>
       </router-link>
     </div>

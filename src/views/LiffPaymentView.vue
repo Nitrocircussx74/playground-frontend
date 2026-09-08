@@ -1,31 +1,31 @@
 <template>
-  <div class="space-y-5 pb-6 font-sans text-slate-900">
-    <div class="space-y-5">
+  <div class="space-y-4 pb-6 font-sans text-slate-800">
+    <div class="space-y-4">
       <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-3xl shadow-sm text-center text-slate-500">
-        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
-        กำลังโหลดข้อมูลชำระเงิน LIFF...
+      <div v-if="loading" class="p-8 bg-white rounded-2xl shadow-xs border border-slate-100 text-center text-slate-400 text-xs">
+        <div class="animate-spin w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2.5"></div>
+        กำลังโหลดข้อมูลชำระเงิน...
       </div>
 
       <!-- Error State -->
-      <div v-else-if="errorMessage" class="p-5 bg-rose-50 border border-rose-200 text-rose-700 rounded-3xl text-sm text-center font-medium">
+      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
 
       <!-- Invoice & Payment Details Card -->
-      <div v-else class="space-y-5">
+      <div v-else class="space-y-4">
         <!-- Verification Success Banner -->
-        <div v-if="verificationResult" class="p-5 rounded-3xl border text-center space-y-2 shadow-md"
-          :class="verificationResult.autoApproved ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-amber-50 border-amber-200 text-amber-950'"
+        <div v-if="verificationResult" class="p-5 rounded-2xl border text-center space-y-2 shadow-xs"
+          :class="verificationResult.autoApproved ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950' : 'bg-amber-50/70 border-amber-200 text-amber-950'"
         >
-          <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mx-auto"
-            :class="verificationResult.autoApproved ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'"
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg mx-auto font-bold"
+            :class="verificationResult.autoApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
           >
-            {{ verificationResult.autoApproved ? '✓' : '⏳' }}
+            {{ verificationResult.autoApproved ? '✓' : '!' }}
           </div>
 
-          <h3 class="text-base font-bold">
-            {{ verificationResult.autoApproved ? 'ชำระเงินสำเร็จแล้ว (PAID)' : 'แนบสลิปเรียบร้อยแล้ว' }}
+          <h3 class="text-sm font-bold">
+            {{ verificationResult.autoApproved ? 'ชำระเงินสำเร็จแล้ว (Paid)' : 'แนบสลิปเรียบร้อยแล้ว' }}
           </h3>
 
           <p class="text-xs text-slate-600 leading-relaxed">
@@ -35,104 +35,104 @@
           <div class="pt-2">
             <router-link
               to="/liff/profile"
-              class="inline-block px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all"
+              class="inline-block px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition-all shadow-xs"
             >
-              กลับสู่หน้าหลักผู้เช่า (Tenant Hub)
+              กลับสู่หน้าหลัก
             </router-link>
           </div>
         </div>
 
         <template v-else>
           <!-- Header Info -->
-          <div class="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-3xl shadow-md">
-            <div class="flex items-center justify-between text-xs opacity-80 mb-1">
+          <div class="p-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl shadow-md space-y-2">
+            <div class="flex items-center justify-between text-xs text-indigo-100">
               <span>{{ invoice.billingCycle }}</span>
-              <span class="font-mono">{{ invoice.invoiceNumber }}</span>
+              <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{{ invoice.invoiceNumber }}</span>
             </div>
-            <div class="text-2xl font-bold">ห้อง {{ invoice.room?.roomNumber }}</div>
-            <div class="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
-              <span class="text-xs opacity-90">ยอดชำระสุทธิ</span>
-              <span class="text-2xl font-extrabold">฿{{ Number(invoice.grandTotal).toLocaleString() }}</span>
+            <div class="text-xl font-bold">ห้อง {{ invoice.room?.roomNumber }}</div>
+            <div class="mt-3 pt-2.5 border-t border-white/20 flex items-center justify-between">
+              <span class="text-xs text-indigo-100/90 font-medium">ยอดชำระสุทธิ</span>
+              <span class="text-xl font-bold font-mono">฿{{ Number(invoice.grandTotal).toLocaleString() }}</span>
             </div>
           </div>
 
           <!-- Breakdown Details -->
-          <div class="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <h3 class="text-xs uppercase font-bold text-slate-400 tracking-wider">รายละเอียดค่าใช้จ่าย</h3>
+          <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">รายละเอียดค่าใช้จ่าย</h3>
 
-            <div class="space-y-2 text-sm">
-              <div class="flex justify-between text-slate-600">
+            <div class="space-y-2 text-xs divide-y divide-slate-100">
+              <div class="flex justify-between text-slate-600 pt-1">
                 <span>ค่าเช่าห้องพัก</span>
-                <span class="font-mono text-slate-900">฿{{ Number(invoice.roomPrice).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.roomPrice).toLocaleString() }}</span>
               </div>
-              <div class="flex justify-between text-slate-600">
+              <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าน้ำประปา</span>
-                <span class="font-mono text-slate-900">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
               </div>
-              <div class="flex justify-between text-slate-600">
+              <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าไฟฟ้า</span>
-                <span class="font-mono text-slate-900">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
               </div>
-              <div class="flex justify-between text-slate-600">
+              <div class="flex justify-between text-slate-600 pt-2">
                 <span>ค่าส่วนกลาง</span>
-                <span class="font-mono text-slate-900">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
+                <span class="font-mono text-slate-800 font-bold">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
               </div>
             </div>
           </div>
 
           <!-- PromptPay QR Code Box -->
-          <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-2xs text-center space-y-3">
-            <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-200">
-              <span>📲 Dynamic PromptPay QR Code</span>
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-2.5">
+            <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
+              <span>PromptPay QR Code</span>
             </div>
 
-            <div class="py-2">
-              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-56 h-56 mx-auto rounded-2xl border border-slate-200 shadow-2xs" />
+            <div class="py-1">
+              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-100 shadow-2xs" />
             </div>
 
-            <div class="text-xs text-slate-600 space-y-1">
-              <div>พร้อมเพย์: <span class="font-bold text-slate-900 font-mono">{{ qrData.promptpayNumber }}</span></div>
-              <div>ยอดชำระตามบิล: <span class="font-bold text-emerald-600 font-mono text-sm">฿{{ Number(qrData.amount).toLocaleString() }}</span></div>
+            <div class="text-xs text-slate-600 space-y-0.5 font-mono">
+              <div>พร้อมเพย์: <span class="font-bold text-slate-800">{{ qrData.promptpayNumber }}</span></div>
+              <div>ยอดชำระ: <span class="font-bold text-emerald-600 text-sm">฿{{ Number(qrData.amount).toLocaleString() }}</span></div>
             </div>
           </div>
 
           <!-- Upload Slip Form -->
-          <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-4">
-            <h3 class="text-sm font-bold text-slate-900">แนบสลิปโอนเงิน (Upload Payment Slip)</h3>
+          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+            <h3 class="text-xs font-bold text-slate-800">แนบสลิปโอนเงิน (Upload Slip)</h3>
 
-            <form @submit.prevent="handleUploadSlip" class="space-y-4">
+            <form @submit.prevent="handleUploadSlip" class="space-y-3">
               <div>
                 <input
                   type="file"
                   accept="image/png, image/jpeg, image/jpg"
                   required
                   @change="handleFileChange"
-                  class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 cursor-pointer"
                 />
               </div>
 
               <!-- Optional Amount Override for Testing Auto Verification -->
               <div>
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">ยอดเงินในสลิป (ระบุเพื่อทดสอบ Auto Verification)</label>
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อทดสอบ Auto Verification)</label>
                 <input
                   v-model="declaredAmount"
                   type="number"
                   step="0.01"
                   :placeholder="`฿${invoice.grandTotal}`"
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-hidden"
+                  class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-mono text-slate-800 focus:outline-hidden focus:bg-white focus:ring-1 focus:ring-indigo-400"
                 />
               </div>
 
               <div v-if="previewUrl" class="text-center">
-                <img :src="previewUrl" class="h-40 mx-auto object-cover rounded-2xl border border-slate-200 shadow-2xs" />
+                <img :src="previewUrl" class="h-40 mx-auto object-cover rounded-xl border border-slate-100 shadow-xs" />
               </div>
 
               <button
                 type="submit"
                 :disabled="submitting || !selectedFile"
-                class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all shadow-xs disabled:opacity-50 cursor-pointer active:scale-[0.99]"
               >
-                {{ submitting ? 'กำลังตรวจสอบสลิปอัตโนมัติ...' : '⚡ ส่งสลิป & ตรวจสอบการชำระเงิน' }}
+                {{ submitting ? 'กำลังตรวจสอบสลิป...' : 'ส่งสลิป & ยืนยันการชำระเงิน' }}
               </button>
             </form>
           </div>
