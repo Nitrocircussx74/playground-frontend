@@ -33,47 +33,38 @@
         <p class="text-xs font-bold text-slate-700">{{ statusText }}</p>
       </div>
 
-      <!-- Standalone Dev Mode / Session Expired Selector (Bright, Beautiful Card) -->
+      <!-- Standalone / Session Expired Entry Card (Clean & Modern) -->
       <div v-else-if="isStandaloneDevMode" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-4 text-left shadow-xl shadow-slate-200/60 backdrop-blur-md">
-        <!-- Dev Mode Header Tag -->
-        <div class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-3.5 py-2 rounded-2xl flex items-center justify-between shadow-2xs">
-          <div class="flex items-center gap-2">
-            <span class="text-sm">🔑</span>
-            <span>ยืนยันตัวตนบัญชี LINE</span>
-          </div>
-          <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold">
-            {{ isLiffLoggedIn() ? 'เข้าสู่ระบบแล้ว' : 'เซสชันหมดอายุ' }}
-          </span>
-        </div>
-
-        <!-- LINE Login Direct Action Button (Primary Green) -->
+        <!-- 1. Primary LINE Login Button -->
         <button
           @click="handleLineLogin('/liff/profile')"
           :disabled="isLoggingIn"
-          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-600/30 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-600/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
         >
           <div class="flex items-center gap-2.5">
             <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs font-black text-[#06C755] shadow-xs">
               💬
             </div>
-            <div class="text-left">
-              <div class="leading-tight">{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE (Verify LINE Login)' }}</div>
-              <div class="text-[10px] text-white/80 font-normal">สำหรับลูกบ้านที่เซสชันหมดอายุ หรือเปิดผ่านเบราว์เซอร์</div>
+            <div class="text-left font-bold">
+              <div>{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE' }}</div>
             </div>
           </div>
           <span class="text-base font-extrabold">➔</span>
         </button>
 
-        <!-- 📱 Phone Verification Card (Direct Tenant Lookup & Auto-Bind) -->
-        <div class="p-4 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-3 shadow-inner">
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">หรือ</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <!-- 2. Phone Verification Box -->
+        <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3">
           <div class="flex items-center justify-between text-xs font-bold text-slate-800">
             <div class="flex items-center gap-1.5">
               <span>📱</span>
-              <span>ยืนยันตัวตนด้วยเบอร์โทรศัพท์</span>
+              <span>ยืนยันด้วยเบอร์โทรศัพท์</span>
             </div>
-            <span class="text-[10px] text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full font-bold">
-              ผูกบัญชีทันที
-            </span>
           </div>
 
           <div class="space-y-2">
@@ -87,45 +78,23 @@
             <button
               @click="handleVerifyByPhone"
               :disabled="verifyingPhone || !verifyPhoneInput"
-              class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-purple-600/20 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+              class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white rounded-xl text-xs font-bold transition-all shadow-sm disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span v-if="verifyingPhone" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
               <span v-else>🔍</span>
-              <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์ & เข้าสู่ห้องพัก' }}</span>
+              <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'เข้าสู่ระบบ' }}</span>
             </button>
           </div>
         </div>
 
-        <div class="relative flex py-1 items-center">
-          <div class="flex-grow border-t border-slate-200"></div>
-          <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">หรือเลือกเมนูใช้งาน</span>
-          <div class="flex-grow border-t border-slate-200"></div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div class="space-y-2.5">
-          <!-- Button 1: Profile Hub (Emerald Gradient) -->
-          <button
-            @click="goTo('/liff/profile')"
-            class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
-          >
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-              <span>สำหรับลูกบ้านที่ลงทะเบียนแล้ว (Profile Hub)</span>
-            </div>
-            <span class="text-base font-extrabold">➔</span>
-          </button>
-
-          <!-- Button 2: Register Invite (Purple Gradient) -->
+        <!-- 3. Simple Footer Link for New Tenants -->
+        <div class="pt-2 text-center">
           <button
             @click="goTo('/liff/register')"
-            class="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+            class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 cursor-pointer transition-colors"
           >
-            <div class="flex items-center gap-2">
-              <span>📝</span>
-              <span>สำหรับผู้เช่าใหม่ (Register Invite)</span>
-            </div>
-            <span class="text-base font-extrabold">➔</span>
+            <span>📝</span>
+            <span>ลงทะเบียนผู้เช่าใหม่ด้วยรหัสเชิญ</span>
           </button>
         </div>
       </div>
