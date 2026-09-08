@@ -5,7 +5,7 @@
     <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-purple-300/20 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="relative z-10 w-full max-w-sm text-center space-y-6">
-      <!-- LINE Brand Header & Glowing Logo -->
+      <!-- LINE Brand Header & Logo -->
       <div class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-1 shadow-xl shadow-emerald-500/25 ring-4 ring-emerald-100 flex items-center justify-center animate-bounce-subtle">
         <div class="w-full h-full bg-white rounded-[22px] flex items-center justify-center text-3xl font-extrabold text-emerald-500 shadow-inner">
           💬
@@ -13,7 +13,7 @@
       </div>
 
       <!-- App Title Header -->
-      <div class="space-y-1.5">
+      <div class="space-y-1">
         <div class="flex items-center justify-center gap-2">
           <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">
             ระบบจัดการหอพัก
@@ -27,76 +27,95 @@
         </p>
       </div>
 
-      <!-- Loading Spinner Indicator (Light Theme) -->
-      <div v-if="loading" class="p-6 bg-white/90 rounded-3xl border border-slate-200/90 backdrop-blur-md space-y-3 shadow-xl shadow-slate-200/60">
+      <!-- 1. Loading Indicator (Initial Check) -->
+      <div v-if="loading" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 backdrop-blur-md space-y-3 shadow-xl shadow-slate-200/60">
         <div class="w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
         <p class="text-xs font-bold text-slate-700">{{ statusText }}</p>
       </div>
 
-      <!-- Standalone / Session Expired Entry Card (Clean & Modern) -->
-      <div v-else-if="isStandaloneDevMode" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-4 text-left shadow-xl shadow-slate-200/60 backdrop-blur-md">
-        <!-- 1. Primary LINE Login Button -->
-        <button
-          @click="handleLineLogin('/liff/profile')"
-          :disabled="isLoggingIn"
-          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-600/25 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
-        >
-          <div class="flex items-center gap-2.5">
-            <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs font-black text-[#06C755] shadow-xs">
-              💬
-            </div>
-            <div class="text-left font-bold">
-              <div>{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE' }}</div>
-            </div>
+      <!-- 2. Phone Verification Form (For Unlinked Tenants) -->
+      <div v-else-if="showPhoneVerifyForm" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-5 text-left shadow-xl shadow-slate-200/60 backdrop-blur-md">
+        <!-- User Profile Greeting Tag -->
+        <div v-if="lineProfile" class="flex items-center gap-3 p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl">
+          <img
+            v-if="lineProfile.pictureUrl"
+            :src="lineProfile.pictureUrl"
+            alt="LINE Avatar"
+            class="w-10 h-10 rounded-full border border-emerald-300 shadow-xs object-cover"
+          />
+          <div v-else class="w-10 h-10 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+            👤
           </div>
-          <span class="text-base font-extrabold">➔</span>
-        </button>
-
-        <div class="relative flex py-1 items-center">
-          <div class="flex-grow border-t border-slate-200"></div>
-          <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">หรือ</span>
-          <div class="flex-grow border-t border-slate-200"></div>
+          <div class="min-w-0 flex-1">
+            <div class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">บัญชี LINE</div>
+            <div class="text-xs font-extrabold text-slate-900 truncate">{{ lineProfile.displayName || 'ผู้ใช้งาน LINE' }}</div>
+          </div>
         </div>
 
-        <!-- 2. Phone Verification Box -->
-        <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between text-xs font-bold text-slate-800">
-            <div class="flex items-center gap-1.5">
-              <span>📱</span>
-              <span>ยืนยันด้วยเบอร์โทรศัพท์</span>
-            </div>
-          </div>
+        <div class="space-y-1">
+          <h2 class="text-sm font-extrabold text-slate-900">📱 ยืนยันเบอร์โทรศัพท์ลูกบ้าน</h2>
+          <p class="text-[11px] text-slate-500">กรอกเบอร์โทรศัพท์ที่เคยลงทะเบียนไว้เพื่อเชื่อมต่อห้องพักอัตโนมัติ</p>
+        </div>
 
-          <div class="space-y-2">
+        <!-- Phone Verification Input & Submit -->
+        <form @submit.prevent="handleVerifyByPhone" class="space-y-3">
+          <div>
             <input
               v-model="verifyPhoneInput"
               type="tel"
+              maxlength="10"
               placeholder="กรอกเบอร์โทรศัพท์ เช่น 0898765432"
-              class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
-              @keyup.enter="handleVerifyByPhone"
+              required
+              autofocus
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-2xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500 transition-all"
             />
-            <button
-              @click="handleVerifyByPhone"
-              :disabled="verifyingPhone || !verifyPhoneInput"
-              class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white rounded-xl text-xs font-bold transition-all shadow-sm disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span v-if="verifyingPhone" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
-              <span v-else>🔍</span>
-              <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'เข้าสู่ระบบ' }}</span>
-            </button>
           </div>
-        </div>
 
-        <!-- 3. Simple Footer Link for New Tenants -->
-        <div class="pt-2 text-center">
+          <!-- Error Alert Banner -->
+          <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-xs font-semibold flex items-center gap-1.5">
+            <span>⚠️</span>
+            <span>{{ phoneErrorMessage }}</span>
+          </div>
+
+          <!-- Submit Button -->
           <button
-            @click="goTo('/liff/register')"
-            class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 cursor-pointer transition-colors"
+            type="submit"
+            :disabled="verifyingPhone || !verifyPhoneInput"
+            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:from-emerald-700 active:to-teal-700 text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-500/25 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+          >
+            <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            <span v-else>✅</span>
+            <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์ & เข้าสู่ห้องพัก' }}</span>
+          </button>
+        </form>
+
+        <!-- Minimal Footer Link for Invite Code / Register -->
+        <div class="pt-2 text-center border-t border-slate-100">
+          <router-link
+            to="/liff/register"
+            class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 transition-colors"
           >
             <span>📝</span>
-            <span>ลงทะเบียนผู้เช่าใหม่ด้วยรหัสเชิญ</span>
-          </button>
+            <span>สำหรับผู้เช่าใหม่ที่มีรหัสเชิญ (Invite Code)</span>
+          </router-link>
         </div>
+      </div>
+
+      <!-- 3. LINE Login Prompt (When opened in external browser without LINE session) -->
+      <div v-else class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-4 text-center shadow-xl shadow-slate-200/60 backdrop-blur-md">
+        <div class="space-y-1">
+          <h2 class="text-sm font-extrabold text-slate-900">เข้าสู่ระบบด้วย LINE</h2>
+          <p class="text-[11px] text-slate-500">กรุณาเข้าสู่ระบบผ่านบัญชี LINE เพื่อเริ่มต้นใช้งาน</p>
+        </div>
+
+        <button
+          @click="handleLineLogin"
+          :disabled="isLoggingIn"
+          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+        >
+          <span class="text-base">💬</span>
+          <span>{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE' }}</span>
+        </button>
       </div>
     </div>
   </div>
@@ -105,52 +124,23 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff, { initLiff, isLiffLoggedIn, loginLiff } from '@/utils/liff';
+import liff, { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
+import { useAuthStore } from '@/stores/auth';
+import { showSuccess } from '@/utils/swal';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
+
 const loading = ref(true);
-const isLoggingIn = ref(false);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
-const isStandaloneDevMode = ref(false);
-const liffErrorMessage = ref('');
+const isLoggingIn = ref(false);
+const showPhoneVerifyForm = ref(false);
+const lineProfile = ref(null);
 const verifyPhoneInput = ref('');
 const verifyingPhone = ref(false);
-
-const handleVerifyByPhone = async () => {
-  if (!verifyPhoneInput.value || !verifyPhoneInput.value.trim()) return;
-  verifyingPhone.value = true;
-  try {
-    let profile = null;
-    if (isLiffLoggedIn()) {
-      try {
-        profile = await liff.getProfile();
-      } catch (err) {
-        console.warn('Could not get LIFF profile:', err);
-      }
-    }
-
-    const payload = {
-      phone: verifyPhoneInput.value.trim(),
-      lineDisplayName: profile?.displayName || null,
-      linePictureUrl: profile?.pictureUrl || null,
-      lineStatusMessage: profile?.statusMessage || null
-    };
-
-    const res = await api.post('/api/v1/liff/auth/verify-phone', payload);
-    if (res.data?.success || res.data?.data) {
-      router.push('/liff/profile');
-    } else {
-      router.push('/liff/profile');
-    }
-  } catch (err) {
-    console.error('Verify phone error:', err);
-    alert(err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้ง');
-  } finally {
-    verifyingPhone.value = false;
-  }
-};
+const phoneErrorMessage = ref('');
 
 onMounted(async () => {
   try {
@@ -159,9 +149,14 @@ onMounted(async () => {
 
     if (isLiffLoggedIn()) {
       statusText.value = 'กำลังตรวจสอบข้อมูลสัญญาเช่าหอพัก...';
+
+      // 1. ดึง LINE Profile สดจาก LINE SDK
+      lineProfile.value = await getLiffProfile();
+
+      // 2. เช็คสถานะการผูกห้องพักในฐานข้อมูล
       const res = await api.get('/api/v1/liff/check-status');
 
-      // ตรวจสอบ Deep Link Target จาก query / liff.state หรือ fallback ไปที่ /liff/profile
+      // ตรวจสอบ Deep Link Target
       const liffState = route.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
       const redirectQuery = route.query.redirect || route.query.path || route.query.target;
       let targetPath = '/liff/profile';
@@ -178,11 +173,13 @@ onMounted(async () => {
       }
 
       if (res.data?.isRegistered) {
+        // [CASE A: ลูกบ้านที่ผูกบัญชีแล้ว] -> เข้าหน้าบริการทันทีแบบ Zero-Click!
         statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าบริการ...';
         router.replace(targetPath);
       } else {
-        statusText.value = 'ยังไม่เคยลงทะเบียน กำลังนำทางไปหน้าลงทะเบียน...';
-        router.replace('/liff/register');
+        // [CASE B: ลูกบ้านใหม่/ยังไม่เคยผูก] -> แสดงฟอร์มกรอกเบอร์โทรศัพท์
+        loading.value = false;
+        showPhoneVerifyForm.value = true;
       }
       return;
     }
@@ -193,45 +190,68 @@ onMounted(async () => {
       return;
     }
 
-    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Mode / Session Expired)
+    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Browser)
     loading.value = false;
-    isStandaloneDevMode.value = true;
   } catch (err) {
     console.error('LIFF Smart Entry init error:', err);
-    liffErrorMessage.value = err?.message || 'ไม่สามารถยืนยันตัวตน LIFF ในเบราว์เซอร์ปกติได้';
     loading.value = false;
-    isStandaloneDevMode.value = true;
   }
 });
 
-const handleLineLogin = async (redirectPath = '/liff/profile') => {
+const handleVerifyByPhone = async () => {
+  if (!verifyPhoneInput.value || !verifyPhoneInput.value.trim()) return;
+  verifyingPhone.value = true;
+  phoneErrorMessage.value = '';
+
+  try {
+    const payload = {
+      phone: verifyPhoneInput.value.trim(),
+      lineDisplayName: lineProfile.value?.displayName || null,
+      linePictureUrl: lineProfile.value?.pictureUrl || null,
+      lineStatusMessage: lineProfile.value?.statusMessage || null
+    };
+
+    const res = await api.post('/api/v1/liff/auth/verify-phone', payload);
+
+    if (res.data?.success) {
+      const accessToken = res.data.accessToken || res.data.data?.accessToken;
+      if (accessToken) {
+        authStore.setAccessToken(accessToken);
+        localStorage.setItem('liff_token', accessToken);
+      }
+      if (res.data.data?.tenant) {
+        authStore.setUser(res.data.data.tenant);
+      }
+
+      await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว');
+      router.replace('/liff/profile');
+    } else {
+      router.replace('/liff/profile');
+    }
+  } catch (err) {
+    console.error('Verify phone error:', err);
+    phoneErrorMessage.value = err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้ง';
+  } finally {
+    verifyingPhone.value = false;
+  }
+};
+
+const handleLineLogin = async () => {
   isLoggingIn.value = true;
   try {
     const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
     if (liffId) {
-      const targetUri = window.location.origin + redirectPath;
+      const targetUri = window.location.origin + '/liff/profile';
       await loginLiff(targetUri);
     } else {
-      router.push(redirectPath);
+      router.push('/liff/profile');
     }
   } catch (err) {
     console.error('LINE Login error:', err);
-    router.push(redirectPath);
+    router.push('/liff/profile');
   } finally {
     isLoggingIn.value = false;
   }
-};
-
-const goTo = async (path) => {
-  // หากยังไม่ได้ล็อกอิน LINE และมี LIFF ID ให้ Verify/Login ผ่าน LINE ก่อน
-  if (!isLiffLoggedIn()) {
-    const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-    if (liffId) {
-      handleLineLogin(path);
-      return;
-    }
-  }
-  router.push(path);
 };
 </script>
 
