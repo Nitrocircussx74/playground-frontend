@@ -48,9 +48,14 @@
 
         <div class="p-4 sm:p-5 space-y-3">
           <div class="flex items-start justify-between gap-3">
-            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-snug group-hover:text-emerald-700 transition-colors">
-              {{ item.title }}
-            </h2>
+            <div class="flex items-center gap-2 flex-wrap min-w-0">
+              <span v-if="!isRead(item.id)" class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shrink-0 shadow-2xs animate-pulse">
+                ใหม่
+              </span>
+              <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-snug group-hover:text-emerald-700 transition-colors truncate">
+                {{ item.title }}
+              </h2>
+            </div>
             <span class="text-[11px] text-slate-400 font-mono shrink-0 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
               {{ formatDate(item.createdAt) }}
             </span>
@@ -170,9 +175,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Megaphone, RotateCw, Building2, User, ChevronRight, X } from 'lucide-vue-next';
+import { Megaphone, RotateCw, Building2, User, ChevronRight, X, Sparkles } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { useAnnouncements } from '@/composables/useAnnouncements';
 import api from '@/utils/api';
+
+const { markAsRead, isRead, checkUnread } = useAnnouncements();
 
 const loading = ref(true);
 const announcements = ref([]);
@@ -190,6 +198,9 @@ const formatDate = (dateString) => {
 
 const openDetail = (item) => {
   selectedAnnouncement.value = item;
+  if (item?.id) {
+    markAsRead(item.id);
+  }
 };
 
 const closeDetail = () => {
@@ -209,7 +220,10 @@ onMounted(async () => {
     console.warn('LIFF init fallback mode:', err.message);
   }
 
-  fetchAnnouncements();
+  await fetchAnnouncements();
+  if (lineUserId.value) {
+    checkUnread(lineUserId.value);
+  }
 });
 
 const fetchAnnouncements = async () => {

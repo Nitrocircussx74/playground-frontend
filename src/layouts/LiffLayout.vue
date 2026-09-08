@@ -75,6 +75,14 @@
         >
           <div class="relative flex items-center justify-center w-8 h-8 rounded-xl transition-colors" :class="isTabActive(tab.path) ? 'bg-slate-100' : ''">
             <component :is="tab.icon" class="w-4 h-4 transition-transform duration-200 group-hover:scale-105" />
+            <!-- Unread Announcement Dot Badge -->
+            <span
+              v-if="tab.path === '/liff/announcements' && unreadCount > 0"
+              class="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5"
+            >
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 border border-white"></span>
+            </span>
           </div>
           <span class="text-[10px] mt-0.5 tracking-tight font-medium">{{ tab.name }}</span>
         </router-link>
@@ -146,6 +154,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
+import { useAnnouncements } from '@/composables/useAnnouncements';
 import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn } from '@/utils/liff';
 import { showSuccess, showWarning } from '@/utils/swal';
 import {
@@ -164,6 +173,7 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const { themeColor, logoUrl, buildingName, fetchAndApplyTheme } = useDynamicTheme();
+const { unreadCount, checkUnread } = useAnnouncements();
 
 const needsAddFriend = ref(false);
 const checkingFriendship = ref(false);
@@ -284,12 +294,14 @@ watch(
   () => route.path,
   () => {
     checkUserFriendship();
+    checkUnread();
   }
 );
 
 onMounted(() => {
   fetchAndApplyTheme();
   checkUserFriendship();
+  checkUnread();
 });
 </script>
 

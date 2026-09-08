@@ -197,6 +197,82 @@
         </div>
       </div>
 
+      <!-- 2.5 Unread Announcements Notification Card (แสดงเมื่อมีข่าวสารใหม่ที่ยังไม่ได้อ่าน) -->
+      <div v-if="latestUnreadAnnouncements.length > 0" class="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+            </span>
+            <h2 class="text-xs font-bold text-slate-800 tracking-tight">
+              ข่าวสาร & ประกาศใหม่ ({{ latestUnreadAnnouncements.length }})
+            </h2>
+          </div>
+          <router-link
+            to="/liff/announcements"
+            class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5"
+          >
+            <span>ดูทั้งหมด</span>
+            <ChevronRight class="w-3.5 h-3.5" />
+          </router-link>
+        </div>
+
+        <div class="space-y-2">
+          <div
+            v-for="announcement in latestUnreadAnnouncements.slice(0, 2)"
+            :key="announcement.id"
+            @click="openAnnouncementModal(announcement)"
+            class="p-4 bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white rounded-2xl border border-emerald-200/80 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+          >
+            <div class="flex items-start gap-3.5">
+              <!-- Cover Image or Megaphone Icon -->
+              <div
+                v-if="announcement.imageUrl"
+                class="w-13 h-13 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-emerald-100 shadow-2xs"
+              >
+                <img
+                  :src="announcement.imageUrl"
+                  :alt="announcement.title"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div
+                v-else
+                class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform"
+              >
+                <Megaphone class="w-5 h-5" />
+              </div>
+
+              <!-- Content Preview -->
+              <div class="min-w-0 flex-1 space-y-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse">
+                    ใหม่
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono">
+                    {{ formatDate(announcement.createdAt) }}
+                  </span>
+                </div>
+                <h3 class="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                  {{ announcement.title }}
+                </h3>
+                <p class="text-[11px] text-slate-500 line-clamp-1 leading-snug">
+                  {{ announcement.content }}
+                </p>
+              </div>
+
+              <!-- Action Chevron -->
+              <div class="self-center pl-1 shrink-0">
+                <div class="w-7 h-7 rounded-xl bg-white/90 border border-emerald-200 text-emerald-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ChevronRight class="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 3. Dynamic Quick Actions Grid (Responsive 2 to 4 cols) -->
       <div class="space-y-2.5" v-if="availableQuickActions.length > 0">
         <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-0.5">
@@ -208,13 +284,21 @@
             v-for="menu in availableQuickActions"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="p-4 bg-white hover:bg-slate-50/80 rounded-2xl border border-slate-100 shadow-xs text-left transition-all group flex flex-col justify-between h-28 cursor-pointer active:scale-[0.99]"
+            class="p-4 bg-white hover:bg-slate-50/80 rounded-2xl border border-slate-100 shadow-xs text-left transition-all group flex flex-col justify-between h-28 cursor-pointer active:scale-[0.99] relative overflow-hidden"
           >
             <div
-              class="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
+              class="relative w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
               :class="menu.bgClass"
             >
               <component :is="menu.icon" class="w-4.5 h-4.5" :class="menu.iconClass" />
+              <!-- Unread badge on Announcement quick action -->
+              <span
+                v-if="menu.id === 'announcements' && latestUnreadAnnouncements.length > 0"
+                class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+              >
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 border border-white"></span>
+              </span>
             </div>
             <div>
               <div class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition-colors">
@@ -324,6 +408,81 @@
         </form>
       </div>
     </div>
+
+    <!-- Announcement Detail Modal Popup -->
+    <Teleport to="body">
+      <div
+        v-if="selectedAnnouncement"
+        class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+        @click.self="closeAnnouncementModal"
+      >
+        <div
+          class="bg-white w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
+        >
+          <!-- Modal Top Header Bar -->
+          <div class="shrink-0 px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white/95 backdrop-blur-md sticky top-0 z-10">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                {{ selectedAnnouncement.building?.name || 'ประกาศทั่วไป' }}
+              </span>
+              <span class="text-xs text-slate-400 font-mono">
+                {{ formatDate(selectedAnnouncement.createdAt) }}
+              </span>
+            </div>
+
+            <button
+              @click="closeAnnouncementModal"
+              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <X class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Scrollable Modal Content -->
+          <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+            <!-- Full Cover Image -->
+            <div v-if="selectedAnnouncement.imageUrl" class="w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-100 shadow-xs">
+              <img
+                :src="selectedAnnouncement.imageUrl"
+                :alt="selectedAnnouncement.title"
+                class="w-full max-h-72 object-cover object-center"
+              />
+            </div>
+
+            <!-- Title -->
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+              {{ selectedAnnouncement.title }}
+            </h2>
+
+            <!-- Author & Metadata Pill -->
+            <div class="flex items-center gap-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs text-slate-600">
+              <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <User class="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400">ผู้ประกาศ</div>
+                <div class="font-semibold text-slate-800">{{ selectedAnnouncement.createdBy || 'ผู้ดูแลหอพัก' }}</div>
+              </div>
+            </div>
+
+            <!-- Content Body -->
+            <div class="prose prose-sm text-slate-700 leading-relaxed whitespace-pre-line text-sm pt-2 border-t border-slate-100">
+              {{ selectedAnnouncement.content }}
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="shrink-0 p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+            <button
+              @click="closeAnnouncementModal"
+              class="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+            >
+              รับทราบ / ปิดหน้าต่าง
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -333,6 +492,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
+import { useAnnouncements } from '@/composables/useAnnouncements';
 import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
@@ -356,6 +516,7 @@ const route = useRoute();
 const authStore = useAuthStore();
 const featureStore = useFeatureStore();
 const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
+const { latestUnreadAnnouncements, checkUnread, markAsRead } = useAnnouncements();
 
 const loading = ref(true);
 const showQrModal = ref(false);
@@ -366,6 +527,27 @@ const inviteCodeInput = ref('');
 const linkingRoom = ref(false);
 const digitalIdQrUrl = ref('');
 const currentLineUserId = ref('');
+const selectedAnnouncement = ref(null);
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const openAnnouncementModal = (item) => {
+  selectedAnnouncement.value = item;
+  if (item?.id) {
+    markAsRead(item.id);
+  }
+};
+
+const closeAnnouncementModal = () => {
+  selectedAnnouncement.value = null;
+};
 
 const tenantProfile = reactive({
   firstName: '',
@@ -569,6 +751,7 @@ onMounted(async () => {
   }
 
   await fetchTenantProfile(currentLineUserId.value);
+  await checkUnread(currentLineUserId.value);
 
   if (currentLineUserId.value || tenantProfile.phone) {
     api.patch('/api/v1/liff/auth/sync-profile', {
