@@ -15,13 +15,69 @@
 
         <div>
           <h1 class="text-xl font-extrabold tracking-tight text-white">ผูกบัญชีลูกบ้าน (Account Linking)</h1>
-          <p class="text-xs text-slate-400 mt-1">กรอกรหัสเชิญ 6 หลักและเบอร์โทรศัพท์ 4 ตัวท้ายเพื่อเชื่อมต่อบัญชี LINE</p>
+          <p class="text-xs text-slate-400 mt-1">ยืนยันตัวตนด้วยเบอร์โทรศัพท์ หรือ รหัสเชิญเพื่อเชื่อมต่อบัญชี LINE</p>
         </div>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div class="grid grid-cols-2 p-1 bg-slate-800/90 rounded-2xl border border-slate-700/80 text-xs font-bold">
+        <button
+          type="button"
+          @click="activeMode = 'phone'"
+          :class="activeMode === 'phone' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25' : 'text-slate-400 hover:text-white'"
+          class="py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <span>📱</span>
+          <span>เบอร์โทรศัพท์</span>
+        </button>
+        <button
+          type="button"
+          @click="activeMode = 'invite'"
+          :class="activeMode === 'invite' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25' : 'text-slate-400 hover:text-white'"
+          class="py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <span>🔑</span>
+          <span>รหัสเชิญ 6 หลัก</span>
+        </button>
       </div>
 
       <!-- Form Card -->
       <div class="p-6 bg-slate-800/90 rounded-3xl border border-slate-700/80 shadow-2xl backdrop-blur-md space-y-5">
-        <form @submit.prevent="handleLinkAccount" class="space-y-4 text-xs">
+        <!-- MODE 1: Phone Verification -->
+        <form v-if="activeMode === 'phone'" @submit.prevent="handleVerifyByPhone" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-200 mb-1.5 flex items-center gap-1">
+              <span>📱</span>
+              <span>เบอร์โทรศัพท์ที่ลงทะเบียนไว้</span>
+              <span class="text-rose-400">*</span>
+            </label>
+            <input
+              v-model="phoneInput"
+              type="tel"
+              placeholder="e.g. 0898765432"
+              required
+              class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 font-mono font-bold text-base text-center tracking-widest text-emerald-400 focus:outline-hidden focus:border-emerald-500 transition-colors"
+            />
+            <p class="text-[10px] text-slate-400 mt-1 text-center">ระบบจะค้นหาห้องพักและผูกบัญชี LINE กับสัญญาเช่าอัตโนมัติ</p>
+          </div>
+
+          <!-- Alert Error Message -->
+          <div v-if="errorMessage" class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-300 text-xs font-semibold text-center">
+            ⚠️ {{ errorMessage }}
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="submitting || !phoneInput"
+            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl font-bold text-xs shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>{{ submitting ? 'กำลังยืนยันข้อมูล...' : '✅ ยืนยันเบอร์ & เข้าสู่ระบบ' }}</span>
+          </button>
+        </form>
+
+        <!-- MODE 2: Invite Code Linking -->
+        <form v-else @submit.prevent="handleLinkAccount" class="space-y-4 text-xs">
           <!-- 1. Invite Code (6-digit alphanumeric) -->
           <div>
             <label class="block font-bold text-slate-200 mb-1.5 flex items-center gap-1">
@@ -84,6 +140,8 @@ import { showSuccess } from '@/utils/swal';
 
 const route = useRoute();
 const router = useRouter();
+const activeMode = ref('phone');
+const phoneInput = ref('');
 const lineDisplayName = ref('');
 const linePictureUrl = ref('');
 const lineStatusMessage = ref('');
@@ -99,6 +157,7 @@ onMounted(async () => {
   // Auto-fill invite code from URL query param if present
   if (route.query.code) {
     form.inviteCode = String(route.query.code).trim().toUpperCase();
+    activeMode.value = 'invite';
   }
 
   try {
@@ -115,6 +174,29 @@ onMounted(async () => {
     console.warn('LIFF init fallback in LiffOnboarding:', err.message);
   }
 });
+
+const handleVerifyByPhone = async () => {
+  if (!phoneInput.value || !phoneInput.value.trim()) return;
+  submitting.value = true;
+  errorMessage.value = '';
+
+  try {
+    const payload = {
+      phone: phoneInput.value.trim(),
+      lineDisplayName: lineDisplayName.value || null,
+      linePictureUrl: linePictureUrl.value || null,
+      lineStatusMessage: lineStatusMessage.value || null
+    };
+
+    const res = await api.post('/api/v1/liff/auth/verify-phone', payload);
+    await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว');
+    router.push('/liff/profile');
+  } catch (err) {
+    errorMessage.value = err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้ง';
+  } finally {
+    submitting.value = false;
+  }
+};
 
 const handleLinkAccount = async () => {
   submitting.value = true;

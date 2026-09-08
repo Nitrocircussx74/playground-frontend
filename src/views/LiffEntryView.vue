@@ -64,6 +64,38 @@
           <span class="text-base font-extrabold">➔</span>
         </button>
 
+        <!-- 📱 Phone Verification Card (Direct Tenant Lookup & Auto-Bind) -->
+        <div class="p-4 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-3 shadow-inner">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-800">
+            <div class="flex items-center gap-1.5">
+              <span>📱</span>
+              <span>ยืนยันตัวตนด้วยเบอร์โทรศัพท์</span>
+            </div>
+            <span class="text-[10px] text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full font-bold">
+              ผูกบัญชีทันที
+            </span>
+          </div>
+
+          <div class="space-y-2">
+            <input
+              v-model="verifyPhoneInput"
+              type="tel"
+              placeholder="กรอกเบอร์โทรศัพท์ เช่น 0898765432"
+              class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              @keyup.enter="handleVerifyByPhone"
+            />
+            <button
+              @click="handleVerifyByPhone"
+              :disabled="verifyingPhone || !verifyPhoneInput"
+              class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-purple-600/20 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span v-if="verifyingPhone" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
+              <span v-else>🔍</span>
+              <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์ & เข้าสู่ห้องพัก' }}</span>
+            </button>
+          </div>
+        </div>
+
         <div class="relative flex py-1 items-center">
           <div class="flex-grow border-t border-slate-200"></div>
           <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">หรือเลือกเมนูใช้งาน</span>
@@ -114,6 +146,42 @@ const isLoggingIn = ref(false);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
 const isStandaloneDevMode = ref(false);
 const liffErrorMessage = ref('');
+const verifyPhoneInput = ref('');
+const verifyingPhone = ref(false);
+
+const handleVerifyByPhone = async () => {
+  if (!verifyPhoneInput.value || !verifyPhoneInput.value.trim()) return;
+  verifyingPhone.value = true;
+  try {
+    let profile = null;
+    if (isLiffLoggedIn()) {
+      try {
+        profile = await liff.getProfile();
+      } catch (err) {
+        console.warn('Could not get LIFF profile:', err);
+      }
+    }
+
+    const payload = {
+      phone: verifyPhoneInput.value.trim(),
+      lineDisplayName: profile?.displayName || null,
+      linePictureUrl: profile?.pictureUrl || null,
+      lineStatusMessage: profile?.statusMessage || null
+    };
+
+    const res = await api.post('/api/v1/liff/auth/verify-phone', payload);
+    if (res.data?.success || res.data?.data) {
+      router.push('/liff/profile');
+    } else {
+      router.push('/liff/profile');
+    }
+  } catch (err) {
+    console.error('Verify phone error:', err);
+    alert(err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้ง');
+  } finally {
+    verifyingPhone.value = false;
+  }
+};
 
 onMounted(async () => {
   try {
