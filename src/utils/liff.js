@@ -135,22 +135,13 @@ export async function getLiffFriendship() {
  * นำทางผู้ใช้ไปยังหน้าเพิ่มเพื่อน LINE Official Account
  */
 export function openAddFriendLine(fallbackOaUrl = '') {
-  const customOaUrl = import.meta.env.VITE_LINE_OA_URL || fallbackOaUrl;
-  const botId = import.meta.env.VITE_LINE_BOT_BASIC_ID || '';
+  const botId = import.meta.env.VITE_LINE_BOT_BASIC_ID || '@446vdkzu';
+  const cleanId = botId.startsWith('@') ? botId : `@${botId}`;
+  const customOaUrl = import.meta.env.VITE_LINE_OA_URL || fallbackOaUrl || `https://line.me/R/ti/p/${cleanId}`;
 
-  if (customOaUrl) {
-    openExternalWindow(customOaUrl);
-    return;
+  if (typeof window !== 'undefined') {
+    window.location.href = customOaUrl;
   }
-
-  if (botId) {
-    const cleanId = botId.startsWith('@') ? botId : `@${botId}`;
-    openExternalWindow(`https://line.me/R/ti/p/${cleanId}`);
-    return;
-  }
-
-  // หากไม่มี OA URL โดยตรง ให้สั่ง LINE Login
-  loginLiff(window.location.href);
 }
 
 /**
