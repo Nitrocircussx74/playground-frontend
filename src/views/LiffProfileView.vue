@@ -219,44 +219,29 @@
         </div>
       </div>
 
-      <!-- 4. Dynamic General Menus (List แนวตั้ง สไตล์ iOS Settings) -->
-      <div class="space-y-2.5" v-if="availableGeneralMenus.length > 0">
-        <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">
-          เมนูทั่วไป (General Settings)
-        </h2>
-
-        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100">
-          <button
-            v-for="menu in availableGeneralMenus"
-            :key="menu.id"
-            @click="handleMenuClick(menu)"
-            class="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group cursor-pointer"
-            :class="menu.isDanger ? 'text-rose-600' : 'text-slate-800'"
-          >
-            <div class="flex items-center gap-3">
-              <div
-                class="w-9 h-9 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105"
-                :class="menu.isDanger ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600'"
-              >
-                <component :is="menu.icon" class="w-4 h-4" />
-              </div>
-              <span class="text-xs font-bold leading-tight">{{ menu.title }}</span>
+      <!-- 4. Personal Profile & Settings Banner / Card -->
+      <router-link
+        to="/liff/settings"
+        class="p-4 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-3xl border border-slate-200/90 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
+      >
+        <div class="flex items-center gap-3.5 min-w-0">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform shadow-2xs shrink-0">
+            <User class="w-5 h-5" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5 flex-wrap">
+              <span>โปรไฟล์และการตั้งค่าส่วนตัว</span>
+              <span class="px-2 py-0.5 text-[9px] font-extrabold bg-indigo-100 text-indigo-700 rounded-full">Profile & Settings</span>
             </div>
-            <ChevronRight class="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
-          </button>
+            <div class="text-[11px] text-slate-400 font-medium mt-0.5 truncate">
+              เปลี่ยน PIN, ตั้งรหัสเว็บ, ข้อมูลผู้เช่า, ประวัติใบเสร็จ
+            </div>
+          </div>
         </div>
-      </div>
-
-      <!-- 5. Standalone Logout Action Button at Bottom -->
-      <div class="pt-1 pb-4">
-        <button
-          @click="handleTenantLogout"
-          class="w-full py-3 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-600 border border-rose-200/90 rounded-2xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
-        >
-          <LogOut class="w-4 h-4" />
-          <span>ออกจากระบบ (Logout)</span>
-        </button>
-      </div>
+        <div class="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-indigo-100 group-hover:text-indigo-600 flex items-center justify-center transition-all text-slate-400 shrink-0 ml-2">
+          <ChevronRight class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        </div>
+      </router-link>
     </div>
 
     <!-- 5. Digital ID QR Code Modal Pop-up -->

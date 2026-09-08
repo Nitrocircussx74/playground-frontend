@@ -184,6 +184,20 @@ const routes = [
         meta: { isLiff: true, title: 'ศูนย์กลางลูกบ้าน (Tenant Hub)' }
       },
       {
+        path: 'settings',
+        name: 'LiffSettings',
+        component: () => import('@/views/LiffPersonalProfileView.vue'),
+        meta: { isLiff: true, title: 'โปรไฟล์ส่วนตัว (Personal Profile)' }
+      },
+      {
+        path: 'personal-profile',
+        redirect: '/liff/settings'
+      },
+      {
+        path: 'account',
+        redirect: '/liff/settings'
+      },
+      {
         path: 'profile/edit',
         name: 'LiffUpdateProfile',
         component: () => import('@/views/LiffUpdateProfileView.vue'),
