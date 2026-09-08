@@ -114,8 +114,11 @@
               <div class="pt-2.5 border-t border-slate-100 flex items-end justify-between">
                 <div>
                   <div class="text-[10px] text-slate-400 font-medium">วันครบกำหนดชำระ</div>
-                  <div class="text-xs font-bold text-rose-600">
+                  <div class="text-xs font-bold" :class="inv.status === 'overdue' ? 'text-rose-600' : 'text-slate-700'">
                     {{ new Date(inv.dueDate).toLocaleDateString('th-TH') }}
+                  </div>
+                  <div v-if="Number(inv.lateFeeCharge) > 0" class="text-[10px] text-rose-600 font-bold mt-0.5">
+                    (รวมค่าปรับ ฿{{ Number(inv.lateFeeCharge).toLocaleString() }})
                   </div>
                 </div>
                 <div class="text-right">

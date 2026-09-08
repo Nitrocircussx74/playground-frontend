@@ -489,11 +489,12 @@
                 <span>อัตราค่าบริการและรอบบิล (Billing & Utility Rates)</span>
               </CardTitle>
               <CardDescription>
-                กำหนดอัตราค่าน้ำ ค่าไฟ วันครบกำหนดชำระ และค่าปรับกรณีชำระล่าช้า
+                กำหนดอัตราค่าน้ำ ค่าไฟ วันครบกำหนดชำระ และนโยบายค่าปรับกรณีชำระล่าช้า
               </CardDescription>
             </CardHeader>
-            <CardContent class="space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <CardContent class="space-y-6">
+              <!-- 1. Utility Rates & Due Date -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700">อัตราค่าน้ำ (บาท / หน่วย)</label>
                   <Input
@@ -517,9 +518,7 @@
                     class="bg-white"
                   />
                 </div>
-              </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700">วันกำหนดชำระเงินของเดือน (1 - 31)</label>
                   <Input
@@ -531,19 +530,145 @@
                     placeholder="5"
                     class="bg-white"
                   />
-                  <span class="text-[11px] text-slate-500">เช่น ใส่เลข 5 หมายถึง วันที่ 5 ของทุกเดือน</span>
+                  <span class="text-[11px] text-slate-500">เช่น วันที่ 5 ของทุกเดือน</span>
+                </div>
+              </div>
+
+              <!-- 2. Late Fee Policy Section (นโยบายค่าปรับชำระล่าช้า) -->
+              <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <span>⚖️</span>
+                      <span>นโยบายค่าปรับชำระล่าช้า (Late Fee Policy)</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-500">
+                      ระบบจะประมวลผลคำนวณค่าปรับอัตโนมัติทุกวันเวลาเที่ยงคืน (00:00 น.) เข้าสู่บิลของลูกบ้าน
+                    </p>
+                  </div>
+                  <span
+                    class="text-[10px] font-bold px-2.5 py-1 rounded-full border"
+                    :class="{
+                      'bg-emerald-100 text-emerald-800 border-emerald-300': form.lateFeeType === 'NONE',
+                      'bg-indigo-100 text-indigo-800 border-indigo-300': form.lateFeeType === 'DAILY',
+                      'bg-amber-100 text-amber-800 border-amber-300': form.lateFeeType === 'FLAT'
+                    }"
+                  >
+                    {{ form.lateFeeType === 'NONE' ? 'ไม่มีค่าปรับ' : (form.lateFeeType === 'DAILY' ? 'คิดปรับรายวัน' : 'เหมาจ่ายครั้งเดียว') }}
+                  </span>
                 </div>
 
-                <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ค่าปรับชำระเกินกำหนด (บาท / วัน หรือ ครั้ง)</label>
-                  <Input
-                    type="number"
-                    step="10"
-                    v-model="form.latePenalty"
-                    :disabled="isReadOnly"
-                    placeholder="50.00"
-                    class="bg-white"
-                  />
+                <!-- Radio Group: Late Fee Type Selection -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <!-- Option 1: NONE -->
+                  <label
+                    class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
+                    :class="form.lateFeeType === 'NONE' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                  >
+                    <input
+                      type="radio"
+                      v-model="form.lateFeeType"
+                      value="NONE"
+                      :disabled="isReadOnly"
+                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                    />
+                    <div>
+                      <div class="text-xs font-bold text-slate-800">ไม่มีค่าปรับ (None)</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5">ไม่คิดค่าปรับเพิ่มเมื่อชำระเกินกำหนด</div>
+                    </div>
+                  </label>
+
+                  <!-- Option 2: DAILY -->
+                  <label
+                    class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
+                    :class="form.lateFeeType === 'DAILY' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                  >
+                    <input
+                      type="radio"
+                      v-model="form.lateFeeType"
+                      value="DAILY"
+                      :disabled="isReadOnly"
+                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                    />
+                    <div>
+                      <div class="text-xs font-bold text-slate-800">คิดรายวัน (Daily Fee)</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5">คำนวณตามจำนวนวันที่เกินกำหนด x ยอดปรับ</div>
+                    </div>
+                  </label>
+
+                  <!-- Option 3: FLAT -->
+                  <label
+                    class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
+                    :class="form.lateFeeType === 'FLAT' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                  >
+                    <input
+                      type="radio"
+                      v-model="form.lateFeeType"
+                      value="FLAT"
+                      :disabled="isReadOnly"
+                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                    />
+                    <div>
+                      <div class="text-xs font-bold text-slate-800">เหมาจ่ายครั้งเดียว (Flat Fee)</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5">คิดค่าปรับก้อนเดียวคงที่เมื่อเกินกำหนด</div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Parameters (Amount & Grace Period) -->
+                <div v-if="form.lateFeeType !== 'NONE'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200/80 animate-in fade-in duration-200">
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-700">
+                      {{ form.lateFeeType === 'DAILY' ? 'จำนวนเงินค่าปรับ (บาท / วัน)' : 'จำนวนเงินค่าปรับ (บาท / บิล)' }}
+                      <span class="text-rose-500">*</span>
+                    </label>
+                    <Input
+                      type="number"
+                      step="10"
+                      min="0"
+                      v-model="form.lateFeeAmount"
+                      :disabled="isReadOnly"
+                      placeholder="เช่น 50.00"
+                      class="bg-white font-mono"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-700">
+                      ระยะเวลาผ่อนผัน (Grace Period - วัน)
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      v-model="form.gracePeriodDays"
+                      :disabled="isReadOnly"
+                      placeholder="0"
+                      class="bg-white font-mono"
+                    />
+                    <span class="text-[11px] text-slate-500">
+                      ใส่ 0 หากต้องการเริ่มคิดทันทีหลังวันครบกำหนด หรือใส่ 3 เพื่อผ่อนผันให้ 3 วัน
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Live Simulation Preview Box -->
+                <div v-if="form.lateFeeType !== 'NONE'" class="p-3.5 bg-purple-50/70 border border-purple-100 rounded-xl text-xs text-purple-900 space-y-1">
+                  <div class="font-bold flex items-center gap-1.5">
+                    <span>💡 ตัวอย่างการคำนวณจริง:</span>
+                  </div>
+                  <div class="text-[11px] text-purple-800 leading-relaxed">
+                    หากบิลครบกำหนดชำระวันที่ <strong>{{ form.dueDateDay || 5 }}</strong>
+                    <span v-if="Number(form.gracePeriodDays) > 0"> (ผ่อนผันให้ <strong>{{ form.gracePeriodDays }}</strong> วัน ถึงวันที่ <strong>{{ (Number(form.dueDateDay) || 5) + Number(form.gracePeriodDays) }}</strong>)</span>
+                    และลูกบ้านมาชำระช้ากว่ากำหนด <strong>5 วัน</strong>:
+                    <br />
+                    ➔ บิลจะถูกคิดค่าปรับอัตโนมัติเท่ากับ
+                    <strong class="text-rose-600 font-mono text-xs">
+                      ฿{{ form.lateFeeType === 'FLAT' 
+                        ? Number(form.lateFeeAmount || 0).toLocaleString() 
+                        : (Math.max(0, 5 - Number(form.gracePeriodDays || 0)) * Number(form.lateFeeAmount || 0)).toLocaleString() 
+                      }}
+                    </strong>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -686,6 +811,9 @@ const form = ref({
   electricRate: 7.00,
   dueDateDay: 5,
   latePenalty: 50.00,
+  lateFeeType: 'NONE',
+  lateFeeAmount: 0.00,
+  gracePeriodDays: 0,
   depositMonths: 2,
   advanceMonths: 1,
   termsAndConditions: ''
@@ -840,6 +968,9 @@ const fetchBuildingSettings = async () => {
       electricRate: settingData.electricRate ? parseFloat(settingData.electricRate) : 7.00,
       dueDateDay: settingData.dueDateDay ? parseInt(settingData.dueDateDay, 10) : 5,
       latePenalty: settingData.latePenalty ? parseFloat(settingData.latePenalty) : 50.00,
+      lateFeeType: settingData.lateFeeType || 'NONE',
+      lateFeeAmount: settingData.lateFeeAmount != null ? parseFloat(settingData.lateFeeAmount) : (settingData.latePenalty ? parseFloat(settingData.latePenalty) : 0.00),
+      gracePeriodDays: settingData.gracePeriodDays != null ? parseInt(settingData.gracePeriodDays, 10) : 0,
       depositMonths: settingData.depositMonths ? parseInt(settingData.depositMonths, 10) : 2,
       advanceMonths: settingData.advanceMonths ? parseInt(settingData.advanceMonths, 10) : 1,
       termsAndConditions: settingData.termsAndConditions || ''

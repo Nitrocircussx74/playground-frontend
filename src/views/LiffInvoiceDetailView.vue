@@ -20,6 +20,33 @@
       </div>
 
       <div v-else class="space-y-4">
+        <!-- 0. Due Date & Late Fee Alert Banner -->
+        <div
+          v-if="invoice.status === 'overdue' || Number(invoice.lateFeeCharge) > 0"
+          class="p-3.5 bg-rose-50 border border-rose-200/80 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs shadow-2xs"
+        >
+          <span class="text-sm shrink-0">⚠️</span>
+          <div class="space-y-0.5">
+            <div class="font-bold">บิลนี้เกินกำหนดชำระ (ครบกำหนด: {{ formatDate(invoice.dueDate) }})</div>
+            <p class="text-[11px] text-rose-700 leading-relaxed">
+              มีค่าปรับชำระล่าช้าเพิ่มขึ้น <strong class="font-mono">฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</strong> กรุณาชำระเงินและแนบสลิปโดยเร็ว
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-else-if="invoice.status === 'pending'"
+          class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs shadow-2xs"
+        >
+          <span class="text-sm shrink-0">📅</span>
+          <div class="space-y-0.5">
+            <div class="font-bold">ครบกำหนดชำระ: {{ formatDate(invoice.dueDate) }}</div>
+            <p class="text-[11px] text-amber-800 leading-relaxed">
+              กรุณาชำระเงินภายในวันครบกำหนด เพื่อหลีกเลี่ยงค่าปรับชำระล่าช้า
+            </p>
+          </div>
+        </div>
+
         <!-- 1. Header Card (ยอดสุทธิ & สถานะบิล) -->
         <div class="p-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl shadow-md relative overflow-hidden space-y-2.5">
           <div class="flex items-center justify-between text-xs text-indigo-100">
@@ -50,7 +77,7 @@
           </div>
         </div>
 
-        <!-- 2. Bill Breakdown Table (แจกแจงค่าเช่า, ค่าน้ำ, ค่าไฟ, ค่าส่วนกลาง) -->
+        <!-- 2. Bill Breakdown Table (แจกแจงค่าเช่า, ค่าน้ำ, ค่าไฟ, ค่าส่วนกลาง, ค่าปรับ) -->
         <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
           <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">รายละเอียดค่าใช้จ่าย (Bill Breakdown)</h3>
 
@@ -83,6 +110,20 @@
             <div class="flex justify-between items-center pt-2">
               <span class="text-slate-600">ค่าส่วนกลาง</span>
               <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.commonFee).toLocaleString() }}</span>
+            </div>
+
+            <div v-if="Number(invoice.otherFee) > 0" class="flex justify-between items-center pt-2">
+              <span class="text-slate-600">ค่าบริการอื่นๆ {{ invoice.otherFeeNote ? `(${invoice.otherFeeNote})` : '' }}</span>
+              <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.otherFee).toLocaleString() }}</span>
+            </div>
+
+            <!-- Late Fee Line Item (Red Highlight) -->
+            <div v-if="Number(invoice.lateFeeCharge) > 0" class="flex justify-between items-center pt-2 text-rose-600 font-bold bg-rose-50/50 p-2 rounded-xl border border-rose-100">
+              <span class="flex items-center gap-1.5">
+                <span>⚠️</span>
+                <span>ค่าปรับชำระล่าช้า (Late Fee)</span>
+              </span>
+              <span class="font-mono text-sm">+฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</span>
             </div>
           </div>
         </div>
@@ -208,6 +249,17 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
 
 const statusBadgeText = computed(() => {
   const map = {

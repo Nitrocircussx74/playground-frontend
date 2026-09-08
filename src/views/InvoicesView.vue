@@ -25,6 +25,18 @@
       <div class="flex items-center gap-2">
         <button
           v-if="activeTab === 'all-invoices'"
+          @click="handleRunLateFees"
+          :disabled="runningLateFees"
+          class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          title="สั่งคำนวณและอัปเดตค่าปรับบิลค้างชำระอัตโนมัติตามนโยบายแต่ละตึก"
+        >
+          <span v-if="runningLateFees" class="animate-spin w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full"></span>
+          <span v-else>⚡</span>
+          <span>{{ runningLateFees ? 'กำลังคำนวณ...' : 'คำนวณค่าปรับ' }}</span>
+        </button>
+
+        <button
+          v-if="activeTab === 'all-invoices'"
           @click="handleRemindBulk"
           :disabled="unpaidCount === 0 || sendingBulkReminder"
           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
@@ -78,6 +90,7 @@
                 <th class="p-3.5">Electric</th>
                 <th class="p-3.5">Common</th>
                 <th class="p-3.5">Other</th>
+                <th class="p-3.5">Late Fee</th>
                 <th class="p-3.5">Total</th>
                 <th class="p-3.5">Slip</th>
                 <th class="p-3.5">Status</th>
@@ -109,6 +122,12 @@
                     <span class="font-mono font-semibold text-indigo-700">฿{{ Number(inv.otherFee).toLocaleString() }}</span>
                     <div v-if="inv.otherFeeNote" class="text-[10px] text-slate-400 truncate max-w-28">{{ inv.otherFeeNote }}</div>
                   </div>
+                  <span v-else class="text-slate-300">-</span>
+                </td>
+                <td class="p-3.5 font-mono text-xs">
+                  <span v-if="Number(inv.lateFeeCharge) > 0" class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                    +฿{{ Number(inv.lateFeeCharge).toLocaleString() }}
+                  </span>
                   <span v-else class="text-slate-300">-</span>
                 </td>
                 <td class="p-3.5 font-mono font-black text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
@@ -364,6 +383,10 @@
                     </td>
                     <td class="p-3 text-right font-mono font-semibold">฿{{ Number(printingInvoice?.otherFee || 0).toLocaleString() }}</td>
                   </tr>
+                  <tr v-if="Number(printingInvoice?.lateFeeCharge) > 0" class="text-rose-600 font-bold bg-rose-50/50">
+                    <td class="p-3">ค่าปรับชำระล่าช้า (Late Payment Penalty Fee)</td>
+                    <td class="p-3 text-right font-mono font-semibold">+฿{{ Number(printingInvoice?.lateFeeCharge || 0).toLocaleString() }}</td>
+                  </tr>
                 </tbody>
                 <tfoot>
                   <tr class="border-t-2 border-slate-900 bg-slate-50 font-bold">
@@ -413,11 +436,36 @@ import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
+import api from '@/utils/api';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 
 const activeTab = ref('all-invoices');
+const runningLateFees = ref(false);
+
+const handleRunLateFees = async () => {
+  const confirmed = await showConfirm(
+    'คำนวณค่าปรับอัตโนมัติ',
+    'คุณต้องการสั่งรันระบบคำนวณค่าปรับสำหรับบิลค้างชำระทั้งหมดตามนโยบายของแต่ละตึกใช่หรือไม่?',
+    'เริ่มคำนวณค่าปรับ',
+    'ยกเลิก'
+  );
+  if (!confirmed) return;
+
+  runningLateFees.value = true;
+  try {
+    const res = await api.post('/api/v1/invoices/process-late-fees');
+    if (res.data?.success) {
+      await showSuccess('สำเร็จ', res.data.message || 'ประมวลผลค่าปรับเรียบร้อยแล้ว');
+      await invoiceStore.fetchInvoices();
+    }
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถประมวลผลค่าปรับได้');
+  } finally {
+    runningLateFees.value = false;
+  }
+};
 const roomStore = useRoomStore();
 const invoiceStore = useInvoiceStore();
 const buildingStore = useBuildingStore();
