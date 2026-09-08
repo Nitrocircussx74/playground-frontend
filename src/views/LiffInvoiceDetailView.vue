@@ -1,10 +1,17 @@
 <template>
   <div class="space-y-4 pb-6 font-sans text-slate-800">
     <div class="space-y-4">
-      <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-2xl shadow-xs border border-slate-100 text-center text-slate-400 text-xs">
-        <div class="animate-spin w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2.5"></div>
-        กำลังโหลดรายละเอียดบิล...
+      <!-- Loading Skeleton State -->
+      <div v-if="loading" class="space-y-4 animate-pulse">
+        <div class="p-6 bg-slate-200/70 skeleton-shimmer rounded-2xl h-36"></div>
+        <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+          <div class="h-4 w-28 bg-slate-100 skeleton-shimmer rounded-md"></div>
+          <div class="space-y-2 pt-2">
+            <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
+            <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
+            <div class="h-3 w-3/4 bg-slate-100 skeleton-shimmer rounded-md"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Error State -->

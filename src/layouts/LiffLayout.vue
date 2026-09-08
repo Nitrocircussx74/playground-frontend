@@ -1,85 +1,70 @@
 <template>
-  <!-- App Shell: Viewport-locked Container with ambient background -->
-  <div class="h-[100dvh] w-full bg-slate-50/60 sm:bg-gradient-to-br sm:from-emerald-50/30 sm:via-slate-50 sm:to-indigo-50/30 flex justify-center items-center overflow-hidden font-sans selection:bg-indigo-500 selection:text-white relative">
-    <!-- Desktop Background Ambience with Dynamic Theme Color Accent -->
-    <div class="hidden sm:block absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div
-        class="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-15 transition-colors duration-500"
-        :style="{ backgroundColor: themeColor }"
-      ></div>
-      <div
-        class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-15 transition-colors duration-500"
-        :style="{ backgroundColor: themeColor }"
-      ></div>
-    </div>
-
-    <!-- Mobile App Container Shell (กว้างสุด max-w-md สำหรับมือถือและมีกรอบจำลองสวยงามบน Desktop) -->
-    <div class="w-full max-w-md h-full sm:h-[94dvh] sm:max-h-[890px] bg-slate-50/80 text-slate-800 relative shadow-xl flex flex-col overflow-hidden sm:rounded-3xl sm:border border-slate-200/60 z-10">
-      
-      <!-- 1. Top App Bar (Header Locked Pinned ชิดขอบบน ไม่เลื่อนหลุดจอ) -->
-      <header class="h-14 shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-30 flex items-center justify-between px-4 shadow-2xs select-none sticky top-0">
-        <!-- ฝั่งซ้าย: ปุ่มย้อนกลับ (Back Button) หรือ Building Logo -->
+  <!-- App Shell: Fully Responsive Container -->
+  <div class="min-h-screen w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-indigo-500 selection:text-white">
+    <!-- 1. Top Navigation Bar (Header) -->
+    <header class="h-14 bg-white/90 backdrop-blur-md border-b border-slate-100 z-30 sticky top-0 px-4 sm:px-6 shadow-2xs">
+      <div class="max-w-4xl mx-auto h-full flex items-center justify-between">
+        <!-- Left: Back Button or Logo -->
         <div class="flex items-center gap-2">
           <button
             v-if="showBackButton"
             @click="handleBack"
-            class="w-8.5 h-8.5 rounded-full bg-slate-100/70 hover:bg-slate-200/70 text-slate-600 flex items-center justify-center transition-all active:scale-95 cursor-pointer"
+            class="w-8 h-8 rounded-xl bg-slate-100/80 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="ย้อนกลับ"
           >
-            <ChevronLeft class="w-4.5 h-4.5" />
+            <ChevronLeft class="w-4 h-4" />
           </button>
           
-          <!-- Dynamic LINE / App Logo -->
           <div v-else class="flex items-center gap-2">
             <img
               v-if="logoUrl"
               :src="logoUrl"
               alt="App Logo"
-              class="w-7.5 h-7.5 rounded-xl object-contain border border-slate-200/60 shadow-2xs bg-white p-0.5"
+              class="w-7 h-7 rounded-xl object-contain border border-slate-200/60 bg-white p-0.5"
             />
             <div
               v-else
-              class="w-7.5 h-7.5 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-xs"
+              class="w-7 h-7 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-xs"
               title="LINE LIFF"
             >
-              <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
+              <svg class="w-3.5 h-3.5 fill-current text-white" viewBox="0 0 24 24">
                 <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.477.254l2.486 3.37V8.108c0-.345.282-.63.63-.63.345 0 .624.285.624.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
               </svg>
             </div>
           </div>
         </div>
 
-        <!-- ตรงกลาง: ชื่อหัวข้อหน้าจอ (Dynamic Page Title) -->
+        <!-- Center: Dynamic Page Title -->
         <div class="flex-1 text-center truncate px-2">
           <h1 class="font-bold text-sm sm:text-base text-slate-800 tracking-tight truncate">
             {{ pageTitle }}
           </h1>
         </div>
 
-        <!-- ฝั่งขวา: Badge LINE LIFF -->
-        <div class="flex items-center justify-end gap-1.5">
-          <span
-            class="text-[10px] font-bold px-2 py-0.5 rounded-full font-sans border bg-emerald-50 border-emerald-200 text-emerald-700"
-          >
+        <!-- Right: Badge LINE LIFF -->
+        <div class="flex items-center justify-end">
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-emerald-50 border-emerald-200/80 text-emerald-700">
             LIFF
           </span>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- 2. Main Scrollable Content Area (ส่วนเนื้อหาตรงกลางที่เลื่อนได้เท่านั้น) -->
-      <main class="flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 scroll-smooth focus:outline-hidden">
-        <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </main>
+    <!-- 2. Main Fluid Content Area -->
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <router-view v-slot="{ Component }">
+        <transition name="page-fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
 
-      <!-- 3. Bottom Navigation (Footer Locked Pinned ชิดขอบล่าง สไตล์ Mobile App) -->
-      <nav
-        v-if="showBottomNav"
-        class="h-16 shrink-0 bg-white/90 backdrop-blur-md border-t border-slate-100 z-30 flex items-center justify-around px-2 shadow-sm select-none sticky bottom-0 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
-      >
+    <!-- 3. Bottom Navigation -->
+    <nav
+      v-if="showBottomNav"
+      class="h-16 bg-white/95 backdrop-blur-md border-t border-slate-100 z-30 sticky bottom-0 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+    >
+      <div class="max-w-4xl mx-auto h-full flex items-center justify-around px-2">
         <router-link
           v-for="tab in navTabs"
           :key="tab.path"
@@ -88,13 +73,13 @@
           :class="isTabActive(tab.path) ? 'font-bold' : 'text-slate-400 hover:text-slate-600 font-medium'"
           :style="isTabActive(tab.path) ? { color: themeColor } : {}"
         >
-          <div class="relative flex items-center justify-center w-8 h-8 rounded-full transition-colors" :class="isTabActive(tab.path) ? 'bg-slate-100/70' : ''">
-            <component :is="tab.icon" class="w-4.5 h-4.5 transition-transform duration-200 group-hover:scale-105" />
+          <div class="relative flex items-center justify-center w-8 h-8 rounded-xl transition-colors" :class="isTabActive(tab.path) ? 'bg-slate-100' : ''">
+            <component :is="tab.icon" class="w-4 h-4 transition-transform duration-200 group-hover:scale-105" />
           </div>
           <span class="text-[10px] mt-0.5 tracking-tight font-medium">{{ tab.name }}</span>
         </router-link>
-      </nav>
-    </div>
+      </div>
+    </nav>
   </div>
 </template>
 

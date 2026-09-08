@@ -7,72 +7,95 @@
     </div>
 
     <div class="space-y-4 relative z-10">
-      <!-- 1. Profile Header Card -->
-      <div
-        class="p-5 text-white rounded-3xl shadow-lg relative overflow-hidden transition-all duration-500"
-        :style="{
-          background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
-          boxShadow: `0 14px 20px -5px ${themeColor}25, 0 6px 8px -6px ${themeColor}25`
-        }"
-      >
-        <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-
-        <div class="flex items-center gap-3.5">
-          <!-- Avatar จาก LINE หรือ Initials -->
-          <div class="relative shrink-0">
-            <img
-              v-if="tenantProfile.avatarUrl && !imageLoadError"
-              :src="tenantProfile.avatarUrl"
-              alt="Tenant Avatar"
-              class="w-15 h-15 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
-              @error="imageLoadError = true"
-            />
-            <div
-              v-else
-              class="w-15 h-15 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-bold text-white select-none"
-            >
-              {{ tenantInitial }}
-            </div>
-            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
-          </div>
-
-          <!-- ชื่อ และ เบอร์โทร -->
-          <div class="space-y-1 flex-1 min-w-0">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <h1 class="font-bold text-base sm:text-lg truncate text-white">
-                {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
-              </h1>
-              <span class="px-2 py-0.5 text-[10px] font-semibold bg-white/20 text-white rounded-full backdrop-blur-xs border border-white/30">
-                ลูกบ้าน
-              </span>
-            </div>
-            <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
-            <div class="flex items-center gap-2 pt-0.5">
-              <span class="text-[11px] font-semibold text-yellow-300">
-                ห้อง {{ tenantProfile.roomNumber || '-' }}
-              </span>
-              <span v-if="tenantProfile.buildingName" class="text-[11px] text-indigo-100/80">
-                • ตึก {{ tenantProfile.buildingName }}
-              </span>
-            </div>
+      <!-- Loading Skeleton State -->
+      <div v-if="loading" class="space-y-4 animate-pulse">
+        <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+          <div class="w-14 h-14 rounded-full bg-slate-100 skeleton-shimmer shrink-0"></div>
+          <div class="space-y-2 flex-1">
+            <div class="h-4 w-32 bg-slate-100 skeleton-shimmer rounded-md"></div>
+            <div class="h-3 w-24 bg-slate-100 skeleton-shimmer rounded-md"></div>
           </div>
         </div>
 
-        <!-- Digital ID & Quick Status -->
-        <div class="mt-4 pt-3.5 border-t border-white/20 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 text-xs text-indigo-100/90">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>LINE Verified</span>
+        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+          <div v-for="i in 4" :key="i" class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-xl bg-slate-100 skeleton-shimmer"></div>
+              <div class="h-3.5 w-28 bg-slate-100 skeleton-shimmer rounded-md"></div>
+            </div>
+            <div class="h-4 w-4 bg-slate-100 skeleton-shimmer rounded-full"></div>
           </div>
-          <button
-            @click="showQrModal = true"
-            class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-all border border-white/30 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
-          >
-            <QrCode class="w-3.5 h-3.5" />
-            <span>Digital ID</span>
-          </button>
         </div>
       </div>
+
+      <template v-else>
+        <!-- 1. Profile Header Card -->
+        <div
+          class="p-5 text-white rounded-3xl shadow-lg relative overflow-hidden transition-all duration-500"
+          :style="{
+            background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
+            boxShadow: `0 14px 20px -5px ${themeColor}25, 0 6px 8px -6px ${themeColor}25`
+          }"
+        >
+          <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+
+          <div class="flex items-center gap-3.5">
+            <!-- Avatar จาก LINE หรือ Initials -->
+            <div class="relative shrink-0">
+              <img
+                v-if="tenantProfile.avatarUrl && !imageLoadError"
+                :src="tenantProfile.avatarUrl"
+                alt="Tenant Avatar"
+                class="w-15 h-15 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
+                @error="imageLoadError = true"
+              />
+              <div
+                v-else
+                class="w-15 h-15 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-bold text-white select-none"
+              >
+                {{ tenantInitial }}
+              </div>
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
+            </div>
+
+            <!-- ชื่อ และ เบอร์โทร -->
+            <div class="space-y-1 flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h1 class="font-bold text-base sm:text-lg truncate text-white">
+                  {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
+                </h1>
+                <span class="px-2 py-0.5 text-[10px] font-semibold bg-white/20 text-white rounded-full backdrop-blur-xs border border-white/30">
+                  ลูกบ้าน
+                </span>
+              </div>
+              <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
+              <div class="flex items-center gap-2 pt-0.5">
+                <span class="text-[11px] font-semibold text-yellow-300">
+                  ห้อง {{ tenantProfile.roomNumber || '-' }}
+                </span>
+                <span v-if="tenantProfile.buildingName" class="text-[11px] text-indigo-100/80">
+                  • ตึก {{ tenantProfile.buildingName }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital ID & Quick Status -->
+          <div class="mt-4 pt-3.5 border-t border-white/20 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 text-xs text-indigo-100/90">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>LINE Verified</span>
+            </div>
+            <button
+              @click="showQrModal = true"
+              class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-all border border-white/30 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
+            >
+              <QrCode class="w-3.5 h-3.5" />
+              <span>Digital ID</span>
+            </button>
+          </div>
+        </div>
+      </template>
 
       <!-- 2. เมนูทั่วไป (GENERAL SETTINGS) - Minimal iOS Group List -->
       <div class="space-y-2">
@@ -247,6 +270,7 @@ const authStore = useAuthStore();
 const featureStore = useFeatureStore();
 const { themeColor, adjustBrightness } = useDynamicTheme();
 
+const loading = ref(true);
 const imageLoadError = ref(false);
 const showQrModal = ref(false);
 const showPasswordModal = ref(false);
@@ -433,6 +457,8 @@ const fetchProfile = async () => {
     }
   } catch (err) {
     console.error('Fetch profile error:', err);
+  } finally {
+    loading.value = false;
   }
 };
 

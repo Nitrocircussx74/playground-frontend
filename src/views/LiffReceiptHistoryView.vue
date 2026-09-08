@@ -16,10 +16,22 @@
       </button>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="p-8 bg-white rounded-2xl border border-slate-100/80 text-center text-slate-400 text-xs shadow-xs">
-      <div class="animate-spin w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
-      กำลังโหลดประวัติใบเสร็จ...
+    <!-- Loading Skeleton State -->
+    <div v-if="loading" class="space-y-3 animate-pulse">
+      <div v-for="i in 3" :key="i" class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="space-y-1.5">
+            <div class="h-3 w-20 bg-slate-100 skeleton-shimmer rounded-md"></div>
+            <div class="h-4 w-32 bg-slate-100 skeleton-shimmer rounded-lg"></div>
+          </div>
+          <div class="h-6 w-16 bg-slate-100 skeleton-shimmer rounded-full"></div>
+        </div>
+        <div class="pt-2 border-t border-slate-50 flex items-center justify-between">
+          <div class="h-3 w-24 bg-slate-100 skeleton-shimmer rounded-md"></div>
+          <div class="h-5 w-20 bg-slate-100 skeleton-shimmer rounded-md"></div>
+        </div>
+        <div class="h-8 w-full bg-slate-100 skeleton-shimmer rounded-xl"></div>
+      </div>
     </div>
 
     <!-- Paid Invoices List -->

@@ -16,10 +16,16 @@
       </button>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="p-8 bg-white rounded-2xl border border-slate-100/80 text-center text-slate-400 text-xs shadow-xs">
-      <div class="animate-spin w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
-      <p class="text-xs">กำลังโหลดประกาศ...</p>
+    <!-- Loading Skeleton State -->
+    <div v-if="loading" class="space-y-3 animate-pulse">
+      <div v-for="i in 2" :key="i" class="bg-white rounded-2xl border border-slate-100/90 shadow-xs overflow-hidden space-y-3">
+        <div class="w-full h-36 bg-slate-100 skeleton-shimmer"></div>
+        <div class="p-4 space-y-2">
+          <div class="h-4 w-40 bg-slate-100 skeleton-shimmer rounded-md"></div>
+          <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
+          <div class="h-3 w-2/3 bg-slate-100 skeleton-shimmer rounded-md"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Announcement List Feed Cards -->

@@ -54,10 +54,21 @@
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-2xl border border-slate-100/80 shadow-xs text-center text-slate-400 text-xs">
-        <div class="animate-spin w-6 h-6 border-2 border-orange-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
-        <p class="text-xs">กำลังโหลดรายการพัสดุ...</p>
+      <!-- Loading Skeleton State -->
+      <div v-if="loading" class="space-y-3 animate-pulse">
+        <div v-for="i in 2" :key="i" class="bg-white rounded-2xl border border-slate-100/90 shadow-xs p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 bg-slate-100 skeleton-shimmer rounded-xl"></div>
+              <div class="space-y-1">
+                <div class="h-3.5 w-24 bg-slate-100 skeleton-shimmer rounded-md"></div>
+                <div class="h-2.5 w-32 bg-slate-100 skeleton-shimmer rounded-md"></div>
+              </div>
+            </div>
+            <div class="h-6 w-20 bg-slate-100 skeleton-shimmer rounded-full"></div>
+          </div>
+          <div class="h-24 w-full bg-slate-100 skeleton-shimmer rounded-xl"></div>
+        </div>
       </div>
 
       <!-- Parcels Card List -->
