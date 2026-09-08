@@ -1,6 +1,6 @@
 <template>
   <!-- 1. Custom Fullscreen Layout (For LIFF, Login, 403) -->
-  <div v-if="isCustomLayout" class="min-h-screen bg-slate-100 font-sans selection:bg-purple-600 selection:text-white">
+  <div v-if="isCustomLayout" class="h-full w-full min-h-screen bg-slate-100 font-sans selection:bg-purple-600 selection:text-white">
     <router-view />
   </div>
 

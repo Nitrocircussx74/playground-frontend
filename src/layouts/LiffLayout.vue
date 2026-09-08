@@ -1,8 +1,8 @@
 <template>
-  <!-- App Shell: Fully Responsive Container -->
-  <div class="min-h-screen w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-indigo-500 selection:text-white">
-    <!-- 1. Top Navigation Bar (Header) -->
-    <header class="h-14 bg-white/90 backdrop-blur-md border-b border-slate-100 z-30 sticky top-0 px-4 sm:px-6 shadow-2xs">
+  <!-- App Shell: Locked Viewport Container (ห้ามขยับทั้ง Header และ Footer) -->
+  <div class="fixed inset-0 h-[100dvh] w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-indigo-500 selection:text-white overflow-hidden">
+    <!-- 1. Top Navigation Bar (Header) - ปักหมุดถาวรด้านบน -->
+    <header class="shrink-0 h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 z-30 px-4 sm:px-6 shadow-2xs select-none">
       <div class="max-w-4xl mx-auto h-full flex items-center justify-between">
         <!-- Left: Back Button or Logo -->
         <div class="flex items-center gap-2">
@@ -50,11 +50,8 @@
       </div>
     </header>
 
-    <!-- 2. Main Fluid Content Area -->
-    <main
-      class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6"
-      :class="showBottomNav ? 'pb-24 sm:pb-20' : ''"
-    >
+    <!-- 2. Main Scrollable Content Area (เลื่อนเฉพาะเนื้อหาข้างใน ไม่กระทบ Header/Footer) -->
+    <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto overscroll-y-contain -webkit-overflow-scrolling-touch">
       <router-view v-slot="{ Component }">
         <transition name="page-fade" mode="out-in">
           <component :is="Component" />
@@ -62,12 +59,12 @@
       </router-view>
     </main>
 
-    <!-- 3. Bottom Navigation (Fixed immovable footer) -->
+    <!-- 3. Bottom Navigation (Fixed Immovable Footer ปักหมุดถาวร ห้ามขยับเด็ดขาด) -->
     <nav
       v-if="showBottomNav"
-      class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-lg pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+      class="shrink-0 h-16 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-lg z-30 select-none pb-[max(0.25rem,env(safe-area-inset-bottom))] touch-none"
     >
-      <div class="max-w-4xl mx-auto h-16 flex items-center justify-around px-2">
+      <div class="max-w-4xl mx-auto h-full flex items-center justify-around px-2">
         <router-link
           v-for="tab in navTabs"
           :key="tab.path"
