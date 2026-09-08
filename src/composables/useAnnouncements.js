@@ -5,6 +5,7 @@ const STORAGE_KEY = 'liff_read_announcement_ids';
 
 const unreadCount = ref(0);
 const latestUnreadAnnouncements = ref([]);
+const announcements = ref([]);
 
 function getReadIds() {
   try {
@@ -22,6 +23,7 @@ export function useAnnouncements() {
       if (lineUserId) params.lineUserId = lineUserId;
       const res = await api.get('/api/v1/liff/announcements', { params });
       const list = res.data?.data || [];
+      announcements.value = list;
       const readIds = getReadIds();
 
       const unreadList = list.filter((item) => !readIds.includes(item.id));
@@ -62,9 +64,11 @@ export function useAnnouncements() {
   return {
     unreadCount,
     latestUnreadAnnouncements,
+    announcements,
     checkUnread,
     markAsRead,
     markAllAsRead,
     isRead
   };
 }
+

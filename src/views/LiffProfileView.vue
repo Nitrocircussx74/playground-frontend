@@ -323,54 +323,9 @@
               </div>
             </div>
           </div>
-
-          <!-- 4. ข่าวสารใหม่ที่ยังไม่ได้อ่าน (Unread Announcements) -->
-          <div
-            v-if="latestUnreadAnnouncements.length > 0"
-            @click="openAnnouncementModal(latestUnreadAnnouncements[0])"
-            class="p-4 bg-gradient-to-r from-emerald-50/95 via-teal-50/40 to-white rounded-2xl border border-emerald-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3 min-w-0">
-                <div
-                  v-if="latestUnreadAnnouncements[0].imageUrl"
-                  class="w-11 h-11 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-emerald-200 shadow-2xs"
-                >
-                  <img :src="latestUnreadAnnouncements[0].imageUrl" class="w-full h-full object-cover" />
-                </div>
-                <div
-                  v-else
-                  class="w-11 h-11 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform"
-                >
-                  <Megaphone class="w-5 h-5" />
-                </div>
-
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">
-                      ข่าวใหม่ ({{ latestUnreadAnnouncements.length }})
-                    </span>
-                    <span class="text-[10px] text-slate-400 font-mono">
-                      {{ formatDate(latestUnreadAnnouncements[0].createdAt) }}
-                    </span>
-                  </div>
-                  <div class="text-xs font-bold text-slate-900 mt-0.5 truncate">
-                    {{ latestUnreadAnnouncements[0].title }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-1 shrink-0">
-                <span class="hidden sm:inline text-xs font-bold text-emerald-600">อ่านข่าว</span>
-                <div class="w-7 h-7 rounded-xl bg-white border border-emerald-200 text-emerald-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-                  <ChevronRight class="w-4 h-4" />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <!-- 5. All Clear Status Card (กรณีไม่มีรายการค้างชำระ/ตกค้าง) -->
+        <!-- 4. All Clear Status Card (กรณีไม่มีรายการค้างชำระ/ตกค้าง) -->
         <div
           v-else
           class="p-4 bg-white rounded-2xl border border-slate-100/90 shadow-2xs flex items-center justify-between gap-3"
@@ -428,7 +383,7 @@
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500 border border-white"></span>
               </span>
               <span
-                v-else-if="menu.id === 'announcements' && latestUnreadAnnouncements.length > 0"
+                v-else-if="menu.id === 'announcements' && unreadCount > 0"
                 class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
               >
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -442,6 +397,149 @@
               <div class="text-[10px] text-slate-400 font-medium truncate mt-0.5">{{ menu.subtitle }}</div>
             </div>
           </button>
+        </div>
+      </div>
+
+      <!-- 3.5 Featured News & Announcements Showcase (ข่าวสาร & ประกาศหอพัก) -->
+      <div v-if="announcements && announcements.length > 0" class="space-y-3">
+        <!-- Section Header -->
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Megaphone class="w-3.5 h-3.5" />
+            </div>
+            <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+              <span>ข่าวสาร & ประกาศหอพัก</span>
+              <span
+                v-if="unreadCount > 0"
+                class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white animate-pulse shadow-2xs"
+              >
+                {{ unreadCount }} ใหม่
+              </span>
+            </h2>
+          </div>
+
+          <router-link
+            to="/liff/announcements"
+            class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors inline-flex items-center gap-0.5 group"
+          >
+            <span>ดูทั้งหมด ({{ announcements.length }})</span>
+            <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </router-link>
+        </div>
+
+        <!-- 1 Announcement: Featured Full Card -->
+        <div
+          v-if="announcements.length === 1"
+          @click="openAnnouncementModal(announcements[0])"
+          class="bg-white rounded-3xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden cursor-pointer group active:scale-[0.99]"
+        >
+          <div v-if="announcements[0].imageUrl" class="w-full h-36 sm:h-44 relative overflow-hidden bg-slate-100">
+            <img
+              :src="announcements[0].imageUrl"
+              :alt="announcements[0].title"
+              class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+            <span
+              v-if="!isRead(announcements[0].id)"
+              class="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-md animate-pulse"
+            >
+              ข่าวใหม่
+            </span>
+            <span
+              class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-medium rounded-lg bg-black/60 text-white backdrop-blur-md"
+            >
+              {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
+            </span>
+          </div>
+          <div v-else class="p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white flex items-center justify-between">
+            <span class="text-[10px] font-semibold bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-xs">
+              {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
+            </span>
+            <span v-if="!isRead(announcements[0].id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
+              ข่าวใหม่
+            </span>
+          </div>
+
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <span>{{ formatDate(announcements[0].createdAt) }}</span>
+              <span>{{ announcements[0].createdBy || 'ผู้ดูแลหอพัก' }}</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
+              {{ announcements[0].title }}
+            </h3>
+            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+              {{ announcements[0].content }}
+            </p>
+            <div class="pt-2 flex items-center justify-between text-xs font-semibold text-emerald-600 border-t border-slate-50">
+              <span>อ่านรายละเอียดข่าว</span>
+              <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Multiple Announcements: Horizontal Swipeable Showcase -->
+        <div
+          v-else
+          class="flex gap-3 overflow-x-auto pb-1.5 scrollbar-none snap-x snap-mandatory"
+        >
+          <div
+            v-for="item in announcements"
+            :key="item.id"
+            @click="openAnnouncementModal(item)"
+            class="w-[270px] sm:w-[300px] shrink-0 snap-start bg-white rounded-2xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-[0.99]"
+          >
+            <!-- Cover or Header -->
+            <div>
+              <div v-if="item.imageUrl" class="w-full h-28 relative overflow-hidden bg-slate-100">
+                <img
+                  :src="item.imageUrl"
+                  :alt="item.title"
+                  class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                <span
+                  v-if="!isRead(item.id)"
+                  class="absolute top-2.5 left-2.5 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse"
+                >
+                  ใหม่
+                </span>
+                <span
+                  class="absolute bottom-2 left-2 px-2 py-0.5 text-[9px] font-medium rounded-md bg-black/60 text-white backdrop-blur-md"
+                >
+                  {{ item.building?.name || 'ประกาศทั่วไป' }}
+                </span>
+              </div>
+              <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border-b border-slate-100/80 flex items-center justify-between">
+                <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                  {{ item.building?.name || 'ประกาศทั่วไป' }}
+                </span>
+                <span v-if="!isRead(item.id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
+                  ใหม่
+                </span>
+              </div>
+
+              <!-- Content Body -->
+              <div class="p-3.5 space-y-1.5">
+                <div class="text-[10px] text-slate-400 font-mono">
+                  {{ formatDate(item.createdAt) }}
+                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                  {{ item.title }}
+                </h3>
+                <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                  {{ item.content }}
+                </p>
+              </div>
+            </div>
+
+            <div class="p-3 pt-0 flex items-center justify-between text-[11px] font-semibold text-emerald-600 border-t border-slate-50 mt-1">
+              <span>อ่านต่อ</span>
+              <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -652,7 +750,14 @@ const route = useRoute();
 const authStore = useAuthStore();
 const featureStore = useFeatureStore();
 const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
-const { latestUnreadAnnouncements, checkUnread, markAsRead } = useAnnouncements();
+const {
+  latestUnreadAnnouncements,
+  announcements,
+  unreadCount,
+  isRead,
+  checkUnread,
+  markAsRead
+} = useAnnouncements();
 
 const cachedTenant = authStore.tenant || null;
 const loading = ref(!cachedTenant?.firstName);
@@ -678,8 +783,7 @@ const hasAnyActionItems = computed(() => {
   return (
     unpaidInvoices.value.length > 0 ||
     pendingParcels.value.length > 0 ||
-    activeMaintenance.value.length > 0 ||
-    latestUnreadAnnouncements.value.length > 0
+    activeMaintenance.value.length > 0
   );
 });
 
