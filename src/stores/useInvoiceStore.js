@@ -121,15 +121,14 @@ export const useInvoiceStore = defineStore('invoice', {
     async exportPdf(invoiceId, invoiceNumber) {
       this.isLoading = true;
       try {
+        const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+        const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+        const directUrl = `${cleanBaseUrl}/api/v1/invoices/${invoiceId}/export`;
+
         const blob = await invoiceService.exportPdf(invoiceId);
-        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `Invoice-${invoiceNumber}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
+        const filename = `Invoice-${invoiceNumber || invoiceId}.pdf`;
+        const { downloadOrSharePdf } = await import('@/utils/downloadHelper');
+        await downloadOrSharePdf(blob, filename, directUrl);
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to export PDF';
       } finally {

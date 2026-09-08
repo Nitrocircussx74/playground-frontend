@@ -110,4 +110,33 @@ export function logoutLiff() {
   }
 }
 
+/**
+ * ตรวจสอบว่าแอปกำลังทำงานอยู่ภายใน LINE App (In-App Browser/LIFF WebView) หรือไม่
+ */
+export function isInLiffClient() {
+  try {
+    return isInitialized && typeof liff.isInClient === 'function' && liff.isInClient();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * เปิด URL ใน External Browser (Safari บน iOS / Chrome บน Android)
+ */
+export function openExternalWindow(url) {
+  try {
+    if (typeof liff.openWindow === 'function') {
+      liff.openWindow({ url, external: true });
+      return true;
+    }
+  } catch (err) {
+    console.warn('liff.openWindow failed:', err);
+  }
+  if (typeof window !== 'undefined') {
+    window.open(url, '_blank');
+  }
+  return true;
+}
+
 export default liff;

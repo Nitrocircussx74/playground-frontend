@@ -101,10 +101,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { RotateCw, CheckCircle2, Download, Receipt } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { downloadOrSharePdf } from '@/utils/downloadHelper';
 import api from '@/utils/api';
 import { showError } from '@/utils/swal';
 
+const authStore = useAuthStore();
 const loading = ref(true);
 const paidInvoices = ref([]);
 const lineUserId = ref('');
@@ -142,19 +145,19 @@ const fetchHistory = async () => {
 
 const downloadReceiptPdf = async (invoiceId, invoiceNumber) => {
   try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/receipt-pdf?token=${encodeURIComponent(token)}`;
+
     const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/receipt-pdf`, {
       responseType: 'blob'
     });
 
     const blob = new Blob([res.data], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Official-Receipt-REC-${invoiceNumber}.pdf`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    const filename = `Official-Receipt-REC-${invoiceNumber || invoiceId}.pdf`;
+
+    await downloadOrSharePdf(blob, filename, directUrl);
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถดาวน์โหลดใบเสร็จรับเงินได้');
   }
