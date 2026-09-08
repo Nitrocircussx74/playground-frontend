@@ -654,7 +654,8 @@ const featureStore = useFeatureStore();
 const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
 const { latestUnreadAnnouncements, checkUnread, markAsRead } = useAnnouncements();
 
-const loading = ref(true);
+const cachedTenant = authStore.tenant || null;
+const loading = ref(!cachedTenant?.firstName);
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
 const sessionExpired = ref(false);
@@ -761,12 +762,12 @@ const closeAnnouncementModal = () => {
 };
 
 const tenantProfile = reactive({
-  firstName: '',
-  lastName: '',
-  roomNumber: '',
-  rooms: [],
-  phone: '',
-  avatarUrl: ''
+  firstName: cachedTenant?.firstName || '',
+  lastName: cachedTenant?.lastName || '',
+  roomNumber: cachedTenant?.roomNumber || '',
+  rooms: cachedTenant?.rooms || [],
+  phone: cachedTenant?.phone || '',
+  avatarUrl: cachedTenant?.avatarUrl || cachedTenant?.linePictureUrl || ''
 });
 
 const tenantInitial = computed(() => {

@@ -328,6 +328,12 @@ async function liffNavigationGuard(to, from, next) {
     }
   }
 
+  // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินและมี Token อยู่แล้ว เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด
+  const hasLiffToken = typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null;
+  if ((to.path === '/liff' || to.path === '/liff/') && hasLiffToken) {
+    return next({ path: '/liff/profile', query: to.query });
+  }
+
   next();
 }
 

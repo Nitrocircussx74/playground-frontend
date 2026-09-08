@@ -426,7 +426,16 @@ watch(
 );
 
 const isCustomLayout = computed(() => {
-  return route.path.startsWith('/liff') || route.path === '/login' || route.path === '/403';
+  if (!authStore.isAuthenticated) return true;
+  return (
+    route.meta?.isLiff ||
+    route.path.startsWith('/liff') ||
+    route.path === '/login' ||
+    route.path === '/403' ||
+    route.path === '/pin-login' ||
+    route.path === '/setup-pin' ||
+    route.path === '/change-pin'
+  );
 });
 
 const handleBuildingChange = (e) => {
