@@ -23,10 +23,10 @@
 
           <div>
             <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
-              ระบบจัดการหอพัก
+              HorHub (หอฮับ)
             </CardTitle>
             <p class="text-xs font-medium text-purple-300 mt-1">
-              Hybrid Authentication Portal
+              ระบบจัดการหอพักและอพาร์ตเมนต์
             </p>
           </div>
           <CardDescription class="text-slate-400 text-xs">

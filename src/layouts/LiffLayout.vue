@@ -182,7 +182,7 @@ const checkingFriendship = ref(false);
  * 1. Dynamic Page Title
  */
 const pageTitle = computed(() => {
-  return route.meta?.title || 'ศูนย์กลางลูกบ้าน (Tenant Hub)';
+  return route.meta?.title || 'HorHub (หอฮับ)';
 });
 
 /**

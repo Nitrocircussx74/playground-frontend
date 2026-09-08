@@ -21,7 +21,7 @@
           to="/liff/profile"
           class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md"
         >
-          📱 กลับไปยังศูนย์กลางผู้เช่า (LINE Tenant Hub)
+          📱 กลับไปยัง HorHub (หอฮับ)
         </router-link>
 
         <router-link

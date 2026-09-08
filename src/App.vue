@@ -38,7 +38,7 @@
           </div>
           <div>
             <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-              <span>Dorm Portal</span>
+              <span>HorHub (หอฮับ)</span>
               <span class="text-[10px] px-1.5 py-0.2 bg-purple-500/20 text-purple-300 font-mono rounded border border-purple-500/30">PRO</span>
             </div>
             <div class="text-[11px] text-slate-400 font-medium">ระบบบริหารจัดการหอพัก</div>
@@ -290,9 +290,9 @@
 
           <div class="min-w-0">
             <h2 class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight truncate flex items-center gap-2">
-              <span>ระบบจัดการหอพัก</span>
+              <span>HorHub (หอฮับ)</span>
               <span class="hidden lg:inline text-xs font-normal text-slate-400">|</span>
-              <span class="hidden lg:inline text-xs font-medium text-slate-500 truncate">Dormitory Management System</span>
+              <span class="hidden lg:inline text-xs font-medium text-slate-500 truncate">ระบบจัดการหอพักและอพาร์ตเมนต์</span>
             </h2>
           </div>
         </div>

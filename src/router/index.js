@@ -157,7 +157,7 @@ const routes = [
         path: '',
         name: 'LiffEntry',
         component: () => import('@/views/LiffEntryView.vue'),
-        meta: { isLiff: true, title: 'ระบบจัดการหอพัก (LINE LIFF)' }
+        meta: { isLiff: true, title: 'HorHub (หอฮับ)' }
       },
       {
         path: 'pin-login',
@@ -181,7 +181,7 @@ const routes = [
         path: 'profile',
         name: 'LiffProfile',
         component: () => import('@/views/LiffProfileView.vue'),
-        meta: { isLiff: true, title: 'ศูนย์กลางลูกบ้าน (Tenant Hub)' }
+        meta: { isLiff: true, title: 'HorHub (หอฮับ)' }
       },
       {
         path: 'settings',
