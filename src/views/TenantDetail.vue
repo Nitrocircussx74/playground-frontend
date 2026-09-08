@@ -202,6 +202,11 @@
                 {{ pendingMaintenanceCount }}
               </span>
             </TabsTrigger>
+
+            <TabsTrigger value="security" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+              <span>🔐</span>
+              <span>การเข้าถึง & ความปลอดภัย</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -621,6 +626,11 @@
             </div>
           </div>
         </TabsContent>
+
+        <!-- 🔐 TAB 4: การเข้าถึงและความปลอดภัย (App Access & Security) -->
+        <TabsContent value="security">
+          <TenantSecurityTab :tenant="tenant" @updated="handleSecurityUpdated" />
+        </TabsContent>
       </Tabs>
     </div>
 
@@ -695,6 +705,7 @@ import tenantService from '@/services/tenantService';
 import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import TenantSecurityTab from '@/components/TenantSecurityTab.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -702,6 +713,12 @@ const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
 
 const tenantId = computed(() => route.params.id || route.params.tenantId);
+
+const handleSecurityUpdated = (updatedTenant) => {
+  if (tenant.value && updatedTenant) {
+    Object.assign(tenant.value, updatedTenant);
+  }
+};
 
 const loading = ref(true);
 const error = ref(null);

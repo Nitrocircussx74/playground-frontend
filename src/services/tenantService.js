@@ -36,5 +36,24 @@ export default {
   async generateTenantInvite(tenantId) {
     const res = await api.post(`/api/admin/tenants/${tenantId}/generate-invite`);
     return res.data;
+  },
+
+  /**
+   * รีเซ็ตรหัส PIN 6 หลักของผู้เช่า (บังคับให้ตั้งค่า PIN ใหม่เมื่อเปิด LIFF ครั้งถัดไป)
+   * @param {string} tenantId - UUID ผู้เช่า
+   */
+  async resetTenantPin(tenantId) {
+    const res = await api.post(`/api/admin/tenants/${tenantId}/reset-pin`);
+    return res.data;
+  },
+
+  /**
+   * ยกเลิกการผูกบัญชี LINE และล้างค่า PIN (เตะออกจากระบบเมื่อมือถือหาย/เปลี่ยนเครื่อง)
+   * @param {string} tenantId - UUID ผู้เช่า
+   */
+  async unlinkTenantLine(tenantId) {
+    const res = await api.post(`/api/admin/tenants/${tenantId}/unlink-line`);
+    return res.data;
   }
 };
+
