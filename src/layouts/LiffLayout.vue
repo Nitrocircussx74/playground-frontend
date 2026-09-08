@@ -142,7 +142,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
-import { getLiffFriendship, openAddFriendLine, isLiffLoggedIn } from '@/utils/liff';
+import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn } from '@/utils/liff';
 import { showSuccess, showWarning } from '@/utils/swal';
 import {
   ChevronLeft,
