@@ -17,15 +17,15 @@
       <!-- Sidebar Header -->
       <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-white/95 p-0.5 flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 overflow-hidden">
-            <img src="/horhub-building-icon.png" alt="HorHub Building Icon" class="w-full h-full object-contain rounded-lg" />
+          <div class="w-10 h-10 rounded-xl bg-white/95 p-1 flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 overflow-hidden ring-2 ring-purple-500/20">
+            <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-lg" />
           </div>
           <div class="min-w-0">
-            <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1 truncate">
+            <div class="font-extrabold text-sm tracking-tight text-white flex items-center gap-1.5 truncate">
               <span>HorHub</span>
-              <span class="text-purple-400 text-xs font-semibold">(หอฮับ)</span>
+              <span class="text-purple-400 text-xs font-bold">(หอฮับ)</span>
             </div>
-            <div class="text-[10px] text-emerald-400 font-medium truncate">A Central Platform</div>
+            <div class="text-[10px] text-emerald-400 font-semibold truncate tracking-tight">Admin Backoffice</div>
           </div>
         </div>
 
@@ -101,7 +101,7 @@
       </nav>
 
       <!-- Sidebar Footer -->
-      <div class="p-3 border-t border-slate-800/80 shrink-0 bg-slate-950/40">
+      <div class="p-3 border-t border-slate-800/80 shrink-0 bg-slate-950/40 space-y-2">
         <button
           @click="handleAdminLogout"
           class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-xl transition-all cursor-pointer"
@@ -109,13 +109,16 @@
           <LogOut class="w-3.5 h-3.5" />
           <span>ออกจากระบบ Admin</span>
         </button>
+        <div class="text-center">
+          <span class="text-[10px] text-slate-500 font-medium">HorHub Platform © 2026</span>
+        </div>
       </div>
     </aside>
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
       <!-- Navbar บน -->
-      <header class="h-16 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shadow-2xs shrink-0 z-30">
+      <header class="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shadow-2xs shrink-0 z-30">
         <div class="flex items-center gap-3">
           <button
             @click="isMobileMenuOpen = !isMobileMenuOpen"
@@ -125,9 +128,17 @@
             <Menu class="w-5 h-5" />
           </button>
 
-          <h2 class="font-bold text-slate-900 text-sm sm:text-base tracking-tight truncate">
-            ระบบผู้ดูแลหอพัก (Admin Management)
-          </h2>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-white border border-slate-200/80 p-0.5 shadow-xs flex items-center justify-center overflow-hidden shrink-0">
+              <img src="/horhub-building-icon.png" alt="HorHub Building Icon" class="w-full h-full object-contain rounded-lg" />
+            </div>
+            <div>
+              <h2 class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight truncate flex items-center gap-2">
+                <span>HorHub CMS</span>
+                <span class="text-[10px] px-2 py-0.5 font-bold text-purple-700 bg-purple-50 border border-purple-200/80 rounded-md hidden sm:inline">ระบบผู้ดูแลหอพัก</span>
+              </h2>
+            </div>
+          </div>
         </div>
 
         <!-- Right Side: Building Switcher Dropdown -->

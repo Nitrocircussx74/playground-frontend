@@ -2,17 +2,22 @@
   <div class="space-y-6">
     <!-- Header & Export Toolbar -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <span>แดชบอร์ดภาพรวมธุรกิจ</span>
-          <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-soft-pulse"></span>
-            <span>Realtime</span>
-          </span>
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">
-          ติดตามรายรับรวม อัตราครองห้อง ยอดค้างชำระ และส่งออกรายงานประจำเดือน
-        </p>
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-white p-1 border border-slate-200/80 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
+          <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+            <span>แดชบอร์ดภาพรวม HorHub</span>
+            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-soft-pulse"></span>
+              <span>Realtime</span>
+            </span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+            A Central Platform for Living and Management - ติดตามรายรับรวม อัตราครองห้อง และยอดค้างชำระ
+          </p>
+        </div>
       </div>
 
       <!-- Toolbar Controls -->
