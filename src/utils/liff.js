@@ -82,14 +82,27 @@ export async function getLiffProfile() {
  * ดำเนินการเข้าสู่ระบบผ่าน LINE Login เพื่อ Verify ตัวตน หรือต่ออายุ Session ที่หมดอายุ
  * รองรับ bot_prompt: 'aggressive' สำหรับบังคับเพิ่มเพื่อน LINE Official Account
  */
-export async function loginLiff(redirectUri, botPrompt = 'aggressive') {
+export async function loginLiff(redirectUri, botPrompt = null) {
   try {
     await initLiff();
     const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
     if (liffId && typeof liff.login === 'function') {
       const uri = redirectUri || (typeof window !== 'undefined' ? window.location.href : undefined);
-      liff.login({ redirectUri: uri, bot_prompt: botPrompt });
-      return true;
+      const options = { redirectUri: uri };
+      if (botPrompt) {
+        options.bot_prompt = botPrompt;
+      }
+      try {
+        liff.login(options);
+        return true;
+      } catch (loginErr) {
+        if (loginErr?.code === 40007 || String(loginErr?.message || '').includes('no login bot')) {
+          console.warn('⚠️ No bot linked to LINE Login channel in LINE Developers Console. Falling back to standard login.');
+          liff.login({ redirectUri: uri });
+          return true;
+        }
+        throw loginErr;
+      }
     }
   } catch (err) {
     console.error('Failed to trigger liff.login():', err);
@@ -99,7 +112,7 @@ export async function loginLiff(redirectUri, botPrompt = 'aggressive') {
 
 /**
  * ตรวจสอบสถานะความเป็นเพื่อนกับ LINE Official Account (Bot Friendship)
- * @returns {Promise<{ friendFlag: boolean } | null>}
+ * @returns {Promise<{ friendFlag: boolean, noBotLinked?: boolean } | null>}
  */
 export async function getLiffFriendship() {
   try {
@@ -109,7 +122,11 @@ export async function getLiffFriendship() {
       return friendship; // { friendFlag: boolean }
     }
   } catch (err) {
-    console.warn('⚠️ getLiffFriendship error:', err.message);
+    console.warn('⚠️ getLiffFriendship warning:', err?.message || err);
+    // Error 40007: LINE Login Channel ยังไม่ได้ผูก Linked OA ใน LINE Developers Console
+    if (err?.code === 40007 || String(err?.message || '').includes('no login bot')) {
+      return { friendFlag: false, noBotLinked: true };
+    }
   }
   return null;
 }
@@ -132,8 +149,8 @@ export function openAddFriendLine(fallbackOaUrl = '') {
     return;
   }
 
-  // หากไม่มี OA URL โดยตรง ให้สั่ง LINE Login พร้อม bot_prompt: 'aggressive'
-  loginLiff(window.location.href, 'aggressive');
+  // หากไม่มี OA URL โดยตรง ให้สั่ง LINE Login
+  loginLiff(window.location.href);
 }
 
 /**
