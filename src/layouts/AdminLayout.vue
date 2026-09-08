@@ -15,14 +15,17 @@
       ]"
     >
       <!-- Sidebar Header -->
-      <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-purple-500 flex items-center justify-center text-white font-extrabold shadow-lg shadow-purple-600/30">
-            <Building2 class="w-5 h-5" />
+      <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 overflow-hidden">
+            <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-lg" />
           </div>
-          <div>
-            <span class="font-bold text-sm tracking-tight text-white">Dorm Admin</span>
-            <div class="text-[11px] text-slate-400 font-medium">ระบบผู้ดูแลหอพัก</div>
+          <div class="min-w-0">
+            <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1 truncate">
+              <span>HorHub</span>
+              <span class="text-purple-400 text-xs font-semibold">(หอฮับ)</span>
+            </div>
+            <div class="text-[10px] text-emerald-400 font-medium truncate">A Central Platform</div>
           </div>
         </div>
 

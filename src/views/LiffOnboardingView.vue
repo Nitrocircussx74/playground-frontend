@@ -3,12 +3,14 @@
     <div class="w-full max-w-sm space-y-5">
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100/80 mx-auto flex items-center justify-center text-emerald-600 shadow-xs">
-          <Link2 class="w-6 h-6" />
+        <div class="w-16 h-16 rounded-2xl bg-white p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
+          <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
         </div>
 
         <div class="space-y-1">
-          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">ผูกบัญชีผู้เช่า</h1>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+            HorHub <span class="text-emerald-600 font-semibold">(หอฮับ)</span>
+          </h1>
           <p class="text-xs text-slate-500">ยืนยันเบอร์โทรศัพท์หรือรหัสเชิญเพื่อเชื่อมต่อบัญชี LINE</p>
         </div>
       </div>

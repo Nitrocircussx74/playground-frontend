@@ -12,21 +12,21 @@
       <Card class="border-slate-800/80 bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-950/50 rounded-3xl overflow-hidden text-slate-100">
         <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
           <div class="relative mx-auto inline-flex">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-xl shadow-purple-600/40">
-              <Building2 class="w-7 h-7" />
+            <div class="w-16 h-16 rounded-2xl bg-white p-1 flex items-center justify-center shadow-xl shadow-purple-600/30 ring-4 ring-purple-500/20 overflow-hidden">
+              <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-purple-500 border-2 border-slate-900"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-slate-900"></span>
             </span>
           </div>
 
           <div>
             <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
-              HorHub (หอฮับ)
+              HorHub <span class="text-purple-400 font-bold">(หอฮับ)</span>
             </CardTitle>
-            <p class="text-xs font-medium text-purple-300 mt-1">
-              ระบบจัดการหอพักและอพาร์ตเมนต์
+            <p class="text-[11px] font-semibold text-emerald-400 tracking-wide mt-1">
+              A Central Platform for Living and Management
             </p>
           </div>
           <CardDescription class="text-slate-400 text-xs">
