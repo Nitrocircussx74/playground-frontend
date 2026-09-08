@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-emerald-50/70 via-slate-50 to-white text-slate-800 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+  <div class="min-h-screen bg-gradient-to-b from-emerald-50/70 via-slate-50 to-white text-slate-800 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
     <!-- Ambient Light Background Ornaments -->
     <div class="absolute -top-32 -left-32 w-80 h-80 bg-emerald-300/20 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-purple-300/20 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="relative z-10 w-full max-w-sm text-center space-y-6">
+    <div class="relative z-10 w-full max-w-sm text-center space-y-5">
       <!-- LINE Brand Header & Logo -->
       <div class="mx-auto w-20 h-20 rounded-3xl bg-[#06C755] p-3.5 shadow-xl shadow-emerald-500/25 ring-4 ring-emerald-100 flex items-center justify-center animate-bounce-subtle">
         <svg class="w-full h-full fill-current text-white" viewBox="0 0 24 24">
@@ -33,9 +33,17 @@
         <p class="text-xs font-bold text-slate-700">{{ statusText }}</p>
       </div>
 
-      <!-- 2. Phone Verification Form (For Unlinked Tenants) -->
+      <!-- 2. New Tenant Onboarding & Phone Verification Form (For Unlinked Tenants) -->
       <div v-else-if="showPhoneVerifyForm" class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-5 text-left shadow-xl shadow-slate-200/60 backdrop-blur-md">
-        <!-- User Profile Greeting Tag -->
+        <!-- New Tenant Badge & User Profile Header -->
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-1 text-[11px] font-bold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+            <span>🌱</span>
+            <span>ยินดีต้อนรับลูกบ้านใหม่</span>
+          </span>
+          <span class="text-[10px] text-slate-400 font-medium">ขั้นตอนที่ 1 จาก 2</span>
+        </div>
+
         <div v-if="lineProfile" class="flex items-center gap-3 p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl">
           <img
             v-if="lineProfile.pictureUrl"
@@ -47,14 +55,16 @@
             👤
           </div>
           <div class="min-w-0 flex-1">
-            <div class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">บัญชี LINE</div>
+            <div class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">บัญชี LINE ของคุณ</div>
             <div class="text-xs font-extrabold text-slate-900 truncate">{{ lineProfile.displayName || 'ผู้ใช้งาน LINE' }}</div>
           </div>
         </div>
 
         <div class="space-y-1">
-          <h2 class="text-sm font-extrabold text-slate-900">📱 ยืนยันเบอร์โทรศัพท์ลูกบ้าน</h2>
-          <p class="text-[11px] text-slate-500">กรอกเบอร์โทรศัพท์ที่เคยลงทะเบียนไว้เพื่อเชื่อมต่อห้องพักอัตโนมัติ</p>
+          <h2 class="text-sm font-extrabold text-slate-900">📱 ยืนยันเบอร์โทรศัพท์</h2>
+          <p class="text-[11px] text-slate-500 leading-relaxed">
+            กรอกเบอร์โทรศัพท์ที่เคยแจ้งไว้กับหอพัก เพื่อผูกห้องพักและตั้งรหัส PIN เข้าใช้งาน
+          </p>
         </div>
 
         <!-- Phone Verification Input & Submit -->
@@ -85,23 +95,24 @@
           >
             <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
             <span v-else>✅</span>
-            <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์ & เข้าสู่ห้องพัก' }}</span>
+            <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์ & ตั้งรหัส PIN' }}</span>
           </button>
         </form>
 
-        <!-- Minimal Footer Link for Invite Code / Register -->
-        <div class="pt-2 text-center border-t border-slate-100">
+        <!-- Option 2: Invite Code Link Card -->
+        <div class="pt-3 text-center border-t border-slate-100 space-y-2">
+          <div class="text-[11px] text-slate-400 font-medium">หรือหากคุณมีรหัสเชิญเข้าพัก</div>
           <router-link
             to="/liff/register"
-            class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 transition-colors"
+            class="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 rounded-2xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all"
           >
-            <span>📝</span>
-            <span>สำหรับผู้เช่าใหม่ที่มีรหัสเชิญ (Invite Code)</span>
+            <span>🔑</span>
+            <span>ลงทะเบียนด้วยรหัสเชิญ (Invite Code)</span>
           </router-link>
         </div>
       </div>
 
-      <!-- 3. LINE Login Prompt (When opened in external browser without LINE session) -->
+      <!-- 3. LINE Login Prompt (When opened in external browser without active LINE session) -->
       <div v-else class="p-6 bg-white/95 rounded-3xl border border-slate-200/90 space-y-4 text-center shadow-xl shadow-slate-200/60 backdrop-blur-md">
         <div class="space-y-1">
           <h2 class="text-sm font-extrabold text-slate-900">เข้าสู่ระบบด้วย LINE</h2>
@@ -170,16 +181,16 @@ onMounted(async () => {
 
       if (isLinked) {
         if (!hasPin) {
-          // [CASE 1: ลูกบ้านยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
-          statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN ครั้งแรก...';
+          // [CASE 1: ลูกบ้านที่ผูกแล้วแต่ยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
+          statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN 6 หลัก...';
           router.replace('/liff/setup-pin');
         } else {
-          // [CASE 2: ลูกบ้านมี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
+          // [CASE 2: ลูกบ้านที่มี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
           statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าระบุ PIN...';
           router.replace('/liff/pin-login');
         }
       } else {
-        // [CASE 3: ลูกบ้านใหม่/ยังไม่เคยผูก] -> แสดงฟอร์มกรอกเบอร์โทรศัพท์
+        // [CASE 3: ลูกบ้านใหม่ / ยังไม่เคยผูกห้อง] -> แสดงหน้าสำหรับลูกบ้านใหม่
         loading.value = false;
         showPhoneVerifyForm.value = true;
       }
@@ -222,14 +233,15 @@ const handleVerifyByPhone = async () => {
         authStore.setLiffAuth(accessToken, tenantData);
       }
 
-      await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว');
-      router.replace('/liff/profile');
+      await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว กรุณาตั้งรหัส PIN 6 หลัก');
+      // พาลูกบ้านใหม่ไปตั้งรหัส PIN 6 หลักทันทีเพื่อความปลอดภัยในครั้งต่อไป
+      router.replace('/liff/setup-pin');
     } else {
-      router.replace('/liff/profile');
+      router.replace('/liff/setup-pin');
     }
   } catch (err) {
     console.error('Verify phone error:', err);
-    phoneErrorMessage.value = err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้ง';
+    phoneErrorMessage.value = err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้งหรือติดต่อผู้ดูแลหอพัก';
   } finally {
     verifyingPhone.value = false;
   }
@@ -240,14 +252,14 @@ const handleLineLogin = async () => {
   try {
     const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
     if (liffId) {
-      const targetUri = window.location.origin + '/liff/profile';
+      const targetUri = window.location.origin + '/liff';
       await loginLiff(targetUri);
     } else {
-      router.push('/liff/profile');
+      router.push('/liff');
     }
   } catch (err) {
     console.error('LINE Login error:', err);
-    router.push('/liff/profile');
+    router.push('/liff');
   } finally {
     isLoggingIn.value = false;
   }
