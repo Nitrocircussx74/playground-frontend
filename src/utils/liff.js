@@ -80,20 +80,60 @@ export async function getLiffProfile() {
 
 /**
  * ดำเนินการเข้าสู่ระบบผ่าน LINE Login เพื่อ Verify ตัวตน หรือต่ออายุ Session ที่หมดอายุ
+ * รองรับ bot_prompt: 'aggressive' สำหรับบังคับเพิ่มเพื่อน LINE Official Account
  */
-export async function loginLiff(redirectUri) {
+export async function loginLiff(redirectUri, botPrompt = 'aggressive') {
   try {
     await initLiff();
     const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
     if (liffId && typeof liff.login === 'function') {
       const uri = redirectUri || (typeof window !== 'undefined' ? window.location.href : undefined);
-      liff.login({ redirectUri: uri });
+      liff.login({ redirectUri: uri, bot_prompt: botPrompt });
       return true;
     }
   } catch (err) {
     console.error('Failed to trigger liff.login():', err);
   }
   return false;
+}
+
+/**
+ * ตรวจสอบสถานะความเป็นเพื่อนกับ LINE Official Account (Bot Friendship)
+ * @returns {Promise<{ friendFlag: boolean } | null>}
+ */
+export async function getLiffFriendship() {
+  try {
+    await initLiff();
+    if (isLiffLoggedIn() && typeof liff.getFriendship === 'function') {
+      const friendship = await liff.getFriendship();
+      return friendship; // { friendFlag: boolean }
+    }
+  } catch (err) {
+    console.warn('⚠️ getLiffFriendship error:', err.message);
+  }
+  return null;
+}
+
+/**
+ * นำทางผู้ใช้ไปยังหน้าเพิ่มเพื่อน LINE Official Account
+ */
+export function openAddFriendLine(fallbackOaUrl = '') {
+  const customOaUrl = import.meta.env.VITE_LINE_OA_URL || fallbackOaUrl;
+  const botId = import.meta.env.VITE_LINE_BOT_BASIC_ID || '';
+
+  if (customOaUrl) {
+    openExternalWindow(customOaUrl);
+    return;
+  }
+
+  if (botId) {
+    const cleanId = botId.startsWith('@') ? botId : `@${botId}`;
+    openExternalWindow(`https://line.me/R/ti/p/${cleanId}`);
+    return;
+  }
+
+  // หากไม่มี OA URL โดยตรง ให้สั่ง LINE Login พร้อม bot_prompt: 'aggressive'
+  loginLiff(window.location.href, 'aggressive');
 }
 
 /**

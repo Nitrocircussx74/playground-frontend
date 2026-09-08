@@ -192,9 +192,9 @@ onMounted(async () => {
       return;
     }
 
-    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติ
+    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติพร้อม prompt เพิ่มเพื่อน
     if (typeof liff.isInClient === 'function' && liff.isInClient()) {
-      liff.login();
+      loginLiff(undefined, 'aggressive');
       return;
     }
 
@@ -248,7 +248,7 @@ const handleLineLogin = async () => {
     const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
     if (liffId) {
       const targetUri = window.location.origin + '/liff';
-      await loginLiff(targetUri);
+      await loginLiff(targetUri, 'aggressive');
     } else {
       router.push('/liff');
     }
