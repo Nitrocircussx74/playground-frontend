@@ -1,6 +1,7 @@
 import { initLiff, isInLiffClient, openExternalWindow } from '@/utils/liff';
 import html2canvas from 'html2canvas';
-import customSwal, { showToast } from '@/utils/swal';
+import Swal from 'sweetalert2';
+import { showToast } from '@/utils/swal';
 
 /**
  * Universal Direct PDF Downloader for LINE LIFF / Mobile & Desktop
@@ -46,7 +47,7 @@ export async function downloadPdf(blob, filename = 'document.pdf', fallbackDirec
 }
 
 /**
- * แสดง Popup รูปภาพพร้อมวิธีบันทึกรูปภาพลงเครื่องสำหรับ Mobile / LINE LIFF
+ * แสดง Popup รูปภาพพร้อมวิธีบันทึกรูปภาพลงเครื่องสำหรับ Mobile / LINE LIFF (Android & iOS)
  * รองรับทั้งการ แตะค้างเพื่อบันทึกรูป (Long-press to save) และ Native Save Dialog
  */
 export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.png') {
@@ -66,31 +67,34 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
     navigator.canShare({ files: [file] })
   );
 
-  return customSwal.fire({
-    title: 'บันทึกรูปภาพ QR Code',
+  return Swal.fire({
+    title: '<span style="font-size: 1.15rem; font-weight: 700; color: #1e293b; display: block;">บันทึกรูปภาพ QR Code</span>',
     html: `
-      <div class="space-y-3 text-center">
-        <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-2xl inline-block shadow-inner max-w-full">
-          <img src="${dataUrl}" alt="PromptPay QR" class="max-h-72 sm:max-h-80 mx-auto rounded-xl shadow-xs pointer-events-auto" style="-webkit-touch-callout: default !important; user-select: auto !important;" />
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 4px; width: 100%;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 8px; width: 100%; box-sizing: border-box;">
+          <img src="${dataUrl}" alt="PromptPay QR" style="max-height: 260px; width: auto; max-width: 100%; margin: 0 auto; border-radius: 12px; display: block; -webkit-touch-callout: default !important; user-select: auto !important; touch-action: manipulation !important;" />
         </div>
-        <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-900 text-xs text-left space-y-1 shadow-2xs">
-          <div class="font-bold flex items-center gap-1">
-            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรีรูปภาพ:</span>
+        
+        <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 10px 12px; width: 100%; text-align: left; box-sizing: border-box;">
+          <div style="font-weight: 700; color: #312e81; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรี (Android & iOS):</span>
           </div>
-          <p class="text-[11px] leading-relaxed text-indigo-800">
-            แตะค้างที่รูปภาพด้านบน แล้วเลือก <b>"บันทึกรูปภาพ" (Save Image)</b> หรือกดปุ่มด้านล่างเพื่อบันทึกลงเครื่อง
+          <p style="font-size: 11px; color: #3730a3; margin: 0; line-height: 1.45;">
+            แตะค้างที่รูปภาพด้านบน แล้วเลือก <b>"บันทึกรูปภาพ" (Save Image)</b> หรือ <b>"ดาวน์โหลดรูปภาพ"</b> ลงเครื่อง
           </p>
         </div>
       </div>
     `,
     showConfirmButton: true,
-    confirmButtonText: canNativeShare ? '📥 บันทึกลงอัลบั้มรูป' : 'เสร็จสิ้น',
+    confirmButtonText: canNativeShare ? '📥 บันทึกลงอัลบั้มรูป' : 'เสร็จสิ้น / ปิดหน้าต่าง',
     showCancelButton: canNativeShare,
-    cancelButtonText: 'ปิด',
+    cancelButtonText: 'ปิดหน้าต่าง',
+    buttonsStyling: false,
     customClass: {
       popup: 'rounded-3xl border border-slate-100 shadow-2xl p-5 font-sans max-w-xs sm:max-w-sm w-full',
-      confirmButton: 'w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all mt-2 cursor-pointer',
-      cancelButton: 'w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all mt-1 cursor-pointer'
+      actions: 'w-full flex flex-col gap-2 mt-3 px-0',
+      confirmButton: 'w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/20 cursor-pointer block text-center',
+      cancelButton: 'w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 cursor-pointer block text-center'
     },
     preConfirm: async () => {
       if (canNativeShare && file) {

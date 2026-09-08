@@ -109,8 +109,8 @@
 
           <!-- PromptPay QR Code Box (Capture Card Area) -->
           <div ref="qrCardRef" class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
-            <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">
-              <QrCode class="w-3.5 h-3.5" />
+            <div class="inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-900 text-xs font-bold px-3.5 py-1.5 rounded-full border border-indigo-200 shadow-2xs">
+              <QrCode class="w-3.5 h-3.5 text-indigo-800" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
