@@ -142,7 +142,18 @@ const showBackButton = computed(() => {
  * 2.1 Logic แสดงแถบ Bottom Navigation Bar
  */
 const showBottomNav = computed(() => {
-  const noNavPaths = ['/liff', '/liff/register', '/liff/onboarding'];
+  if (route.meta?.hideBottomNav) return false;
+  const noNavPaths = [
+    '/liff',
+    '/liff/register',
+    '/liff/onboarding',
+    '/liff/pin-login',
+    '/liff/setup-pin',
+    '/liff/change-pin',
+    '/pin-login',
+    '/setup-pin',
+    '/change-pin'
+  ];
   return !noNavPaths.includes(route.path);
 });
 
