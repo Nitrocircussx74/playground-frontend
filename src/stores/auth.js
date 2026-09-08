@@ -7,12 +7,15 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     accessToken: null,
     isInitialized: false,
+    isLiffReady: false,
+    liffProfile: null,
     loading: false
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
-    currentUser: (state) => state.user
+    currentUser: (state) => state.user,
+    ready: (state) => state.isLiffReady
   },
 
   actions: {
@@ -24,9 +27,50 @@ export const useAuthStore = defineStore('auth', {
       this.user = userData;
     },
 
+    setLiffReady(ready, profile = null) {
+      this.isLiffReady = ready;
+      if (profile) {
+        this.liffProfile = profile;
+      }
+    },
+
     clearAuth() {
       this.user = null;
       this.accessToken = null;
+    },
+
+    /**
+     * Action เข้าสู่ระบบด้วย LINE Seamless PIN 6 หลัก
+     */
+    async loginPin(lineIdToken, pin) {
+      this.loading = true;
+      try {
+        const data = await authService.loginPin(lineIdToken, pin);
+        const token = data.accessToken || data.token;
+        if (token) {
+          this.setAccessToken(token);
+          localStorage.setItem('liff_token', token);
+        }
+        if (data.user || data.tenant) {
+          this.setUser(data.user || data.tenant);
+        }
+        return data;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
+     * Action ตั้งค่าหรือเปลี่ยนรหัส PIN 6 หลัก
+     */
+    async setupPin(pin, lineIdToken = '') {
+      this.loading = true;
+      try {
+        const data = await authService.setupPin({ pin, lineIdToken });
+        return data;
+      } finally {
+        this.loading = false;
+      }
     },
 
     /**

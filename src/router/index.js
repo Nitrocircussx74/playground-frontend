@@ -12,6 +12,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
     meta: { isCms: true }
   },
+  {
+    path: '/pin-login',
+    name: 'PinLogin',
+    component: () => import('@/views/PinLoginView.vue'),
+    meta: { isLiff: true, title: 'เข้าสู่ระบบด้วยรหัส PIN' }
+  },
 
   // 🏢 1. CMS Admin Backoffice Routes (ต้องการสิทธิ์ Admin JWT Authentication)
   {
@@ -140,6 +146,12 @@ const routes = [
         name: 'LiffEntry',
         component: () => import('@/views/LiffEntryView.vue'),
         meta: { isLiff: true, title: 'ระบบจัดการหอพัก (LINE LIFF)' }
+      },
+      {
+        path: 'pin-login',
+        name: 'LiffPinLogin',
+        component: () => import('@/views/PinLoginView.vue'),
+        meta: { isLiff: true, title: 'เข้าสู่ระบบด้วยรหัส PIN' }
       },
       {
         path: 'profile',

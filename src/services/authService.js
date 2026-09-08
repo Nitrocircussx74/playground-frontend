@@ -32,6 +32,25 @@ export const authService = {
   },
 
   /**
+   * เข้าสู่ระบบด้วย LINE PIN 6 หลัก (LIFF Seamless PIN Auto-Login)
+   * @param {string} lineIdToken
+   * @param {string} pin
+   */
+  async loginPin(lineIdToken, pin) {
+    const response = await api.post('/api/auth/liff/pin-login', { lineIdToken, pin });
+    return response.data; // { success: true, accessToken, user, tenant }
+  },
+
+  /**
+   * ตั้งค่าหรือเปลี่ยนรหัส PIN 6 หลัก
+   * @param {Object} payload - { pin: string, lineIdToken?: string }
+   */
+  async setupPin(payload) {
+    const response = await api.post('/api/auth/liff/setup-pin', payload);
+    return response.data; // { success: true, message }
+  },
+
+  /**
    * ตั้งค่ารหัสผ่านใหม่หรือเปลี่ยนรหัสผ่าน
    * @param {Object} payload - { newPassword: string, oldPassword?: string }
    */
