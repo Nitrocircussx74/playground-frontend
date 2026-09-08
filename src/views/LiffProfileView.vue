@@ -45,10 +45,18 @@
           <!-- Avatar จาก LINE Profile -->
           <div class="relative shrink-0">
             <img
-              :src="tenantProfile.avatarUrl || defaultAvatar"
+              v-if="tenantProfile.avatarUrl && !imageLoadError"
+              :src="tenantProfile.avatarUrl"
               alt="Tenant Avatar"
-              class="w-16 h-16 rounded-full object-cover border-2 border-white/80 shadow-md"
+              class="w-16 h-16 rounded-full object-cover border-2 border-white/80 shadow-md bg-white/20"
+              @error="handleAvatarError"
             />
+            <div
+              v-else
+              class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-md flex items-center justify-center text-2xl font-black text-white select-none"
+            >
+              {{ tenantInitial }}
+            </div>
             <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-400 border-2 border-white rounded-full"></span>
           </div>
 
@@ -348,10 +356,10 @@ const { themeColor, applyTheme, adjustBrightness } = useDynamicTheme();
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
 const sessionExpired = ref(false);
+const imageLoadError = ref(false);
 const inviteCodeInput = ref('');
 const linkingRoom = ref(false);
 const digitalIdQrUrl = ref('');
-const defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
 const currentLineUserId = ref('');
 
 const tenantProfile = reactive({
@@ -362,6 +370,17 @@ const tenantProfile = reactive({
   phone: '',
   avatarUrl: ''
 });
+
+const tenantInitial = computed(() => {
+  if (tenantProfile.firstName && tenantProfile.firstName.trim()) {
+    return tenantProfile.firstName.trim().charAt(0).toUpperCase();
+  }
+  return '👤';
+});
+
+const handleAvatarError = () => {
+  imageLoadError.value = true;
+};
 
 const selectedRoomId = ref('');
 
@@ -561,15 +580,10 @@ onMounted(async () => {
       const profile = await getLiffProfile();
       if (profile?.userId) {
         currentLineUserId.value = profile.userId;
-        if (profile.pictureUrl) tenantProfile.avatarUrl = profile.pictureUrl;
-
-        // Auto-sync LINE profile in background to database
-        api.patch('/api/v1/liff/auth/sync-profile', {
-          lineUserId: profile.userId,
-          lineDisplayName: profile.displayName,
-          linePictureUrl: profile.pictureUrl,
-          lineStatusMessage: profile.statusMessage
-        }).catch(() => {});
+        if (profile.pictureUrl) {
+          tenantProfile.avatarUrl = profile.pictureUrl;
+          imageLoadError.value = false;
+        }
       }
     }
   } catch (err) {
@@ -577,6 +591,17 @@ onMounted(async () => {
   }
 
   await fetchTenantProfile(currentLineUserId.value);
+
+  // Auto-sync LINE profile in background with tenant info
+  if (currentLineUserId.value || tenantProfile.phone) {
+    api.patch('/api/v1/liff/auth/sync-profile', {
+      lineUserId: currentLineUserId.value || undefined,
+      lineDisplayName: tenantProfile.firstName,
+      linePictureUrl: tenantProfile.avatarUrl,
+      phone: tenantProfile.phone || undefined,
+      roomNumber: tenantProfile.roomNumber || undefined
+    }).catch(() => {});
+  }
 
   const payload = `TENANT-ID:${tenantProfile.firstName}-ROOMS-${tenantProfile.roomNumber}-${Date.now()}`;
   digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
