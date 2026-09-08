@@ -41,21 +41,21 @@
 
           <div class="flex items-center gap-3.5">
             <!-- Avatar จาก LINE หรือ Initials -->
-            <div class="relative shrink-0">
+            <div class="relative w-16 h-16 shrink-0">
               <img
                 v-if="tenantProfile.avatarUrl && !imageLoadError"
                 :src="tenantProfile.avatarUrl"
                 alt="Tenant Avatar"
-                class="w-15 h-15 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
+                class="w-16 h-16 rounded-full object-cover border-2 border-white/80 shadow-xs bg-white/20"
                 @error="imageLoadError = true"
               />
               <div
                 v-else
-                class="w-15 h-15 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-bold text-white select-none"
+                class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-xs border-2 border-white/80 shadow-xs flex items-center justify-center text-xl font-bold text-white select-none"
               >
                 {{ tenantInitial }}
               </div>
-              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
+              <span class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-400 border-2 border-white rounded-full shadow-2xs" title="LINE Verified"></span>
             </div>
 
             <!-- ชื่อ และ เบอร์โทร -->
