@@ -230,9 +230,11 @@ const isTabActive = (path) => {
  * 5. ตรวจสอบสถานะการเพิ่มเพื่อนกับ LINE Official Account
  */
 const checkUserFriendship = async () => {
-  if (!isLiffLoggedIn()) return;
   try {
+    await initLiff();
+    if (!isLiffLoggedIn()) return;
     const friendship = await getLiffFriendship();
+    console.log('[LIFF Layout] Friendship status:', friendship);
     if (friendship && friendship.friendFlag === false) {
       needsAddFriend.value = true;
     } else {
@@ -264,6 +266,13 @@ const handleRecheckFriendship = async () => {
     checkingFriendship.value = false;
   }
 };
+
+watch(
+  () => route.path,
+  () => {
+    checkUserFriendship();
+  }
+);
 
 onMounted(() => {
   fetchAndApplyTheme();
