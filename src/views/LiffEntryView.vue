@@ -264,6 +264,11 @@ const checkEntryFriendship = async () => {
   try {
     const friendship = await getLiffFriendship();
     console.log('[LIFF Entry] Friendship status:', friendship);
+    if (friendship && friendship.noBotLinked) {
+      console.warn('⚠️ LINE Login Channel has no linked OA bot. Skipping friendship block to prevent endless loop.');
+      needsAddFriend.value = false;
+      return true;
+    }
     if (friendship && friendship.friendFlag === false) {
       needsAddFriend.value = true;
       loading.value = false;

@@ -244,6 +244,10 @@ const checkUserFriendship = async () => {
     if (!isLiffLoggedIn()) return;
     const friendship = await getLiffFriendship();
     console.log('[LIFF Layout] Friendship status:', friendship);
+    if (friendship && friendship.noBotLinked) {
+      needsAddFriend.value = false;
+      return;
+    }
     if (friendship && friendship.friendFlag === false) {
       needsAddFriend.value = true;
     } else {
@@ -262,7 +266,7 @@ const handleRecheckFriendship = async () => {
   checkingFriendship.value = true;
   try {
     const friendship = await getLiffFriendship();
-    if (friendship && friendship.friendFlag === true) {
+    if (friendship && (friendship.friendFlag === true || friendship.noBotLinked)) {
       needsAddFriend.value = false;
       await showSuccess('ยินดีต้อนรับ!', 'ตรวจสอบพบการเพิ่มเพื่อนเรียบร้อยแล้วครับ');
     } else {
