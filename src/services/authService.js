@@ -60,6 +60,25 @@ export const authService = {
   },
 
   /**
+   * ตรวจสอบสถานะเบอร์โทรศัพท์ (มีในระบบ HorHub แล้วหรือไม่สำหรับ Centralized Identity)
+   * @param {string|Object} payload - { phone: string } or phone string
+   */
+  async verifyPhoneStatus(payload) {
+    const data = typeof payload === 'string' ? { phone: payload } : payload;
+    const response = await api.post('/api/liff/auth/verify-phone-status', data);
+    return response.data; // { success: true, isExistingUser: boolean, hasPin: boolean, tenantName?: string }
+  },
+
+  /**
+   * ผูก LINE OA ของตึกใหม่เข้ากับบัญชีเดิมด้วย PIN 6 หลัก และเข้าสู่ระบบทันที
+   * @param {Object} payload - { phone, pin, buildingId, lineIdToken, lineUserId, lineDisplayName, linePictureUrl, lineStatusMessage }
+   */
+  async linkAndLogin(payload) {
+    const response = await api.post('/api/liff/auth/link-and-login', payload);
+    return response.data; // { success: true, accessToken, user, tenant }
+  },
+
+  /**
    * เปลี่ยนรหัส PIN ของลูกบ้าน (ต้องแนบ Bearer Token)
    * @param {Object} payload - { oldPin: string, newPin: string }
    */

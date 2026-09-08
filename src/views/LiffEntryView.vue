@@ -121,81 +121,146 @@
         </div>
       </div>
 
-      <!-- 2. New Tenant Onboarding & Phone Verification Form (For Unlinked Tenants) -->
+      <!-- 2. Phone Verification & Existing User PIN Confirmation Form -->
       <div
         v-else-if="showPhoneVerifyForm"
         class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8 space-y-5 text-left animate-in fade-in zoom-in-95 duration-200"
       >
-        <!-- User Profile Header -->
-        <div class="flex items-center justify-between">
-          <span class="px-3 py-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200/80">
-            ยินดีต้อนรับลูกบ้านใหม่
-          </span>
-          <span class="text-[10px] text-slate-400 font-medium">ขั้นตอนที่ 1 จาก 2</span>
-        </div>
-
-        <div v-if="lineProfile" class="flex items-center gap-3 p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100">
-          <img
-            v-if="lineProfile.pictureUrl"
-            :src="lineProfile.pictureUrl"
-            alt="LINE Avatar"
-            class="w-11 h-11 rounded-full border border-emerald-200 shadow-xs object-cover"
-          />
-          <div v-else class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">
-            U
+        <!-- State A: Existing User Detected -> Prompt for Central PIN -->
+        <div v-if="isExistingUserPrompt" class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-3 py-1 text-[11px] font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200/80">
+              พบข้อมูลใน HorHub
+            </span>
+            <button
+              type="button"
+              @click="isExistingUserPrompt = false; existingPinInput = ''; phoneErrorMessage = ''"
+              class="text-[11px] text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
+            >
+              ← เปลี่ยนเบอร์โทร
+            </button>
           </div>
-          <div class="min-w-0 flex-1">
-            <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">บัญชี LINE</div>
-            <div class="text-sm font-bold text-slate-800 truncate">{{ lineProfile.displayName || 'ผู้ใช้งาน LINE' }}</div>
+
+          <div class="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-bold flex items-center justify-center text-sm shrink-0">
+              {{ existingUserName ? existingUserName.charAt(0).toUpperCase() : '👤' }}
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-800 truncate">{{ existingUserName || 'ลูกบ้าน HorHub' }}</div>
+              <div class="text-[11px] text-slate-500 font-mono">{{ verifyPhoneInput }}</div>
+            </div>
           </div>
+
+          <div class="space-y-1">
+            <h2 class="text-base font-bold text-slate-900">กรอกรหัส PIN 6 หลัก</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              กรอกรหัส PIN เดิมของคุณเพื่อยืนยันตัวตนและผูก LINE กับหอพักนี้ทันที
+            </p>
+          </div>
+
+          <form @submit.prevent="handleLinkAndLogin" class="space-y-4">
+            <div>
+              <input
+                v-model="existingPinInput"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="6"
+                placeholder="••••••"
+                required
+                autofocus
+                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-2xl font-mono font-bold text-center tracking-[0.4em] text-slate-800 placeholder:text-slate-300 placeholder:tracking-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+              />
+            </div>
+
+            <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-medium">
+              {{ phoneErrorMessage }}
+            </div>
+
+            <button
+              type="submit"
+              :disabled="verifyingPhone || existingPinInput.length !== 6"
+              class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:from-emerald-700 active:to-teal-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+            >
+              <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+              <span>{{ verifyingPhone ? 'กำลังผูกบัญชีและเข้าสู่ระบบ...' : 'ยืนยัน PIN & เข้าสู่ระบบ' }}</span>
+            </button>
+          </form>
         </div>
 
-        <div class="space-y-1">
-          <h2 class="text-base font-bold text-slate-900">ยืนยันเบอร์โทรศัพท์</h2>
-          <p class="text-xs text-slate-500 leading-relaxed">
-            กรอกเบอร์โทรศัพท์ที่แจ้งไว้กับหอพัก เพื่อผูกข้อมูลห้องพักและตั้งรหัส PIN ความปลอดภัย
-          </p>
-        </div>
+        <!-- State B: Enter Phone Number (New or Unchecked) -->
+        <div v-else class="space-y-5">
+          <!-- User Profile Header -->
+          <div class="flex items-center justify-between">
+            <span class="px-3 py-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200/80">
+              ยินดีต้อนรับลูกบ้านใหม่
+            </span>
+            <span class="text-[10px] text-slate-400 font-medium">ขั้นตอนที่ 1 จาก 2</span>
+          </div>
 
-        <!-- Phone Verification Input & Submit -->
-        <form @submit.prevent="handleVerifyByPhone" class="space-y-4">
-          <div>
-            <input
-              v-model="verifyPhoneInput"
-              type="tel"
-              maxlength="10"
-              placeholder="08xxxxxxxx"
-              required
-              autofocus
-              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-base font-mono font-bold text-center tracking-widest text-slate-800 placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+          <div v-if="lineProfile" class="flex items-center gap-3 p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100">
+            <img
+              v-if="lineProfile.pictureUrl"
+              :src="lineProfile.pictureUrl"
+              alt="LINE Avatar"
+              class="w-11 h-11 rounded-full border border-emerald-200 shadow-xs object-cover"
             />
+            <div v-else class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">
+              U
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">บัญชี LINE</div>
+              <div class="text-sm font-bold text-slate-800 truncate">{{ lineProfile.displayName || 'ผู้ใช้งาน LINE' }}</div>
+            </div>
           </div>
 
-          <!-- Error Alert Banner -->
-          <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-medium">
-            {{ phoneErrorMessage }}
+          <div class="space-y-1">
+            <h2 class="text-base font-bold text-slate-900">ยืนยันเบอร์โทรศัพท์</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              กรอกเบอร์โทรศัพท์ที่แจ้งไว้กับหอพัก เพื่อผูกข้อมูลห้องพักและตั้งรหัส PIN ความปลอดภัย
+            </p>
           </div>
 
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="verifyingPhone || !verifyPhoneInput"
-            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:from-emerald-700 active:to-teal-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-          >
-            <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-            <span>{{ verifyingPhone ? 'กำลังค้นหาและผูกบัญชี...' : 'ยืนยันเบอร์โทร & ตั้งรหัส PIN' }}</span>
-          </button>
-        </form>
+          <!-- Phone Verification Input & Submit -->
+          <form @submit.prevent="handleVerifyByPhone" class="space-y-4">
+            <div>
+              <input
+                v-model="verifyPhoneInput"
+                type="tel"
+                maxlength="10"
+                placeholder="08xxxxxxxx"
+                required
+                autofocus
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-base font-mono font-bold text-center tracking-widest text-slate-800 placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+              />
+            </div>
 
-        <!-- Option 2: Invite Code Link Card -->
-        <div class="pt-3 text-center border-t border-slate-100 space-y-2">
-          <div class="text-[11px] text-slate-400 font-medium">หรือหากคุณได้รับรหัสเชิญเข้าพักจากผู้ดูแล</div>
-          <router-link
-            to="/liff/register"
-            class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 rounded-2xl text-xs font-semibold inline-flex items-center justify-center transition-all border border-slate-200/70"
-          >
-            ลงทะเบียนด้วยรหัสเชิญ (Invite Code)
-          </router-link>
+            <!-- Error Alert Banner -->
+            <div v-if="phoneErrorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-medium">
+              {{ phoneErrorMessage }}
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              :disabled="verifyingPhone || !verifyPhoneInput"
+              class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:from-emerald-700 active:to-teal-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+            >
+              <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+              <span>{{ verifyingPhone ? 'กำลังค้นหาและตรวจสอบ...' : 'ยืนยันเบอร์โทรศัพท์' }}</span>
+            </button>
+          </form>
+
+          <!-- Option 2: Invite Code Link Card -->
+          <div class="pt-3 text-center border-t border-slate-100 space-y-2">
+            <div class="text-[11px] text-slate-400 font-medium">หรือหากคุณได้รับรหัสเชิญเข้าพักจากผู้ดูแล</div>
+            <router-link
+              to="/liff/register"
+              class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 rounded-2xl text-xs font-semibold inline-flex items-center justify-center transition-all border border-slate-200/70"
+            >
+              ลงทะเบียนด้วยรหัสเชิญ (Invite Code)
+            </router-link>
+          </div>
         </div>
       </div>
 
@@ -253,6 +318,9 @@ const loading = ref(true);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
 const isLoggingIn = ref(false);
 const showPhoneVerifyForm = ref(false);
+const isExistingUserPrompt = ref(false);
+const existingUserName = ref('');
+const existingPinInput = ref('');
 const lineProfile = ref(null);
 const verifyPhoneInput = ref('');
 const verifyingPhone = ref(false);
@@ -365,9 +433,23 @@ const handleVerifyByPhone = async () => {
   verifyingPhone.value = true;
   phoneErrorMessage.value = '';
 
+  const cleanPhone = verifyPhoneInput.value.trim();
+
   try {
+    // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน (Centralized Identity Check)
+    const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone });
+    
+    if (phoneStatus?.isExistingUser && phoneStatus?.hasPin) {
+      // ผู้ใช้เดิมที่มีบัญชีและ PIN ในระบบแล้ว -> ให้กรอก PIN 6 หลักเดิมเพื่อผูกบัญชีทันที
+      existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน HorHub';
+      isExistingUserPrompt.value = true;
+      verifyingPhone.value = false;
+      return;
+    }
+
+    // 2. หากเป็นลูกบ้านใหม่หรือไม่เคยตั้ง PIN -> ทำการ verify phone ตามปกติ
     const payload = {
-      phone: verifyPhoneInput.value.trim(),
+      phone: cleanPhone,
       lineDisplayName: lineProfile.value?.displayName || null,
       linePictureUrl: lineProfile.value?.pictureUrl || null,
       lineStatusMessage: lineProfile.value?.statusMessage || null
@@ -391,6 +473,44 @@ const handleVerifyByPhone = async () => {
   } catch (err) {
     console.error('Verify phone error:', err);
     phoneErrorMessage.value = err.response?.data?.message || 'ไม่พบข้อมูลลูกบ้านที่ตรงกับเบอร์โทรศัพท์นี้ กรุณาตรวจสอบเบอร์โทรศัพท์อีกครั้งหรือติดต่อผู้ดูแลหอพัก';
+  } finally {
+    verifyingPhone.value = false;
+  }
+};
+
+const handleLinkAndLogin = async () => {
+  if (!existingPinInput.value || existingPinInput.value.length !== 6) return;
+  verifyingPhone.value = true;
+  phoneErrorMessage.value = '';
+
+  try {
+    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
+    const payload = {
+      phone: verifyPhoneInput.value.trim(),
+      pin: existingPinInput.value,
+      lineIdToken: idToken,
+      lineDisplayName: lineProfile.value?.displayName || null,
+      linePictureUrl: lineProfile.value?.pictureUrl || null,
+      lineStatusMessage: lineProfile.value?.statusMessage || null
+    };
+
+    const res = await authService.linkAndLogin(payload);
+
+    if (res?.success) {
+      const token = res.accessToken || res.data?.accessToken;
+      const tenantData = res.user || res.tenant || res.data?.tenant || res.data?.user;
+      if (token) {
+        authStore.setLiffAuth(token, tenantData);
+      }
+
+      await showSuccess('เชื่อมต่อบัญชีสำเร็จ! 🎉', `ยินดีต้อนรับคุณ ${existingUserName.value || 'ลูกบ้าน'} เข้าสู่ระบบหอพัก`);
+      router.replace('/liff/profile');
+    } else {
+      phoneErrorMessage.value = res?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง';
+    }
+  } catch (err) {
+    console.error('Link and login error:', err);
+    phoneErrorMessage.value = err.response?.data?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
   } finally {
     verifyingPhone.value = false;
   }
