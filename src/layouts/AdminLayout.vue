@@ -17,8 +17,8 @@
       <!-- Sidebar Header -->
       <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 overflow-hidden">
-            <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-lg" />
+          <div class="w-9 h-9 rounded-xl bg-white/95 p-0.5 flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 overflow-hidden">
+            <img src="/horhub-building-icon.png" alt="HorHub Building Icon" class="w-full h-full object-contain rounded-lg" />
           </div>
           <div class="min-w-0">
             <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1 truncate">

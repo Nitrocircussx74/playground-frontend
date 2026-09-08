@@ -12,8 +12,8 @@
       <Card class="border-slate-800/80 bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-950/50 rounded-3xl overflow-hidden text-slate-100">
         <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
           <div class="relative mx-auto inline-flex">
-            <div class="w-16 h-16 rounded-2xl bg-white p-1 flex items-center justify-center shadow-xl shadow-purple-600/30 ring-4 ring-purple-500/20 overflow-hidden">
-              <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+            <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-xl shadow-purple-600/30 ring-4 ring-purple-500/20 overflow-hidden">
+              <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain rounded-xl" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

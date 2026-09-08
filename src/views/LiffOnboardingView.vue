@@ -3,8 +3,8 @@
     <div class="w-full max-w-sm space-y-5">
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
-        <div class="w-16 h-16 rounded-2xl bg-white p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
-          <img src="/horhub-logo.jpg" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+        <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
+          <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
         </div>
 
         <div class="space-y-1">

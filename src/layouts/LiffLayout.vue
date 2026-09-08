@@ -17,7 +17,7 @@
           
           <div v-else class="flex items-center gap-2">
             <img
-              :src="logoUrl || '/horhub-logo.jpg'"
+              :src="logoUrl || '/horhub-app-icon.png'"
               alt="HorHub Logo"
               class="w-8 h-8 rounded-xl object-contain border border-slate-200/80 bg-white p-0.5 shadow-2xs"
             />
