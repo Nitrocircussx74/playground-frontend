@@ -128,31 +128,71 @@
           </div>
           <button
             @click="showLinkRoomModal = true"
-            class="text-xs text-indigo-600 font-semibold hover:text-indigo-700 transition-colors cursor-pointer"
+            class="text-xs font-semibold hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-1 text-indigo-600"
+            :style="{ color: themeColor }"
           >
-            + ผูกห้องเพิ่ม
+            <PlusCircle class="w-3.5 h-3.5" />
+            <span>ผูกห้องเพิ่ม</span>
           </button>
         </div>
 
         <!-- Room Selector Buttons Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
           <button
             v-for="room in tenantProfile.rooms"
             :key="room.id"
             @click="selectRoom(room)"
-            class="p-3 rounded-xl border text-left transition-all duration-150 flex items-center gap-2.5 cursor-pointer"
-            :class="selectedRoomId === room.id ? 'bg-indigo-50 border-indigo-200 text-indigo-900 font-bold' : 'bg-slate-50/70 border-slate-100 text-slate-600 hover:bg-slate-100/70'"
+            class="p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative overflow-hidden active:scale-[0.99]"
+            :class="selectedRoomId === room.id 
+              ? 'bg-indigo-50/60 border-indigo-200 shadow-2xs' 
+              : 'bg-slate-50/60 hover:bg-slate-100/70 border-slate-100/90 text-slate-600'"
           >
+            <!-- Left: Room Icon & Room Details -->
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div
+                class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
+                :class="selectedRoomId === room.id 
+                  ? 'bg-indigo-600 text-white shadow-xs' 
+                  : 'bg-white text-slate-500 border border-slate-200/60'"
+                :style="selectedRoomId === room.id ? { backgroundColor: themeColor } : {}"
+              >
+                <DoorClosed class="w-4.5 h-4.5" />
+              </div>
+              
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span
+                    class="text-xs font-bold truncate"
+                    :class="selectedRoomId === room.id ? 'text-slate-900' : 'text-slate-700'"
+                  >
+                    ห้อง {{ room.roomNumber }}
+                  </span>
+                  <span
+                    v-if="selectedRoomId === room.id"
+                    class="px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-indigo-100 text-indigo-700"
+                    :style="{ backgroundColor: `${themeColor}18`, color: themeColor }"
+                  >
+                    ใช้งานอยู่
+                  </span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate mt-0.5 font-medium">
+                  {{ room.buildingName || 'อาคารหลัก' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Check Indicator -->
             <div
-              class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 transition-colors"
-              :class="selectedRoomId === room.id ? 'bg-indigo-600 text-white' : 'bg-slate-200/80 text-slate-600'"
+              v-if="selectedRoomId === room.id"
+              class="w-5 h-5 rounded-full flex items-center justify-center text-white shrink-0 shadow-2xs"
+              :style="{ backgroundColor: themeColor }"
             >
-              {{ room.roomNumber }}
+              <Check class="w-3 h-3 stroke-[3]" />
             </div>
-            <div class="truncate text-left">
-              <div class="text-xs truncate">ห้อง {{ room.roomNumber }}</div>
-              <div class="text-[10px] text-slate-400 truncate">{{ room.buildingName || 'อาคารหลัก' }}</div>
-            </div>
+            <div
+              v-else
+              class="w-5 h-5 rounded-full border border-slate-200/80 shrink-0"
+            ></div>
           </button>
         </div>
       </div>
@@ -306,7 +346,9 @@ import {
   QrCode,
   ChevronRight,
   PlusCircle,
-  X
+  X,
+  DoorClosed,
+  Check
 } from 'lucide-vue-next';
 
 const router = useRouter();
