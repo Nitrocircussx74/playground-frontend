@@ -1,19 +1,42 @@
 <template>
   <div class="space-y-5 pb-6 font-sans text-slate-800">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-2">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight">ข่าวสาร & ประกาศ</h1>
+        <div class="flex items-center gap-2">
+          <h1 class="text-lg font-bold text-slate-900 tracking-tight">ข่าวสาร & ประกาศ</h1>
+          <span
+            v-if="unreadCount > 0"
+            class="px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold rounded-full shrink-0 animate-pulse"
+          >
+            {{ unreadCount }} ใหม่
+          </span>
+        </div>
         <p class="text-xs text-slate-500 mt-0.5">ประกาศและข่าวสารสำคัญจากหอพัก</p>
       </div>
 
-      <button
-        @click="fetchAnnouncements"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50/80 hover:bg-amber-100 text-xs font-semibold text-amber-700 transition-colors cursor-pointer"
-      >
-        <RotateCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
-        <span>รีเฟรช</span>
-      </button>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <!-- ปุ่มทำเครื่องหมายว่าอ่านทั้งหมด -->
+        <button
+          v-if="unreadCount > 0"
+          type="button"
+          @click="handleMarkAllAsRead"
+          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 transition-all border border-indigo-100 cursor-pointer shadow-2xs active:scale-95"
+          title="ทำเครื่องหมายว่าอ่านทั้งหมด"
+        >
+          <CheckCheck class="w-3.5 h-3.5 text-indigo-600" />
+          <span class="hidden sm:inline">อ่านทั้งหมด</span>
+        </button>
+
+        <button
+          type="button"
+          @click="fetchAnnouncements"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition-colors cursor-pointer"
+        >
+          <RotateCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
+          <span class="hidden sm:inline">รีเฟรช</span>
+        </button>
+      </div>
     </div>
 
     <!-- Loading Skeleton State -->
@@ -34,7 +57,8 @@
         v-for="item in announcements"
         :key="item.id"
         @click="openDetail(item)"
-        class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden transition-all hover:border-emerald-200 hover:shadow-md cursor-pointer active:scale-[0.99] group"
+        class="rounded-2xl border shadow-xs overflow-hidden transition-all hover:shadow-md cursor-pointer active:scale-[0.99] group"
+        :class="!isRead(item.id) ? 'bg-white border-indigo-200/90 ring-1 ring-indigo-100/60 shadow-indigo-500/5' : 'bg-slate-50/70 border-slate-200/70 hover:bg-white'"
       >
         <!-- Cover Banner Image -->
         <div v-if="item.imageUrl" class="w-full h-44 overflow-hidden bg-slate-100 relative">
@@ -49,23 +73,42 @@
         <div class="p-4 sm:p-5 space-y-3">
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-center gap-2 flex-wrap min-w-0">
-              <span v-if="!isRead(item.id)" class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shrink-0 shadow-2xs animate-pulse">
-                ใหม่
+              <!-- สถานะ: ยังไม่อ่าน (ใหม่) vs อ่านแล้ว -->
+              <span
+                v-if="!isRead(item.id)"
+                class="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shrink-0 shadow-2xs animate-pulse"
+              >
+                <Sparkles class="w-2.5 h-2.5" />
+                <span>ใหม่</span>
               </span>
-              <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-snug group-hover:text-emerald-700 transition-colors truncate">
+              <span
+                v-else
+                class="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-semibold rounded-full bg-slate-100 text-slate-500 border border-slate-200 shrink-0"
+              >
+                <Check class="w-2.5 h-2.5 text-emerald-600 stroke-[2.5]" />
+                <span>อ่านแล้ว</span>
+              </span>
+
+              <h2
+                class="font-bold text-sm sm:text-base leading-snug transition-colors truncate"
+                :class="!isRead(item.id) ? 'text-slate-900 group-hover:text-indigo-600' : 'text-slate-600 group-hover:text-slate-800'"
+              >
                 {{ item.title }}
               </h2>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono shrink-0 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
+            <span class="text-[11px] text-slate-400 font-mono shrink-0 bg-white/80 px-2 py-0.5 rounded-lg border border-slate-100">
               {{ formatDate(item.createdAt) }}
             </span>
           </div>
 
-          <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">
+          <p
+            class="text-xs leading-relaxed line-clamp-2"
+            :class="!isRead(item.id) ? 'text-slate-700 font-normal' : 'text-slate-500'"
+          >
             {{ item.content }}
           </p>
 
-          <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 font-medium border-t border-slate-100/80">
+          <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 font-medium border-t border-slate-100">
             <div class="flex items-center gap-2">
               <span class="inline-flex items-center gap-1 text-slate-500">
                 <Building2 class="w-3 h-3 text-slate-400" />
@@ -78,7 +121,10 @@
               </span>
             </div>
 
-            <span class="text-emerald-600 font-semibold inline-flex items-center gap-1 text-[11px] group-hover:translate-x-0.5 transition-transform">
+            <span
+              class="font-semibold inline-flex items-center gap-1 text-[11px] group-hover:translate-x-0.5 transition-transform"
+              :class="!isRead(item.id) ? 'text-indigo-600' : 'text-slate-500'"
+            >
               <span>อ่านรายละเอียด</span>
               <ChevronRight class="w-3.5 h-3.5" />
             </span>
@@ -88,7 +134,7 @@
 
       <!-- Empty State -->
       <div v-if="announcements.length === 0" class="p-10 bg-white rounded-2xl border border-slate-100/80 text-center space-y-2 shadow-xs">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
           <Megaphone class="w-6 h-6" />
         </div>
         <h3 class="text-sm font-bold text-slate-800">ยังไม่มีประกาศข่าวสาร</h3>
@@ -109,7 +155,7 @@
           <!-- Modal Top Header Bar -->
           <div class="shrink-0 px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white/95 backdrop-blur-md sticky top-0 z-10">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
                 {{ selectedAnnouncement.building?.name || 'ประกาศทั่วไป' }}
               </span>
               <span class="text-xs text-slate-400 font-mono">
@@ -141,15 +187,23 @@
               {{ selectedAnnouncement.title }}
             </h2>
 
-            <!-- Author & Metadata Pill -->
-            <div class="flex items-center gap-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs text-slate-600">
-              <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <User class="w-3.5 h-3.5" />
+            <!-- Author & Read Receipt Pill -->
+            <div class="flex items-center justify-between gap-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs text-slate-600">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                  <User class="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div class="text-[10px] text-slate-400">ผู้ประกาศ</div>
+                  <div class="font-semibold text-slate-800">{{ selectedAnnouncement.createdBy || 'ผู้ดูแลหอพัก' }}</div>
+                </div>
               </div>
-              <div>
-                <div class="text-[10px] text-slate-400">ผู้ประกาศ</div>
-                <div class="font-semibold text-slate-800">{{ selectedAnnouncement.createdBy || 'ผู้ดูแลหอพัก' }}</div>
-              </div>
+
+              <!-- Read Status Badge -->
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 rounded-full">
+                <Check class="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                <span>บันทึกว่าอ่านแล้ว</span>
+              </span>
             </div>
 
             <!-- Content Body -->
@@ -175,12 +229,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Megaphone, RotateCw, Building2, User, ChevronRight, X, Sparkles } from 'lucide-vue-next';
+import { Megaphone, RotateCw, Building2, User, ChevronRight, X, Sparkles, Check, CheckCheck } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import { useAnnouncements } from '@/composables/useAnnouncements';
 import api from '@/utils/api';
 
-const { markAsRead, isRead, checkUnread } = useAnnouncements();
+const { markAsRead, markAllAsRead, isRead, checkUnread, unreadCount } = useAnnouncements();
 
 const loading = ref(true);
 const announcements = ref([]);
@@ -199,8 +253,12 @@ const formatDate = (dateString) => {
 const openDetail = (item) => {
   selectedAnnouncement.value = item;
   if (item?.id) {
-    markAsRead(item.id);
+    markAsRead(item.id, lineUserId.value);
   }
+};
+
+const handleMarkAllAsRead = async () => {
+  await markAllAsRead(announcements.value.map((a) => a.id), lineUserId.value);
 };
 
 const closeDetail = () => {
