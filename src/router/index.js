@@ -252,6 +252,26 @@ const routes = [
         meta: { isLiff: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
       },
       {
+        path: 'issues',
+        name: 'LiffIssueHistory',
+        component: () => import('@/views/IssueHistory.vue'),
+        meta: { isLiff: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน' }
+      },
+      {
+        path: 'issues/report',
+        name: 'LiffReportIssue',
+        component: () => import('@/views/ReportIssue.vue'),
+        meta: { isLiff: true, title: 'แจ้งซ่อมและร้องเรียน' }
+      },
+      {
+        path: 'report-issue',
+        redirect: '/liff/issues/report'
+      },
+      {
+        path: 'issue-history',
+        redirect: '/liff/issues'
+      },
+      {
         path: 'receipts',
         name: 'LiffReceiptHistory',
         component: () => import('@/views/LiffReceiptHistoryView.vue'),
