@@ -115,16 +115,22 @@
         </div>
       </div>
 
-      <!-- 1. Loading Indicator (Initial Check) -->
+      <!-- 1. Loading Indicator (Initial Check) - Splash Screen ใช้ Icon ของแอปเป็นหลัก -->
       <div
         v-else-if="loading"
-        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-8 space-y-4 text-center"
+        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10 space-y-5 text-center animate-in fade-in duration-200"
       >
-        <div class="relative w-14 h-14 mx-auto flex items-center justify-center">
-          <div class="w-12 h-12 border-3 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+        <!-- App Icon พร้อมวงแหวน Pulse ล้อมรอบแบบหน้า Splash ของแอป -->
+        <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+          <span class="absolute inset-0 rounded-[1.75rem] bg-emerald-400/20 animate-ping"></span>
+          <span class="absolute inset-0 rounded-[1.75rem] border-3 border-emerald-500/15"></span>
+          <div class="absolute inset-0 rounded-[1.75rem] border-3 border-transparent border-t-emerald-500 border-r-emerald-500 animate-spin"></div>
+          <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg shadow-emerald-900/10 ring-1 ring-slate-100 flex items-center justify-center overflow-hidden">
+            <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain" />
+          </div>
         </div>
         <div class="space-y-1">
-          <h2 class="text-sm font-bold text-slate-800">กำลังเชื่อมต่อ LINE</h2>
+          <h2 class="text-sm font-bold text-slate-800">HorHub (หอฮับ)</h2>
           <p class="text-xs font-medium text-slate-500">{{ statusText }}</p>
         </div>
       </div>
