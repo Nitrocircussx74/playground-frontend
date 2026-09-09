@@ -191,9 +191,10 @@ const submitPinLogin = async () => {
   errorMessage.value = '';
 
   try {
+    // หมายเหตุ: Dev Fallback ใช้งานได้เฉพาะ Dev Build เท่านั้น ห้ามมี Mock User ID ติดไปกับ Production
     let idToken = getLiffIdToken();
-    if (!idToken && typeof window !== 'undefined') {
-      idToken = localStorage.getItem('dev_line_user_id') || 'U_mock_tenant_user_1';
+    if (!idToken && import.meta.env.DEV && typeof window !== 'undefined') {
+      idToken = localStorage.getItem('dev_line_user_id') || null;
     }
 
     const res = await authService.loginPin(idToken, enteredPin.value);

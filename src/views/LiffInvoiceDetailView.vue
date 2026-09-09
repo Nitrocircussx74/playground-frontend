@@ -475,7 +475,7 @@ const downloadInvoicePdf = async () => {
   try {
     const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
     const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const token = authStore.liffToken || '';
     const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/invoice-pdf?token=${encodeURIComponent(token)}`;
 
     const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/invoice-pdf`, {
@@ -497,7 +497,7 @@ const downloadReceiptPdf = async () => {
   try {
     const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
     const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    const token = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : '') || '';
+    const token = authStore.liffToken || '';
     const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/receipt-pdf?token=${encodeURIComponent(token)}`;
 
     const res = await api.get(`/api/v1/liff/invoices/${invoiceId}/receipt-pdf`, {
