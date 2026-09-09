@@ -143,6 +143,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { useAnnouncements } from '@/composables/useAnnouncements';
 import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn } from '@/utils/liff';
@@ -162,6 +163,7 @@ import {
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const featureStore = useFeatureStore();
 const { themeColor, logoUrl, buildingName, fetchAndApplyTheme } = useDynamicTheme();
 const { unreadCount, checkUnread } = useAnnouncements();
 
@@ -212,14 +214,19 @@ const handleBack = () => {
 
 /**
  * 4. เมนูของ Bottom Navigation Bar (5 แท็บหลักครบครัน)
+ * แท็บที่มี featureKey จะถูกซ่อนถ้า Admin ปิดใช้งานฟีเจอร์นั้นไว้ (หน้าแรก/โปรไฟล์เป็นแกนหลัก ไม่มี Flag)
  */
-const navTabs = [
+const allNavTabs = [
   { name: 'หน้าแรก', path: '/liff/profile', icon: Home },
-  { name: 'ใบเสร็จ', path: '/liff/receipts', icon: Receipt },
-  { name: 'แจ้งซ่อม', path: '/liff/issues', icon: Wrench },
-  { name: 'ข่าวสาร', path: '/liff/announcements', icon: Megaphone },
+  { name: 'ใบเสร็จ', path: '/liff/receipts', icon: Receipt, featureKey: 'ENABLE_RECEIPT_HISTORY' },
+  { name: 'แจ้งซ่อม', path: '/liff/issues', icon: Wrench, featureKey: 'ENABLE_MAINTENANCE_REQUEST' },
+  { name: 'ข่าวสาร', path: '/liff/announcements', icon: Megaphone, featureKey: 'ENABLE_ANNOUNCEMENTS' },
   { name: 'โปรไฟล์', path: '/liff/settings', icon: User }
 ];
+
+const navTabs = computed(() =>
+  allNavTabs.filter((tab) => !tab.featureKey || featureStore.isEnabled(tab.featureKey))
+);
 
 /**
  * ตรวจสอบว่าแอนิเมชัน/ไฮไลต์แท็บปัจจุบันถูกเปิดอยู่หรือไม่
@@ -289,6 +296,7 @@ watch(
 
 onMounted(() => {
   fetchAndApplyTheme();
+  featureStore.fetchFeatures();
   checkUserFriendship();
   checkUnread();
 });
