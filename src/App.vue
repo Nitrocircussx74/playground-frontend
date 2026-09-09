@@ -427,14 +427,12 @@ watch(
 
 const isCustomLayout = computed(() => {
   if (!authStore.isAuthenticated) return true;
+  // route.meta?.isLiff ครอบคลุมหน้า PIN (/liff/pin-login, /liff/setup-pin, /liff/change-pin) อยู่แล้ว
   return (
     route.meta?.isLiff ||
     route.path.startsWith('/liff') ||
     route.path === '/login' ||
-    route.path === '/403' ||
-    route.path === '/pin-login' ||
-    route.path === '/setup-pin' ||
-    route.path === '/change-pin'
+    route.path === '/403'
   );
 });
 
