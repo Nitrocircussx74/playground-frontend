@@ -600,7 +600,7 @@
                   </div>
 
                   <!-- Details Grid -->
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3 rounded-xl border border-slate-200/80 text-xs">
+                  <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-3 rounded-xl border border-slate-200/80 text-xs">
                     <div>
                       <span class="text-slate-400 block text-[10px]">ช่างผู้รับผิดชอบ:</span>
                       <span class="font-bold text-slate-800">{{ req.technicianName || 'ยังไม่มอบหมาย' }}</span>
@@ -609,6 +609,16 @@
                     <div>
                       <span class="text-slate-400 block text-[10px]">ค่าซ่อมแซม:</span>
                       <span class="font-bold text-purple-700">{{ formatCurrency(req.repairCost) }}</span>
+                    </div>
+
+                    <div v-if="Number(req.repairCost || 0) > 0">
+                      <span class="text-slate-400 block text-[10px]">ผู้รับผิดชอบค่าใช้จ่าย:</span>
+                      <span class="font-bold" :class="req.payer === 'TENANT' ? 'text-amber-700' : 'text-slate-800'">
+                        {{ req.payer === 'TENANT' ? 'ลูกบ้านจ่ายเอง' : 'นิติออกให้' }}
+                        <span v-if="req.payer === 'TENANT'" class="font-normal text-slate-400">
+                          ({{ req.billedInvoiceId ? 'รวมในบิลแล้ว' : 'รอรวมบิลรอบถัดไป' }})
+                        </span>
+                      </span>
                     </div>
 
                     <div>

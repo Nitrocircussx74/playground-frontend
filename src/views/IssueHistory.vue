@@ -363,7 +363,14 @@ const normalizeMaintenanceItem = (item) => {
 
   const extraNotes = [];
   if (item.technicianName) extraNotes.push(`ช่างผู้รับผิดชอบ: ${item.technicianName}`);
-  if (Number(item.repairCost || 0) > 0) extraNotes.push(`ค่าซ่อม/อุปกรณ์: ฿${Number(item.repairCost).toLocaleString()}`);
+  if (Number(item.repairCost || 0) > 0) {
+    extraNotes.push(`ค่าซ่อม/อุปกรณ์: ฿${Number(item.repairCost).toLocaleString()}`);
+    extraNotes.push(
+      item.payer === 'TENANT'
+        ? (item.billedInvoiceId ? 'ค่าใช้จ่าย: รวมอยู่ในบิลค่าเช่าแล้ว' : 'ค่าใช้จ่าย: ลูกบ้านชำระเอง (จะรวมในบิลค่าเช่ารอบถัดไปอัตโนมัติ)')
+        : 'ค่าใช้จ่าย: นิติบุคคลออกให้'
+    );
+  }
   const adminReply = [item.adminNote, ...extraNotes].filter(Boolean).join('\n') || null;
 
   return {
