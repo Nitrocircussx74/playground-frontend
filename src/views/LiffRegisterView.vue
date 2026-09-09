@@ -24,11 +24,12 @@
         </div>
 
         <div class="pt-3 border-t border-slate-100">
+          <!-- หากยังไม่เคยตั้งรหัส PIN ให้พาไปตั้งค่าก่อนเข้าใช้งาน เพื่อป้องกันบัญชีตั้งแต่ครั้งแรก -->
           <router-link
-            to="/liff/profile"
+            :to="successData.hasPin ? '/liff/profile' : '/liff/setup-pin'"
             class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs"
           >
-            <span>ไปยังหน้าหลักผู้เช่า</span>
+            <span>{{ successData.hasPin ? 'ไปยังหน้าหลักผู้เช่า' : 'ตั้งรหัส PIN 6 หลัก' }}</span>
             <ArrowRight class="w-3.5 h-3.5" />
           </router-link>
         </div>

@@ -59,7 +59,8 @@
 
             <div class="space-y-1">
               <label class="block font-medium text-slate-700">
-                กรอกรหัส PIN 6 หลักเดิมของคุณ <span class="text-rose-500">*</span>
+                {{ existingUserHasPin ? 'กรอกรหัส PIN 6 หลักเดิมของคุณ' : 'ตั้งรหัส PIN 6 หลักใหม่สำหรับบัญชีนี้' }}
+                <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="pinInput"
@@ -73,8 +74,11 @@
                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 font-mono font-bold text-xl text-center tracking-[0.3em] text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
               />
               <div class="flex items-center justify-between pt-0.5">
-                <p class="text-[11px] text-slate-400">ระบบจะเชื่อมต่อบัญชีเข้ากับตึกนี้ทันที</p>
+                <p class="text-[11px] text-slate-400">
+                  {{ existingUserHasPin ? 'ระบบจะเชื่อมต่อบัญชีเข้ากับตึกนี้ทันที' : 'บัญชีนี้ยังไม่เคยตั้งรหัส PIN ระบบจะบันทึกเป็น PIN ใหม่และผูกกับตึกนี้ทันที' }}
+                </p>
                 <button
+                  v-if="existingUserHasPin"
                   type="button"
                   @click="handleForgotPin"
                   class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
@@ -90,7 +94,7 @@
                 <AlertCircle class="w-4 h-4 shrink-0" />
                 <span>{{ errorMessage }}</span>
               </div>
-              <div class="pt-0.5 text-right">
+              <div v-if="existingUserHasPin" class="pt-0.5 text-right">
                 <button
                   type="button"
                   @click="handleForgotPin"
@@ -109,7 +113,7 @@
               class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <CheckCircle2 class="w-4 h-4" />
-              <span>{{ submitting ? 'กำลังผูกบัญชี...' : 'ยืนยัน PIN & เข้าสู่ระบบ' }}</span>
+              <span>{{ submitting ? (existingUserHasPin ? 'กำลังผูกบัญชี...' : 'กำลังตั้ง PIN และผูกบัญชี...') : (existingUserHasPin ? 'ยืนยัน PIN & เข้าสู่ระบบ' : 'ตั้งรหัส PIN ใหม่ & เข้าสู่ระบบ') }}</span>
             </button>
           </div>
 
@@ -223,6 +227,7 @@ const activeMode = ref('phone');
 const phoneInput = ref('');
 const pinInput = ref('');
 const isExistingUserPrompt = ref(false);
+const existingUserHasPin = ref(true);
 const existingUserName = ref('');
 const lineDisplayName = ref('');
 const linePictureUrl = ref('');
@@ -267,8 +272,10 @@ const handleVerifyByPhone = async () => {
     // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน
     const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone });
 
-    if (phoneStatus?.isExistingUser && phoneStatus?.hasPin) {
+    if (phoneStatus?.isExistingUser) {
+      // พบบัญชีเดิมในระบบ HorHub -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) แล้วผูกกับตึกนี้
       existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน HorHub';
+      existingUserHasPin.value = Boolean(phoneStatus.hasPin);
       isExistingUserPrompt.value = true;
       submitting.value = false;
       return;
@@ -322,7 +329,11 @@ const handleLinkAndLogin = async () => {
         authStore.setLiffAuth(token, tenantData);
       }
 
-      await showSuccess('เชื่อมต่อบัญชีสำเร็จ! 🎉', `ยินดีต้อนรับคุณ ${existingUserName.value || 'ลูกบ้าน'} เข้าสู่ระบบหอพัก`);
+      const pinCreated = res.pinCreated ?? res.data?.pinCreated;
+      await showSuccess(
+        pinCreated ? 'ตั้งรหัส PIN ใหม่และเข้าสู่ระบบสำเร็จ! 🎉' : 'เชื่อมต่อบัญชีสำเร็จ! 🎉',
+        `ยินดีต้อนรับคุณ ${existingUserName.value || 'ลูกบ้าน'} เข้าสู่ระบบหอพัก`
+      );
       router.replace('/liff/profile');
     } else {
       errorMessage.value = res?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง';
@@ -372,7 +383,9 @@ const handleLinkAccount = async () => {
     const res = await api.post('/api/v1/liff/auth/link-account', payload);
 
     await showSuccess('สำเร็จ', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณเรียบร้อยแล้ว');
-    router.push('/liff/profile');
+    // หากบัญชีนี้ยังไม่เคยตั้งรหัส PIN มาก่อน ให้พาไปตั้งค่าต่อทันทีเพื่อความปลอดภัย
+    const hasPin = res.data?.data?.hasPin ?? res.data?.hasPin;
+    router.push(hasPin ? '/liff/profile' : '/liff/setup-pin');
   } catch (err) {
     errorMessage.value = err.response?.data?.message || 'การผูกบัญชีไม่สำเร็จ กรุณาตรวจสอบรหัสเชิญและเบอร์โทรศัพท์';
   } finally {
