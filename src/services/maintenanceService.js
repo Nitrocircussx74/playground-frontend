@@ -19,5 +19,25 @@ export default {
   async deleteRequest(id) {
     const response = await api.delete(`/api/v1/maintenance-requests/${id}`);
     return response.data;
+  },
+
+  // Aliases for compatibility
+  async getMaintenanceRequests(buildingId) {
+    const params = buildingId ? { buildingId } : {};
+    return this.getRequests(params);
+  },
+
+  async createMaintenanceRequest(payload) {
+    return this.createRequest(payload);
+  },
+
+  async updateMaintenanceRequest(id, payload) {
+    const { status, ...extra } = payload || {};
+    return this.updateStatus(id, status, extra);
+  },
+
+  async deleteMaintenanceRequest(id) {
+    return this.deleteRequest(id);
   }
 };
+
