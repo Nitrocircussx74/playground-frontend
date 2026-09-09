@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import authService from '@/services/authService';
+import { initLiff, isLiffLoggedIn, getLiffIdToken } from '@/utils/liff';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -8,9 +9,9 @@ export const useAuthStore = defineStore('auth', {
     accessToken: null,
     isInitialized: false,
 
-    // LIFF Tenant Authentication State
+    // LIFF Tenant Authentication State (Memory-only เช่นกัน - ห้ามเก็บ Access Token ลง LocalStorage)
     tenant: null,
-    liffToken: typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null,
+    liffToken: null,
     isLiffReady: false,
     liffProfile: null,
     loading: false
@@ -41,10 +42,9 @@ export const useAuthStore = defineStore('auth', {
 
     // LIFF Tenant Actions
     setLiffAuth(token, tenantData = null) {
+      // เก็บ Access Token ไว้ใน Memory (Pinia State) เท่านั้น ห้ามเขียนลง LocalStorage
+      // เพราะเสี่ยงต่อการถูกขโมยผ่าน XSS - เมื่อรีเฟรชหน้าให้ใช้ restoreLiffSession() แทน
       this.liffToken = token;
-      if (token && typeof window !== 'undefined') {
-        localStorage.setItem('liff_token', token);
-      }
       if (tenantData) {
         this.tenant = tenantData;
       }
@@ -58,7 +58,39 @@ export const useAuthStore = defineStore('auth', {
       this.tenant = null;
       this.liffToken = null;
       if (typeof window !== 'undefined') {
+        // ล้าง Token เก่าที่อาจตกค้างอยู่ใน LocalStorage จากเวอร์ชันก่อนหน้า (Migration Cleanup)
         localStorage.removeItem('liff_token');
+      }
+    },
+
+    /**
+     * กู้คืน Session ของลูกบ้านหลังรีเฟรชหน้า/เปิดแอปใหม่ โดยไม่ต้องพึ่ง LocalStorage
+     * ใช้ LINE ID Token ที่ LIFF SDK เก็บ Session ไว้ให้เอง (ปลอดภัยกว่าเพราะควบคุมโดย LINE)
+     * แลกเป็น Access Token ใหม่ผ่าน Silent Login ทุกครั้งที่ต้องใช้งาน
+     * @returns {Promise<boolean>} true หากกู้คืน Session สำเร็จ
+     */
+    async restoreLiffSession() {
+      if (this.liffToken) return true;
+
+      try {
+        await initLiff();
+        if (!isLiffLoggedIn()) return false;
+
+        const idToken = getLiffIdToken();
+        if (!idToken) return false;
+
+        const data = await authService.silentLoginLiff(idToken);
+        const token = data?.accessToken || data?.token || data?.data?.accessToken;
+        const tenantData = data?.data?.tenant || data?.tenant;
+
+        if (token) {
+          this.setLiffAuth(token, tenantData);
+          return true;
+        }
+        return false;
+      } catch (err) {
+        console.warn('restoreLiffSession failed:', err?.message || err);
+        return false;
       }
     },
 

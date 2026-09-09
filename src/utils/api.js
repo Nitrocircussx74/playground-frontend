@@ -62,8 +62,8 @@ api.interceptors.request.use(
     const isLiff = url.includes('/api/v1/liff') || url.includes('/api/liff') || url.includes('/liff');
 
     if (isLiff) {
-      // 1. LIFF Tenant Token (Isolated from CMS Admin)
-      const liffToken = authStore.liffToken || (typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null);
+      // 1. LIFF Tenant Token (Isolated from CMS Admin, Memory-only ผ่าน Pinia - ไม่มี LocalStorage แล้ว)
+      const liffToken = authStore.liffToken;
       if (liffToken) {
         config.headers.Authorization = `Bearer ${liffToken}`;
       }
@@ -90,10 +90,13 @@ api.interceptors.request.use(
           config.headers['X-Line-Id-Token'] = idToken;
         }
 
-        // Attach lineUserId fallback for Standalone Dev Mode
-        const devLineUserId = localStorage.getItem('dev_line_user_id');
-        if (devLineUserId && !config.headers['X-Line-User-Id']) {
-          config.headers['X-Line-User-Id'] = devLineUserId;
+        // Attach lineUserId fallback สำหรับ Standalone Dev Mode เท่านั้น
+        // ห้ามทำงานใน Production เด็ดขาด ป้องกันการปลอม X-Line-User-Id เพื่อสวมรอยผู้ใช้อื่น
+        if (import.meta.env.DEV) {
+          const devLineUserId = localStorage.getItem('dev_line_user_id');
+          if (devLineUserId && !config.headers['X-Line-User-Id']) {
+            config.headers['X-Line-User-Id'] = devLineUserId;
+          }
         }
       } catch {
         // Continue request even if token extraction fails

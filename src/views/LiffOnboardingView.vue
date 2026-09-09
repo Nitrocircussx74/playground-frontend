@@ -303,7 +303,7 @@ const handleLinkAndLogin = async () => {
   errorMessage.value = '';
 
   try {
-    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
+    const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     const payload = {
       phone: phoneInput.value.trim(),
       pin: pinInput.value,

@@ -240,10 +240,10 @@ const routes = [
         meta: { isLiff: true, title: 'ข่าวสาร & ประกาศหอพัก' }
       },
       {
+        // เดิมเป็นระบบแจ้งซ่อมแยกต่างหาก (LiffMaintenanceView) - ถูก unify รวมกับระบบ issues แล้ว
+        // คง path เดิมไว้เป็น redirect เพื่อไม่ให้ลิงก์เก่า/LINE Rich Menu ที่ผูกไว้พังกลางทาง
         path: 'maintenance',
-        name: 'LiffMaintenance',
-        component: () => import('@/views/LiffMaintenanceView.vue'),
-        meta: { isLiff: true, title: 'แจ้งซ่อม & ติดตามสถานะ' }
+        redirect: '/liff/issues'
       },
       {
         path: 'parcels',
@@ -348,10 +348,14 @@ async function liffNavigationGuard(to, from, next) {
     }
   }
 
-  // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินและมี Token อยู่แล้ว เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด
-  const hasLiffToken = typeof window !== 'undefined' ? localStorage.getItem('liff_token') : null;
-  if ((to.path === '/liff' || to.path === '/liff/') && hasLiffToken) {
-    return next({ path: '/liff/profile', query: to.query });
+  // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินอยู่แล้ว (Memory หรือกู้คืนผ่าน Silent Login ด้วย LINE ID Token)
+  // เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด - ไม่พึ่ง LocalStorage แล้ว
+  if (to.path === '/liff' || to.path === '/liff/') {
+    const authStore = useAuthStore();
+    const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
+    if (hasSession) {
+      return next({ path: '/liff/profile', query: to.query });
+    }
   }
 
   next();
