@@ -791,7 +791,7 @@ const handleSaveTicket = async () => {
   try {
     if (selectedTicket.value.sourceType === 'maintenance') {
       await maintenanceService.updateMaintenanceRequest(selectedTicket.value.rawId, {
-        status: editForm.status,
+        status: editForm.status.toLowerCase(),
         technicianName: editForm.technicianName,
         repairCost: editForm.repairCost,
         adminNote: editForm.adminNote
