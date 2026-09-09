@@ -401,15 +401,18 @@ const continueToSmartEntry = async () => {
     const isLinked = statusRes?.isLinked || statusRes?.isRegistered || statusRes?.data?.isLinked;
     const hasPin = statusRes?.hasPin || statusRes?.data?.hasPin;
 
+    // ส่งต่อปลายทางเดิม (ถ้ามี) จาก Route Guard ที่เด้งมาเพราะยังไม่ได้ Login เพื่อกลับไปหน้านั้นให้อัตโนมัติหลัง Login สำเร็จ
+    const redirectQuery = route.query.redirect ? { redirect: route.query.redirect } : {};
+
     if (isLinked) {
       if (!hasPin) {
         // [CASE 1: ลูกบ้านที่ผูกแล้วแต่ยังไม่มี PIN] -> บังคับตั้ง PIN ครั้งแรก
         statusText.value = 'พบข้อมูลลูกบ้าน กำลังพาไปตั้งรหัส PIN 6 หลัก...';
-        router.replace('/liff/setup-pin');
+        router.replace({ path: '/liff/setup-pin', query: redirectQuery });
       } else {
         // [CASE 2: ลูกบ้านที่มี PIN แล้ว] -> พาไปหน้ากรอก PIN Auto-Login
         statusText.value = 'พบข้อมูลลูกบ้าน กำลังเปิดหน้าระบุ PIN...';
-        router.replace('/liff/pin-login');
+        router.replace({ path: '/liff/pin-login', query: redirectQuery });
       }
     } else {
       // [CASE 3: ลูกบ้านใหม่ / ยังไม่เคยผูกห้อง] -> แสดงหน้าสำหรับลูกบ้านใหม่
