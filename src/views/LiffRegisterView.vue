@@ -151,7 +151,7 @@ import {
   AlertCircle,
   UserPlus
 } from 'lucide-vue-next';
-import { initLiff } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 
 const route = useRoute();
@@ -213,11 +213,13 @@ const handleRegister = async () => {
     const payload = { ...form };
 
     try {
-      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        payload.lineDisplayName = profile.displayName || null;
-        payload.linePictureUrl = profile.pictureUrl || null;
-        payload.lineStatusMessage = profile.statusMessage || null;
+      if (isLiffLoggedIn()) {
+        const profile = await getLiffProfile();
+        if (profile) {
+          payload.lineDisplayName = profile.displayName || null;
+          payload.linePictureUrl = profile.pictureUrl || null;
+          payload.lineStatusMessage = profile.statusMessage || null;
+        }
       }
     } catch (profileErr) {
       console.warn('Could not read LINE profile:', profileErr);
