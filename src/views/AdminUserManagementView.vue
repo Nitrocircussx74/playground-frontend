@@ -366,6 +366,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import adminService from '@/services/adminService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatDate } from '@/utils/formatters';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
@@ -531,10 +532,5 @@ const confirmDeleteUser = async (user) => {
   } catch (err) {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถลบบัญชีได้');
   }
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('th-TH');
 };
 </script>

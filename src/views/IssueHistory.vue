@@ -216,6 +216,7 @@ import {
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
+import { formatDateTime as formatDate } from '@/utils/formatters';
 
 const featureStore = useFeatureStore();
 const loading = ref(true);
@@ -332,19 +333,6 @@ const resolveImageUrl = (path) => {
 
 const openImageModal = (url) => {
   previewModalImage.value = url;
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 /**

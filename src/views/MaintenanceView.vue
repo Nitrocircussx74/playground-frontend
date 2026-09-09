@@ -751,6 +751,7 @@ import uploadService from '@/services/uploadService';
 import maintenanceService from '@/services/maintenanceService';
 import api from '@/utils/api';
 import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
+import { formatDateTime as formatDate } from '@/utils/formatters';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -807,17 +808,6 @@ const resolveImageUrl = (path) => {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${cleanBase}${cleanPath}`;
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 const formatRelativeTime = (dateStr) => {

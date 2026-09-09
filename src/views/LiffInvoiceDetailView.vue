@@ -278,6 +278,7 @@ import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/util
 import { downloadOrSharePdf, captureAndDownloadElement, downloadImage } from '@/utils/downloadHelper';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
+import { formatShortDate as formatDate } from '@/utils/formatters';
 import { FileText, Download, Receipt, QrCode } from 'lucide-vue-next';
 
 const route = useRoute();
@@ -404,17 +405,6 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
 
 const statusBadgeText = computed(() => {
   const map = {

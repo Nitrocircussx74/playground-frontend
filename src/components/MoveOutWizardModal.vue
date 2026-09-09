@@ -11,7 +11,7 @@
                 ระบบแจ้งย้ายออก & คำนวณคืนเงินมัดจำ (ห้อง {{ room?.roomNumber }})
               </h3>
               <p class="text-xs text-slate-400">
-                ผู้เช่า: {{ tenantName }} | สัญญาเงินมัดจำ: ฿{{ Number(lease?.depositAmount || 0).toLocaleString() }}
+                ผู้เช่า: {{ tenantName }} | สัญญาเงินมัดจำ: {{ formatCurrency(lease?.depositAmount) }}
               </p>
             </div>
           </div>
@@ -67,7 +67,7 @@
                 />
               </div>
               <div class="text-right text-indigo-700">
-                เงินมัดจำในสัญญา: <span class="font-black font-mono text-sm text-indigo-950">฿{{ depositAmount.toLocaleString() }}</span>
+                เงินมัดจำในสัญญา: <span class="font-black font-mono text-sm text-indigo-950">{{ formatCurrency(depositAmount) }}</span>
               </div>
             </div>
 
@@ -92,7 +92,7 @@
 
                 <div class="pt-2 border-t border-blue-200/60 flex justify-between text-xs font-mono">
                   <span class="text-slate-600">ยูนิตที่ใช้: <b class="text-blue-900">{{ waterUsage }}</b> หน่วย</span>
-                  <span class="font-black text-blue-900">รวม ฿{{ finalWaterTotal.toLocaleString() }}</span>
+                  <span class="font-black text-blue-900">รวม {{ formatCurrency(finalWaterTotal) }}</span>
                 </div>
               </div>
 
@@ -116,7 +116,7 @@
 
                 <div class="pt-2 border-t border-amber-200/60 flex justify-between text-xs font-mono">
                   <span class="text-slate-600">ยูนิตที่ใช้: <b class="text-amber-900">{{ electricUsage }}</b> หน่วย</span>
-                  <span class="font-black text-amber-900">รวม ฿{{ finalElectricTotal.toLocaleString() }}</span>
+                  <span class="font-black text-amber-900">รวม {{ formatCurrency(finalElectricTotal) }}</span>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@
 
             <div class="p-3 bg-slate-100 rounded-xl flex justify-between text-xs font-mono font-bold text-slate-800">
               <span>รวมรายการหักเพิ่มเติม (Damage Charges Total):</span>
-              <span class="text-rose-600">฿{{ damageTotal.toLocaleString() }}</span>
+              <span class="text-rose-600">{{ formatCurrency(damageTotal) }}</span>
             </div>
 
             <div class="flex justify-between pt-4">
@@ -203,28 +203,28 @@
               <!-- Deposit -->
               <div class="px-4 py-2.5 flex justify-between font-bold text-emerald-800 bg-emerald-50/50">
                 <span>➕ เงินประกัน/มัดจำ ( Deposit Amount )</span>
-                <span class="font-mono">+ ฿{{ depositAmount.toLocaleString() }}</span>
+                <span class="font-mono">+ {{ formatCurrency(depositAmount) }}</span>
               </div>
 
               <!-- Deductions -->
               <div class="px-4 py-2 flex justify-between text-slate-700">
                 <span>➖ ค่าน้ำรอบสุดท้าย ({{ waterUsage }} หน่วย × ฿{{ waterRate }})</span>
-                <span class="font-mono text-rose-600">- ฿{{ finalWaterTotal.toLocaleString() }}</span>
+                <span class="font-mono text-rose-600">- {{ formatCurrency(finalWaterTotal) }}</span>
               </div>
 
               <div class="px-4 py-2 flex justify-between text-slate-700">
                 <span>➖ ค่าไฟรอบสุดท้าย ({{ electricUsage }} หน่วย × ฿{{ electricRate }})</span>
-                <span class="font-mono text-rose-600">- ฿{{ finalElectricTotal.toLocaleString() }}</span>
+                <span class="font-mono text-rose-600">- {{ formatCurrency(finalElectricTotal) }}</span>
               </div>
 
               <div v-if="unpaidInvoicesTotal > 0" class="px-4 py-2 flex justify-between text-slate-700">
                 <span>➖ บิลค้างชำระเดิมก่อนหน้า (Unpaid Invoices)</span>
-                <span class="font-mono text-rose-600">- ฿{{ unpaidInvoicesTotal.toLocaleString() }}</span>
+                <span class="font-mono text-rose-600">- {{ formatCurrency(unpaidInvoicesTotal) }}</span>
               </div>
 
               <div v-for="(item, idx) in form.damageCharges" :key="idx" class="px-4 py-2 flex justify-between text-slate-700">
                 <span>➖ {{ item.item || 'รายการหักเงิน' }}</span>
-                <span class="font-mono text-rose-600">- ฿{{ Number(item.amount || 0).toLocaleString() }}</span>
+                <span class="font-mono text-rose-600">- {{ formatCurrency(item.amount) }}</span>
               </div>
 
               <!-- Net Refund Total Card -->
@@ -239,7 +239,7 @@
                 </div>
 
                 <div class="text-right font-mono font-black text-2xl" :class="netRefund >= 0 ? 'text-emerald-700' : 'text-rose-700'">
-                  ฿{{ Math.abs(netRefund).toLocaleString() }}
+                  {{ formatCurrency(Math.abs(netRefund)) }}
                 </div>
               </div>
             </div>
@@ -301,27 +301,27 @@
             <tbody>
               <tr>
                 <td class="border border-slate-900 px-3 py-1.5 font-bold">เงินประกัน/มัดจำในสัญญา (Deposit)</td>
-                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono font-bold">+ ฿{{ depositAmount.toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono font-bold">+ {{ formatCurrency(depositAmount) }}</td>
               </tr>
               <tr>
                 <td class="border border-slate-900 px-3 py-1.5">ค่าน้ำรอบสุดท้าย (มิเตอร์ {{ oldWater }} ➔ {{ form.finalWaterMeter }} = {{ waterUsage }} หน่วย)</td>
-                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- ฿{{ finalWaterTotal.toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(finalWaterTotal) }}</td>
               </tr>
               <tr>
                 <td class="border border-slate-900 px-3 py-1.5">ค่าไฟรอบสุดท้าย (มิเตอร์ {{ oldElectric }} ➔ {{ form.finalElectricMeter }} = {{ electricUsage }} หน่วย)</td>
-                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- ฿{{ finalElectricTotal.toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(finalElectricTotal) }}</td>
               </tr>
               <tr v-if="unpaidInvoicesTotal > 0">
                 <td class="border border-slate-900 px-3 py-1.5">บิลค้างชำระเดิมก่อนหน้า</td>
-                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- ฿{{ unpaidInvoicesTotal.toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(unpaidInvoicesTotal) }}</td>
               </tr>
               <tr v-for="(item, idx) in form.damageCharges" :key="idx">
                 <td class="border border-slate-900 px-3 py-1.5">{{ item.item || 'รายการหักเงิน' }}</td>
-                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- ฿{{ Number(item.amount || 0).toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(item.amount) }}</td>
               </tr>
               <tr class="bg-slate-100 font-bold">
                 <td class="border border-slate-900 px-3 py-2 text-right">ยอดสุทธิ {{ netRefund >= 0 ? '(คืนเงินมัดจำ)' : '(ชำระเพิ่ม)' }}:</td>
-                <td class="border border-slate-900 px-3 py-2 text-right font-mono text-sm">฿{{ Math.abs(netRefund).toLocaleString() }}</td>
+                <td class="border border-slate-900 px-3 py-2 text-right font-mono text-sm">{{ formatCurrency(Math.abs(netRefund)) }}</td>
               </tr>
             </tbody>
           </table>
@@ -357,6 +357,7 @@ import { ref, reactive, computed, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
+import { formatDate, formatCurrency } from '@/utils/formatters';
 
 const props = defineProps({
   show: Boolean,
@@ -474,7 +475,7 @@ const handleConfirmMoveOut = async () => {
       finalWaterMeter: form.finalWaterMeter,
       finalElectricMeter: form.finalElectricMeter,
       damageCharges: form.damageCharges,
-      adminNote: `คืนเงินมัดจำสุทธิ ฿${netRefund.value.toLocaleString()}`
+      adminNote: `คืนเงินมัดจำสุทธิ ${formatCurrency(netRefund.value)}`
     });
 
     await showSuccess('แจ้งย้ายออกสำเร็จ!', res.data.message || 'บันทึกรายการย้ายออกเรียบร้อยแล้ว');
@@ -487,10 +488,7 @@ const handleConfirmMoveOut = async () => {
   }
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH');
-};
+
 </script>
 
 <style>

@@ -440,6 +440,7 @@ import api from '@/utils/api';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatDate } from '@/utils/formatters';
 
 const activeTab = ref('all-invoices');
 const runningLateFees = ref(false);
@@ -624,11 +625,6 @@ const handleRemindBulk = async () => {
   } finally {
     sendingBulkReminder.value = false;
   }
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('th-TH');
 };
 </script>
 

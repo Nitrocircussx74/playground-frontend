@@ -4,14 +4,43 @@ import Swal from 'sweetalert2';
 import { showToast } from '@/utils/swal';
 
 /**
+ * ดาวน์โหลด Blob ลงเครื่องผ่าน Object URL + Anchor Element (คลิกแล้วเคลียร์ทิ้งอัตโนมัติ)
+ * หมายเหตุ: ห้ามใส่ target="_blank" คู่กับ download เพราะบาง Android WebView/In-App Browser
+ * (รวมถึง LINE) จะตีความเป็นการเปิดแท็บใหม่แทนการดาวน์โหลด แล้วทำอะไรไม่ได้เพราะ WebView เปิดแท็บใหม่ไม่ได้
+ *
+ * @param {Blob} blob
+ * @param {string} filename
+ * @returns {string} object URL ที่สร้างขึ้น (จะถูก revoke อัตโนมัติหลัง 2.5 วินาที)
+ */
+export function downloadBlob(urlOrBlob, filename) {
+  const isBlob = urlOrBlob instanceof Blob;
+  const url = isBlob ? window.URL.createObjectURL(urlOrBlob) : urlOrBlob;
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+
+  setTimeout(() => {
+    link.remove();
+    if (isBlob) window.URL.revokeObjectURL(url);
+  }, 2500);
+
+  return url;
+}
+
+export const downloadUrl = downloadBlob;
+
+/**
  * Universal Direct PDF Downloader for LINE LIFF / Mobile & Desktop
  * ดาวน์โหลดไฟล์ PDF ลงเครื่องโดยตรง (ไม่เปิด Native Share Sheet)
- * 
+ *
  * @param {Blob} blob - ไฟล์ PDF ในรูปแบบ Blob
  * @param {string} filename - ชื่อไฟล์ที่ต้องการบันทึก เช่น Official-Receipt-REC-001.pdf
  * @param {string} fallbackDirectUrl - URL ตรงของไฟล์ PDF สำหรับเปิดดาวน์โหลดบน External Browser
  */
-export async function downloadPdf(blob, filename = 'document.pdf', fallbackDirectUrl = '') {
+export async function downloadOrSharePdf(blob, filename = 'document.pdf', fallbackDirectUrl = '') {
   try {
     // 1. กรณีเปิดบน LINE App Client และมี Direct Download URL -> ให้เปิดดาวน์โหลดผ่าน External Browser (Safari / Chrome) เพื่อเซฟไฟล์ลงเครื่องได้ทันที
     await initLiff();
@@ -21,20 +50,7 @@ export async function downloadPdf(blob, filename = 'document.pdf', fallbackDirec
     }
 
     // 2. ดาวน์โหลดตรงผ่าน Blob Object URL และ Anchor Element สำหรับ Desktop และ Mobile Web
-    // หมายเหตุ: ห้ามใส่ target="_blank" คู่กับ download เพราะบาง Android WebView/In-App Browser
-    // (รวมถึง LINE) จะตีความเป็นการเปิดแท็บใหม่แทนการดาวน์โหลด แล้วทำอะไรไม่ได้เพราะ WebView เปิดแท็บใหม่ไม่ได้
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-
-    setTimeout(() => {
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    }, 2500);
+    downloadBlob(blob, filename);
 
     return true;
   } catch (err) {
@@ -123,36 +139,12 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
  */
 export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png') {
   try {
-    let downloadHref = '';
-    let isCreatedBlobUrl = false;
-
-    if (typeof dataUrlOrBlob === 'string' && dataUrlOrBlob.startsWith('data:')) {
-      downloadHref = dataUrlOrBlob;
-    } else {
-      let blob = dataUrlOrBlob;
-      if (typeof dataUrlOrBlob === 'string' && (dataUrlOrBlob.startsWith('http://') || dataUrlOrBlob.startsWith('https://') || dataUrlOrBlob.startsWith('/'))) {
-        const res = await fetch(dataUrlOrBlob);
-        blob = await res.blob();
-      }
-      downloadHref = window.URL.createObjectURL(blob);
-      isCreatedBlobUrl = true;
+    let blobOrUrl = dataUrlOrBlob;
+    if (typeof dataUrlOrBlob === 'string' && (dataUrlOrBlob.startsWith('http://') || dataUrlOrBlob.startsWith('https://') || dataUrlOrBlob.startsWith('/'))) {
+      const res = await fetch(dataUrlOrBlob);
+      blobOrUrl = await res.blob();
     }
-
-    // สร้าง Element ลิงก์ดาวน์โหลดและ trigger click
-    // หมายเหตุ: ห้ามใส่ target="_blank" คู่กับ download (เหตุผลเดียวกับ downloadPdf ด้านบน)
-    const link = document.createElement('a');
-    link.href = downloadHref;
-    link.setAttribute('download', filename);
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-
-    setTimeout(() => {
-      link.remove();
-      if (isCreatedBlobUrl) {
-        window.URL.revokeObjectURL(downloadHref);
-      }
-    }, 2500);
+    const downloadHref = downloadBlob(blobOrUrl, filename);
 
     // ตรวจสอบว่าเป็น Mobile หรือ LINE LIFF หรือไม่
     const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
@@ -199,7 +191,3 @@ export async function captureAndDownloadElement(element, filename = 'promptpay-q
     throw err;
   }
 }
-
-// Backward-Compatibility Aliases
-export const downloadOrSharePdf = downloadPdf;
-export const downloadOrShareImage = downloadImage;
