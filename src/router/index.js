@@ -12,24 +12,9 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
     meta: { isCms: true }
   },
-  {
-    path: '/pin-login',
-    name: 'PinLogin',
-    component: () => import('@/views/LiffPinLogin.vue'),
-    meta: { isLiff: true, title: 'เข้าสู่ระบบด้วยรหัส PIN' }
-  },
-  {
-    path: '/setup-pin',
-    name: 'SetupPin',
-    component: () => import('@/views/LiffSetupPin.vue'),
-    meta: { isLiff: true, title: 'ตั้งรหัส PIN 6 หลัก' }
-  },
-  {
-    path: '/change-pin',
-    name: 'ChangePin',
-    component: () => import('@/views/LiffChangePin.vue'),
-    meta: { isLiff: true, title: 'เปลี่ยนรหัส PIN' }
-  },
+  // หมายเหตุ: เดิมมี /pin-login, /setup-pin, /change-pin แบบ Top-level ซ้ำกับชุดใต้ /liff/*
+  // แต่ใช้ Component เดียวกันทุกอย่างและไม่มีที่ไหนในแอปลิงก์มาเลย - ตัดออกเหลือชุดเดียวใต้ /liff/*
+  // ที่มี LiffLayout ห่ออยู่ (ดูด้านล่างในหมวด LINE / LIFF Tenant Portal Routes)
 
   // 🏢 1. CMS Admin Backoffice Routes (ต้องการสิทธิ์ Admin JWT Authentication)
   {
@@ -181,13 +166,13 @@ const routes = [
         path: 'profile',
         name: 'LiffProfile',
         component: () => import('@/views/LiffProfileView.vue'),
-        meta: { isLiff: true, title: 'HorHub (หอฮับ)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'HorHub (หอฮับ)' }
       },
       {
         path: 'settings',
         name: 'LiffSettings',
         component: () => import('@/views/LiffPersonalProfileView.vue'),
-        meta: { isLiff: true, title: 'โปรไฟล์ส่วนตัว (Personal Profile)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'โปรไฟล์ส่วนตัว (Personal Profile)' }
       },
       {
         path: 'personal-profile',
@@ -201,25 +186,25 @@ const routes = [
         path: 'profile/edit',
         name: 'LiffUpdateProfile',
         component: () => import('@/views/LiffUpdateProfileView.vue'),
-        meta: { isLiff: true, title: 'แก้ไขข้อมูลส่วนตัว' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แก้ไขข้อมูลส่วนตัว' }
       },
       {
         path: 'invoices',
         name: 'LiffInvoiceList',
         component: () => import('@/views/LiffInvoiceListView.vue'),
-        meta: { isLiff: true, title: 'บิลค่าเช่าทั้งหมด' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'บิลค่าเช่าทั้งหมด' }
       },
       {
         path: 'invoices/:id',
         name: 'LiffInvoiceDetail',
         component: () => import('@/views/LiffInvoiceDetailView.vue'),
-        meta: { isLiff: true, title: 'รายละเอียดบิล & ชำระเงิน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'รายละเอียดบิล & ชำระเงิน' }
       },
       {
         path: 'pay/:invoiceId',
         name: 'LiffPayment',
         component: () => import('@/views/LiffPaymentView.vue'),
-        meta: { isLiff: true, title: 'ชำระเงินบิลค่าเช่า' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ชำระเงินบิลค่าเช่า' }
       },
       {
         path: 'register',
@@ -237,7 +222,7 @@ const routes = [
         path: 'announcements',
         name: 'LiffAnnouncements',
         component: () => import('@/views/LiffAnnouncementsView.vue'),
-        meta: { isLiff: true, title: 'ข่าวสาร & ประกาศหอพัก' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ข่าวสาร & ประกาศหอพัก' }
       },
       {
         // เดิมเป็นระบบแจ้งซ่อมแยกต่างหาก (LiffMaintenanceView) - ถูก unify รวมกับระบบ issues แล้ว
@@ -249,19 +234,19 @@ const routes = [
         path: 'parcels',
         name: 'LiffParcels',
         component: () => import('@/views/LiffParcelsView.vue'),
-        meta: { isLiff: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
       },
       {
         path: 'issues',
         name: 'LiffIssueHistory',
         component: () => import('@/views/IssueHistory.vue'),
-        meta: { isLiff: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน' }
       },
       {
         path: 'issues/report',
         name: 'LiffReportIssue',
         component: () => import('@/views/ReportIssue.vue'),
-        meta: { isLiff: true, title: 'แจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แจ้งซ่อมและร้องเรียน' }
       },
       {
         path: 'report-issue',
@@ -275,7 +260,7 @@ const routes = [
         path: 'receipts',
         name: 'LiffReceiptHistory',
         component: () => import('@/views/LiffReceiptHistoryView.vue'),
-        meta: { isLiff: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
       }
     ]
   },
@@ -348,13 +333,24 @@ async function liffNavigationGuard(to, from, next) {
     }
   }
 
+  const authStore = useAuthStore();
+
   // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินอยู่แล้ว (Memory หรือกู้คืนผ่าน Silent Login ด้วย LINE ID Token)
   // เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด - ไม่พึ่ง LocalStorage แล้ว
   if (to.path === '/liff' || to.path === '/liff/') {
-    const authStore = useAuthStore();
     const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
     if (hasSession) {
       return next({ path: '/liff/profile', query: to.query });
+    }
+    return next();
+  }
+
+  // 🔒 กันหน้าที่ต้อง Login ก่อนเข้า (invoices, payment, profile ฯลฯ) ไม่ให้เห็นหน้าเปล่า/ยิง API แล้วเจอ 401
+  // ก่อนเด้งกลับ - เช็ค Session ในหน่วยความจำก่อน แล้วลอง Silent Login ด้วย LINE ID Token เป็นทางสำรอง
+  if (to.meta?.requiresLiffAuth) {
+    const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
+    if (!hasSession) {
+      return next({ path: '/liff', query: { redirect: to.fullPath } });
     }
   }
 

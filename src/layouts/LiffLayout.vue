@@ -194,10 +194,7 @@ const showBottomNav = computed(() => {
     '/liff/onboarding',
     '/liff/pin-login',
     '/liff/setup-pin',
-    '/liff/change-pin',
-    '/pin-login',
-    '/setup-pin',
-    '/change-pin'
+    '/liff/change-pin'
   ];
   return !noNavPaths.includes(route.path);
 });
@@ -280,10 +277,12 @@ const handleRecheckFriendship = async () => {
   }
 };
 
+// หมายเหตุ: checkUserFriendship() ไม่ได้ผูกกับ watch(route.path) แล้ว เพราะจะยิง LINE SDK
+// getFriendship() ซ้ำทุกครั้งที่สลับแท็บโดยไม่จำเป็น (สถานะเพิ่มเพื่อนไม่ได้เปลี่ยนบ่อยขนาดนั้น)
+// เช็คครั้งเดียวตอนเข้าแอปพอ ผู้ใช้ยังกดปุ่ม "ตรวจสอบอีกครั้ง" เองได้จาก Modal อยู่แล้ว
 watch(
   () => route.path,
   () => {
-    checkUserFriendship();
     checkUnread();
   }
 );
