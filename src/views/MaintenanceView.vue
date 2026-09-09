@@ -1,82 +1,80 @@
 <template>
   <div class="space-y-6 font-sans">
     <!-- Header & Action Controls -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
-            <Wrench v-if="activeMainTab === 'maintenance'" class="w-5 h-5" />
-            <MessageSquareWarning v-else class="w-5 h-5" />
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+      <div class="space-y-1">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-xs">
+            <Kanban class="w-5 h-5" />
           </div>
-          <span>{{ activeMainTab === 'maintenance' ? 'ระบบแจ้งซ่อมและติดตามงาน (Maintenance Kanban)' : 'บอร์ดจัดการเรื่องร้องเรียนและแจ้งเหตุ (Issues Kanban)' }}</span>
+          <span>ศูนย์รวมแจ้งซ่อม & ร้องเรียน (Service & Issue Board)</span>
         </h1>
-        <p class="text-sm text-slate-500">
-          {{ activeMainTab === 'maintenance' 
-            ? 'จัดการตั๋วงานซ่อม มอบหมายช่าง คำนวณค่าซ่อม และส่งสัญญาณอัปเดต LINE ลูกบ้าน' 
-            : 'ติดตามข้อร้องเรียนและปัญหาจากลูกบ้านในรูปแบบ Kanban Board พร้อมตอบกลับผ่าน LINE LIFF ทันที' }}
+        <p class="text-xs sm:text-sm text-slate-500">
+          จัดการงานแจ้งซ่อม มอบหมายช่าง ตรวจสอบข้อร้องเรียน และส่งคำตอบกลับเข้า LINE ลูกบ้านในบอร์ดเดียว
         </p>
       </div>
 
       <div class="flex items-center gap-2.5">
         <button
-          v-if="activeMainTab === 'maintenance'"
           @click="showNewModal = true"
-          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+          class="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <Plus class="w-4 h-4" />
           <span>สร้างใบแจ้งซ่อมใหม่</span>
         </button>
         <button
           @click="handleRefresh"
-          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          title="รีเฟรชข้อมูล"
         >
-          <RefreshCw class="w-3.5 h-3.5 text-slate-500" :class="{ 'animate-spin': loadingIssues }" />
-          <span>รีเฟรชข้อมูล</span>
+          <RefreshCw class="w-3.5 h-3.5 text-slate-500" :class="{ 'animate-spin': loading }" />
+          <span>รีเฟรช</span>
         </button>
       </div>
     </div>
 
-    <!-- Main Navigation Tabs -->
-    <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
-      <button
-        @click="activeMainTab = 'maintenance'"
-        class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
-        :class="activeMainTab === 'maintenance' ? 'bg-purple-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
-      >
-        <Wrench class="w-4 h-4" />
-        <span>บอร์ดงานแจ้งซ่อม (Maintenance)</span>
-        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold">
-          {{ requests.length }}
-        </span>
-      </button>
-
-      <button
-        @click="activeMainTab = 'issues'"
-        class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
-        :class="activeMainTab === 'issues' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
-      >
-        <MessageSquareWarning class="w-4 h-4" />
-        <span>บอร์ดเรื่องร้องเรียน & แจ้งเหตุ (Complaints & Issues)</span>
-        <span
-          v-if="pendingIssuesCount > 0"
-          class="px-2 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-mono font-bold animate-pulse"
+    <!-- Filter Pills & Search Bar -->
+    <div class="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
+        <button
+          v-for="cat in categoryFilters"
+          :key="cat.value"
+          @click="selectedCategory = cat.value"
+          class="px-3.5 py-2 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 shadow-2xs"
+          :class="selectedCategory === cat.value ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200/60'"
         >
-          {{ pendingIssuesCount }} รอรับเรื่อง
-        </span>
-        <span v-else class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono font-bold">
-          {{ issueList.length }}
-        </span>
-      </button>
+          <component :is="cat.icon" class="w-3.5 h-3.5" :class="cat.iconClass" />
+          <span>{{ cat.label }}</span>
+          <span
+            class="px-1.5 py-0.2 rounded-full text-[10px]"
+            :class="selectedCategory === cat.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'"
+          >
+            {{ cat.count }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="relative bg-slate-50 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center px-3.5 py-2 min-w-[240px]">
+        <Search class="w-4 h-4 text-slate-400 shrink-0 mr-2" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="ค้นหาห้อง, ผู้เช่า, รายละเอียด..."
+          class="w-full text-xs text-slate-800 placeholder:text-slate-400 bg-transparent focus:outline-hidden"
+        />
+      </div>
     </div>
 
-    <!-- ==================== VIEW 1: MAINTENANCE KANBAN ==================== -->
-    <div v-if="activeMainTab === 'maintenance'" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-      <!-- Column 1: Pending (รอดำเนินการ) -->
-      <div id="tour-kanban-pending" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+    <!-- Unified Kanban Board Grid (3 Columns) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+      <!-- Column 1: Pending (รอดำเนินการ / รอรับเรื่อง) -->
+      <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[550px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <Clock class="w-4 h-4 text-amber-500" />
-            <h3 class="font-bold text-slate-800 text-sm">รอดำเนินการ (Pending)</h3>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+            <h3 class="font-bold text-slate-800 text-sm">รอรับเรื่อง (Pending)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
             {{ pendingList.length }}
@@ -86,43 +84,59 @@
         <div class="space-y-3">
           <div
             v-for="item in pendingList"
-            :key="item.id"
-            @click="openEditModal(item)"
-            class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
+            :key="item.uniqueId"
+            @click="openDetailModal(item)"
+            class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
           >
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
-                <DoorClosed class="w-3.5 h-3.5" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
+            <!-- Card Top: Category Badge + Room Pill -->
+            <div class="flex items-center justify-between gap-2">
+              <span
+                class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                :class="getCategoryBadgeClass(item.category)"
+              >
+                <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
+                <span>{{ getCategoryLabel(item.category) }}</span>
               </span>
-              <span class="text-[11px] text-slate-400 font-mono">
-                {{ new Date(item.createdAt).toLocaleDateString('th-TH') }}
+
+              <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono flex items-center gap-1">
+                <DoorClosed class="w-3 h-3 text-indigo-500" />
+                <span>ห้อง {{ item.room?.roomNumber || '-' }} {{ item.building?.name ? `(${item.building.name})` : '' }}</span>
               </span>
             </div>
 
+            <!-- Title & Description -->
             <div>
-              <h4 class="font-bold text-slate-900 text-sm group-hover:text-purple-600 transition-colors flex items-center gap-1.5">
-                <Wrench class="w-4 h-4 text-amber-500 shrink-0" />
-                <span>{{ item.title }}</span>
+              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-indigo-600 transition-colors line-clamp-1">
+                {{ item.title }}
               </h4>
-              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
+              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed whitespace-pre-line">
+                {{ item.description }}
+              </p>
             </div>
 
-            <div v-if="item.imageUrl || item.photoUrl" class="rounded-xl overflow-hidden max-h-32 border border-slate-100">
-              <img :src="item.imageUrl || item.photoUrl" class="w-full h-full object-cover" />
+            <!-- Image Thumbnails -->
+            <div v-if="item.imageUrls && item.imageUrls.length > 0" class="flex items-center gap-1.5 overflow-x-auto pt-0.5">
+              <img
+                v-for="(img, idx) in item.imageUrls"
+                :key="idx"
+                :src="resolveImageUrl(img)"
+                class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+              />
             </div>
 
+            <!-- Card Bottom Bar -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span class="flex items-center gap-1">
-                <UserCheck class="w-3.5 h-3.5 text-slate-400" />
-                <span>{{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <span class="flex items-center gap-1 truncate max-w-[130px] text-slate-600">
+                <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span class="truncate">{{ getTenantDisplayName(item) }}</span>
               </span>
+
               <button
-                @click.stop="handleQuickStatus(item.id, 'in_progress')"
+                @click.stop="handleQuickStatusChange(item, 'in_progress')"
                 class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer"
               >
                 <Zap class="w-3 h-3" />
-                <span>➔ กำลังซ่อม</span>
+                <span>➔ กำลังทำ</span>
               </button>
             </div>
           </div>
@@ -133,11 +147,11 @@
         </div>
       </div>
 
-      <!-- Column 2: In Progress (กำลังดำเนินการซ่อม) -->
-      <div id="tour-kanban-inprogress" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <!-- Column 2: In Progress (กำลังดำเนินการ / ส่งช่าง) -->
+      <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[550px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <Zap class="w-4 h-4 text-blue-500" />
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
             <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ (In Progress)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
@@ -148,61 +162,74 @@
         <div class="space-y-3">
           <div
             v-for="item in inProgressList"
-            :key="item.id"
-            @click="openEditModal(item)"
-            class="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
+            :key="item.uniqueId"
+            @click="openDetailModal(item)"
+            class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
           >
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
-                <DoorClosed class="w-3.5 h-3.5" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
+            <!-- Card Top -->
+            <div class="flex items-center justify-between gap-2">
+              <span
+                class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                :class="getCategoryBadgeClass(item.category)"
+              >
+                <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
+                <span>{{ getCategoryLabel(item.category) }}</span>
               </span>
-              <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
-                <Zap class="w-3 h-3" />
-                <span>กำลังซ่อม</span>
+
+              <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono flex items-center gap-1">
+                <DoorClosed class="w-3 h-3 text-indigo-500" />
+                <span>ห้อง {{ item.room?.roomNumber || '-' }} {{ item.building?.name ? `(${item.building.name})` : '' }}</span>
               </span>
             </div>
 
+            <!-- Title & Description -->
             <div>
-              <h4 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors flex items-center gap-1.5">
-                <Wrench class="w-4 h-4 text-blue-500 shrink-0" />
-                <span>{{ item.title }}</span>
+              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-blue-600 transition-colors line-clamp-1">
+                {{ item.title }}
               </h4>
-              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
+              <p class="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed whitespace-pre-line">
+                {{ item.description }}
+              </p>
             </div>
 
-            <div v-if="item.technicianName" class="p-2 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium flex items-center gap-1.5">
+            <!-- Technician info or Admin Note Preview -->
+            <div v-if="item.technicianName" class="p-2 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium flex items-center gap-1.5">
               <UserCheck class="w-3.5 h-3.5 text-blue-600" />
               <span>ช่าง: {{ item.technicianName }}</span>
             </div>
+            <div v-else-if="item.adminNote" class="p-2 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-900 line-clamp-2">
+              <strong>ตอบแล้ว:</strong> {{ item.adminNote }}
+            </div>
 
+            <!-- Card Bottom Bar -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span class="flex items-center gap-1">
-                <UserCheck class="w-3.5 h-3.5 text-slate-400" />
-                <span>{{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
+              <span class="flex items-center gap-1 truncate max-w-[130px] text-slate-600">
+                <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span class="truncate">{{ getTenantDisplayName(item) }}</span>
               </span>
+
               <button
-                @click.stop="handleQuickStatus(item.id, 'resolved')"
+                @click.stop="handleQuickStatusChange(item, 'resolved')"
                 class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer"
               >
                 <CheckCircle2 class="w-3 h-3" />
-                <span>➔ ซ่อมเสร็จแล้ว</span>
+                <span>➔ เสร็จสิ้น</span>
               </button>
             </div>
           </div>
 
           <div v-if="inProgressList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
-            ไม่มีงานที่กำลังซ่อม
+            ไม่มีรายการที่กำลังดำเนินการ
           </div>
         </div>
       </div>
 
-      <!-- Column 3: Resolved (เสร็จสิ้น) -->
-      <div id="tour-kanban-resolved" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <!-- Column 3: Resolved (เสร็จสิ้น / ตอบกลับแล้ว) -->
+      <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[550px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <CheckCircle2 class="w-4 h-4 text-emerald-600" />
-            <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้น (Resolved)</h3>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้นแล้ว (Resolved)</h3>
           </div>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
             {{ resolvedList.length }}
@@ -212,37 +239,52 @@
         <div class="space-y-3">
           <div
             v-for="item in resolvedList"
-            :key="item.id"
-            @click="openEditModal(item)"
-            class="p-4 bg-white/90 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
+            :key="item.uniqueId"
+            @click="openDetailModal(item)"
+            class="p-4.5 bg-white/90 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
           >
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/60 font-mono flex items-center gap-1">
-                <DoorClosed class="w-3.5 h-3.5" />
-                <span>ห้อง {{ item.room?.roomNumber || 'N/A' }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</span>
+            <!-- Card Top -->
+            <div class="flex items-center justify-between gap-2">
+              <span
+                class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                :class="getCategoryBadgeClass(item.category)"
+              >
+                <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
+                <span>{{ getCategoryLabel(item.category) }}</span>
               </span>
-              <span class="text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1 border border-emerald-200">
-                <CheckCircle2 class="w-3 h-3" />
-                <span>เสร็จสิ้น</span>
+
+              <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-mono flex items-center gap-1">
+                <DoorClosed class="w-3 h-3 text-slate-400" />
+                <span>ห้อง {{ item.room?.roomNumber || '-' }}</span>
               </span>
             </div>
 
+            <!-- Title & Description -->
             <div>
-              <h4 class="font-bold text-slate-800 text-sm line-through text-slate-500 group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                <Wrench class="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>{{ item.title }}</span>
+              <h4 class="font-bold text-slate-800 text-xs sm:text-sm line-through text-slate-400 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                {{ item.title }}
               </h4>
-              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{{ item.description }}</p>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                {{ item.description }}
+              </p>
             </div>
 
-            <div v-if="Number(item.repairCost || 0) > 0" class="p-2 bg-emerald-50/60 rounded-xl border border-emerald-100 text-xs text-emerald-800 font-bold flex items-center gap-1.5">
+            <!-- Cost / Admin Note -->
+            <div v-if="Number(item.repairCost || 0) > 0" class="p-2 bg-emerald-50/70 rounded-xl border border-emerald-100 text-xs text-emerald-800 font-bold flex items-center gap-1.5">
               <Coins class="w-3.5 h-3.5 text-emerald-600" />
               <span>ค่าซ่อม: ฿{{ Number(item.repairCost).toLocaleString() }}</span>
             </div>
+            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/70 rounded-xl border border-emerald-100 text-[11px] text-emerald-950 line-clamp-2">
+              <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ item.adminNote }}
+            </div>
 
+            <!-- Card Bottom Bar -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-              <span>{{ item.tenant ? `${item.tenant.firstName}` : 'ลูกบ้าน' }}</span>
-              <span>{{ item.resolvedAt ? new Date(item.resolvedAt).toLocaleDateString('th-TH') : 'ปิดงานแล้ว' }}</span>
+              <span>{{ getTenantDisplayName(item) }}</span>
+              <span class="text-emerald-700 font-bold flex items-center gap-1 text-[11px]">
+                <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600" />
+                <span>ปิดเรื่องแล้ว</span>
+              </span>
             </div>
           </div>
 
@@ -253,257 +295,21 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 2: COMPLAINTS & ISSUES KANBAN BOARD ==================== -->
-    <div v-else class="space-y-5">
-      <!-- Category Filter Tabs Bar -->
-      <div class="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-slate-700 shrink-0">กรองหมวดหมู่เรื่อง:</span>
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
-            <button
-              v-for="cat in issueCategoryFilters"
-              :key="cat.value"
-              @click="selectedCategoryFilter = cat.value"
-              class="px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 shadow-2xs"
-              :class="selectedCategoryFilter === cat.value ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
-            >
-              <span>{{ cat.label }}</span>
-              <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="selectedCategoryFilter === cat.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'">
-                {{ cat.count }}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <div class="text-xs text-slate-400 font-mono">
-          แสดงผลรวม: {{ filteredIssuesByCat.length }} รายการ
-        </div>
-      </div>
-
-      <!-- Issues Kanban Grid (3 Columns) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-        <!-- 1. Pending Issues Column -->
-        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
-          <div class="flex items-center justify-between px-1">
-            <div class="flex items-center gap-2">
-              <Clock class="w-4 h-4 text-amber-500" />
-              <h3 class="font-bold text-slate-800 text-sm">รอรับเรื่อง (Pending)</h3>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
-              {{ pendingIssueList.length }}
-            </span>
-          </div>
-
-          <div class="space-y-3">
-            <div
-              v-for="issue in pendingIssueList"
-              :key="issue.id"
-              @click="openIssueDetailModal(issue)"
-              class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
-            >
-              <!-- Card Top: Category & Room -->
-              <div class="flex items-center justify-between gap-2">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
-                  :class="getCategoryBadgeClass(issue.category)"
-                >
-                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
-                  <span>{{ getCategoryLabel(issue.category) }}</span>
-                </span>
-
-                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono">
-                  ห้อง {{ issue.room?.roomNumber || '-' }}
-                </span>
-              </div>
-
-              <!-- Description -->
-              <div>
-                <p class="text-xs text-slate-800 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
-                  {{ issue.description }}
-                </p>
-              </div>
-
-              <!-- Thumbnails -->
-              <div v-if="getParsedImages(issue.imageUrls).length > 0" class="flex items-center gap-1.5 overflow-x-auto pt-0.5">
-                <img
-                  v-for="(img, idx) in getParsedImages(issue.imageUrls)"
-                  :key="idx"
-                  :src="resolveImageUrl(img)"
-                  class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
-                />
-              </div>
-
-              <!-- Card Footer -->
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <div class="flex items-center gap-1 text-slate-600 truncate max-w-[130px]">
-                  <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span class="truncate">{{ issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : 'ลูกบ้าน' }}</span>
-                </div>
-
-                <button
-                  @click.stop="handleQuickIssueStatus(issue.id, 'IN_PROGRESS')"
-                  class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer"
-                >
-                  <Zap class="w-3 h-3" />
-                  <span>➔ กำลังตรวจ</span>
-                </button>
-              </div>
-            </div>
-
-            <div v-if="pendingIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
-              ไม่มีเรื่องที่รอดำเนินการ 🎉
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. In Progress Issues Column -->
-        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
-          <div class="flex items-center justify-between px-1">
-            <div class="flex items-center gap-2">
-              <Zap class="w-4 h-4 text-blue-500" />
-              <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ (In Progress)</h3>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
-              {{ inProgressIssueList.length }}
-            </span>
-          </div>
-
-          <div class="space-y-3">
-            <div
-              v-for="issue in inProgressIssueList"
-              :key="issue.id"
-              @click="openIssueDetailModal(issue)"
-              class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
-            >
-              <!-- Card Top -->
-              <div class="flex items-center justify-between gap-2">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
-                  :class="getCategoryBadgeClass(issue.category)"
-                >
-                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
-                  <span>{{ getCategoryLabel(issue.category) }}</span>
-                </span>
-
-                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono">
-                  ห้อง {{ issue.room?.roomNumber || '-' }}
-                </span>
-              </div>
-
-              <!-- Description -->
-              <div>
-                <p class="text-xs text-slate-800 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
-                  {{ issue.description }}
-                </p>
-              </div>
-
-              <!-- Admin Reply Notice (if added) -->
-              <div v-if="issue.adminReply" class="p-2 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-900 line-clamp-2">
-                <strong>ตอบแล้ว:</strong> {{ issue.adminReply }}
-              </div>
-
-              <!-- Card Footer -->
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <div class="flex items-center gap-1 text-slate-600 truncate max-w-[130px]">
-                  <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span class="truncate">{{ issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : 'ลูกบ้าน' }}</span>
-                </div>
-
-                <button
-                  @click.stop="openIssueDetailModal(issue)"
-                  class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer"
-                >
-                  <CheckCircle2 class="w-3 h-3" />
-                  <span>➔ ตอบ/ปิดเรื่อง</span>
-                </button>
-              </div>
-            </div>
-
-            <div v-if="inProgressIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
-              ไม่มีเรื่องที่กำลังดำเนินการ
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Resolved Issues Column -->
-        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
-          <div class="flex items-center justify-between px-1">
-            <div class="flex items-center gap-2">
-              <CheckCircle2 class="w-4 h-4 text-emerald-600" />
-              <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้น/ตอบแล้ว (Resolved)</h3>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-              {{ resolvedIssueList.length }}
-            </span>
-          </div>
-
-          <div class="space-y-3">
-            <div
-              v-for="issue in resolvedIssueList"
-              :key="issue.id"
-              @click="openIssueDetailModal(issue)"
-              class="p-4.5 bg-white/90 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
-            >
-              <!-- Card Top -->
-              <div class="flex items-center justify-between gap-2">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
-                  :class="getCategoryBadgeClass(issue.category)"
-                >
-                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
-                  <span>{{ getCategoryLabel(issue.category) }}</span>
-                </span>
-
-                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
-                  ห้อง {{ issue.room?.roomNumber || '-' }}
-                </span>
-              </div>
-
-              <!-- Description -->
-              <div>
-                <p class="text-xs text-slate-500 line-through leading-relaxed line-clamp-2 whitespace-pre-line">
-                  {{ issue.description }}
-                </p>
-              </div>
-
-              <!-- Admin Reply Box -->
-              <div v-if="issue.adminReply" class="p-2.5 bg-emerald-50/70 rounded-xl border border-emerald-100 text-[11px] text-emerald-950 line-clamp-2">
-                <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ issue.adminReply }}
-              </div>
-
-              <!-- Card Footer -->
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <span>{{ issue.user ? `${issue.user.firstName}` : 'ลูกบ้าน' }}</span>
-                <span class="text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 class="w-3 h-3" />
-                  <span>แก้ไขเรียบร้อย</span>
-                </span>
-              </div>
-            </div>
-
-            <div v-if="resolvedIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
-              ยังไม่มีเรื่องที่เสร็จสิ้น
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== ISSUE DETAIL & ADMIN REPLY MODAL ==================== -->
-    <div v-if="selectedIssue" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+    <!-- ==================== UNIFIED DETAIL & EDIT MODAL ==================== -->
+    <div v-if="selectedTicket" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs" :class="getCategoryBadgeClass(selectedIssue.category)">
-              {{ getCategoryLabel(selectedIssue.category) }}
+            <span class="px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs" :class="getCategoryBadgeClass(selectedTicket.category)">
+              {{ getCategoryLabel(selectedTicket.category) }}
             </span>
-            <span class="text-xs text-slate-500 font-mono font-bold">
-              ห้อง {{ selectedIssue.room?.roomNumber || '-' }}
+            <span class="text-xs text-slate-600 font-mono font-bold">
+              ห้อง {{ selectedTicket.room?.roomNumber || '-' }} ({{ selectedTicket.building?.name || 'อาคารหลัก' }})
             </span>
           </div>
 
-          <button @click="selectedIssue = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+          <button @click="selectedTicket = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -511,37 +317,37 @@
         <!-- Tenant Information -->
         <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between text-xs text-slate-700">
           <div>
-            <div class="text-[10px] text-slate-400">ผู้แจ้งเหตุ:</div>
+            <div class="text-[10px] text-slate-400">ผู้แจ้งเรื่อง:</div>
             <div class="font-bold text-slate-900">
-              {{ selectedIssue.user ? `${selectedIssue.user.firstName} ${selectedIssue.user.lastName}` : 'ผู้เช่า' }}
+              {{ getTenantDisplayName(selectedTicket) }}
             </div>
-            <div v-if="selectedIssue.user?.phone" class="text-slate-500 text-[11px] font-mono">
-              โทร: {{ selectedIssue.user.phone }}
+            <div v-if="selectedTicket.tenant?.phone" class="text-slate-500 text-[11px] font-mono">
+              โทร: {{ selectedTicket.tenant.phone }}
             </div>
           </div>
 
           <div class="text-right">
-            <div class="text-[10px] text-slate-400">อาคาร & ห้องพัก:</div>
-            <div class="font-bold text-indigo-600 font-mono">
-              ห้อง {{ selectedIssue.room?.roomNumber || '-' }} ({{ selectedIssue.building?.name || 'อาคารหลัก' }})
+            <div class="text-[10px] text-slate-400">วันเวลาที่แจ้ง:</div>
+            <div class="font-mono text-slate-700 text-[11px]">
+              {{ formatDate(selectedTicket.createdAt) }}
             </div>
           </div>
         </div>
 
-        <!-- Description -->
+        <!-- Description Details -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-700">รายละเอียดปัญหาที่แจ้ง:</label>
+          <label class="block text-xs font-bold text-slate-700">รายละเอียดปัญหา / ข้อร้องเรียน:</label>
           <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 text-xs text-slate-800 leading-relaxed whitespace-pre-line">
-            {{ selectedIssue.description }}
+            {{ selectedTicket.description }}
           </div>
         </div>
 
         <!-- Attached Images -->
-        <div v-if="getParsedImages(selectedIssue.imageUrls).length > 0" class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-700">รูปภาพประกอบ (แตะเพื่อเปิดรูปเต็ม):</label>
+        <div v-if="selectedTicket.imageUrls && selectedTicket.imageUrls.length > 0" class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700">รูปภาพประกอบ (แตะเพื่อดูรูปเต็ม):</label>
           <div class="grid grid-cols-3 gap-2">
             <a
-              v-for="(img, idx) in getParsedImages(selectedIssue.imageUrls)"
+              v-for="(img, idx) in selectedTicket.imageUrls"
               :key="idx"
               :href="resolveImageUrl(img)"
               target="_blank"
@@ -552,111 +358,60 @@
           </div>
         </div>
 
-        <!-- Admin Reply & Status Form -->
-        <form @submit.prevent="handleSaveIssueReply" class="space-y-4 pt-2 border-t border-slate-100 text-xs">
+        <!-- Edit Form -->
+        <form @submit.prevent="handleSaveTicket" class="space-y-4 pt-2 border-t border-slate-100 text-xs text-slate-700">
+          <!-- Status Selector -->
           <div>
-            <label class="block font-bold text-slate-800 mb-1">ปรับเปลี่ยนสถานะตั๋ว:</label>
-            <select
-              v-model="replyForm.status"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 focus:outline-hidden"
-            >
-              <option value="PENDING">🟡 รอรับเรื่อง (Pending)</option>
-              <option value="IN_PROGRESS">🔵 กำลังดำเนินการตรวจสอบ / ส่งช่าง (In Progress)</option>
-              <option value="RESOLVED">🟢 แก้ไขเรียบร้อยแล้ว (Resolved)</option>
-              <option value="CANCELLED">🔴 ยกเลิกเรื่อง (Cancelled)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">ข้อความตอบกลับลูกบ้าน (จะแสดงบน LINE LIFF ทันที):</label>
-            <textarea
-              v-model="replyForm.adminReply"
-              rows="3"
-              placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่ได้รับเรื่องแล้ว กำลังประสานงานช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 focus:outline-hidden leading-relaxed"
-            ></textarea>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              @click="selectedIssue = null"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
-            >
-              ปิดหน้าต่าง
-            </button>
-            <button
-              type="submit"
-              :disabled="savingReply"
-              class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
-            >
-              {{ savingReply ? 'กำลังบันทึก...' : 'บันทึก & ส่งคำตอบกลับ' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ==================== EXISTING MAINTENANCE EDIT MODAL ==================== -->
-    <div v-if="selectedItem" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div>
-            <h3 class="text-base font-bold text-slate-900">จัดการงานซ่อม: {{ selectedItem.title }}</h3>
-            <p class="text-xs text-slate-400 font-mono">ห้อง {{ selectedItem.room?.roomNumber || 'N/A' }}</p>
-          </div>
-          <button @click="selectedItem = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
-            <X class="w-4 h-4" />
-          </button>
-        </div>
-
-        <form @submit.prevent="handleEditSubmit" class="space-y-4 text-xs text-slate-700">
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">สถานะงานซ่อม</label>
+            <label class="block font-bold text-slate-800 mb-1">ปรับเปลี่ยนสถานะ:</label>
             <select
               v-model="editForm.status"
               class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 focus:outline-hidden"
             >
-              <option value="pending">รอดำเนินการ (Pending)</option>
-              <option value="in_progress">กำลังดำเนินการซ่อม (In Progress)</option>
-              <option value="resolved">เสร็จสิ้นแล้ว (Resolved)</option>
+              <option value="pending">🟡 รอรับเรื่อง (Pending)</option>
+              <option value="in_progress">🔵 กำลังดำเนินการตรวจสอบ / ส่งช่าง (In Progress)</option>
+              <option value="resolved">🟢 แก้ไขเรียบร้อยแล้ว (Resolved)</option>
             </select>
           </div>
 
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
-            <input
-              v-model="editForm.technicianName"
-              type="text"
-              placeholder="e.g. ช่างสมชาย, บริษัทแอร์เซอร์วิส"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-semibold text-slate-900 focus:outline-hidden"
-            />
+          <!-- Technician & Cost (Optional for Repairs) -->
+          <div class="grid grid-cols-2 gap-3" v-if="selectedTicket.category === 'REPAIR'">
+            <div>
+              <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
+              <input
+                v-model="editForm.technicianName"
+                type="text"
+                placeholder="e.g. ช่างสมชาย"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 focus:outline-hidden font-medium"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
+              <input
+                v-model.number="editForm.repairCost"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="0.00"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-emerald-700 focus:outline-hidden"
+              />
+            </div>
           </div>
 
+          <!-- Admin Reply Note -->
           <div>
-            <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม / ค่าอุปกรณ์ (บาท)</label>
-            <input
-              v-model.number="editForm.repairCost"
-              type="number"
-              min="0"
-              step="any"
-              placeholder="0.00"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-emerald-700 focus:outline-hidden"
-            />
-          </div>
-
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">ข้อความตอบกลับลูกบ้าน (Admin Note)</label>
+            <label class="block font-bold text-slate-800 mb-1">ข้อความตอบกลับลูกบ้าน (จะแสดงบน LINE LIFF):</label>
             <textarea
               v-model="editForm.adminNote"
               rows="3"
-              placeholder="ข้อความที่จะส่งแจ้งเตือนไปยัง LINE ลูกบ้าน..."
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 focus:outline-hidden"
+              placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่รับเรื่องแล้ว กำลังส่งช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 focus:outline-hidden leading-relaxed"
             ></textarea>
           </div>
 
-          <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+          <!-- Modal Action Buttons -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100">
             <button
+              v-if="selectedTicket.sourceType === 'maintenance'"
               type="button"
               @click="handleDelete"
               class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer"
@@ -664,11 +419,12 @@
               <Trash2 class="w-4 h-4" />
               <span>ลบรายการ</span>
             </button>
+            <div v-else></div>
 
             <div class="flex gap-2">
               <button
                 type="button"
-                @click="selectedItem = null"
+                @click="selectedTicket = null"
                 class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
               >
                 ยกเลิก
@@ -676,9 +432,9 @@
               <button
                 type="submit"
                 :disabled="submitting"
-                class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
               >
-                {{ submitting ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข' }}
+                {{ submitting ? 'กำลังบันทึก...' : 'บันทึก & ตอบกลับ' }}
               </button>
             </div>
           </div>
@@ -754,7 +510,7 @@
             <button
               type="submit"
               :disabled="submitting || uploading"
-              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+              class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
             >
               {{ submitting ? 'กำลังบันทึก...' : 'สร้างตั๋วแจ้งซ่อม' }}
             </button>
@@ -768,6 +524,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import {
+  Kanban,
   Wrench,
   Plus,
   RefreshCw,
@@ -776,12 +533,11 @@ import {
   CheckCircle2,
   UserCheck,
   Coins,
-  MessageSquare,
   MessageSquareWarning,
   HelpCircle,
+  Sparkles,
   Trash2,
-  Edit3,
-  Camera,
+  Search,
   DoorClosed,
   User,
   X
@@ -796,31 +552,22 @@ import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
 
-const activeMainTab = ref('maintenance');
 const requests = ref([]);
 const issueList = ref([]);
-const loadingIssues = ref(false);
+const loading = ref(false);
 const uploading = ref(false);
 const submitting = ref(false);
-const savingReply = ref(false);
 
 const showNewModal = ref(false);
-const selectedItem = ref(null);
-const selectedIssue = ref(null);
-
-const selectedCategoryFilter = ref('ALL');
+const selectedTicket = ref(null);
+const selectedCategory = ref('ALL');
+const searchQuery = ref('');
 
 const editForm = reactive({
-  id: '',
   status: 'pending',
   technicianName: '',
   repairCost: 0,
   adminNote: ''
-});
-
-const replyForm = reactive({
-  status: 'PENDING',
-  adminReply: ''
 });
 
 const newForm = reactive({
@@ -830,70 +577,7 @@ const newForm = reactive({
   imageUrl: ''
 });
 
-// Maintenance Kanban Lists
-const pendingList = computed(() => requests.value.filter((r) => r.status === 'pending'));
-const inProgressList = computed(() => requests.value.filter((r) => r.status === 'in_progress'));
-const resolvedList = computed(() => requests.value.filter((r) => r.status === 'resolved' || r.status === 'completed'));
-
-// Issues Kanban Lists
-const pendingIssuesCount = computed(() => {
-  return issueList.value.filter((i) => (i.status || '').toUpperCase() === 'PENDING').length;
-});
-
-const issueCategoryFilters = computed(() => {
-  const allCount = issueList.value.length;
-  const complaintCount = issueList.value.filter((i) => (i.category || '').toUpperCase() === 'COMPLAINT').length;
-  const repairCount = issueList.value.filter((i) => (i.category || '').toUpperCase() === 'REPAIR').length;
-  const otherCount = issueList.value.filter((i) => (i.category || '').toUpperCase() === 'OTHER').length;
-
-  return [
-    { value: 'ALL', label: 'ทั้งหมด', count: allCount },
-    { value: 'COMPLAINT', label: 'ข้อร้องเรียน (Complaint)', count: complaintCount },
-    { value: 'REPAIR', label: 'แจ้งซ่อม (Repair)', count: repairCount },
-    { value: 'OTHER', label: 'เรื่องอื่นๆ (Other)', count: otherCount }
-  ];
-});
-
-const filteredIssuesByCat = computed(() => {
-  if (selectedCategoryFilter.value === 'ALL') return issueList.value;
-  return issueList.value.filter((i) => (i.category || '').toUpperCase() === selectedCategoryFilter.value);
-});
-
-const pendingIssueList = computed(() => {
-  return filteredIssuesByCat.value.filter((i) => (i.status || '').toUpperCase() === 'PENDING');
-});
-
-const inProgressIssueList = computed(() => {
-  return filteredIssuesByCat.value.filter((i) => (i.status || '').toUpperCase() === 'IN_PROGRESS');
-});
-
-const resolvedIssueList = computed(() => {
-  return filteredIssuesByCat.value.filter((i) => ['RESOLVED', 'COMPLETED', 'CANCELLED'].includes((i.status || '').toUpperCase()));
-});
-
-const getCategoryLabel = (category) => {
-  const map = {
-    REPAIR: 'แจ้งซ่อมบำรุง',
-    COMPLAINT: 'เรื่องร้องเรียน',
-    OTHER: 'เรื่องอื่นๆ'
-  };
-  return map[(category || '').toUpperCase()] || 'เรื่องทั่วไป';
-};
-
-const getCategoryIcon = (category) => {
-  const cat = (category || '').toUpperCase();
-  if (cat === 'REPAIR') return Wrench;
-  if (cat === 'COMPLAINT') return MessageSquareWarning;
-  return HelpCircle;
-};
-
-const getCategoryBadgeClass = (category) => {
-  const cat = (category || '').toUpperCase();
-  if (cat === 'REPAIR') return 'bg-amber-100 text-amber-800 border border-amber-200';
-  if (cat === 'COMPLAINT') return 'bg-rose-100 text-rose-800 border border-rose-200';
-  return 'bg-purple-100 text-purple-800 border border-purple-200';
-};
-
+// Helper: Parse images
 const getParsedImages = (imageUrls) => {
   if (!imageUrls) return [];
   if (Array.isArray(imageUrls)) return imageUrls;
@@ -914,104 +598,216 @@ const resolveImageUrl = (path) => {
   return `${cleanBase}${cleanPath}`;
 };
 
-const fetchData = async () => {
-  try {
-    const data = await maintenanceService.getMaintenanceRequests(buildingStore.activeBuildingId);
-    requests.value = data;
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดรายการแจ้งซ่อมได้');
-  }
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
-const fetchIssues = async () => {
-  loadingIssues.value = true;
+const getTenantDisplayName = (item) => {
+  if (item.tenant) {
+    return `${item.tenant.firstName || ''} ${item.tenant.lastName || ''}`.trim() || 'ลูกบ้าน';
+  }
+  return 'ลูกบ้าน';
+};
+
+// 1. Unified Tickets List (Merge Maintenance & Issues seamlessly)
+const unifiedTickets = computed(() => {
+  const list = [];
+
+  // Add Maintenance Requests
+  requests.value.forEach((m) => {
+    list.push({
+      uniqueId: `m_${m.id}`,
+      rawId: m.id,
+      sourceType: 'maintenance',
+      category: 'REPAIR',
+      title: m.title || 'รายการแจ้งซ่อมห้องพัก',
+      description: m.description || '',
+      status: (m.status || 'pending').toLowerCase(),
+      room: m.room,
+      building: m.room?.building || m.building,
+      tenant: m.tenant,
+      technicianName: m.technicianName,
+      repairCost: m.repairCost,
+      adminNote: m.adminNote,
+      imageUrls: m.imageUrl || m.photoUrl ? [m.imageUrl || m.photoUrl] : [],
+      createdAt: m.createdAt,
+      resolvedAt: m.resolvedAt
+    });
+  });
+
+  // Add Issue Tickets (Complaints, Repairs, Other)
+  issueList.value.forEach((iss) => {
+    list.push({
+      uniqueId: `iss_${iss.id}`,
+      rawId: iss.id,
+      sourceType: 'issue',
+      category: (iss.category || 'OTHER').toUpperCase(),
+      title: iss.category === 'COMPLAINT' 
+        ? `ข้อร้องเรียนห้อง ${iss.room?.roomNumber || '-'}`
+        : (iss.category === 'REPAIR' ? `แจ้งซ่อมห้อง ${iss.room?.roomNumber || '-'}` : `เรื่องอื่นๆ ห้อง ${iss.room?.roomNumber || '-'}`),
+      description: iss.description || '',
+      status: (iss.status || 'PENDING').toLowerCase(),
+      room: iss.room,
+      building: iss.building,
+      tenant: iss.user,
+      technicianName: '',
+      repairCost: 0,
+      adminNote: iss.adminReply,
+      imageUrls: getParsedImages(iss.imageUrls),
+      createdAt: iss.createdAt,
+      resolvedAt: iss.status === 'RESOLVED' ? iss.updatedAt : null
+    });
+  });
+
+  return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+});
+
+// Category Filter Count Definitions
+const categoryFilters = computed(() => {
+  const allCount = unifiedTickets.value.length;
+  const repairCount = unifiedTickets.value.filter((i) => i.category === 'REPAIR').length;
+  const complaintCount = unifiedTickets.value.filter((i) => i.category === 'COMPLAINT').length;
+  const otherCount = unifiedTickets.value.filter((i) => i.category === 'OTHER').length;
+
+  return [
+    { value: 'ALL', label: 'ทั้งหมด', count: allCount, icon: Sparkles, iconClass: 'text-indigo-400' },
+    { value: 'REPAIR', label: 'แจ้งซ่อมบำรุง', count: repairCount, icon: Wrench, iconClass: 'text-amber-500' },
+    { value: 'COMPLAINT', label: 'ข้อร้องเรียน', count: complaintCount, icon: MessageSquareWarning, iconClass: 'text-rose-500' },
+    { value: 'OTHER', label: 'เรื่องอื่นๆ', count: otherCount, icon: HelpCircle, iconClass: 'text-purple-500' }
+  ];
+});
+
+// Filter by Category and Search Query
+const filteredTickets = computed(() => {
+  return unifiedTickets.value.filter((t) => {
+    const matchCategory = selectedCategory.value === 'ALL' || t.category === selectedCategory.value;
+    if (!matchCategory) return false;
+
+    if (!searchQuery.value.trim()) return true;
+    const q = searchQuery.value.toLowerCase().trim();
+    const roomNo = t.room?.roomNumber?.toLowerCase() || '';
+    const desc = t.description?.toLowerCase() || '';
+    const title = t.title?.toLowerCase() || '';
+    const tenantName = `${t.tenant?.firstName || ''} ${t.tenant?.lastName || ''}`.toLowerCase();
+
+    return roomNo.includes(q) || desc.includes(q) || title.includes(q) || tenantName.includes(q);
+  });
+});
+
+// 3 Kanban Columns from Filtered List
+const pendingList = computed(() => filteredTickets.value.filter((t) => t.status === 'pending'));
+const inProgressList = computed(() => filteredTickets.value.filter((t) => t.status === 'in_progress'));
+const resolvedList = computed(() => filteredTickets.value.filter((t) => ['resolved', 'completed', 'cancelled'].includes(t.status)));
+
+const getCategoryLabel = (category) => {
+  const map = {
+    REPAIR: 'แจ้งซ่อม',
+    COMPLAINT: 'ข้อร้องเรียน',
+    OTHER: 'เรื่องอื่นๆ'
+  };
+  return map[(category || '').toUpperCase()] || 'ทั่วไป';
+};
+
+const getCategoryIcon = (category) => {
+  const cat = (category || '').toUpperCase();
+  if (cat === 'REPAIR') return Wrench;
+  if (cat === 'COMPLAINT') return MessageSquareWarning;
+  return HelpCircle;
+};
+
+const getCategoryBadgeClass = (category) => {
+  const cat = (category || '').toUpperCase();
+  if (cat === 'REPAIR') return 'bg-amber-100 text-amber-800 border border-amber-200';
+  if (cat === 'COMPLAINT') return 'bg-rose-100 text-rose-800 border border-rose-200';
+  return 'bg-purple-100 text-purple-800 border border-purple-200';
+};
+
+// Data Fetching
+const fetchData = async () => {
+  loading.value = true;
   try {
     const params = {};
     if (buildingStore.activeBuildingId) {
       params.buildingId = buildingStore.activeBuildingId;
     }
-    const res = await api.get('/api/admin/issues', { params });
-    issueList.value = res.data?.data || [];
+
+    const [maintenanceData, issuesRes] = await Promise.allSettled([
+      maintenanceService.getMaintenanceRequests(buildingStore.activeBuildingId),
+      api.get('/api/admin/issues', { params })
+    ]);
+
+    if (maintenanceData.status === 'fulfilled') {
+      requests.value = maintenanceData.value || [];
+    }
+    if (issuesRes.status === 'fulfilled') {
+      issueList.value = issuesRes.value.data?.data || [];
+    }
   } catch (error) {
-    console.warn('Failed to fetch admin issues:', error);
+    console.error('Error fetching unified tickets:', error);
   } finally {
-    loadingIssues.value = false;
+    loading.value = false;
   }
 };
 
 const handleRefresh = async () => {
-  await Promise.allSettled([fetchData(), fetchIssues()]);
-  showToast('รีเฟรชข้อมูลเรียบร้อยแล้ว');
+  await fetchData();
+  showToast('รีเฟรชข้อมูลบอร์ดเรียบร้อยแล้ว');
 };
 
-const openIssueDetailModal = (issue) => {
-  selectedIssue.value = issue;
-  replyForm.status = (issue.status || 'PENDING').toUpperCase();
-  replyForm.adminReply = issue.adminReply || '';
-};
-
-const handleQuickIssueStatus = async (id, newStatus) => {
-  try {
-    await api.put(`/api/admin/issues/${id}`, { status: newStatus });
-    showToast(`อัปเดตสถานะเป็น ${newStatus} แล้ว`);
-    fetchIssues();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', 'ไม่สามารถเปลี่ยนสถานะได้');
-  }
-};
-
-const handleSaveIssueReply = async () => {
-  if (!selectedIssue.value?.id) return;
-  savingReply.value = true;
-  try {
-    await api.put(`/api/admin/issues/${selectedIssue.value.id}`, {
-      status: replyForm.status,
-      adminReply: replyForm.adminReply
-    });
-
-    showToast('บันทึกคำตอบกลับและสถานะเรียบร้อยแล้ว');
-    selectedIssue.value = null;
-    await fetchIssues();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถบันทึกคำตอบกลับได้');
-  } finally {
-    savingReply.value = false;
-  }
-};
-
-const openEditModal = (item) => {
-  selectedItem.value = item;
-  editForm.id = item.id;
+const openDetailModal = (item) => {
+  selectedTicket.value = item;
   editForm.status = item.status || 'pending';
   editForm.technicianName = item.technicianName || '';
   editForm.repairCost = item.repairCost || 0;
   editForm.adminNote = item.adminNote || '';
 };
 
-const handleQuickStatus = async (id, newStatus) => {
+// Quick Status Toggle on Kanban Card
+const handleQuickStatusChange = async (item, newStatus) => {
   try {
-    await maintenanceService.updateMaintenanceRequest(id, { status: newStatus });
-    showToast(`อัปเดตสถานะเป็น ${newStatus} แล้ว`);
+    if (item.sourceType === 'maintenance') {
+      await maintenanceService.updateMaintenanceRequest(item.rawId, { status: newStatus });
+    } else {
+      await api.put(`/api/admin/issues/${item.rawId}`, { status: newStatus.toUpperCase() });
+    }
+    showToast(`อัปเดตสถานะเป็น ${newStatus} เรียบร้อยแล้ว`);
     fetchData();
   } catch (error) {
-    showError('เกิดข้อผิดพลาด', 'ไม่สามารถเปลี่ยนสถานะด่วนได้');
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถเปลี่ยนสถานะได้');
   }
 };
 
-const handleEditSubmit = async () => {
+// Save Edit & Reply from Modal
+const handleSaveTicket = async () => {
+  if (!selectedTicket.value) return;
   submitting.value = true;
   try {
-    await maintenanceService.updateMaintenanceRequest(editForm.id, {
-      status: editForm.status,
-      technicianName: editForm.technicianName,
-      repairCost: editForm.repairCost,
-      adminNote: editForm.adminNote
-    });
-    showSuccess('สำเร็จ', 'อัปเดตข้อมูลการแจ้งซ่อมเรียบร้อยแล้ว');
-    selectedItem.value = null;
+    if (selectedTicket.value.sourceType === 'maintenance') {
+      await maintenanceService.updateMaintenanceRequest(selectedTicket.value.rawId, {
+        status: editForm.status,
+        technicianName: editForm.technicianName,
+        repairCost: editForm.repairCost,
+        adminNote: editForm.adminNote
+      });
+    } else {
+      await api.put(`/api/admin/issues/${selectedTicket.value.rawId}`, {
+        status: editForm.status.toUpperCase(),
+        adminReply: editForm.adminNote
+      });
+    }
+
+    showSuccess('สำเร็จ', 'บันทึกการแก้ไขและส่งข้อความตอบกลับเรียบร้อยแล้ว');
+    selectedTicket.value = null;
     fetchData();
   } catch (error) {
-    showError('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
+    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถบันทึกข้อมูลได้');
   } finally {
     submitting.value = false;
   }
@@ -1056,16 +852,16 @@ const handleCreateSubmit = async () => {
 };
 
 const handleDelete = async () => {
-  if (!selectedItem.value) return;
+  if (!selectedTicket.value || selectedTicket.value.sourceType !== 'maintenance') return;
   const isConfirmed = await showConfirm(
     'ยืนยันการลบ',
-    'คุณแน่ใจหรือไม่ว่าต้องการลบรายการแจ้งซ่อมนี้ออกจากระบบ?'
+    'คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้ออกจากระบบ?'
   );
   if (isConfirmed) {
     try {
-      await maintenanceService.deleteMaintenanceRequest(selectedItem.value.id);
-      showSuccess('สำเร็จ', 'ลบรายการแจ้งซ่อมเรียบร้อยแล้ว');
-      selectedItem.value = null;
+      await maintenanceService.deleteMaintenanceRequest(selectedTicket.value.rawId);
+      showSuccess('สำเร็จ', 'ลบรายการเรียบร้อยแล้ว');
+      selectedTicket.value = null;
       fetchData();
     } catch (error) {
       showError('เกิดข้อผิดพลาด', 'ไม่สามารถลบรายการได้');
@@ -1076,14 +872,12 @@ const handleDelete = async () => {
 onMounted(() => {
   roomStore.fetchRooms();
   fetchData();
-  fetchIssues();
 });
 
 watch(
   () => buildingStore.activeBuildingId,
   () => {
     fetchData();
-    fetchIssues();
   }
 );
 </script>
