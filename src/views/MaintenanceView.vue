@@ -3,17 +3,17 @@
     <!-- Header & Action Controls -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
             <Wrench v-if="activeMainTab === 'maintenance'" class="w-5 h-5" />
             <MessageSquareWarning v-else class="w-5 h-5" />
           </div>
-          <span>{{ activeMainTab === 'maintenance' ? 'ระบบแจ้งซ่อมและติดตามงาน (Maintenance)' : 'เรื่องร้องเรียนและแจ้งเหตุจากลูกบ้าน (Complaints & Issues)' }}</span>
+          <span>{{ activeMainTab === 'maintenance' ? 'ระบบแจ้งซ่อมและติดตามงาน (Maintenance Kanban)' : 'บอร์ดจัดการเรื่องร้องเรียนและแจ้งเหตุ (Issues Kanban)' }}</span>
         </h1>
         <p class="text-sm text-slate-500">
           {{ activeMainTab === 'maintenance' 
             ? 'จัดการตั๋วงานซ่อม มอบหมายช่าง คำนวณค่าซ่อม และส่งสัญญาณอัปเดต LINE ลูกบ้าน' 
-            : 'ตรวจสอบข้อร้องเรียน ปัญหาห้องพัก และตอบกลับลูกบ้านผ่าน LINE LIFF ได้ทันที' }}
+            : 'ติดตามข้อร้องเรียนและปัญหาจากลูกบ้านในรูปแบบ Kanban Board พร้อมตอบกลับผ่าน LINE LIFF ทันที' }}
         </p>
       </div>
 
@@ -40,30 +40,30 @@
     <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
       <button
         @click="activeMainTab = 'maintenance'"
-        class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+        class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         :class="activeMainTab === 'maintenance' ? 'bg-purple-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
       >
         <Wrench class="w-4 h-4" />
-        <span>ตารางงานแจ้งซ่อม (Kanban)</span>
-        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono">
+        <span>บอร์ดงานแจ้งซ่อม (Maintenance)</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold">
           {{ requests.length }}
         </span>
       </button>
 
       <button
         @click="activeMainTab = 'issues'"
-        class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+        class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         :class="activeMainTab === 'issues' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
       >
         <MessageSquareWarning class="w-4 h-4" />
-        <span>เรื่องร้องเรียน & แจ้งเหตุ (Issues Inbox)</span>
+        <span>บอร์ดเรื่องร้องเรียน & แจ้งเหตุ (Complaints & Issues)</span>
         <span
           v-if="pendingIssuesCount > 0"
-          class="px-1.5 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-mono animate-pulse"
+          class="px-2 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-mono font-bold animate-pulse"
         >
-          {{ pendingIssuesCount }} ใหม่
+          {{ pendingIssuesCount }} รอรับเรื่อง
         </span>
-        <span v-else class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono">
+        <span v-else class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-mono font-bold">
           {{ issueList.length }}
         </span>
       </button>
@@ -72,7 +72,7 @@
     <!-- ==================== VIEW 1: MAINTENANCE KANBAN ==================== -->
     <div v-if="activeMainTab === 'maintenance'" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
       <!-- Column 1: Pending (รอดำเนินการ) -->
-      <div id="tour-kanban-pending" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-pending" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <Clock class="w-4 h-4 text-amber-500" />
@@ -119,7 +119,7 @@
               </span>
               <button
                 @click.stop="handleQuickStatus(item.id, 'in_progress')"
-                class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1"
+                class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer"
               >
                 <Zap class="w-3 h-3" />
                 <span>➔ กำลังซ่อม</span>
@@ -134,7 +134,7 @@
       </div>
 
       <!-- Column 2: In Progress (กำลังดำเนินการซ่อม) -->
-      <div id="tour-kanban-inprogress" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-inprogress" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <Zap class="w-4 h-4 text-blue-500" />
@@ -183,7 +183,7 @@
               </span>
               <button
                 @click.stop="handleQuickStatus(item.id, 'resolved')"
-                class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1"
+                class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer"
               >
                 <CheckCircle2 class="w-3 h-3" />
                 <span>➔ ซ่อมเสร็จแล้ว</span>
@@ -198,7 +198,7 @@
       </div>
 
       <!-- Column 3: Resolved (เสร็จสิ้น) -->
-      <div id="tour-kanban-resolved" class="bg-slate-100/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+      <div id="tour-kanban-resolved" class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
             <CheckCircle2 class="w-4 h-4 text-emerald-600" />
@@ -253,126 +253,244 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 2: COMPLAINTS & ISSUES INBOX ==================== -->
-    <div v-else class="space-y-4">
-      <!-- Filter Controls Bar -->
-      <div class="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <!-- Category Tabs -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <button
-            v-for="cat in issueCategoryFilters"
-            :key="cat.value"
-            @click="selectedCategoryFilter = cat.value"
-            class="px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-            :class="selectedCategoryFilter === cat.value ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
-          >
-            <span>{{ cat.label }}</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="selectedCategoryFilter === cat.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'">
-              {{ cat.count }}
-            </span>
-          </button>
-        </div>
-
-        <!-- Status Filter -->
+    <!-- ==================== VIEW 2: COMPLAINTS & ISSUES KANBAN BOARD ==================== -->
+    <div v-else class="space-y-5">
+      <!-- Category Filter Tabs Bar -->
+      <div class="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-slate-500">สถานะ:</span>
-          <select
-            v-model="selectedStatusFilter"
-            class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 font-semibold focus:outline-hidden"
-          >
-            <option value="ALL">ทั้งหมดทุกสถานะ</option>
-            <option value="PENDING">รอรับเรื่อง (Pending)</option>
-            <option value="IN_PROGRESS">กำลังดำเนินการ (In Progress)</option>
-            <option value="RESOLVED">แก้ไขเสร็จสิ้น (Resolved)</option>
-            <option value="CANCELLED">ยกเลิก (Cancelled)</option>
-          </select>
+          <span class="text-xs font-bold text-slate-700 shrink-0">กรองหมวดหมู่เรื่อง:</span>
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
+            <button
+              v-for="cat in issueCategoryFilters"
+              :key="cat.value"
+              @click="selectedCategoryFilter = cat.value"
+              class="px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              :class="selectedCategoryFilter === cat.value ? 'bg-indigo-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
+            >
+              <span>{{ cat.label }}</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="selectedCategoryFilter === cat.value ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'">
+                {{ cat.count }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-400 font-mono">
+          แสดงผลรวม: {{ filteredIssuesByCat.length }} รายการ
         </div>
       </div>
 
-      <!-- Issues List Cards -->
-      <div v-if="filteredIssues.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
-          v-for="issue in filteredIssues"
-          :key="issue.id"
-          @click="openIssueDetailModal(issue)"
-          class="p-5 bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer space-y-3.5 flex flex-col justify-between"
-        >
+      <!-- Issues Kanban Grid (3 Columns) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+        <!-- 1. Pending Issues Column -->
+        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-2">
+              <Clock class="w-4 h-4 text-amber-500" />
+              <h3 class="font-bold text-slate-800 text-sm">รอรับเรื่อง (Pending)</h3>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
+              {{ pendingIssueList.length }}
+            </span>
+          </div>
+
           <div class="space-y-3">
-            <!-- Card Header: Category Badge + Status Badge -->
-            <div class="flex items-center justify-between gap-2 flex-wrap">
-              <span
-                class="px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs"
-                :class="getCategoryBadgeClass(issue.category)"
-              >
-                <component :is="getCategoryIcon(issue.category)" class="w-3.5 h-3.5" />
-                <span>{{ getCategoryLabel(issue.category) }}</span>
-              </span>
+            <div
+              v-for="issue in pendingIssueList"
+              :key="issue.id"
+              @click="openIssueDetailModal(issue)"
+              class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all cursor-pointer space-y-3 group"
+            >
+              <!-- Card Top: Category & Room -->
+              <div class="flex items-center justify-between gap-2">
+                <span
+                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                  :class="getCategoryBadgeClass(issue.category)"
+                >
+                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
+                  <span>{{ getCategoryLabel(issue.category) }}</span>
+                </span>
 
-              <span
-                class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border inline-flex items-center gap-1"
-                :class="getIssueStatusBadgeClass(issue.status)"
-              >
-                <span class="w-1.5 h-1.5 rounded-full" :class="getIssueStatusDotClass(issue.status)"></span>
-                <span>{{ getIssueStatusLabel(issue.status) }}</span>
-              </span>
+                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono">
+                  ห้อง {{ issue.room?.roomNumber || '-' }}
+                </span>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <p class="text-xs text-slate-800 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
+                  {{ issue.description }}
+                </p>
+              </div>
+
+              <!-- Thumbnails -->
+              <div v-if="getParsedImages(issue.imageUrls).length > 0" class="flex items-center gap-1.5 overflow-x-auto pt-0.5">
+                <img
+                  v-for="(img, idx) in getParsedImages(issue.imageUrls)"
+                  :key="idx"
+                  :src="resolveImageUrl(img)"
+                  class="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                />
+              </div>
+
+              <!-- Card Footer -->
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <div class="flex items-center gap-1 text-slate-600 truncate max-w-[130px]">
+                  <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span class="truncate">{{ issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : 'ลูกบ้าน' }}</span>
+                </div>
+
+                <button
+                  @click.stop="handleQuickIssueStatus(issue.id, 'IN_PROGRESS')"
+                  class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer"
+                >
+                  <Zap class="w-3 h-3" />
+                  <span>➔ กำลังตรวจ</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Room & Tenant Info -->
-            <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50/70 p-2.5 rounded-2xl border border-slate-100">
-              <div class="flex items-center gap-2 font-bold text-slate-900">
-                <DoorClosed class="w-4 h-4 text-indigo-600" />
-                <span>ห้อง {{ issue.room?.roomNumber || '-' }} {{ issue.building?.name ? `(${issue.building.name})` : '' }}</span>
-              </div>
-              <div class="text-slate-500 font-medium flex items-center gap-1">
-                <User class="w-3.5 h-3.5 text-slate-400" />
-                <span>{{ issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : 'ลูกบ้าน' }}</span>
-              </div>
-            </div>
-
-            <!-- Description -->
-            <p class="text-xs text-slate-700 leading-relaxed line-clamp-3 whitespace-pre-line">
-              {{ issue.description }}
-            </p>
-
-            <!-- Image Thumbnails -->
-            <div v-if="getParsedImages(issue.imageUrls).length > 0" class="flex items-center gap-2 pt-1 overflow-x-auto pb-1">
-              <img
-                v-for="(img, idx) in getParsedImages(issue.imageUrls)"
-                :key="idx"
-                :src="resolveImageUrl(img)"
-                class="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
-              />
-            </div>
-
-            <!-- Admin Reply Preview (if exists) -->
-            <div v-if="issue.adminReply" class="p-2.5 bg-indigo-50/70 rounded-xl border border-indigo-100 text-xs text-indigo-900 space-y-1">
-              <div class="font-bold flex items-center gap-1 text-[11px]">
-                <CheckCircle2 class="w-3.5 h-3.5 text-indigo-600" />
-                <span>ตอบกลับแล้ว:</span>
-              </div>
-              <p class="text-slate-600 text-[11px] line-clamp-2">{{ issue.adminReply }}</p>
+            <div v-if="pendingIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+              ไม่มีเรื่องที่รอดำเนินการ 🎉
             </div>
           </div>
+        </div>
 
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-            <span>แจ้งเมื่อ: {{ formatDate(issue.createdAt) }}</span>
-            <span class="text-indigo-600 font-bold hover:underline">คลิกเพื่อดูและตอบกลับ ➔</span>
+        <!-- 2. In Progress Issues Column -->
+        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-2">
+              <Zap class="w-4 h-4 text-blue-500" />
+              <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ (In Progress)</h3>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
+              {{ inProgressIssueList.length }}
+            </span>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="issue in inProgressIssueList"
+              :key="issue.id"
+              @click="openIssueDetailModal(issue)"
+              class="p-4.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-300 transition-all cursor-pointer space-y-3 group"
+            >
+              <!-- Card Top -->
+              <div class="flex items-center justify-between gap-2">
+                <span
+                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                  :class="getCategoryBadgeClass(issue.category)"
+                >
+                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
+                  <span>{{ getCategoryLabel(issue.category) }}</span>
+                </span>
+
+                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 font-mono">
+                  ห้อง {{ issue.room?.roomNumber || '-' }}
+                </span>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <p class="text-xs text-slate-800 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
+                  {{ issue.description }}
+                </p>
+              </div>
+
+              <!-- Admin Reply Notice (if added) -->
+              <div v-if="issue.adminReply" class="p-2 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-900 line-clamp-2">
+                <strong>ตอบแล้ว:</strong> {{ issue.adminReply }}
+              </div>
+
+              <!-- Card Footer -->
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <div class="flex items-center gap-1 text-slate-600 truncate max-w-[130px]">
+                  <User class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span class="truncate">{{ issue.user ? `${issue.user.firstName} ${issue.user.lastName}` : 'ลูกบ้าน' }}</span>
+                </div>
+
+                <button
+                  @click.stop="openIssueDetailModal(issue)"
+                  class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer"
+                >
+                  <CheckCircle2 class="w-3 h-3" />
+                  <span>➔ ตอบ/ปิดเรื่อง</span>
+                </button>
+              </div>
+            </div>
+
+            <div v-if="inProgressIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+              ไม่มีเรื่องที่กำลังดำเนินการ
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div v-else class="p-12 bg-white rounded-3xl border border-slate-200/80 text-center space-y-3 shadow-xs">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-          <MessageSquareWarning class="w-6 h-6" />
+        <!-- 3. Resolved Issues Column -->
+        <div class="bg-slate-100/80 p-4 rounded-3xl border border-slate-200/80 space-y-3.5 min-h-[500px]">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-2">
+              <CheckCircle2 class="w-4 h-4 text-emerald-600" />
+              <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้น/ตอบแล้ว (Resolved)</h3>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              {{ resolvedIssueList.length }}
+            </span>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="issue in resolvedIssueList"
+              :key="issue.id"
+              @click="openIssueDetailModal(issue)"
+              class="p-4.5 bg-white/90 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer space-y-3 group opacity-90 hover:opacity-100"
+            >
+              <!-- Card Top -->
+              <div class="flex items-center justify-between gap-2">
+                <span
+                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                  :class="getCategoryBadgeClass(issue.category)"
+                >
+                  <component :is="getCategoryIcon(issue.category)" class="w-3 h-3" />
+                  <span>{{ getCategoryLabel(issue.category) }}</span>
+                </span>
+
+                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+                  ห้อง {{ issue.room?.roomNumber || '-' }}
+                </span>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <p class="text-xs text-slate-500 line-through leading-relaxed line-clamp-2 whitespace-pre-line">
+                  {{ issue.description }}
+                </p>
+              </div>
+
+              <!-- Admin Reply Box -->
+              <div v-if="issue.adminReply" class="p-2.5 bg-emerald-50/70 rounded-xl border border-emerald-100 text-[11px] text-emerald-950 line-clamp-2">
+                <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ issue.adminReply }}
+              </div>
+
+              <!-- Card Footer -->
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <span>{{ issue.user ? `${issue.user.firstName}` : 'ลูกบ้าน' }}</span>
+                <span class="text-emerald-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 class="w-3 h-3" />
+                  <span>แก้ไขเรียบร้อย</span>
+                </span>
+              </div>
+            </div>
+
+            <div v-if="resolvedIssueList.length === 0" class="p-8 text-center text-slate-400 text-xs bg-white/60 rounded-2xl border border-dashed border-slate-200">
+              ยังไม่มีเรื่องที่เสร็จสิ้น
+            </div>
+          </div>
         </div>
-        <h3 class="text-sm font-bold text-slate-800">ไม่มีรายการเรื่องร้องเรียนหรือแจ้งเหตุ</h3>
-        <p class="text-xs text-slate-400">ยังไม่มีลูกบ้านส่งเรื่องร้องเรียนในหมวดหมู่นี้</p>
       </div>
     </div>
 
     <!-- ==================== ISSUE DETAIL & ADMIN REPLY MODAL ==================== -->
-    <div v-if="selectedIssue" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div v-if="selectedIssue" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -380,7 +498,7 @@
             <span class="px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs" :class="getCategoryBadgeClass(selectedIssue.category)">
               {{ getCategoryLabel(selectedIssue.category) }}
             </span>
-            <span class="text-xs text-slate-400 font-mono">
+            <span class="text-xs text-slate-500 font-mono font-bold">
               ห้อง {{ selectedIssue.room?.roomNumber || '-' }}
             </span>
           </div>
@@ -403,7 +521,7 @@
           </div>
 
           <div class="text-right">
-            <div class="text-[10px] text-slate-400">อาคาร & ห้อง:</div>
+            <div class="text-[10px] text-slate-400">อาคาร & ห้องพัก:</div>
             <div class="font-bold text-indigo-600 font-mono">
               ห้อง {{ selectedIssue.room?.roomNumber || '-' }} ({{ selectedIssue.building?.name || 'อาคารหลัก' }})
             </div>
@@ -420,7 +538,7 @@
 
         <!-- Attached Images -->
         <div v-if="getParsedImages(selectedIssue.imageUrls).length > 0" class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-700">รูปภาพประกอบ:</label>
+          <label class="block text-xs font-bold text-slate-700">รูปภาพประกอบ (แตะเพื่อเปิดรูปเต็ม):</label>
           <div class="grid grid-cols-3 gap-2">
             <a
               v-for="(img, idx) in getParsedImages(selectedIssue.imageUrls)"
@@ -442,15 +560,15 @@
               v-model="replyForm.status"
               class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-slate-900 focus:outline-hidden"
             >
-              <option value="PENDING">รอรับเรื่อง (Pending)</option>
-              <option value="IN_PROGRESS">กำลังดำเนินการตรวจสอบ / ส่งช่าง (In Progress)</option>
-              <option value="RESOLVED">แก้ไขเรียบร้อยแล้ว (Resolved)</option>
-              <option value="CANCELLED">ยกเลิกเรื่อง (Cancelled)</option>
+              <option value="PENDING">🟡 รอรับเรื่อง (Pending)</option>
+              <option value="IN_PROGRESS">🔵 กำลังดำเนินการตรวจสอบ / ส่งช่าง (In Progress)</option>
+              <option value="RESOLVED">🟢 แก้ไขเรียบร้อยแล้ว (Resolved)</option>
+              <option value="CANCELLED">🔴 ยกเลิกเรื่อง (Cancelled)</option>
             </select>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">ข้อความตอบกลับลูกบ้าน (จะแสดงบน LINE LIFF):</label>
+            <label class="block font-bold text-slate-800 mb-1">ข้อความตอบกลับลูกบ้าน (จะแสดงบน LINE LIFF ทันที):</label>
             <textarea
               v-model="replyForm.adminReply"
               rows="3"
@@ -691,7 +809,6 @@ const selectedItem = ref(null);
 const selectedIssue = ref(null);
 
 const selectedCategoryFilter = ref('ALL');
-const selectedStatusFilter = ref('ALL');
 
 const editForm = reactive({
   id: '',
@@ -713,10 +830,12 @@ const newForm = reactive({
   imageUrl: ''
 });
 
+// Maintenance Kanban Lists
 const pendingList = computed(() => requests.value.filter((r) => r.status === 'pending'));
 const inProgressList = computed(() => requests.value.filter((r) => r.status === 'in_progress'));
 const resolvedList = computed(() => requests.value.filter((r) => r.status === 'resolved' || r.status === 'completed'));
 
+// Issues Kanban Lists
 const pendingIssuesCount = computed(() => {
   return issueList.value.filter((i) => (i.status || '').toUpperCase() === 'PENDING').length;
 });
@@ -735,12 +854,21 @@ const issueCategoryFilters = computed(() => {
   ];
 });
 
-const filteredIssues = computed(() => {
-  return issueList.value.filter((i) => {
-    const matchCat = selectedCategoryFilter.value === 'ALL' || (i.category || '').toUpperCase() === selectedCategoryFilter.value;
-    const matchStatus = selectedStatusFilter.value === 'ALL' || (i.status || '').toUpperCase() === selectedStatusFilter.value;
-    return matchCat && matchStatus;
-  });
+const filteredIssuesByCat = computed(() => {
+  if (selectedCategoryFilter.value === 'ALL') return issueList.value;
+  return issueList.value.filter((i) => (i.category || '').toUpperCase() === selectedCategoryFilter.value);
+});
+
+const pendingIssueList = computed(() => {
+  return filteredIssuesByCat.value.filter((i) => (i.status || '').toUpperCase() === 'PENDING');
+});
+
+const inProgressIssueList = computed(() => {
+  return filteredIssuesByCat.value.filter((i) => (i.status || '').toUpperCase() === 'IN_PROGRESS');
+});
+
+const resolvedIssueList = computed(() => {
+  return filteredIssuesByCat.value.filter((i) => ['RESOLVED', 'COMPLETED', 'CANCELLED'].includes((i.status || '').toUpperCase()));
 });
 
 const getCategoryLabel = (category) => {
@@ -766,48 +894,6 @@ const getCategoryBadgeClass = (category) => {
   return 'bg-purple-100 text-purple-800 border border-purple-200';
 };
 
-const getIssueStatusLabel = (status) => {
-  const map = {
-    PENDING: 'รอรับเรื่อง',
-    IN_PROGRESS: 'กำลังดำเนินการ',
-    RESOLVED: 'แก้ไขเรียบร้อย',
-    CANCELLED: 'ยกเลิก'
-  };
-  return map[(status || '').toUpperCase()] || status;
-};
-
-const getIssueStatusBadgeClass = (status) => {
-  const s = (status || '').toUpperCase();
-  switch (s) {
-    case 'PENDING':
-      return 'bg-amber-50 text-amber-800 border-amber-200';
-    case 'IN_PROGRESS':
-      return 'bg-blue-50 text-blue-800 border-blue-200';
-    case 'RESOLVED':
-      return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-    case 'CANCELLED':
-      return 'bg-rose-50 text-rose-700 border-rose-200';
-    default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
-  }
-};
-
-const getIssueStatusDotClass = (status) => {
-  const s = (status || '').toUpperCase();
-  switch (s) {
-    case 'PENDING':
-      return 'bg-amber-500 animate-pulse';
-    case 'IN_PROGRESS':
-      return 'bg-blue-500 animate-pulse';
-    case 'RESOLVED':
-      return 'bg-emerald-500';
-    case 'CANCELLED':
-      return 'bg-rose-500';
-    default:
-      return 'bg-slate-400';
-  }
-};
-
 const getParsedImages = (imageUrls) => {
   if (!imageUrls) return [];
   if (Array.isArray(imageUrls)) return imageUrls;
@@ -826,17 +912,6 @@ const resolveImageUrl = (path) => {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${cleanBase}${cleanPath}`;
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 const fetchData = async () => {
@@ -875,6 +950,16 @@ const openIssueDetailModal = (issue) => {
   replyForm.adminReply = issue.adminReply || '';
 };
 
+const handleQuickIssueStatus = async (id, newStatus) => {
+  try {
+    await api.put(`/api/admin/issues/${id}`, { status: newStatus });
+    showToast(`อัปเดตสถานะเป็น ${newStatus} แล้ว`);
+    fetchIssues();
+  } catch (error) {
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถเปลี่ยนสถานะได้');
+  }
+};
+
 const handleSaveIssueReply = async () => {
   if (!selectedIssue.value?.id) return;
   savingReply.value = true;
@@ -884,7 +969,7 @@ const handleSaveIssueReply = async () => {
       adminReply: replyForm.adminReply
     });
 
-    showToast('บันทึกคำตอบกลับเรียบร้อยแล้ว');
+    showToast('บันทึกคำตอบกลับและสถานะเรียบร้อยแล้ว');
     selectedIssue.value = null;
     await fetchIssues();
   } catch (error) {
