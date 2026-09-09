@@ -119,3 +119,26 @@
 - พิจารณาลบไฟล์ `LiffMaintenanceView.vue` ที่กลายเป็น Dead Code แล้วหลังข้อ 4
 
 ### STATUS: 🟢 COMPLETE & VERIFIED (รอ Merge เข้า `main` — ยังไม่ลบไฟล์ Dead Code ในรอบนี้)
+
+---
+
+## 📅 [2026-09-09] - PIN Verify-and-Set Flow, Maintenance Payer UI, UI Polish, Android/LINE PDF Download Fix
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **Audit ระบบ PIN (LIFF)**: พบว่าตอนยืนยันตัวตนข้ามอาคาร (`linkAndLogin`) ถ้าบัญชียังไม่เคยตั้ง PIN มาก่อนจะโดนบล็อกเฉยๆ ไม่มีทางตั้ง PIN ใหม่ในหน้าเดียวกันได้ — ประสาน Backend แก้ให้ตั้ง PIN ใหม่พร้อมยืนยันตัวตนได้ในคำขอเดียว แล้วปรับ UI ให้สอดคล้อง:
+   - [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) และ [LiffOnboardingView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffOnboardingView.vue): เดิมพาไปหน้ากรอก PIN เฉพาะกรณีมี PIN แล้วเท่านั้น ปรับให้เข้าหน้าเดียวกันทุกกรณีที่เป็นผู้ใช้เดิม แล้วสลับข้อความ/ปุ่มอัตโนมัติ ("กรอก PIN เดิม" vs "ตั้ง PIN ใหม่") ซ่อนปุ่ม "ลืม PIN" เมื่อยังไม่เคยมี PIN
+   - [LiffOnboardingView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffOnboardingView.vue) MODE 2 (ผูกบัญชีด้วย Invite Code) และ [LiffRegisterView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffRegisterView.vue) (ลงทะเบียนใหม่ด้วย Invite Code): เดิมไม่เคยพาลูกบ้านไปตั้ง PIN เลยหลังผูกบัญชี/ลงทะเบียนสำเร็จ ปรับให้เช็ค `hasPin` จาก Backend แล้วพาไป `/liff/setup-pin` อัตโนมัติถ้ายังไม่มี
+   - ⚠️ **แก้ไขบันทึกเดิม**: Follow-up item "ลบ LiffOnboardingView.vue (Dead Code)" จากบันทึกวันเดียวกันด้านบน **ไม่ถูกต้อง** — หน้านี้ยังมี Route (`/liff/onboarding`) ใช้งานจริงในเซสชันนี้ ไม่ควรลบ
+2. **UI/Design Audit หน้าโปรไฟล์ลูกบ้าน ([LiffProfileView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffProfileView.vue))**: จากภาพหน้าจอที่ผู้ใช้ส่งมา
+   - การ์ดข่าวสารเลื่อนแนวนอนถูกตัดขาดที่ขอบขวาโดยไม่มีสัญญาณว่าเลื่อนดูต่อได้ → เพิ่มเงาไล่สีจางบอกใบ้ (Edge Fade)
+   - รูปปกข่าวสารที่โหลดพัง (ลิงก์เสีย) โชว์เป็นกล่องเทาว่างๆ → เพิ่ม `@error` fallback สลับไปโชว์หัวการ์ดแบบไม่มีรูปแทน (มี Pattern เดิมสำหรับ Avatar อยู่แล้วแต่ลืมทำให้การ์ดข่าวสาร)
+   - **พบและแก้บั๊กจริงระหว่างตรวจ**: รูปโปรไฟล์ LINE ไม่ขึ้น เพราะ (ก) DB ของ Tenant ทดสอบถูกอินทิเกรชันเทสเขียนทับด้วย URL ปลอม (ล้างข้อมูลให้แล้ว) และ (ข) `fetchTenantProfile()` ให้ค่า `linePictureUrl` จาก DB ทับรูปสดจาก LIFF SDK เสมอ ทั้งที่ควรให้รูปสดชนะ — แก้ให้ใช้รูปสดจาก LIFF ก่อนเสมอถ้ามี ค่อย fallback ไป DB
+3. **ระบบผู้รับผิดชอบค่าซ่อม (Maintenance Payer) ฝั่ง UI**:
+   - [MaintenanceView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/MaintenanceView.vue): เพิ่มปุ่มเลือก "นิติออกให้" / "ลูกบ้านจ่ายเอง" ตอนปิดงานซ่อม + Badge สถานะ "รอรวมบิล / รวมในบิลแล้ว" (ล็อกฟิลด์เมื่อรวมบิลไปแล้ว)
+   - [IssueHistory.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/IssueHistory.vue) และ [TenantDetail.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/TenantDetail.vue): โชว์ผู้รับผิดชอบค่าใช้จ่ายให้ลูกบ้านและแอดมินเห็นตรงกัน
+4. **แก้บั๊กดาวน์โหลดใบแจ้งหนี้/QR Code ไม่ได้บน Android ใน LINE**:
+   - [downloadHelper.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/utils/downloadHelper.js): เอา `target="_blank"` ออกจาก Anchor ที่มี `download` attribute ทั้งใน `downloadPdf` และ `downloadImage` (คู่กันแล้วบาง Android WebView/LINE In-App Browser ตีความเป็นเปิดแท็บใหม่แทนดาวน์โหลด แล้วพังเงียบๆ)
+   - Backend แก้ `Content-Disposition` จาก `inline` เป็น `attachment` ที่ Endpoint PDF ใบแจ้งหนี้/ใบเสร็จ (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 12) — เป็นสาเหตุหลักที่ทำให้ Android ดาวน์โหลดไม่ได้
+5. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
+
+### STATUS: 🟢 COMPLETE & VERIFIED
