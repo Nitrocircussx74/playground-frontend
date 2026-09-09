@@ -814,10 +814,11 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
     const params = {};
     if (lineUserId) params.lineUserId = lineUserId;
 
-    const [invoicesRes, parcelsRes, maintenanceRes] = await Promise.allSettled([
+    const [invoicesRes, parcelsRes, maintenanceRes, issuesRes] = await Promise.allSettled([
       api.get('/api/v1/liff/invoices/history', { params }),
       api.get('/api/v1/liff/parcels', { params }),
-      api.get('/api/v1/liff/maintenance', { params })
+      api.get('/api/v1/liff/maintenance', { params }),
+      api.get('/api/v1/liff/issues', { params })
     ]);
 
     // 1. Unpaid Invoices
@@ -836,13 +837,22 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
       );
     }
 
-    // 3. Active Maintenance
+    // 3. Active Maintenance & Issues (รวม 2 ระบบหลังบ้านเป็นตัวเลขเดียว ให้ตรงกับหน้า /liff/issues ที่ปุ่มนี้พาไป)
+    const activeStatuses = ['pending', 'in_progress', 'assigned'];
+    let activeTickets = [];
     if (maintenanceRes.status === 'fulfilled') {
       const mList = maintenanceRes.value.data?.data || [];
-      activeMaintenance.value = mList.filter((m) =>
-        ['pending', 'in_progress', 'assigned'].includes((m.status || '').toLowerCase())
+      activeTickets = activeTickets.concat(
+        mList.filter((m) => activeStatuses.includes((m.status || '').toLowerCase()))
       );
     }
+    if (issuesRes.status === 'fulfilled') {
+      const iList = issuesRes.value.data?.data || [];
+      activeTickets = activeTickets.concat(
+        iList.filter((i) => activeStatuses.includes((i.status || '').toLowerCase()))
+      );
+    }
+    activeMaintenance.value = activeTickets;
   } catch (err) {
     console.warn('Live action metrics fetch warning:', err);
   }
