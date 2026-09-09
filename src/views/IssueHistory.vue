@@ -18,6 +18,7 @@
         </button>
 
         <router-link
+          v-if="featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
           to="/liff/issues/report"
           class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer active:scale-95"
         >
@@ -27,135 +28,151 @@
       </div>
     </div>
 
-    <!-- Filter Tabs -->
-    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-      <button
-        v-for="tab in filterTabs"
-        :key="tab.value"
-        type="button"
-        @click="activeTab = tab.value"
-        class="px-3 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-        :class="activeTab === tab.value
-          ? 'bg-slate-900 text-white shadow-xs'
-          : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80'"
-      >
-        <span>{{ tab.label }}</span>
-        <span
-          v-if="tab.count > 0"
-          class="px-1.5 py-0.2 rounded-full text-[10px]"
-          :class="activeTab === tab.value ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'"
-        >
-          {{ tab.count }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Loading Skeleton -->
-    <div v-if="loading" class="space-y-3 animate-pulse">
-      <div v-for="i in 3" :key="i" class="p-5 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <div class="flex justify-between items-center">
-          <div class="h-4 w-28 bg-slate-100 skeleton-shimmer rounded-md"></div>
-          <div class="h-4 w-20 bg-slate-100 skeleton-shimmer rounded-full"></div>
-        </div>
-        <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
-        <div class="h-3 w-3/4 bg-slate-100 skeleton-shimmer rounded-md"></div>
+    <!-- Feature Disabled Notice (Admin ปิดใช้งานระบบแจ้งซ่อม/ร้องเรียนไว้) -->
+    <div
+      v-if="!featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
+      class="p-5 bg-amber-50 border border-amber-200 rounded-3xl text-amber-900 space-y-2 shadow-xs"
+    >
+      <div class="flex items-center gap-2 font-bold text-xs">
+        <AlertTriangle class="w-4 h-4 text-amber-600 shrink-0" />
+        <span>ระบบแจ้งซ่อมและร้องเรียนถูกปิดใช้งานชั่วคราว</span>
       </div>
+      <p class="text-[11px] text-amber-700 leading-relaxed">
+        ผู้ดูแลหอพักได้ปิดการรับเรื่องแจ้งซ่อมหรือร้องเรียนผ่านระบบออนไลน์ชั่วคราว หากมีเหตุฉุกเฉินกรุณาติดต่อเจ้าหน้าที่โดยตรง
+      </p>
     </div>
 
-    <!-- Issues List -->
-    <div v-else-if="filteredIssues.length > 0" class="space-y-3.5">
-      <div
-        v-for="issue in filteredIssues"
-        :key="issue.id"
-        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3 transition-all hover:shadow-md"
-      >
-        <!-- Card Top Bar: Category & Status Badge -->
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <div class="flex items-center gap-2">
-            <span
-              class="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold"
-              :class="getCategoryIconBg(issue.category)"
-            >
-              <component :is="getCategoryIcon(issue.category)" class="w-3.5 h-3.5" />
-            </span>
+    <template v-else>
+      <!-- Filter Tabs -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <button
+          v-for="tab in filterTabs"
+          :key="tab.value"
+          type="button"
+          @click="activeTab = tab.value"
+          class="px-3 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+          :class="activeTab === tab.value
+            ? 'bg-slate-900 text-white shadow-xs'
+            : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80'"
+        >
+          <span>{{ tab.label }}</span>
+          <span
+            v-if="tab.count > 0"
+            class="px-1.5 py-0.2 rounded-full text-[10px]"
+            :class="activeTab === tab.value ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'"
+          >
+            {{ tab.count }}
+          </span>
+        </button>
+      </div>
 
-            <div>
-              <span class="text-xs font-bold text-slate-800">
-                {{ getCategoryLabel(issue.category) }}
+      <!-- Loading Skeleton -->
+      <div v-if="loading" class="space-y-3 animate-pulse">
+        <div v-for="i in 3" :key="i" class="p-5 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="h-4 w-28 bg-slate-100 skeleton-shimmer rounded-md"></div>
+            <div class="h-4 w-20 bg-slate-100 skeleton-shimmer rounded-full"></div>
+          </div>
+          <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
+          <div class="h-3 w-3/4 bg-slate-100 skeleton-shimmer rounded-md"></div>
+        </div>
+      </div>
+
+      <!-- Issues List -->
+      <div v-else-if="filteredIssues.length > 0" class="space-y-3.5">
+        <div
+          v-for="issue in filteredIssues"
+          :key="issue.id"
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3 transition-all hover:shadow-md"
+        >
+          <!-- Card Top Bar: Category & Status Badge -->
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              <span
+                class="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold"
+                :class="getCategoryIconBg(issue.category)"
+              >
+                <component :is="getCategoryIcon(issue.category)" class="w-3.5 h-3.5" />
               </span>
-              <div class="text-[10px] text-slate-400 font-mono">
-                ห้อง {{ issue.room?.roomNumber || '-' }} • {{ formatDate(issue.createdAt) }}
+
+              <div>
+                <span class="text-xs font-bold text-slate-800">
+                  {{ getCategoryLabel(issue.category) }}
+                </span>
+                <div class="text-[10px] text-slate-400 font-mono">
+                  ห้อง {{ issue.room?.roomNumber || '-' }} • {{ formatDate(issue.createdAt) }}
+                </div>
               </div>
+            </div>
+
+            <!-- Status Badge -->
+            <span
+              class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs inline-flex items-center gap-1"
+              :class="getStatusBadgeClass(issue.status)"
+            >
+              <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(issue.status)"></span>
+              <span>{{ getStatusLabel(issue.status) }}</span>
+            </span>
+          </div>
+
+          <!-- Description Content -->
+          <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line pt-1">
+            {{ issue.description }}
+          </p>
+
+          <!-- Attached Images Preview Thumbnails -->
+          <div v-if="getParsedImages(issue.imageUrls).length > 0" class="pt-1">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+              <img
+                v-for="(imgUrl, idx) in getParsedImages(issue.imageUrls)"
+                :key="idx"
+                :src="resolveImageUrl(imgUrl)"
+                alt="Attached Image"
+                @click="openImageModal(resolveImageUrl(imgUrl))"
+                class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-200 shrink-0 cursor-pointer hover:opacity-90 transition-opacity shadow-2xs"
+              />
             </div>
           </div>
 
-          <!-- Status Badge -->
-          <span
-            class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs inline-flex items-center gap-1"
-            :class="getStatusBadgeClass(issue.status)"
+          <!-- Admin Reply Box (if present) -->
+          <div
+            v-if="issue.adminReply"
+            class="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-1.5 text-xs shadow-2xs"
           >
-            <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(issue.status)"></span>
-            <span>{{ getStatusLabel(issue.status) }}</span>
-          </span>
-        </div>
-
-        <!-- Description Content -->
-        <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line pt-1">
-          {{ issue.description }}
-        </p>
-
-        <!-- Attached Images Preview Thumbnails -->
-        <div v-if="getParsedImages(issue.imageUrls).length > 0" class="pt-1">
-          <div class="flex items-center gap-2 overflow-x-auto pb-1">
-            <img
-              v-for="(imgUrl, idx) in getParsedImages(issue.imageUrls)"
-              :key="idx"
-              :src="resolveImageUrl(imgUrl)"
-              alt="Attached Image"
-              @click="openImageModal(resolveImageUrl(imgUrl))"
-              class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-200 shrink-0 cursor-pointer hover:opacity-90 transition-opacity shadow-2xs"
-            />
+            <div class="flex items-center gap-1.5 text-indigo-900 font-bold text-[11px]">
+              <CheckCircle2 class="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span>ข้อความตอบกลับจากแอดมิน / ช่างซ่อม</span>
+            </div>
+            <p class="text-indigo-950 text-xs leading-relaxed whitespace-pre-line pl-5 font-medium">
+              {{ issue.adminReply }}
+            </p>
           </div>
         </div>
+      </div>
 
-        <!-- Admin Reply Box (if present) -->
-        <div
-          v-if="issue.adminReply"
-          class="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-1.5 text-xs shadow-2xs"
-        >
-          <div class="flex items-center gap-1.5 text-indigo-900 font-bold text-[11px]">
-            <CheckCircle2 class="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-            <span>ข้อความตอบกลับจากแอดมิน / ช่างซ่อม</span>
-          </div>
-          <p class="text-indigo-950 text-xs leading-relaxed whitespace-pre-line pl-5 font-medium">
-            {{ issue.adminReply }}
+      <!-- Empty State -->
+      <div v-else class="p-10 bg-white rounded-3xl border border-slate-100 text-center space-y-3 shadow-xs">
+        <div class="w-14 h-14 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
+          <ClipboardList class="w-7 h-7" />
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">ไม่พบรายการแจ้งเหตุ</h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            {{ activeTab === 'ALL' ? 'คุณยังไม่เคยส่งเรื่องแจ้งซ่อมหรือร้องเรียน' : 'ไม่มีรายการในหมวดหมู่นี้' }}
           </p>
         </div>
-      </div>
-    </div>
 
-    <!-- Empty State -->
-    <div v-else class="p-10 bg-white rounded-3xl border border-slate-100 text-center space-y-3 shadow-xs">
-      <div class="w-14 h-14 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
-        <ClipboardList class="w-7 h-7" />
+        <div class="pt-1">
+          <router-link
+            to="/liff/issues/report"
+            class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+          >
+            <Plus class="w-3.5 h-3.5" />
+            <span>แจ้งซ่อม / ร้องเรียนเรื่องแรก</span>
+          </router-link>
+        </div>
       </div>
-      <div>
-        <h3 class="text-sm font-bold text-slate-800">ไม่พบรายการแจ้งเหตุ</h3>
-        <p class="text-xs text-slate-400 mt-0.5">
-          {{ activeTab === 'ALL' ? 'คุณยังไม่เคยส่งเรื่องแจ้งซ่อมหรือร้องเรียน' : 'ไม่มีรายการในหมวดหมู่นี้' }}
-        </p>
-      </div>
-
-      <div class="pt-1">
-        <router-link
-          to="/liff/issues/report"
-          class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
-        >
-          <Plus class="w-3.5 h-3.5" />
-          <span>แจ้งซ่อม / ร้องเรียนเรื่องแรก</span>
-        </router-link>
-      </div>
-    </div>
+    </template>
 
     <!-- Lightbox Image Modal -->
     <Teleport to="body">
@@ -193,11 +210,14 @@ import {
   HelpCircle,
   CheckCircle2,
   ClipboardList,
+  AlertTriangle,
   X
 } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
 
+const featureStore = useFeatureStore();
 const loading = ref(true);
 const issues = ref([]);
 const lineUserId = ref('');
@@ -384,6 +404,8 @@ const fetchIssues = async () => {
 };
 
 onMounted(async () => {
+  featureStore.fetchFeatures();
+
   try {
     await initLiff();
     if (isLiffLoggedIn()) {
