@@ -437,11 +437,12 @@
           @click="openAnnouncementModal(announcements[0])"
           class="bg-white rounded-3xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden cursor-pointer group active:scale-[0.99]"
         >
-          <div v-if="announcements[0].imageUrl" class="w-full h-36 sm:h-44 relative overflow-hidden bg-slate-100">
+          <div v-if="announcements[0].imageUrl && !failedAnnouncementImageIds.has(announcements[0].id)" class="w-full h-36 sm:h-44 relative overflow-hidden bg-slate-100">
             <img
               :src="announcements[0].imageUrl"
               :alt="announcements[0].title"
               class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+              @error="handleAnnouncementImageError(announcements[0].id)"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
             <span
@@ -484,65 +485,71 @@
         </div>
 
         <!-- Multiple Announcements: Horizontal Swipeable Showcase -->
-        <div
-          v-else
-          class="flex gap-3 overflow-x-auto pb-1.5 scrollbar-none snap-x snap-mandatory"
-        >
+        <!-- ครอบด้วย relative + เพิ่มเงาไล่สีขอบขวา เพื่อบอกใบ้ว่ายังเลื่อนดูการ์ดถัดไปได้อีก ไม่ให้การ์ดสุดท้ายดูเหมือนถูกตัดขาดดื้อๆ -->
+        <div v-else class="relative">
           <div
-            v-for="item in announcements"
-            :key="item.id"
-            @click="openAnnouncementModal(item)"
-            class="w-[270px] sm:w-[300px] shrink-0 snap-start bg-white rounded-2xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-[0.99]"
+            class="flex gap-3 overflow-x-auto pb-1.5 scrollbar-none snap-x snap-mandatory"
           >
-            <!-- Cover or Header -->
-            <div>
-              <div v-if="item.imageUrl" class="w-full h-28 relative overflow-hidden bg-slate-100">
-                <img
-                  :src="item.imageUrl"
-                  :alt="item.title"
-                  class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                <span
-                  v-if="!isRead(item.id)"
-                  class="absolute top-2.5 left-2.5 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse"
-                >
-                  ใหม่
-                </span>
-                <span
-                  class="absolute bottom-2 left-2 px-2 py-0.5 text-[9px] font-medium rounded-md bg-black/60 text-white backdrop-blur-md"
-                >
-                  {{ item.building?.name || 'ประกาศทั่วไป' }}
-                </span>
-              </div>
-              <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border-b border-slate-100/80 flex items-center justify-between">
-                <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                  {{ item.building?.name || 'ประกาศทั่วไป' }}
-                </span>
-                <span v-if="!isRead(item.id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
-                  ใหม่
-                </span>
-              </div>
-
-              <!-- Content Body -->
-              <div class="p-3.5 space-y-1.5">
-                <div class="text-[10px] text-slate-400 font-mono">
-                  {{ formatDate(item.createdAt) }}
+            <div
+              v-for="item in announcements"
+              :key="item.id"
+              @click="openAnnouncementModal(item)"
+              class="w-[270px] sm:w-[300px] shrink-0 snap-start bg-white rounded-2xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-[0.99]"
+            >
+              <!-- Cover or Header -->
+              <div>
+                <div v-if="item.imageUrl && !failedAnnouncementImageIds.has(item.id)" class="w-full h-28 relative overflow-hidden bg-slate-100">
+                  <img
+                    :src="item.imageUrl"
+                    :alt="item.title"
+                    class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                    @error="handleAnnouncementImageError(item.id)"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                  <span
+                    v-if="!isRead(item.id)"
+                    class="absolute top-2.5 left-2.5 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse"
+                  >
+                    ใหม่
+                  </span>
+                  <span
+                    class="absolute bottom-2 left-2 px-2 py-0.5 text-[9px] font-medium rounded-md bg-black/60 text-white backdrop-blur-md"
+                  >
+                    {{ item.building?.name || 'ประกาศทั่วไป' }}
+                  </span>
                 </div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
-                  {{ item.title }}
-                </h3>
-                <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
-                  {{ item.content }}
-                </p>
-              </div>
-            </div>
+                <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border-b border-slate-100/80 flex items-center justify-between">
+                  <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                    {{ item.building?.name || 'ประกาศทั่วไป' }}
+                  </span>
+                  <span v-if="!isRead(item.id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
+                    ใหม่
+                  </span>
+                </div>
 
-            <div class="p-3 pt-0 flex items-center justify-between text-[11px] font-semibold text-emerald-600 border-t border-slate-50 mt-1">
-              <span>อ่านต่อ</span>
-              <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                <!-- Content Body -->
+                <div class="p-3.5 space-y-1.5">
+                  <div class="text-[10px] text-slate-400 font-mono">
+                    {{ formatDate(item.createdAt) }}
+                  </div>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                    {{ item.title }}
+                  </h3>
+                  <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                    {{ item.content }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="p-3 pt-0 flex items-center justify-between text-[11px] font-semibold text-emerald-600 border-t border-slate-50 mt-1">
+                <span>อ่านต่อ</span>
+                <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </div>
             </div>
           </div>
+
+          <!-- Edge Fade: บอกใบ้ว่าเลื่อนดูต่อได้ (แสดงเฉพาะตอนมีมากกว่า 1 การ์ด) -->
+          <div class="pointer-events-none absolute top-0 right-0 bottom-1.5 w-10 bg-gradient-to-l from-slate-50 via-slate-50/70 to-transparent"></div>
         </div>
       </div>
 
@@ -898,6 +905,14 @@ const handleAvatarError = () => {
   imageLoadError.value = true;
 };
 
+// รูปปกข่าวสาร/ประกาศที่โหลดไม่สำเร็จ (ลิงก์เสีย) - เก็บ id ไว้เพื่อสลับไปแสดงหัวการ์ดแบบไม่มีรูปแทน กันไม่ให้เห็นกล่องว่างๆ
+const failedAnnouncementImageIds = ref(new Set());
+const handleAnnouncementImageError = (id) => {
+  failedAnnouncementImageIds.value.add(id);
+  // ต้องสร้าง Set ใหม่เพื่อให้ Vue reactivity ตรวจจับการเปลี่ยนแปลงได้
+  failedAnnouncementImageIds.value = new Set(failedAnnouncementImageIds.value);
+};
+
 const selectedRoomId = ref('');
 
 const selectedRoom = computed(() => {
@@ -937,7 +952,9 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = data.roomNumber || '-';
       tenantProfile.rooms = data.rooms || [];
       tenantProfile.phone = data.phone || '';
-      if (data.linePictureUrl) {
+      // ใช้รูปโปรไฟล์สดจาก LIFF SDK (onMounted ด้านล่างดึงมาก่อนหน้านี้) เป็นหลักเสมอถ้ามี เพราะเป็นข้อมูลล่าสุดจริง
+      // ค่อย fallback ไปใช้ค่าที่แคชไว้ใน DB เมื่อดึงจาก LIFF ไม่ได้ (เช่น เปิดนอกแอป LINE) ป้องกันไม่ให้ค่าเก่า/ค้างใน DB มาทับรูปที่ถูกต้อง
+      if (data.linePictureUrl && !tenantProfile.avatarUrl) {
         tenantProfile.avatarUrl = data.linePictureUrl;
       }
 

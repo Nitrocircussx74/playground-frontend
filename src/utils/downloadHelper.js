@@ -21,11 +21,12 @@ export async function downloadPdf(blob, filename = 'document.pdf', fallbackDirec
     }
 
     // 2. ดาวน์โหลดตรงผ่าน Blob Object URL และ Anchor Element สำหรับ Desktop และ Mobile Web
+    // หมายเหตุ: ห้ามใส่ target="_blank" คู่กับ download เพราะบาง Android WebView/In-App Browser
+    // (รวมถึง LINE) จะตีความเป็นการเปิดแท็บใหม่แทนการดาวน์โหลด แล้วทำอะไรไม่ได้เพราะ WebView เปิดแท็บใหม่ไม่ได้
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', filename);
-    link.setAttribute('target', '_blank');
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
@@ -138,10 +139,10 @@ export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png'
     }
 
     // สร้าง Element ลิงก์ดาวน์โหลดและ trigger click
+    // หมายเหตุ: ห้ามใส่ target="_blank" คู่กับ download (เหตุผลเดียวกับ downloadPdf ด้านบน)
     const link = document.createElement('a');
     link.href = downloadHref;
     link.setAttribute('download', filename);
-    link.setAttribute('target', '_blank');
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();

@@ -80,11 +80,12 @@ export const authService = {
 
   /**
    * ผูก LINE OA ของตึกใหม่เข้ากับบัญชีเดิมด้วย PIN 6 หลัก และเข้าสู่ระบบทันที
+   * หากบัญชีนี้ยังไม่เคยตั้ง PIN มาก่อน ระบบจะบันทึก pin ที่ส่งไปเป็นรหัส PIN ใหม่ให้ทันที
    * @param {Object} payload - { phone, pin, buildingId, lineIdToken, lineUserId, lineDisplayName, linePictureUrl, lineStatusMessage }
    */
   async linkAndLogin(payload) {
     const response = await api.post('/api/liff/auth/link-and-login', payload);
-    return response.data; // { success: true, accessToken, user, tenant }
+    return response.data; // { success: true, accessToken, user, tenant, pinCreated }
   },
 
   /**

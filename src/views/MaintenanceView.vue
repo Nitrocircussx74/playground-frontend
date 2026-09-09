@@ -350,12 +350,29 @@
             </div>
 
             <!-- Cost / Admin Note -->
-            <div v-if="Number(item.repairCost || 0) > 0" class="p-2 bg-emerald-50/80 rounded-xl border border-emerald-200/80 text-xs text-emerald-800 font-bold flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <Coins class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>ค่าใช้จ่าย/ค่าซ่อม:</span>
+            <div v-if="Number(item.repairCost || 0) > 0" class="p-2 bg-emerald-50/80 rounded-xl border border-emerald-200/80 text-xs text-emerald-800 font-bold space-y-1">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <Coins class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>ค่าใช้จ่าย/ค่าซ่อม:</span>
+                </div>
+                <span class="font-mono text-emerald-700">฿{{ Number(item.repairCost).toLocaleString() }}</span>
               </div>
-              <span class="font-mono text-emerald-700">฿{{ Number(item.repairCost).toLocaleString() }}</span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span
+                  class="px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
+                  :class="item.payer === 'TENANT' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-600'"
+                >
+                  {{ item.payer === 'TENANT' ? 'ลูกบ้านจ่ายเอง' : 'นิติออกให้' }}
+                </span>
+                <span
+                  v-if="item.payer === 'TENANT'"
+                  class="px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
+                  :class="item.billedInvoiceId ? 'bg-emerald-600 text-white' : 'bg-white text-amber-700 border border-amber-200'"
+                >
+                  {{ item.billedInvoiceId ? 'รวมในบิลแล้ว' : 'รอรวมบิลรอบถัดไป' }}
+                </span>
+              </div>
             </div>
             <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-3 border-l-emerald-500 border-y border-r border-emerald-100 text-[11px] text-slate-700 line-clamp-2">
               <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ item.adminNote }}
@@ -519,8 +536,40 @@
                 min="0"
                 step="any"
                 placeholder="0.00"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-hidden font-mono"
+                :disabled="Boolean(selectedTicket.billedInvoiceId)"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-hidden font-mono disabled:opacity-60 disabled:cursor-not-allowed"
               />
+            </div>
+
+            <!-- ผู้รับผิดชอบค่าใช้จ่าย: นิติออกให้ (ไม่เก็บเงินลูกบ้าน) หรือลูกบ้านจ่ายเอง (รวมเข้าบิลค่าเช่ารอบถัดไปอัตโนมัติ) -->
+            <div class="col-span-2 space-y-1">
+              <label class="block font-bold text-slate-800 mb-1">ผู้รับผิดชอบค่าใช้จ่าย</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  @click="editForm.payer = 'MANAGEMENT'"
+                  :disabled="Boolean(selectedTicket.billedInvoiceId)"
+                  class="p-2 rounded-xl border font-bold text-center transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  :class="editForm.payer === 'MANAGEMENT' ? 'bg-slate-800 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                >
+                  นิติออกให้
+                </button>
+                <button
+                  type="button"
+                  @click="editForm.payer = 'TENANT'"
+                  :disabled="Boolean(selectedTicket.billedInvoiceId)"
+                  class="p-2 rounded-xl border font-bold text-center transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  :class="editForm.payer === 'TENANT' ? 'bg-amber-500 border-amber-500 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                >
+                  ลูกบ้านจ่ายเอง
+                </button>
+              </div>
+              <p v-if="editForm.payer === 'TENANT'" class="text-[11px] text-amber-700 font-medium">
+                ค่าซ่อมนี้จะถูกรวมเข้าบิลค่าเช่ารอบถัดไปของห้องนี้โดยอัตโนมัติเมื่อสถานะเป็น "เสร็จสิ้นแล้ว"
+              </p>
+              <p v-if="selectedTicket.billedInvoiceId" class="text-[11px] text-emerald-700 font-medium">
+                ค่าซ่อมนี้ถูกรวมเข้าบิลไปแล้ว ไม่สามารถแก้ไขค่าซ่อม/ผู้รับผิดชอบได้อีก
+              </p>
             </div>
           </div>
 
@@ -728,6 +777,7 @@ const editForm = reactive({
   status: 'pending',
   technicianName: '',
   repairCost: 0,
+  payer: 'MANAGEMENT',
   adminNote: ''
 });
 
@@ -960,6 +1010,7 @@ const openDetailModal = (item) => {
   editForm.status = item.status || 'pending';
   editForm.technicianName = item.technicianName || '';
   editForm.repairCost = item.repairCost || 0;
+  editForm.payer = item.payer || 'MANAGEMENT';
   editForm.adminNote = item.adminNote || '';
 };
 
@@ -988,6 +1039,7 @@ const handleSaveTicket = async () => {
         status: editForm.status.toLowerCase(),
         technicianName: editForm.technicianName,
         repairCost: editForm.repairCost,
+        payer: editForm.payer,
         adminNote: editForm.adminNote
       });
     } else {
