@@ -46,8 +46,22 @@
       </span>
     </div>
 
+    <!-- Disabled Feature Notice Banner -->
+    <div
+      v-if="!featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
+      class="p-5 bg-amber-50 border border-amber-200 rounded-3xl text-amber-900 space-y-2 shadow-xs"
+    >
+      <div class="flex items-center gap-2 font-bold text-xs">
+        <AlertTriangle class="w-4 h-4 text-amber-600 shrink-0" />
+        <span>ระบบแจ้งซ่อมและร้องเรียนถูกปิดใช้งานชั่วคราว</span>
+      </div>
+      <p class="text-[11px] text-amber-700 leading-relaxed">
+        ผู้ดูแลหอพักได้ปิดการรับเรื่องแจ้งซ่อมหรือร้องเรียนผ่านระบบออนไลน์ชั่วคราว หากมีเหตุฉุกเฉินกรุณาติดต่อเจ้าหน้าที่โดยตรง
+      </p>
+    </div>
+
     <!-- Main Issue Report Form Card -->
-    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5">
+    <div v-else class="bg-white rounded-3xl border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5">
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- 1. Category Selection -->
         <div class="space-y-2">
@@ -176,6 +190,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useFeatureStore } from '@/stores/useFeatureStore';
 import {
   ArrowLeft,
   Wrench,
@@ -186,13 +201,15 @@ import {
   X,
   Send,
   History,
-  DoorClosed
+  DoorClosed,
+  AlertTriangle
 } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 
 const router = useRouter();
+const featureStore = useFeatureStore();
 
 const submitting = ref(false);
 const fileInputRef = ref(null);
@@ -281,6 +298,7 @@ const removeImage = (index) => {
 };
 
 onMounted(async () => {
+  featureStore.fetchFeatures();
   try {
     await initLiff();
     if (isLiffLoggedIn()) {

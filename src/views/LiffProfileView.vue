@@ -106,7 +106,9 @@
               <span>ผูกห้องเพิ่ม</span>
             </button>
 
+            <!-- Digital ID Button -->
             <button
+              v-if="featureStore.isEnabled('ENABLE_DIGITAL_ID')"
               @click="showQrModal = true"
               class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-colors border border-white/30 flex items-center gap-1.5 cursor-pointer"
             >
@@ -163,7 +165,8 @@
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span
                     class="text-xs font-bold truncate"
-                    :class="selectedRoomId === room.id ? 'text-slate-900' : 'text-slate-700'"
+                    :class="selectedRoomId === room.id ? 'text-indigo-950 font-extrabold' : 'text-slate-800'"
+                    :style="selectedRoomId === room.id ? { color: themeColor } : {}"
                   >
                     ห้อง {{ room.roomNumber }}
                   </span>
@@ -221,7 +224,7 @@
         <div v-if="hasAnyActionItems" class="space-y-2.5">
           <!-- 1. บิลค่าเช่าค้างชำระ / รอชำระ (Pending Invoices) -->
           <div
-            v-if="unpaidInvoices.length > 0"
+            v-if="featureStore.isEnabled('ENABLE_LINE_PAYMENT') && unpaidInvoices.length > 0"
             @click="goToPayment(unpaidInvoices[0])"
             class="p-4 bg-gradient-to-r from-rose-50/95 via-amber-50/40 to-white rounded-2xl border border-rose-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
@@ -256,7 +259,7 @@
 
           <!-- 2. พัสดุมาถึงรอรับ (Pending Parcels) -->
           <div
-            v-if="pendingParcels.length > 0"
+            v-if="featureStore.isEnabled('ENABLE_PARCEL_NOTIFY') && pendingParcels.length > 0"
             @click="router.push('/liff/parcels')"
             class="p-4 bg-gradient-to-r from-orange-50/95 via-amber-50/40 to-white rounded-2xl border border-orange-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
@@ -291,8 +294,8 @@
 
           <!-- 3. รายการแจ้งซ่อมกำลังดำเนินการ (Active Maintenance) -->
           <div
-            v-if="activeMaintenance.length > 0"
-            @click="router.push('/liff/maintenance')"
+            v-if="featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST') && activeMaintenance.length > 0"
+            @click="router.push('/liff/issues')"
             class="p-4 bg-gradient-to-r from-sky-50/95 via-indigo-50/40 to-white rounded-2xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
             <div class="flex items-center justify-between gap-3">
@@ -401,7 +404,7 @@
       </div>
 
       <!-- 3.5 Featured News & Announcements Showcase (ข่าวสาร & ประกาศหอพัก) -->
-      <div v-if="announcements && announcements.length > 0" class="space-y-3">
+      <div v-if="featureStore.isEnabled('ENABLE_ANNOUNCEMENTS') && announcements && announcements.length > 0" class="space-y-3">
         <!-- Section Header -->
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
@@ -781,9 +784,9 @@ const totalUnpaidAmount = computed(() => {
 
 const hasAnyActionItems = computed(() => {
   return (
-    unpaidInvoices.value.length > 0 ||
-    pendingParcels.value.length > 0 ||
-    activeMaintenance.value.length > 0
+    (featureStore.isEnabled('ENABLE_LINE_PAYMENT') && unpaidInvoices.value.length > 0) ||
+    (featureStore.isEnabled('ENABLE_PARCEL_NOTIFY') && pendingParcels.value.length > 0) ||
+    (featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST') && activeMaintenance.value.length > 0)
   );
 });
 
@@ -997,12 +1000,12 @@ const quickActionsConfig = [
   },
   {
     id: 'maintenance',
-    title: 'แจ้งซ่อม',
+    title: 'แจ้งซ่อม & ร้องเรียน',
     subtitle: 'ส่งเรื่อง & ติดตามสถานะ',
     icon: Wrench,
     bgClass: 'bg-amber-50',
     iconClass: 'text-amber-600',
-    route: '/liff/maintenance',
+    route: '/liff/issues',
     featureKey: 'ENABLE_MAINTENANCE_REQUEST'
   },
   {
@@ -1023,7 +1026,7 @@ const quickActionsConfig = [
     bgClass: 'bg-sky-50',
     iconClass: 'text-sky-600',
     route: '/liff/announcements',
-    featureKey: 'ENABLE_TENANT_PORTAL'
+    featureKey: 'ENABLE_ANNOUNCEMENTS'
   }
 ];
 
