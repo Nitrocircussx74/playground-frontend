@@ -388,7 +388,7 @@ const continueToSmartEntry = async () => {
     lineProfile.value = await getLiffProfile();
 
     // 3. เช็คสถานะการผูกห้องพักและการตั้งค่า PIN ในฐานข้อมูล
-    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
+    const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     let statusRes = null;
     if (idToken) {
       try {
@@ -532,7 +532,7 @@ const handleLinkAndLogin = async () => {
   phoneErrorMessage.value = '';
 
   try {
-    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
+    const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     const payload = {
       phone: verifyPhoneInput.value.trim(),
       pin: existingPinInput.value,

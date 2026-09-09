@@ -179,7 +179,7 @@ const pageTitle = computed(() => {
  * 2. Logic แสดงปุ่ม Back
  */
 const showBackButton = computed(() => {
-  const mainTabPaths = ['/liff', '/liff/profile', '/liff/receipts', '/liff/maintenance', '/liff/announcements', '/liff/settings'];
+  const mainTabPaths = ['/liff', '/liff/profile', '/liff/receipts', '/liff/issues', '/liff/announcements', '/liff/settings'];
   return !mainTabPaths.includes(route.path);
 });
 
@@ -219,7 +219,7 @@ const handleBack = () => {
 const navTabs = [
   { name: 'หน้าแรก', path: '/liff/profile', icon: Home },
   { name: 'ใบเสร็จ', path: '/liff/receipts', icon: Receipt },
-  { name: 'แจ้งซ่อม', path: '/liff/maintenance', icon: Wrench },
+  { name: 'แจ้งซ่อม', path: '/liff/issues', icon: Wrench },
   { name: 'ข่าวสาร', path: '/liff/announcements', icon: Megaphone },
   { name: 'โปรไฟล์', path: '/liff/settings', icon: User }
 ];

@@ -241,7 +241,8 @@ const submitSetupPin = async () => {
   errorMessage.value = '';
 
   try {
-    const idToken = getLiffIdToken() || (typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null) || 'U_mock_tenant_user_1';
+    // หมายเหตุ: Dev Fallback ใช้งานได้เฉพาะ Dev Build เท่านั้น ห้ามมี Mock User ID ติดไปกับ Production
+    const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     const phoneParam = route.query.phone ? String(route.query.phone).trim() : undefined;
 
     const payload = {

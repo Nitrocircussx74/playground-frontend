@@ -327,14 +327,55 @@ const formatDate = (dateStr) => {
   });
 };
 
+/**
+ * แปลงข้อมูลจากระบบ Maintenance เดิม (ก่อน Unify) ให้อยู่ในรูปแบบเดียวกับ Issue
+ * เพื่อให้ลูกบ้านยังเห็นประวัติแจ้งซ่อมเก่าครบถ้วน แม้ระบบเขียนใหม่จะย้ายไปที่ Issues แล้ว
+ */
+const normalizeMaintenanceItem = (item) => {
+  const statusMap = {
+    pending: 'PENDING',
+    in_progress: 'IN_PROGRESS',
+    assigned: 'IN_PROGRESS',
+    resolved: 'RESOLVED',
+    completed: 'RESOLVED',
+    cancelled: 'CANCELLED'
+  };
+
+  const extraNotes = [];
+  if (item.technicianName) extraNotes.push(`ช่างผู้รับผิดชอบ: ${item.technicianName}`);
+  if (Number(item.repairCost || 0) > 0) extraNotes.push(`ค่าซ่อม/อุปกรณ์: ฿${Number(item.repairCost).toLocaleString()}`);
+  const adminReply = [item.adminNote, ...extraNotes].filter(Boolean).join('\n') || null;
+
+  return {
+    id: `maintenance-${item.id}`,
+    category: 'REPAIR',
+    description: item.title ? `${item.title}${item.description ? `\n${item.description}` : ''}` : item.description,
+    status: statusMap[(item.status || '').toLowerCase()] || 'PENDING',
+    room: item.room,
+    imageUrls: item.imageUrl || item.photoUrl ? [item.imageUrl || item.photoUrl] : [],
+    adminReply,
+    createdAt: item.createdAt
+  };
+};
+
 const fetchIssues = async () => {
   loading.value = true;
   try {
     const params = {};
     if (lineUserId.value) params.lineUserId = lineUserId.value;
 
-    const res = await api.get('/api/v1/liff/issues', { params });
-    issues.value = res.data?.data || [];
+    // รวมข้อมูลจาก 2 ระบบหลังบ้าน (issues ระบบปัจจุบัน + maintenance ระบบเดิมที่ถูก unify) เข้าเป็นประวัติเดียว
+    const [issuesRes, maintenanceRes] = await Promise.allSettled([
+      api.get('/api/v1/liff/issues', { params }),
+      api.get('/api/v1/liff/maintenance', { params })
+    ]);
+
+    const issueList = issuesRes.status === 'fulfilled' ? (issuesRes.value.data?.data || []) : [];
+    const maintenanceList = maintenanceRes.status === 'fulfilled' ? (maintenanceRes.value.data?.data || []) : [];
+
+    issues.value = [...issueList, ...maintenanceList.map(normalizeMaintenanceItem)].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
   } catch (err) {
     console.error('Failed to fetch issues:', err);
   } finally {

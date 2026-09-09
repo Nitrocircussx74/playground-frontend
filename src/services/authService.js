@@ -106,6 +106,25 @@ export const authService = {
   },
 
   /**
+   * ต่ออายุ Session ของลูกบ้าน LIFF แบบเงียบ (Silent Re-Authentication)
+   * ใช้ LINE ID Token สดจาก LIFF SDK แลก Access Token ใหม่ทุกครั้ง
+   * แทนการเก็บ Access Token ไว้ใน LocalStorage เพื่อลดความเสี่ยงจาก XSS
+   * หมายเหตุ: ใช้ axios ตรงๆ (ไม่ผ่าน instance `api`) เพื่อไม่ให้ชนกับ interceptor ต่ออายุ session
+   * @param {string} lineIdToken
+   */
+  async silentLoginLiff(lineIdToken) {
+    const response = await axios.post(
+      `${BASE_URL}/api/v1/liff/auth/silent-login`,
+      { lineIdToken },
+      {
+        headers: { 'X-Line-Id-Token': lineIdToken },
+        withCredentials: true
+      }
+    );
+    return response.data; // { success: true, accessToken, data: { tenant } }
+  },
+
+  /**
    * ขอ Access Token ใหม่ด้วย HTTP-Only Refresh Token Cookie (Silent Refresh)
    */
   async refreshToken() {
