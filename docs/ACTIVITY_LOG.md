@@ -86,3 +86,36 @@
    - รันคำสั่ง `yarn build` สำเร็จ 100% (0 Errors)
 
 ### STATUS: 🟢 COMPLETE & FULLY VERIFIED
+
+---
+
+## 📅 [2026-09-09] - LIFF Security Audit: ตัด Token ออกจาก LocalStorage, ปิด Dev Bypass และ Unify ระบบแจ้งซ่อม
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **Audit Flow ฝั่งลูกบ้าน (LIFF Tenant Portal)**:
+   - ไล่ตรวจ Flow ทั้งหมดตั้งแต่ [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) → Friendship Check → Auth Check → PIN → Main App พบจุดเสี่ยงด้าน Security และ Data Consistency หลายจุด
+2. **Security Fix #1 - ย้าย `liff_token` ออกจาก LocalStorage**:
+   - แก้ [stores/auth.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/stores/auth.js) ให้เก็บ `liffToken` แบบ Memory-only ผ่าน Pinia เท่านั้น (ของเดิมเขียน/อ่าน `localStorage.liff_token` ตรงๆ ขัดกับกฎใน AGENTS.md)
+   - เพิ่ม Action `restoreLiffSession()` กู้คืน Session หลังรีเฟรชหน้าด้วย LINE ID Token ผ่าน Silent Login (`authService.silentLoginLiff()`) แทนการอ่านค่าจาก LocalStorage
+   - อัปเดต [utils/api.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/utils/api.js), [router/index.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/router/index.js) และหน้าที่เคยอ่าน `liff_token` จาก LocalStorage โดยตรง (LiffReceiptHistoryView, LiffInvoiceDetailView, LiffInvoiceListView) ให้ใช้ Memory State แทนทั้งหมด
+3. **Security Fix #2 - ตัด Hardcoded Dev Bypass**:
+   - ลบ Mock User ID (`U_mock_tenant_user_1`) ที่ Hardcode ไว้ใน LiffPinLogin.vue, LiffSetupPin.vue, PinLoginView.vue ออกทั้งหมด
+   - Gate กลไก `dev_line_user_id` / Header `X-Line-User-Id` ทั้งหมดด้วย `import.meta.env.DEV` ป้องกันการสวมรอยผู้ใช้อื่นใน Production Build
+4. **Unify ระบบแจ้งซ่อม/ร้องเรียนที่ซ้อนกัน (Maintenance vs Issues)**:
+   - พบว่า `/liff/maintenance` และ `/liff/issues` เป็นคนละ Endpoint/ตารางกันจริงในฝั่ง Backend (`playground-api`) แต่ฝั่ง Admin CMS Unify แสดงผลรวมเป็น Kanban Board เดียวไปแล้วก่อนหน้านี้
+   - ปรับ Bottom Nav "แจ้งซ่อม" ให้ชี้ไปที่ `/liff/issues` (ฟอร์มใหม่ที่ครบกว่า: แนบได้ 5 รูป, แยกหมวดซ่อม/ร้องเรียน/อื่นๆ) และเปลี่ยน `/liff/maintenance` เป็น Redirect แทนการแสดงฟอร์มแยก เพื่อไม่ให้มีการเขียนข้อมูลใหม่เข้าตารางเดิมอีก
+   - [IssueHistory.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/IssueHistory.vue) ดึงข้อมูลจากทั้ง 2 Endpoint มารวมกันและ Normalize ให้อยู่ในรูปแบบเดียวกัน เพื่อไม่ให้ประวัติแจ้งซ่อมเก่าของลูกบ้านหายไป
+   - แก้ Badge จำนวนงานค้างใน LiffProfileView.vue ให้นับรวมจากทั้ง 2 Endpoint ให้ตรงกับสิ่งที่กดเข้าไปดูจริง
+5. **Build Verification**:
+   - รัน `yarn build` ผ่าน 100% (0 Errors) และ `yarn test` ไม่มี Regression เพิ่มจากที่มีอยู่ก่อนแล้ว (4 Test เดิมที่ Fail จาก Pinia Setup ใน `LiffLayout.test.js` ยังไม่ได้แก้ในรอบนี้)
+6. **Git**: Commit และ Push ขึ้น Branch `fix/liff-security-audit-and-unify-maintenance`
+
+### ⏭️ งานที่เหลือ (Follow-up Items จาก Audit):
+- ลบ `LiffOnboardingView.vue` (Dead Code, ไม่มี Route ไหนลิงก์มาเลย, ตรรกะซ้ำกับ LiffEntryView.vue)
+- แก้บั๊ก `liff` undefined ใน `LiffRegisterView.vue` (บรรทัด 216) ทำให้ LINE Profile ไม่ถูกแนบไปกับ Payload ลงทะเบียน
+- ตัด Route PIN ที่ซ้ำกัน (`/pin-login`, `/setup-pin`, `/change-pin` ระดับบนสุด vs ชุดเดียวกันใต้ `/liff/*`)
+- เพิ่ม Route Guard สำหรับหน้า LIFF ที่ต้อง Login (เช่น `/liff/invoices`, `/liff/pay/:id`)
+- ลด Friendship Check ที่ยิงซ้ำทุกครั้งที่เปลี่ยนแท็บใน LiffLayout.vue
+- พิจารณาลบไฟล์ `LiffMaintenanceView.vue` ที่กลายเป็น Dead Code แล้วหลังข้อ 4
+
+### STATUS: 🟢 COMPLETE & VERIFIED (รอ Merge เข้า `main` — ยังไม่ลบไฟล์ Dead Code ในรอบนี้)
