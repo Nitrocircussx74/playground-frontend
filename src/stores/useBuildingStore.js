@@ -63,7 +63,7 @@ export const useBuildingStore = defineStore('building', {
     async updateBuildingSetting(buildingId, payload) {
       this.isLoading = true;
       try {
-        const res = await api.put(`/api/v1/buildings/${buildingId}/setting`, payload);
+        const res = await api.put(`/api/v1/buildings/${buildingId}/settings`, payload);
         await this.fetchBuildings();
         return res.data;
       } catch (err) {
