@@ -333,7 +333,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import liff, { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile, getLiffIdToken, getLiffFriendship, openAddFriendLine } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile, getLiffIdToken, getLiffFriendship, openAddFriendLine } from '@/utils/liff';
 import api from '@/utils/api';
 import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
@@ -472,18 +472,30 @@ onMounted(async () => {
       return;
     }
 
-    // หากเปิดใน LINE App แต่ยังไม่ได้ล็อกอิน ให้ login อัตโนมัติพร้อม prompt เพิ่มเพื่อน (จำกัด 1 ครั้งต่อ Session ป้องกัน Loop)
-    if (typeof liff.isInClient === 'function' && liff.isInClient()) {
-      const loginAttempted = sessionStorage.getItem('liff_auto_login_attempted');
-      if (!loginAttempted) {
-        sessionStorage.setItem('liff_auto_login_attempted', 'true');
-        loginLiff(undefined, 'aggressive');
-        return;
-      }
+    // ⚠️ เดิมเช็ค liff.isInClient() ก่อนตัดสินใจ ทำให้พลาดกรณี liff.init() ล้มเงียบๆ (เช่น Endpoint URL
+    // ไม่ตรงกับ origin ปัจจุบัน) หรือผู้ใช้เปิดผ่าน LINE แบบ External Browser — isInClient() จะ false
+    // ทั้งที่เข้ามาจาก Rich Menu/ลิงก์ LINE จริงๆ แล้วโดนเด้งไป WebLogin (เบอร์โทร+PIN) ทันทีอย่างผิดๆ
+    // แก้โดยไม่พึ่ง isInClient() แล้ว: ลอง loginLiff() ก่อนเสมอ (จำกัด 1 ครั้งต่อ Session กัน Loop)
+    // เพราะ liff.login() รองรับทั้งสองบริบทอยู่แล้ว (ในแอป LINE เข้าแบบ Silent, นอกแอปจะ Redirect ผ่าน
+    // LINE Login OAuth) ถ้าเรียกไม่สำเร็จจริงๆ (LIFF ใช้งานไม่ได้เลย) ค่อย Fallback ไปหน้า WebLogin
+    const loginAttempted = sessionStorage.getItem('liff_auto_login_attempted');
+    if (!loginAttempted) {
+      sessionStorage.setItem('liff_auto_login_attempted', 'true');
+      const loginStarted = await loginLiff(undefined, 'aggressive');
+      if (loginStarted) return; // liff.login() จะ Redirect ออกจากหน้านี้เอง
+
+      // ลอง loginLiff() แล้วแต่เรียกไม่สำเร็จเลย -> ไม่ใช่แค่ isInClient() false เฉยๆ ถือว่า LIFF ใช้งานไม่ได้จริง
     }
 
-    // กรณีเปิดบนเบราว์เซอร์ภายนอก (Standalone Browser)
-    loading.value = false;
+    // ลองแล้วในเซสชันนี้ (หรือ LIFF ใช้งานไม่ได้เลย) ยังไม่ล็อกอิน -> พาไปหน้า WebLogin (เบอร์โทร+PIN)
+    const targetBuilding = route.query.building || route.query.buildingId;
+    router.replace({
+      path: '/web/login',
+      query: {
+        ...(targetBuilding && { building: targetBuilding }),
+        ...(route.query.redirect && { redirect: route.query.redirect })
+      }
+    });
   } catch (err) {
     console.error('LIFF Smart Entry init error:', err);
     loading.value = false;
