@@ -21,10 +21,10 @@
           v-if="unreadCount > 0"
           type="button"
           @click="handleMarkAllAsRead"
-          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 transition-all border border-indigo-100 cursor-pointer shadow-2xs active:scale-95"
+          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-xs font-semibold text-teal-700 transition-all border border-teal-100 cursor-pointer shadow-2xs active:scale-95"
           title="ทำเครื่องหมายว่าอ่านทั้งหมด"
         >
-          <CheckCheck class="w-3.5 h-3.5 text-indigo-600" />
+          <CheckCheck class="w-3.5 h-3.5 text-teal-600" />
           <span class="hidden sm:inline">อ่านทั้งหมด</span>
         </button>
 
@@ -74,7 +74,7 @@
           :key="item.id"
           @click="openDetail(item)"
           class="rounded-2xl border shadow-xs overflow-hidden transition-all hover:shadow-md cursor-pointer active:scale-[0.99] group"
-          :class="!isRead(item.id) ? 'bg-white border-indigo-200/90 ring-1 ring-indigo-100/60 shadow-indigo-500/5' : 'bg-slate-50/70 border-slate-200/70 hover:bg-white'"
+          :class="!isRead(item.id) ? 'bg-white border-teal-200/90 ring-1 ring-teal-100/60 shadow-teal-500/5' : 'bg-slate-50/70 border-slate-200/70 hover:bg-white'"
         >
           <!-- Cover Banner Image -->
           <div v-if="item.imageUrl" class="w-full h-44 overflow-hidden bg-slate-100 relative">
@@ -107,7 +107,7 @@
 
                 <h2
                   class="font-bold text-sm sm:text-base leading-snug transition-colors truncate"
-                  :class="!isRead(item.id) ? 'text-slate-900 group-hover:text-indigo-600' : 'text-slate-600 group-hover:text-slate-800'"
+                  :class="!isRead(item.id) ? 'text-slate-900 group-hover:text-teal-600' : 'text-slate-600 group-hover:text-slate-800'"
                 >
                   {{ item.title }}
                 </h2>
@@ -139,7 +139,7 @@
 
               <span
                 class="font-semibold inline-flex items-center gap-1 text-[11px] group-hover:translate-x-0.5 transition-transform"
-                :class="!isRead(item.id) ? 'text-indigo-600' : 'text-slate-500'"
+                :class="!isRead(item.id) ? 'text-teal-600' : 'text-slate-500'"
               >
                 <span>อ่านรายละเอียด</span>
                 <ChevronRight class="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@
 
         <!-- Empty State -->
         <div v-if="announcements.length === 0" class="p-10 bg-white rounded-2xl border border-slate-100/80 text-center space-y-2 shadow-xs">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+          <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto">
             <Megaphone class="w-6 h-6" />
           </div>
           <h3 class="text-sm font-bold text-slate-800">ยังไม่มีประกาศข่าวสาร</h3>
@@ -172,7 +172,7 @@
           <!-- Modal Top Header Bar -->
           <div class="shrink-0 px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white/95 backdrop-blur-md sticky top-0 z-10">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-teal-50 text-teal-700 border border-teal-200/80">
                 {{ selectedAnnouncement.building?.name || 'ประกาศทั่วไป' }}
               </span>
               <span class="text-xs text-slate-400 font-mono">
@@ -207,7 +207,7 @@
             <!-- Author & Read Receipt Pill -->
             <div class="flex items-center justify-between gap-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs text-slate-600">
               <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
                   <User class="w-3.5 h-3.5" />
                 </div>
                 <div>

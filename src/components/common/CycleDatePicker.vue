@@ -85,6 +85,6 @@ const handleDateChange = (val) => {
   box-shadow: none !important;
 }
 .dp__theme_light {
-  --dp-primary-color: #9333ea;
+  --dp-primary-color: #0891b2;
 }
 </style>

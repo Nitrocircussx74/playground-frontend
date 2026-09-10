@@ -15,7 +15,7 @@
       <div class="flex items-center gap-2.5">
         <button
           @click="showCheckinModal = true"
-          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+          class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <UserPlus class="w-4 h-4" />
           <span>+ เพิ่มผู้เช่าใหม่ (Walk-in)</span>
@@ -98,7 +98,7 @@
           v-model="searchQuery"
           type="text"
           placeholder="ค้นหาชื่อ, เบอร์โทร, เลขบัตร..."
-          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
         />
         <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
       </div>
@@ -106,7 +106,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="p-16 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-3">
-      <div class="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div class="w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p class="text-xs text-slate-500 font-medium">กำลังโหลดข้อมูลทะเบียนผู้เช่า...</p>
     </div>
 
@@ -115,7 +115,7 @@
       <div
         v-for="t in filteredTenants"
         :key="t.id"
-        class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-purple-300 transition-all p-5 flex flex-col justify-between space-y-4 group"
+        class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-cyan-300 transition-all p-5 flex flex-col justify-between space-y-4 group"
       >
         <!-- Card Header with Avatar & Badges -->
         <div class="space-y-3">
@@ -125,17 +125,17 @@
                 v-if="t.linePictureUrl"
                 :src="t.linePictureUrl"
                 :alt="t.firstName"
-                class="w-12 h-12 rounded-2xl object-cover ring-2 ring-purple-500/30 shadow-2xs shrink-0"
+                class="w-12 h-12 rounded-2xl object-cover ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
               />
               <div
                 v-else
-                class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-extrabold text-lg flex items-center justify-center ring-2 ring-purple-500/30 shadow-2xs shrink-0"
+                class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-lg flex items-center justify-center ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
               >
                 {{ t.firstName ? t.firstName.charAt(0).toUpperCase() : '👤' }}
               </div>
 
               <div>
-                <div class="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
+                <div class="text-sm font-bold text-slate-900 group-hover:text-cyan-700 transition-colors">
                   {{ t.firstName }} {{ t.lastName }}
                 </div>
                 <div class="text-xs text-slate-500 flex items-center gap-1 font-mono">
@@ -172,7 +172,7 @@
           <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/70 text-xs space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-slate-500 text-[11px]">ห้องพักปัจจุบัน:</span>
-              <span v-if="t.rooms && t.rooms.length > 0" class="font-bold text-purple-800">
+              <span v-if="t.rooms && t.rooms.length > 0" class="font-bold text-cyan-800">
                 🏠 ห้อง {{ t.rooms.map(r => r.roomNumber).join(', ') }}
               </span>
               <span v-else class="text-slate-400 italic text-[11px]">ไม่มีห้องพักผูกอยู่</span>
@@ -188,7 +188,7 @@
         <!-- Action Button: Open 360 Profile -->
         <router-link
           :to="`/tenants/${t.id}`"
-          class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+          class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <span>👤 ดูโปรไฟล์ & ประวัติ 360°</span>
           <span>→</span>

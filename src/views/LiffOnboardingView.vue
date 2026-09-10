@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-emerald-50/40 via-slate-50 to-indigo-50/30 text-slate-800 flex flex-col items-center justify-center p-5 sm:p-6 font-sans">
+  <div class="min-h-screen bg-gradient-to-b from-emerald-50/40 via-slate-50 to-teal-50/30 text-slate-800 flex flex-col items-center justify-center p-5 sm:p-6 font-sans">
     <div class="w-full max-w-sm space-y-5">
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
@@ -357,6 +357,8 @@ const handleLinkAndLogin = async () => {
     }
   } catch (err) {
     console.error('Link and login error in onboarding:', err);
+    // หาก LINE ID Token หมดอายุ (code: LINE_TOKEN_INVALID) Axios Interceptor กลาง (utils/api.js)
+    // จะ Hard Redirect ไปหน้า /liff ให้เข้าสู่ระบบใหม่อัตโนมัติอยู่แล้ว ไม่ต้องจัดการซ้ำที่นี่
     errorMessage.value = err.response?.data?.message || 'รหัส PIN 6 หลักไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
   } finally {
     submitting.value = false;

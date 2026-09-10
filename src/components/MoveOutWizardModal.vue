@@ -57,17 +57,17 @@
         <div class="p-6 space-y-6 print:hidden">
           <!-- STEP 1: Final Meter Readings -->
           <div v-if="step === 1" class="space-y-4 animate-in fade-in duration-150">
-            <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex items-center justify-between text-xs">
+            <div class="bg-teal-50 border border-teal-200 p-4 rounded-2xl flex items-center justify-between text-xs">
               <div>
-                <span class="font-bold text-indigo-900">📅 วันที่แจ้งย้ายออกจริง:</span>
+                <span class="font-bold text-teal-900">📅 วันที่แจ้งย้ายออกจริง:</span>
                 <input
                   v-model="form.moveOutDate"
                   type="date"
-                  class="ml-2 bg-white border border-indigo-300 rounded-lg px-2.5 py-1 font-mono font-bold text-indigo-950"
+                  class="ml-2 bg-white border border-teal-300 rounded-lg px-2.5 py-1 font-mono font-bold text-teal-950"
                 />
               </div>
-              <div class="text-right text-indigo-700">
-                เงินมัดจำในสัญญา: <span class="font-black font-mono text-sm text-indigo-950">{{ formatCurrency(depositAmount) }}</span>
+              <div class="text-right text-teal-700">
+                เงินมัดจำในสัญญา: <span class="font-black font-mono text-sm text-teal-950">{{ formatCurrency(depositAmount) }}</span>
               </div>
             </div>
 
@@ -140,7 +140,7 @@
               </div>
               <button
                 @click="addDamageItem"
-                class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
               >
                 <span>➕ เพิ่มรายการหักเงิน</span>
               </button>

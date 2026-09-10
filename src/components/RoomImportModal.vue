@@ -2,14 +2,14 @@
   <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
     <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Modal Header -->
-      <div class="px-6 py-4 bg-gradient-to-r from-indigo-900 to-slate-900 text-white flex items-center justify-between">
+      <div class="px-6 py-4 bg-gradient-to-r from-teal-900 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-indigo-600/40 flex items-center justify-center text-lg">
+          <div class="w-9 h-9 rounded-xl bg-teal-600/40 flex items-center justify-center text-lg">
             📥
           </div>
           <div>
             <h3 class="font-bold text-base text-white">Import Rooms (นำเข้าห้องพักจำนวนมาก)</h3>
-            <p class="text-xs text-indigo-200">นำเข้าด้วยไฟล์ CSV หรือสร้างห้องพักอัตโนมัติตามช่วงชั้น</p>
+            <p class="text-xs text-teal-200">นำเข้าด้วยไฟล์ CSV หรือสร้างห้องพักอัตโนมัติตามช่วงชั้น</p>
           </div>
         </div>
         <button @click="close" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
@@ -22,14 +22,14 @@
         <button
           @click="activeTab = 'csv'"
           class="px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2"
-          :class="activeTab === 'csv' ? 'bg-white border-indigo-600 text-indigo-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
+          :class="activeTab === 'csv' ? 'bg-white border-teal-600 text-teal-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
           📄 อัปโหลดไฟล์ CSV
         </button>
         <button
           @click="activeTab = 'generator'"
           class="px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2"
-          :class="activeTab === 'generator' ? 'bg-white border-indigo-600 text-indigo-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
+          :class="activeTab === 'generator' ? 'bg-white border-teal-600 text-teal-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
           ⚡ Quick Batch Generator (สร้างตามช่วงชั้น)
         </button>
@@ -39,13 +39,13 @@
       <div class="p-6 overflow-y-auto space-y-5 flex-1">
         <!-- Tab 1: CSV Upload -->
         <div v-if="activeTab === 'csv'" class="space-y-4">
-          <div class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-3 rounded-xl">
-            <span class="text-xs text-indigo-900 font-medium">
+          <div class="flex items-center justify-between bg-teal-50 border border-teal-100 p-3 rounded-xl">
+            <span class="text-xs text-teal-900 font-medium">
               💡 ต้องการไฟล์ตัวอย่างสำหรับเตรียมข้อมูล?
             </span>
             <button
               @click="downloadTemplate"
-              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-all shadow-xs"
+              class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition-all shadow-xs"
             >
               📥 ดาวน์โหลด CSV Template
             </button>
@@ -55,7 +55,7 @@
           <div
             @dragover.prevent
             @drop.prevent="handleFileDrop"
-            class="border-2 border-dashed border-indigo-200 hover:border-indigo-500 bg-indigo-50/30 hover:bg-indigo-50 rounded-2xl p-6 text-center cursor-pointer transition-all"
+            class="border-2 border-dashed border-teal-200 hover:border-teal-500 bg-teal-50/30 hover:bg-teal-50 rounded-2xl p-6 text-center cursor-pointer transition-all"
             @click="$refs.fileInput.click()"
           >
             <input
@@ -79,7 +79,7 @@
               v-model.number="genForm.startFloor"
               type="number"
               min="1"
-              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
             />
           </div>
           <div>
@@ -88,7 +88,7 @@
               v-model.number="genForm.endFloor"
               type="number"
               min="1"
-              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
             />
           </div>
           <div>
@@ -97,7 +97,7 @@
               v-model.number="genForm.roomsPerFloor"
               type="number"
               min="1"
-              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
             />
           </div>
           <div>
@@ -106,14 +106,14 @@
               v-model.number="genForm.defaultPrice"
               type="number"
               step="100"
-              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
             />
           </div>
 
           <div class="col-span-full flex justify-end">
             <button
               @click="generateBatchRooms"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
+              class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
             >
               <span>⚡ สร้างรายการพรีวิว</span>
             </button>
@@ -125,7 +125,7 @@
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <span>📋 รายการพรีวิวห้องพักที่จะนำเข้า</span>
-              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px]">
+              <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded-full text-[10px]">
                 {{ parsedRooms.length }} รายการ
               </span>
             </h4>

@@ -12,7 +12,7 @@
         type="button"
         @click="saveProfile"
         :disabled="isSubmitting || !!phoneError"
-        class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold transition-colors shadow-xs disabled:opacity-50 shrink-0 flex items-center gap-1.5"
+        class="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-xl text-xs font-semibold transition-colors shadow-xs disabled:opacity-50 shrink-0 flex items-center gap-1.5"
       >
         <Save class="w-3.5 h-3.5" />
         <span>{{ isSubmitting ? 'บันทึก...' : 'บันทึก' }}</span>
@@ -33,7 +33,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="p-8 bg-white rounded-2xl border border-slate-100/80 text-center text-slate-400 text-xs shadow-xs">
-      <div class="animate-spin w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
+      <div class="animate-spin w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full mx-auto mb-2.5"></div>
       กำลังโหลดข้อมูลส่วนตัว...
     </div>
 
@@ -90,7 +90,7 @@
       <!-- Section 2: Contact Info (Editable) -->
       <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-3.5">
         <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-          <Phone class="w-4 h-4 text-indigo-500" />
+          <Phone class="w-4 h-4 text-teal-500" />
           <h3 class="text-xs font-bold text-slate-800">ข้อมูลติดต่อ</h3>
         </div>
 
@@ -105,8 +105,8 @@
             placeholder="เช่น 0812345678"
             required
             @input="validatePhone"
-            class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-100"
-            :class="phoneError ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200 focus:border-indigo-400'"
+            class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:ring-2 focus:ring-teal-100"
+            :class="phoneError ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200 focus:border-teal-400'"
           />
           <span v-if="phoneError" class="text-[11px] font-medium text-rose-500 block pt-0.5">
             {{ phoneError }}
@@ -121,13 +121,13 @@
       >
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <div class="flex items-center gap-2">
-            <Car class="w-4 h-4 text-indigo-500" />
+            <Car class="w-4 h-4 text-teal-500" />
             <h3 class="text-xs font-bold text-slate-800">จัดการยานพาหนะ</h3>
           </div>
           <button
             type="button"
             @click="showAddVehicleModal = true"
-            class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+            class="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-800"
           >
             <Plus class="w-3.5 h-3.5" />
             <span>เพิ่มยานพาหนะ</span>
@@ -170,7 +170,7 @@
         <button
           type="submit"
           :disabled="isSubmitting || !!phoneError"
-          class="w-full py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50"
+          class="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50"
         >
           <div v-if="isSubmitting" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></div>
           <Save v-else class="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@
         <form @submit.prevent="addVehicle" class="space-y-3 text-xs">
           <div class="space-y-1">
             <label class="block font-medium text-slate-700">ประเภทพาหนะ</label>
-            <select v-model="newVehicle.type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-indigo-400">
+            <select v-model="newVehicle.type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-teal-400">
               <option value="motorcycle">รถจักรยานยนต์</option>
               <option value="car">รถยนต์</option>
             </select>
@@ -205,7 +205,7 @@
               type="text"
               placeholder="เช่น 1กข-9999 กทม"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 font-mono font-medium focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
@@ -216,7 +216,7 @@
               type="text"
               placeholder="เช่น Honda Click / Toyota Yaris"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
@@ -230,7 +230,7 @@
             </button>
             <button
               type="submit"
-              class="flex-1 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold shadow-xs transition-colors"
+              class="flex-1 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold shadow-xs transition-colors"
             >
               เพิ่ม
             </button>

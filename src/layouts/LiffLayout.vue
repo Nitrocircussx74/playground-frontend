@@ -1,6 +1,6 @@
 <template>
   <!-- App Shell: Locked Viewport Container (ห้ามขยับทั้ง Header และ Footer) -->
-  <div class="fixed inset-0 h-[100dvh] w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-indigo-500 selection:text-white overflow-hidden">
+  <div class="fixed inset-0 h-[100dvh] w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-teal-500 selection:text-white overflow-hidden">
     <!-- 1. Top Navigation Bar (Header) - ปักหมุดถาวรด้านบน -->
     <header class="shrink-0 h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 z-30 px-4 sm:px-6 shadow-2xs select-none">
       <div class="max-w-4xl mx-auto h-full flex items-center justify-between">
@@ -31,11 +31,28 @@
           </h1>
         </div>
 
-        <!-- Right: Badge LINE LIFF -->
-        <div class="flex items-center justify-end">
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-emerald-50 border-emerald-200/80 text-emerald-700">
+        <!-- Right: Badge & Actions -->
+        <div class="flex items-center justify-end gap-2">
+          <span
+            v-if="authStore.isWebTenant"
+            class="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-cyan-50 border-cyan-200 text-cyan-700"
+          >
+            Web Portal
+          </span>
+          <span
+            v-else
+            class="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-emerald-50 border-emerald-200/80 text-emerald-700"
+          >
             LIFF
           </span>
+          <button
+            v-if="authStore.isWebTenant"
+            @click="handleLogout"
+            class="text-[11px] font-semibold text-slate-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            title="ออกจากระบบลูกบ้าน"
+          >
+            ออก
+          </button>
         </div>
       </div>
     </header>
@@ -146,8 +163,8 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { useAnnouncements } from '@/composables/useAnnouncements';
-import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn } from '@/utils/liff';
-import { showSuccess, showWarning } from '@/utils/swal';
+import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn, closeLiffWindow } from '@/utils/liff';
+import { showSuccess, showWarning, showConfirm } from '@/utils/swal';
 import {
   ChevronLeft,
   Home,
@@ -281,6 +298,25 @@ const handleRecheckFriendship = async () => {
     console.warn('Recheck friendship error:', err);
   } finally {
     checkingFriendship.value = false;
+  }
+};
+
+const handleLogout = async () => {
+  const isConfirmed = await showConfirm(
+    'ยืนยันออกจากระบบ',
+    'คุณต้องการออกจากระบบลูกบ้านใช่หรือไม่?',
+    'ออกจากระบบ',
+    'ยกเลิก'
+  );
+  if (!isConfirmed) return;
+
+  const result = await authStore.logoutTenant();
+  if (result.channel === 'web') {
+    router.replace('/web/login');
+  } else if (result.channel === 'line_client') {
+    closeLiffWindow();
+  } else {
+    router.replace('/liff');
   }
 };
 

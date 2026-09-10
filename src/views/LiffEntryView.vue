@@ -4,7 +4,7 @@
     <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
       <div class="absolute -top-36 -left-36 w-96 h-96 bg-emerald-300/20 rounded-full blur-3xl"></div>
       <div class="absolute top-1/2 -right-36 w-96 h-96 bg-teal-200/25 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-36 left-1/3 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-36 left-1/3 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl"></div>
     </div>
 
     <div class="w-full max-w-md mx-auto">
@@ -55,7 +55,7 @@
           </div>
 
           <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
-            <div class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0 mt-0.5">
               <Package class="w-3.5 h-3.5" />
             </div>
             <div class="min-w-0">
@@ -143,7 +143,7 @@
         <!-- State A: Existing User Detected -> Prompt for Central PIN -->
         <div v-if="isExistingUserPrompt" class="space-y-4">
           <div class="flex items-center justify-between">
-            <span class="px-3 py-1 text-[11px] font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200/80">
+            <span class="px-3 py-1 text-[11px] font-bold bg-teal-50 text-teal-700 rounded-full border border-teal-200/80">
               พบข้อมูลใน HorHub
             </span>
             <button

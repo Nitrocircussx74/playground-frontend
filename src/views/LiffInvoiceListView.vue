@@ -9,7 +9,7 @@
         </div>
         <button
           @click="fetchInvoices"
-          class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+          class="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors"
         >
           รีเฟรช
         </button>
@@ -39,7 +39,7 @@
         <button
           @click="selectedRoomFilter = 'ALL'"
           class="px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoomFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
+          :class="selectedRoomFilter === 'ALL' ? 'bg-teal-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
         >
           ทั้งหมด
         </button>
@@ -48,7 +48,7 @@
           :key="room.id"
           @click="selectedRoomFilter = room.id"
           class="px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoomFilter === room.id ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
+          :class="selectedRoomFilter === room.id ? 'bg-teal-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'"
         >
           ห้อง {{ room.roomNumber }}
         </button>
@@ -134,7 +134,7 @@
                 <button
                   type="button"
                   @click.stop="downloadInvoicePdf(inv.id, inv.invoiceNumber)"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 text-[11px] font-semibold transition-colors cursor-pointer"
                 >
                   <Download class="w-3.5 h-3.5" />
                   <span>ดาวน์โหลดใบแจ้งหนี้ (PDF)</span>

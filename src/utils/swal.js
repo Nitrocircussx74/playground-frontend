@@ -7,7 +7,7 @@ const customSwal = Swal.mixin({
     popup: 'rounded-3xl border border-slate-100 shadow-2xl p-6 font-sans',
     title: 'text-xl font-bold text-slate-900',
     htmlContainer: 'text-sm text-slate-600 mt-2',
-    confirmButton: 'px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-purple-600/30 transition-all mx-1.5 focus:outline-none',
+    confirmButton: 'px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-cyan-600/30 transition-all mx-1.5 focus:outline-none',
     cancelButton: 'px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-slate-200 mx-1.5 focus:outline-none'
   },
   buttonsStyling: false

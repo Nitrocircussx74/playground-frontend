@@ -6,7 +6,7 @@
         <button
           @click="activeTab = 'fast-table'"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
-          :class="activeTab === 'fast-table' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :class="activeTab === 'fast-table' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>⚡</span>
           <span>ตารางคีย์มิเตอร์ (Fast Entry)</span>
@@ -15,7 +15,7 @@
         <button
           @click="activeTab = 'draft-review'"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
-          :class="activeTab === 'draft-review' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>📝</span>
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
@@ -24,7 +24,7 @@
         <button
           @click="activeTab = 'single-history'"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'single-history' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :class="activeTab === 'single-history' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>📜</span>
           <span>ประวัติการจดมิเตอร์</span>
@@ -63,7 +63,7 @@
             <select
               v-model="form.roomId"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
             >
               <option value="" disabled>-- Select Room --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
@@ -77,7 +77,7 @@
             <select
               v-model="form.meterType"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
             >
               <option value="water">Water (น้ำ)</option>
               <option value="electric">Electric (ไฟ)</option>
@@ -99,20 +99,20 @@
               step="0.01"
               placeholder="e.g. 135"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
             />
           </div>
 
           <div class="col-span-full flex items-center justify-between pt-2">
             <label class="flex items-center space-x-2 text-xs text-slate-600 cursor-pointer">
-              <input v-model="form.isReset" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+              <input v-model="form.isReset" type="checkbox" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
               <span>Meter has been reset (มิเตอร์วนรอบกลับมา 0)</span>
             </label>
 
             <button
               type="submit"
               :disabled="meterStore.isLoading"
-              class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 disabled:opacity-50"
+              class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 disabled:opacity-50"
             >
               {{ meterStore.isLoading ? 'Saving...' : 'Save Meter Reading' }}
             </button>
@@ -124,7 +124,7 @@
       <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
         <div class="p-4 border-b border-slate-200 flex items-center justify-between">
           <h3 class="font-semibold text-slate-900">Recent Meter Records</h3>
-          <button @click="meterStore.fetchMeterRecords(buildingStore.activeBuildingId)" class="text-xs text-indigo-600 hover:underline font-semibold">Refresh</button>
+          <button @click="meterStore.fetchMeterRecords(buildingStore.activeBuildingId)" class="text-xs text-teal-600 hover:underline font-semibold">Refresh</button>
         </div>
 
         <div class="overflow-x-auto">

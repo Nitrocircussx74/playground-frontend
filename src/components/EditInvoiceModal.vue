@@ -89,15 +89,15 @@
         </div>
 
         <!-- Common Fee Waive Switch Box -->
-        <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-2xl flex items-center justify-between">
+        <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-2xl flex items-center justify-between">
           <div>
-            <span class="font-bold text-indigo-900">🎁 ละเว้น/งดเว้นค่าส่วนกลาง (Waive Common Fee)</span>
-            <p class="text-[11px] text-indigo-600">ตั้งค่าส่วนกลางเป็น 0 บาท สำหรับโปรโมชั่นหรือเงื่อนไขพิเศษ</p>
+            <span class="font-bold text-teal-900">🎁 ละเว้น/งดเว้นค่าส่วนกลาง (Waive Common Fee)</span>
+            <p class="text-[11px] text-teal-600">ตั้งค่าส่วนกลางเป็น 0 บาท สำหรับโปรโมชั่นหรือเงื่อนไขพิเศษ</p>
           </div>
 
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" v-model="form.waiveCommonFee" class="sr-only peer" />
-            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
           </label>
         </div>
 
@@ -108,7 +108,7 @@
             <button
               type="button"
               @click="addOtherFeeItem"
-              class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold transition-all"
+              class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg text-[11px] font-bold transition-all"
             >
               + เพิ่มรายการ
             </button>
@@ -171,7 +171,7 @@
           <button
             type="submit"
             :disabled="submitting"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-xs disabled:opacity-50"
+            class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold transition-all shadow-xs disabled:opacity-50"
           >
             {{ submitting ? 'กำลังบันทึก...' : (isEditing ? 'อัปเดตบิล' : 'สร้างบิลใหม่') }}
           </button>

@@ -22,7 +22,7 @@
           class="text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 shadow-2xs shrink-0"
           :class="{
             'bg-emerald-100/80 border-emerald-300 text-emerald-800': room.status === 'occupied',
-            'bg-purple-50 border-purple-200 text-purple-700': room.status === 'available',
+            'bg-cyan-50 border-cyan-200 text-cyan-700': room.status === 'available',
             'bg-amber-100/80 border-amber-300 text-amber-800': room.status === 'maintenance'
           }"
         >
@@ -30,7 +30,7 @@
             class="w-2 h-2 rounded-full"
             :class="{
               'bg-emerald-500 animate-soft-pulse': room.status === 'occupied',
-              'bg-purple-500': room.status === 'available',
+              'bg-cyan-500': room.status === 'available',
               'bg-amber-500 animate-soft-pulse': room.status === 'maintenance'
             }"
           ></span>
@@ -55,7 +55,7 @@
           <span class="bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60 font-mono">
             ชั้น {{ room.floor }}
           </span>
-          <span v-if="room.locationZone" class="truncate text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+          <span v-if="room.locationZone" class="truncate text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
             📍 {{ room.locationZone }}
           </span>
         </div>
@@ -66,7 +66,7 @@
         <div class="flex items-center justify-between">
           <span class="text-xs text-slate-400">ค่าเช่า:</span>
           <div class="text-right">
-            <span class="text-base font-extrabold text-purple-700 font-mono">
+            <span class="text-base font-extrabold text-cyan-700 font-mono">
               ฿{{ Number(room.price).toLocaleString() }}
             </span>
             <span class="text-[11px] font-normal text-slate-400">/เดือน</span>
@@ -85,7 +85,7 @@
     <div class="pt-3 border-t border-slate-200/80 space-y-1 text-xs text-slate-600">
       <div v-if="room.owner" class="flex items-center justify-between">
         <span class="text-slate-400 flex items-center gap-1"><span>👑</span> เจ้าของ:</span>
-        <span class="font-bold text-indigo-700 truncate max-w-[150px]">
+        <span class="font-bold text-teal-700 truncate max-w-[150px]">
           {{ room.owner.name }}
         </span>
       </div>
@@ -144,9 +144,9 @@ const getUnitTypeClass = (type) => {
   switch (type) {
     case 'commercial_shop': return 'bg-sky-50 text-sky-700 border-sky-200';
     case 'vending_spot': return 'bg-amber-50 text-amber-700 border-amber-200';
-    case 'parking': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+    case 'parking': return 'bg-teal-50 text-teal-700 border-teal-200';
     case 'storage': return 'bg-orange-50 text-orange-700 border-orange-200';
-    case 'billboard_rooftop': return 'bg-purple-50 text-purple-700 border-purple-200';
+    case 'billboard_rooftop': return 'bg-cyan-50 text-cyan-700 border-cyan-200';
     default: return 'bg-slate-100 text-slate-700 border-slate-200';
   }
 };

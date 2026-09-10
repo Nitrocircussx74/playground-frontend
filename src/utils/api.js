@@ -126,6 +126,22 @@ api.interceptors.response.use(
     const isCmsAuthRoute = url.includes('/auth/login') || url.includes('/auth/refresh');
 
     // ------------------------------------------------------------------------
+    // CASE 0: LINE ID Token เสียจริง (หมดอายุ/ไม่ถูกต้อง) — Silent Retry ช่วยไม่ได้ เพราะ Token เดิม
+    // ที่ค้างอยู่ใน LIFF SDK ก็ยังเสียเหมือนเดิม ต้อง Hard Redirect กลับไปหน้า Login (/liff) เท่านั้น
+    // เพื่อบังคับให้ liff.init() รันใหม่ทั้งหมด (Route Change ธรรมดาผ่าน router.push ไม่ช่วย เพราะ
+    // Singleton ใน liff.js จะไม่ re-init ให้) เช็คก่อน isAuthEndpoint เพราะ Endpoint ที่คืน Code นี้
+    // (pin-login, link-and-login, check-status, silent-login) ล้วนมี /auth/ อยู่ในพาธที่จะโดน Skip ไป
+    if (isLiffRoute && error.response?.data?.code === 'LINE_TOKEN_INVALID') {
+      const authStore = useAuthStore();
+      authStore.clearLiffAuth();
+      localStorage.removeItem('dev_line_user_id');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/liff') {
+        window.location.href = `/liff?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+      }
+      return Promise.reject(error);
+    }
+
+    // ------------------------------------------------------------------------
     // CASE A: LIFF Silent Re-Authentication (สำหรับลูกบ้านใน LINE LIFF)
     // ------------------------------------------------------------------------
     if (isLiffRoute) {

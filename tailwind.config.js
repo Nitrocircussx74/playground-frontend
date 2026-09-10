@@ -23,12 +23,12 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'rgb(var(--theme-primary-rgb, 59 130 246) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--theme-primary-rgb, 14 116 144) / <alpha-value>)',
           foreground: 'hsl(var(--primary-foreground))'
         },
-        'theme-primary': 'rgb(var(--theme-primary-rgb, 59 130 246) / <alpha-value>)',
-        'theme-primary-light': 'var(--theme-primary-light, #60A5FA)',
-        'theme-primary-dark': 'var(--theme-primary-dark, #1D4ED8)',
+        'theme-primary': 'rgb(var(--theme-primary-rgb, 14 116 144) / <alpha-value>)',
+        'theme-primary-light': 'var(--theme-primary-light, #22D3EE)',
+        'theme-primary-dark': 'var(--theme-primary-dark, #155E75)',
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))'

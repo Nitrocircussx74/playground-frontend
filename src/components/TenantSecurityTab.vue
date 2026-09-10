@@ -1,24 +1,24 @@
 <template>
   <div class="space-y-6">
     <!-- ========================================================================= -->
-    <!-- 1. Section 1: สถานะปัจจุบัน (Current Status Grid)                          -->
+    <!-- 1. Section 1: สถานะช่องทางการเข้าใช้งานและความปลอดภัย (Access Channels & Security Status) -->
     <!-- ========================================================================= -->
     <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-5">
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
             <span>🛡️</span>
-            <span>สถานะการเข้าถึงและความปลอดภัย (Current Access & Security Status)</span>
+            <span>สถานะช่องทางการเข้าใช้งานและความปลอดภัย (Access Channels & Security Status)</span>
           </h3>
           <p class="text-xs text-slate-500">
-            ภาพรวมการเชื่อมต่อ LINE บัญชีลูกบ้าน และสถานะรหัสความปลอดภัย PIN 6 หลัก
+            ภาพรวมการเชื่อมต่อ LINE LIFF, การเข้าใช้งานผ่าน Web Portal (เบอร์ + PIN 6 หลัก) และประวัติความปลอดภัย
           </p>
         </div>
       </div>
 
       <!-- 3-Column Grid Status Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Card 1: สถานะ LINE (LINE Account Connection) -->
+        <!-- Card 1: ช่องทาง LINE Integration (LINE In-App LIFF) -->
         <div
           class="p-4 rounded-2xl border transition-all space-y-3"
           :class="isLineLinked ? 'bg-emerald-50/50 border-emerald-200/90' : 'bg-amber-50/50 border-amber-200/90'"
@@ -26,101 +26,116 @@
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
               <span>💬</span>
-              <span>สถานะ LINE</span>
+              <span>ช่องทาง LINE LIFF</span>
             </span>
             <span
               class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold flex items-center gap-1 shadow-2xs"
-              :class="isLineLinked ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'"
+              :class="isLineLinked ? 'bg-[#06C755] text-white' : 'bg-amber-500 text-white'"
             >
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-white" :class="{ 'animate-pulse': isLineLinked }"></span>
               {{ isLineLinked ? 'เชื่อมต่อแล้ว' : 'รอการเชื่อมต่อ' }}
             </span>
           </div>
 
-          <div v-if="isLineLinked" class="flex items-center gap-3 pt-1">
-            <img
-              v-if="localTenant.linePictureUrl"
-              :src="localTenant.linePictureUrl"
-              :alt="localTenant.lineDisplayName || 'LINE User'"
-              class="w-11 h-11 rounded-xl object-cover border-2 border-emerald-400 shadow-2xs shrink-0"
-            />
-            <div
-              v-else
-              class="w-11 h-11 rounded-xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center shrink-0 shadow-2xs"
-            >
-              {{ (localTenant.lineDisplayName || localTenant.firstName || 'L').charAt(0).toUpperCase() }}
+          <div v-if="isLineLinked" class="space-y-2 pt-1">
+            <div class="flex items-center gap-3">
+              <img
+                v-if="localTenant.linePictureUrl"
+                :src="localTenant.linePictureUrl"
+                :alt="localTenant.lineDisplayName || 'LINE User'"
+                class="w-11 h-11 rounded-xl object-cover border-2 border-emerald-400 shadow-2xs shrink-0"
+              />
+              <div
+                v-else
+                class="w-11 h-11 rounded-xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center shrink-0 shadow-2xs"
+              >
+                {{ (localTenant.lineDisplayName || localTenant.firstName || 'L').charAt(0).toUpperCase() }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-xs text-slate-900 truncate">
+                  {{ localTenant.lineDisplayName || 'ไม่ระบุชื่อ LINE' }}
+                </div>
+                <div class="text-[10px] font-mono text-slate-400 truncate" :title="localTenant.lineUserId">
+                  UID: {{ localTenant.lineUserId }}
+                </div>
+              </div>
             </div>
-            <div class="min-w-0 flex-1">
-              <div class="font-bold text-xs text-slate-900 truncate">
-                {{ localTenant.lineDisplayName || 'ไม่ระบุชื่อ LINE' }}
-              </div>
-              <div class="text-[10px] font-mono text-slate-400 truncate" :title="localTenant.lineUserId">
-                UID: {{ localTenant.lineUserId }}
-              </div>
+
+            <!-- Multi-building LINE Links if any -->
+            <div v-if="localTenant.lineAccounts && localTenant.lineAccounts.length > 1" class="text-[10px] text-emerald-800 bg-emerald-100/60 p-1.5 rounded-lg">
+              ผูกกับ LINE OA ทั้งหมด {{ localTenant.lineAccounts.length }} อาคาร
             </div>
           </div>
 
           <div v-else class="space-y-1 pt-1">
-            <p class="text-xs font-semibold text-amber-900">ยังไม่ผูกบัญชี LINE</p>
+            <p class="text-xs font-semibold text-amber-900">ยังไม่ผูกบัญชี LINE OA</p>
             <p class="text-[11px] text-amber-700/90 leading-relaxed">
-              ผู้เช่ายังไม่ได้เข้าสู่ระบบผ่าน LIFF หรือเพิ่งถูกยกเลิกการผูกบัญชี
+              ลูกบ้านยังไม่เคยเปิด LIFF หรือลงทะเบียนแบบ Walk-in สามารถสร้าง Invite Code ให้ลูกบ้านสแกนผูกได้
             </p>
           </div>
         </div>
 
-        <!-- Card 2: สถานะ PIN (PIN Security Status) -->
+        <!-- Card 2: ช่องทาง Web Portal Access (Dual-Mode Phone + PIN) -->
         <div
           class="p-4 rounded-2xl border transition-all space-y-3"
-          :class="hasPin ? 'bg-indigo-50/50 border-indigo-200/90' : 'bg-slate-50 border-slate-200/90'"
+          :class="hasPin ? 'bg-teal-50/50 border-teal-200/90' : 'bg-slate-50 border-slate-200/90'"
         >
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-              <span>🔢</span>
-              <span>สถานะ PIN</span>
+              <span>🌐</span>
+              <span>ช่องทาง Web Portal</span>
             </span>
             <span
               class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold flex items-center gap-1 shadow-2xs"
-              :class="hasPin ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-700'"
+              :class="hasPin ? 'bg-teal-600 text-white' : 'bg-slate-300 text-slate-700'"
             >
-              {{ hasPin ? 'ตั้งค่าแล้ว' : 'ยังไม่ตั้งค่า' }}
+              {{ hasPin ? 'พร้อมใช้งาน' : 'ยังไม่ตั้ง PIN' }}
             </span>
           </div>
 
-          <div v-if="hasPin" class="space-y-1.5 pt-1">
-            <div class="text-base font-black tracking-widest text-indigo-700 font-mono">
-              •••••• (6 หลัก)
+          <div class="space-y-2 pt-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-500">Username (เบอร์):</span>
+              <span class="font-mono font-bold text-slate-800">{{ localTenant.phone || 'ยังไม่มีเบอร์' }}</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-              เปิดใช้งานระบบ Seamless Auto-Login ผ่าน PIN 6 หลักเรียบร้อย
-            </p>
-          </div>
 
-          <div v-else class="space-y-1 pt-1">
-            <div class="text-xs font-bold text-slate-700">ยังไม่มีรหัส PIN</div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-500">รหัส PIN 6 หลัก:</span>
+              <span v-if="hasPin" class="font-mono font-black tracking-widest text-teal-700">•••••• (ตั้งแล้ว)</span>
+              <span v-else class="text-slate-400 font-medium">ยังไม่ตั้ง</span>
+            </div>
+
             <p class="text-[11px] text-slate-500 leading-relaxed">
-              ลูกบ้านจะถูกบังคับให้ตั้งรหัส PIN 6 หลักใหม่เมื่อเปิด LIFF ครั้งถัดไป
+              {{ hasPin ? 'เข้าสู่ระบบผ่านเว็บเบราว์เซอร์ด้วย เบอร์โทร + PIN 6 หลัก ได้ทันที' : 'ลูกบ้านจะถูกแจ้งให้ตั้ง PIN 6 หลักเมื่อเปิดใช้งานระบบครั้งแรก' }}
             </p>
           </div>
         </div>
 
-        <!-- Card 3: เข้าใช้งานล่าสุด / อัปเดตล่าสุด (Last Activity) -->
+        <!-- Card 3: สรุปความพร้อมการเข้าถึงและกิจกรรมล่าสุด (Access Overview & Last Activity) -->
         <div class="p-4 rounded-2xl border bg-slate-50 border-slate-200/90 space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
               <span>🕒</span>
-              <span>เข้าใช้งานล่าสุด</span>
+              <span>กิจกรรมและการเข้าถึงล่าสุด</span>
             </span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">
-              System Log
+            <span
+              class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+              :class="isLineLinked && hasPin ? 'bg-emerald-100 text-emerald-800' : isLineLinked || hasPin ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'"
+            >
+              {{ isLineLinked && hasPin ? 'ครบ 2 ช่องทาง' : isLineLinked ? 'LINE LIFF' : hasPin ? 'Web Portal' : 'Walk-in' }}
             </span>
           </div>
 
-          <div class="space-y-1 pt-1">
+          <div class="space-y-1.5 pt-1">
             <div class="text-sm font-extrabold text-slate-900 font-mono">
               {{ formatDateTime(localTenant.updatedAt || localTenant.createdAt) }}
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed">
-              เวลาบันทึกกิจกรรมหรือการซิงก์ข้อมูลความปลอดภัยล่าสุด
+              บันทึกกิจกรรมล่าสุดในระบบ: 
+              <span v-if="isLineLinked && hasPin" class="text-emerald-700 font-medium">พร้อมใช้งานทั้ง LINE และ Web</span>
+              <span v-else-if="isLineLinked" class="text-emerald-700 font-medium">เชื่อมต่อผ่าน LINE แล้ว</span>
+              <span v-else-if="hasPin" class="text-teal-700 font-medium">พร้อมใช้ Web Portal</span>
+              <span v-else class="text-amber-700 font-medium">รอการเปิดใช้งานครั้งแรก</span>
             </p>
           </div>
         </div>

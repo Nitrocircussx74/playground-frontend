@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
       <div class="space-y-1">
         <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-xs">
+          <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shadow-xs">
             <ToggleLeft class="w-5 h-5" />
           </div>
           <span>ตั้งค่าการเปิด-ปิดฟีเจอร์ (Feature Settings)</span>
@@ -30,12 +30,12 @@
       <!-- Building Selection -->
       <div class="md:col-span-2 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0">
-          <Building2 class="w-4 h-4 text-indigo-600" />
+          <Building2 class="w-4 h-4 text-teal-600" />
           <span>เลือกอาคารที่ต้องการตั้งค่า:</span>
         </div>
         <select
           v-model="buildingStore.activeBuildingId"
-          class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 font-medium focus:outline-hidden focus:border-indigo-400 cursor-pointer w-full sm:w-auto min-w-[240px]"
+          class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 font-medium focus:outline-hidden focus:border-teal-400 cursor-pointer w-full sm:w-auto min-w-[240px]"
         >
           <option :value="null">🌐 ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
           <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
@@ -58,7 +58,7 @@
 
     <!-- Loading State -->
     <div v-if="featureStore.isLoading" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-      <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto"></div>
+      <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto"></div>
       <div class="text-xs font-medium">กำลังโหลดสถานะฟีเจอร์...</div>
     </div>
 
@@ -115,7 +115,7 @@
 
                     <span
                       v-if="buildingStore.activeBuildingId && item.isBuildingOverride"
-                      class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100"
+                      class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100"
                     >
                       เฉพาะอาคารนี้
                     </span>
@@ -127,7 +127,7 @@
               <button
                 @click="handleToggle(item.key, !item.isActive)"
                 type="button"
-                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs mt-0.5"
+                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-2 focus:ring-teal-500/20 shadow-2xs mt-0.5"
                 :class="item.isActive ? 'bg-emerald-500' : 'bg-slate-200'"
               >
                 <span
@@ -236,7 +236,7 @@ const getFeatureIconBg = (key) => {
     case 'ENABLE_MAINTENANCE_REQUEST':
       return 'bg-amber-50 text-amber-600';
     case 'ENABLE_LINE_PAYMENT':
-      return 'bg-indigo-50 text-indigo-600';
+      return 'bg-teal-50 text-teal-600';
     case 'ENABLE_PARCEL_NOTIFY':
       return 'bg-orange-50 text-orange-600';
     case 'ENABLE_ANNOUNCEMENTS':
@@ -246,7 +246,7 @@ const getFeatureIconBg = (key) => {
     case 'ENABLE_RECEIPT_HISTORY':
       return 'bg-teal-50 text-teal-600';
     case 'ENABLE_VEHICLE_MANAGEMENT':
-      return 'bg-purple-50 text-purple-600';
+      return 'bg-cyan-50 text-cyan-600';
     default:
       return 'bg-slate-50 text-slate-600';
   }

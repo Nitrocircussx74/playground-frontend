@@ -16,10 +16,11 @@
     --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
 
-    --theme-primary: #3B82F6;
-    --theme-primary-rgb: 59 130 246;
-    --theme-primary-light: #60A5FA;
-    --theme-primary-dark: #1D4ED8;
+    /* HorHub Brand Teal (สีเดียวกับโลโก้ HorHub) — ใช้เป็นค่า Default ก่อนโหลด Theme สีเฉพาะของแต่ละตึก */
+    --theme-primary: #0E7490;
+    --theme-primary-rgb: 14 116 144;
+    --theme-primary-light: #22D3EE;
+    --theme-primary-dark: #155E75;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;

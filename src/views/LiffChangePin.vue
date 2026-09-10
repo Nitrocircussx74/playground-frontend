@@ -4,12 +4,12 @@
     <!-- 1. Header & Step Instructions -->
     <header class="w-full flex flex-col items-center pt-1 sm:pt-2 space-y-2 sm:space-y-3 text-center shrink-0">
       <!-- Icon Badge -->
-      <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600">
+      <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100/80 flex items-center justify-center text-teal-600">
         <KeyRound class="w-5 h-5" />
       </div>
 
       <div class="space-y-1">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">
           ขั้นตอนที่ {{ step }} จาก 3
         </span>
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">
@@ -33,7 +33,7 @@
           class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
           :class="[
             index <= enteredPin.length
-              ? 'bg-indigo-500 scale-110 shadow-xs ring-4 ring-indigo-50'
+              ? 'bg-teal-500 scale-110 shadow-xs ring-4 ring-teal-50'
               : 'bg-slate-200/70 border border-slate-300/50'
           ]"
         ></div>
@@ -45,8 +45,8 @@
           <AlertCircle class="w-3.5 h-3.5 shrink-0" />
           <span>{{ errorMessage }}</span>
         </div>
-        <div v-else-if="isLoading" class="text-xs font-medium text-indigo-600 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
-          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+        <div v-else-if="isLoading" class="text-xs font-medium text-teal-600 mt-2 sm:mt-3 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
           <span>กำลังเปลี่ยนรหัส PIN...</span>
         </div>
         <div v-else class="h-5 mt-2 sm:mt-3"></div>

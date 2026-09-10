@@ -20,7 +20,7 @@
         <button
           @click="handleGenerateInvite"
           :disabled="generating"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
         >
           {{ generating ? 'กำลังสร้าง...' : '⚡ สร้างรหัสเชิญ' }}
         </button>

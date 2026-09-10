@@ -36,14 +36,14 @@
 
       <!-- Financial Flow Summary Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-100">
-        <div class="p-3.5 bg-purple-50/70 border border-purple-100 rounded-xl space-y-0.5">
-          <div class="text-[11px] font-bold text-purple-700 uppercase">จำนวนบิลร่าง (Draft Invoices)</div>
-          <div class="text-lg font-extrabold text-purple-900 font-mono">{{ draftInvoices.length }} ใบ</div>
+        <div class="p-3.5 bg-cyan-50/70 border border-cyan-100 rounded-xl space-y-0.5">
+          <div class="text-[11px] font-bold text-cyan-700 uppercase">จำนวนบิลร่าง (Draft Invoices)</div>
+          <div class="text-lg font-extrabold text-cyan-900 font-mono">{{ draftInvoices.length }} ใบ</div>
         </div>
 
-        <div class="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl space-y-0.5">
-          <div class="text-[11px] font-bold text-indigo-700 uppercase">รวมค่าเช่าห้องพัก</div>
-          <div class="text-lg font-extrabold text-indigo-900 font-mono">฿{{ summaryTotals.roomPrice.toLocaleString() }}</div>
+        <div class="p-3.5 bg-teal-50/70 border border-teal-100 rounded-xl space-y-0.5">
+          <div class="text-[11px] font-bold text-teal-700 uppercase">รวมค่าเช่าห้องพัก</div>
+          <div class="text-lg font-extrabold text-teal-900 font-mono">฿{{ summaryTotals.roomPrice.toLocaleString() }}</div>
         </div>
 
         <div class="p-3.5 bg-cyan-50/70 border border-cyan-100 rounded-xl space-y-0.5">
@@ -60,7 +60,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-xs">
-      <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       กำลังโหลดรายการบิลร่าง...
     </div>
 
@@ -91,7 +91,7 @@
           </thead>
           <tbody class="divide-y divide-slate-100">
             <tr v-for="inv in draftInvoices" :key="inv.id" class="hover:bg-slate-50/70 transition-colors">
-              <td class="p-3.5 font-mono text-xs font-bold text-indigo-700">{{ inv.invoiceNumber }}</td>
+              <td class="p-3.5 font-mono text-xs font-bold text-teal-700">{{ inv.invoiceNumber }}</td>
               <td class="p-3.5 space-y-0.5">
                 <div class="font-bold text-slate-900">Room {{ inv.room?.roomNumber }}</div>
                 <div class="text-xs text-slate-500">
@@ -107,11 +107,11 @@
                 <span>฿{{ Number(inv.otherFee).toLocaleString() }}</span>
                 <div v-if="inv.otherFeeNote" class="text-[10px] text-slate-400 truncate max-w-[100px]">{{ inv.otherFeeNote }}</div>
               </td>
-              <td class="p-3.5 text-right font-mono font-extrabold text-indigo-950 text-sm sm:text-base bg-indigo-50/30">
+              <td class="p-3.5 text-right font-mono font-extrabold text-teal-950 text-sm sm:text-base bg-teal-50/30">
                 ฿{{ Number(inv.grandTotal).toLocaleString() }}
               </td>
               <td class="p-3.5 text-center">
-                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 uppercase tracking-wider">
+                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-cyan-100 text-cyan-800 uppercase tracking-wider">
                   DRAFT (ร่าง)
                 </span>
               </td>

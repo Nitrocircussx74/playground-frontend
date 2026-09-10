@@ -9,7 +9,7 @@
 
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-purple-600/20 flex items-center gap-1.5"
+        class="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-cyan-600/20 flex items-center gap-1.5"
       >
         <span>+ เพิ่มตึกใหม่ (Add Building)</span>
       </button>
@@ -21,10 +21,10 @@
         v-for="b in buildingStore.buildings"
         :key="b.id"
         class="bg-white border rounded-2xl p-5 shadow-xs space-y-4 transition-all hover:shadow-md relative overflow-hidden"
-        :class="b.id === buildingStore.activeBuildingId ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-slate-200'"
+        :class="b.id === buildingStore.activeBuildingId ? 'border-cyan-500 ring-2 ring-cyan-500/20' : 'border-slate-200'"
       >
         <!-- Top color accent stripe -->
-        <div class="absolute top-0 left-0 right-0 h-1.5" :style="{ backgroundColor: b.themeColor || '#3B82F6' }"></div>
+        <div class="absolute top-0 left-0 right-0 h-1.5" :style="{ backgroundColor: b.themeColor || '#0E7490' }"></div>
 
         <div class="flex items-start justify-between gap-2 pt-1">
           <div class="flex items-center gap-3">
@@ -37,7 +37,7 @@
             <div
               v-else
               class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold shadow-2xs shrink-0"
-              :style="{ backgroundColor: b.themeColor || '#3B82F6' }"
+              :style="{ backgroundColor: b.themeColor || '#0E7490' }"
             >
               🏢
             </div>
@@ -49,7 +49,7 @@
 
           <span
             v-if="b.id === buildingStore.activeBuildingId"
-            class="text-[10px] font-bold px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full border border-purple-200 shrink-0"
+            class="text-[10px] font-bold px-2 py-0.5 bg-cyan-100 text-cyan-700 rounded-full border border-cyan-200 shrink-0"
           >
             ACTIVE
           </span>
@@ -64,8 +64,8 @@
           <div class="p-2.5 bg-slate-50 rounded-xl text-xs flex flex-col justify-between text-slate-600">
             <span class="text-[10px] text-slate-400 font-bold uppercase">ธีมสี LIFF:</span>
             <div class="flex items-center gap-1.5 mt-0.5">
-              <span class="w-3 h-3 rounded-full border border-slate-300" :style="{ backgroundColor: b.themeColor || '#3B82F6' }"></span>
-              <span class="font-mono font-bold text-slate-900 text-[11px]">{{ b.themeColor || '#3B82F6' }}</span>
+              <span class="w-3 h-3 rounded-full border border-slate-300" :style="{ backgroundColor: b.themeColor || '#0E7490' }"></span>
+              <span class="font-mono font-bold text-slate-900 text-[11px]">{{ b.themeColor || '#0E7490' }}</span>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@
               v-if="b.setting?.paymentQrUrl"
               :href="b.setting.paymentQrUrl"
               target="_blank"
-              class="text-purple-300 hover:underline font-semibold"
+              class="text-cyan-300 hover:underline font-semibold"
             >
               ดูรูป QR Code
             </a>
@@ -103,7 +103,7 @@
 
           <button
             @click="openEditSettingModal(b)"
-            class="px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-semibold transition-all"
+            class="px-3 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-semibold transition-all"
           >
             ⚙️ แก้ไขธีม & QR
           </button>
@@ -153,7 +153,7 @@
                 <input
                   v-model="createForm.themeColor"
                   type="text"
-                  placeholder="#3B82F6"
+                  placeholder="#0E7490"
                   class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 font-mono text-slate-900 focus:outline-hidden uppercase"
                 />
               </div>
@@ -204,7 +204,7 @@
             <button
               type="submit"
               :disabled="submitting"
-              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
+              class="px-5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
             >
               {{ submitting ? 'กำลังบันทึก...' : 'สร้างตึกใหม่' }}
             </button>
@@ -234,7 +234,7 @@
                 <input
                   v-model="editForm.themeColor"
                   type="text"
-                  placeholder="#3B82F6"
+                  placeholder="#0E7490"
                   class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 font-mono text-slate-900 focus:outline-hidden uppercase"
                 />
               </div>
@@ -307,7 +307,7 @@
             <button
               type="submit"
               :disabled="submitting"
-              class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
+              class="px-5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
             >
               {{ submitting ? 'กำลังบันทึก...' : 'บันทึกการตั้งค่า' }}
             </button>
@@ -336,13 +336,13 @@ const selectedBuilding = ref(null);
 const createForm = reactive({
   name: '',
   address: '',
-  themeColor: '#3B82F6',
+  themeColor: '#0E7490',
   logoUrl: '',
   promptpayNum: ''
 });
 
 const editForm = reactive({
-  themeColor: '#3B82F6',
+  themeColor: '#0E7490',
   logoUrl: '',
   promptpayNum: '',
   paymentQrUrl: ''
@@ -354,7 +354,7 @@ onMounted(() => {
 
 const openEditSettingModal = (b) => {
   selectedBuilding.value = b;
-  editForm.themeColor = b.themeColor || '#3B82F6';
+  editForm.themeColor = b.themeColor || '#0E7490';
   editForm.logoUrl = b.logoUrl || '';
   editForm.promptpayNum = b.setting?.promptpayNum || '';
   editForm.paymentQrUrl = b.setting?.paymentQrUrl || '';
@@ -427,7 +427,7 @@ const handleCreateBuilding = async () => {
     showCreateModal.value = false;
     createForm.name = '';
     createForm.address = '';
-    createForm.themeColor = '#3B82F6';
+    createForm.themeColor = '#0E7490';
     createForm.logoUrl = '';
     createForm.promptpayNum = '';
   } catch (error) {

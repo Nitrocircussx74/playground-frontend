@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-6 py-4">
     <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl font-extrabold ring-2 ring-white/20 shadow-inner">
           {{ userInitials }}
@@ -9,10 +9,10 @@
         <div>
           <h1 class="text-xl font-bold tracking-tight text-white">{{ meData?.name || authStore.currentUser?.name || 'Admin User' }}</h1>
           <div class="flex items-center gap-2 mt-1">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-purple-500/30 text-purple-200 border border-purple-400/40">
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
               {{ meData?.role || authStore.currentUser?.role || 'ADMIN' }}
             </span>
-            <span class="text-xs text-purple-200">{{ meData?.email || authStore.currentUser?.email }}</span>
+            <span class="text-xs text-cyan-200">{{ meData?.email || authStore.currentUser?.email }}</span>
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@
               <span class="text-slate-500 font-semibold">ระดับสิทธิ์ (Role)</span>
               <span
                 class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase"
-                :class="isOwner ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'"
+                :class="isOwner ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-teal-100 text-teal-700 border border-teal-200'"
               >
                 {{ meData?.role || 'N/A' }}
               </span>
@@ -76,7 +76,7 @@
               </span>
             </h4>
 
-            <div v-if="isOwner" class="p-3 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs text-indigo-900 font-medium">
+            <div v-if="isOwner" class="p-3 bg-teal-50/60 border border-teal-100 rounded-xl text-xs text-teal-900 font-medium">
               🔑 ในฐานะ <span class="font-bold">OWNER</span> คุณมีสิทธิ์เข้าถึงและจัดการข้อมูลตึกและห้องพักทั้งหมดในระบบโดยปริยาย
             </div>
 
@@ -119,7 +119,7 @@
                 type="password"
                 required
                 placeholder="••••••••"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -131,7 +131,7 @@
                 required
                 minlength="6"
                 placeholder="อย่างน้อย 6 ตัวอักษร"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -142,7 +142,7 @@
                 type="password"
                 required
                 placeholder="••••••••"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -150,7 +150,7 @@
               <button
                 type="submit"
                 :disabled="updatingPwd"
-                class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <span>{{ updatingPwd ? 'กำลังบันทึก...' : '💾 บันทึกรหัสผ่านใหม่' }}</span>
               </button>

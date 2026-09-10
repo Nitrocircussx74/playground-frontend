@@ -1,11 +1,11 @@
 <template>
   <!-- 1. Custom Fullscreen Layout (For LIFF, Login, 403) -->
-  <div v-if="isCustomLayout" class="h-full w-full min-h-screen bg-slate-100 font-sans selection:bg-purple-600 selection:text-white">
+  <div v-if="isCustomLayout" class="h-full w-full min-h-screen bg-slate-100 font-sans selection:bg-cyan-600 selection:text-white">
     <router-view />
   </div>
 
   <!-- 2. Admin Backoffice App Shell -->
-  <div v-else class="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 flex font-sans selection:bg-purple-600 selection:text-white">
+  <div v-else class="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 flex font-sans selection:bg-cyan-600 selection:text-white">
     <!-- Backdrop สำหรับ Mobile Drawer -->
     <transition
       enter-active-class="transition-opacity duration-300"
@@ -33,13 +33,13 @@
       <!-- Sidebar Header / Brand Logo -->
       <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
         <router-link to="/dashboard" class="flex items-center gap-3 group text-decoration-none">
-          <div class="w-10 h-10 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-lg shadow-purple-600/30 ring-2 ring-purple-500/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden shrink-0">
+          <div class="w-10 h-10 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-lg shadow-cyan-600/30 ring-2 ring-cyan-500/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden shrink-0">
             <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
           </div>
           <div>
             <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
               <span>HorHub (หอฮับ)</span>
-              <span class="text-[10px] px-1.5 py-0.2 bg-purple-500/20 text-purple-300 font-mono rounded border border-purple-500/30">PRO</span>
+              <span class="text-[10px] px-1.5 py-0.2 bg-cyan-500/20 text-cyan-300 font-mono rounded border border-cyan-500/30">PRO</span>
             </div>
             <div class="text-[11px] text-slate-400 font-medium">ระบบบริหารจัดการหอพัก</div>
           </div>
@@ -65,9 +65,9 @@
             to="/dashboard"
             @click="isMobileMenuOpen = false"
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-            :class="route.path === '/dashboard' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            :class="route.path === '/dashboard' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
           >
-            <LayoutDashboard class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/dashboard' ? 'text-white' : 'text-purple-400'" />
+            <LayoutDashboard class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/dashboard' ? 'text-white' : 'text-cyan-400'" />
             <span>Dashboard ภาพรวม</span>
           </router-link>
         </div>
@@ -83,9 +83,9 @@
               to="/buildings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/buildings' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/buildings' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <Building class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/buildings' ? 'text-white' : 'text-indigo-400'" />
+              <Building class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/buildings' ? 'text-white' : 'text-teal-400'" />
               <span>จัดการตึก/อาคาร</span>
             </router-link>
 
@@ -94,9 +94,9 @@
               to="/building-settings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/building-settings' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/building-settings' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <SlidersHorizontal class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/building-settings' ? 'text-white' : 'text-indigo-400'" />
+              <SlidersHorizontal class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/building-settings' ? 'text-white' : 'text-teal-400'" />
               <span>ตั้งค่าตึก & ค่าน้ำไฟ</span>
             </router-link>
 
@@ -104,9 +104,9 @@
               to="/rooms"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/rooms' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/rooms' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <DoorOpen class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/rooms' ? 'text-white' : 'text-indigo-400'" />
+              <DoorOpen class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/rooms' ? 'text-white' : 'text-teal-400'" />
               <span>{{ isRoomOwnerRole ? 'ห้องพักของฉัน (My Rooms)' : 'จัดการห้องพัก' }}</span>
             </router-link>
 
@@ -114,9 +114,9 @@
               to="/leases"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/leases' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/leases' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <FileText class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/leases' ? 'text-white' : 'text-indigo-400'" />
+              <FileText class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/leases' ? 'text-white' : 'text-teal-400'" />
               <span>สัญญาเช่า & ประวัติ</span>
             </router-link>
 
@@ -124,9 +124,9 @@
               to="/tenants"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path.startsWith('/tenants') ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path.startsWith('/tenants') ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <Users class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path.startsWith('/tenants') ? 'text-white' : 'text-indigo-400'" />
+              <Users class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path.startsWith('/tenants') ? 'text-white' : 'text-teal-400'" />
               <span>ทะเบียนผู้เช่า (CRM)</span>
             </router-link>
           </div>
@@ -143,7 +143,7 @@
               to="/meter-readings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/meter-readings' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/meter-readings' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Zap class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/meter-readings' ? 'text-white' : 'text-amber-400'" />
               <span>จดมิเตอร์น้ำ-ไฟ</span>
@@ -153,7 +153,7 @@
               to="/invoices"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/invoices' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/invoices' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Receipt class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/invoices' ? 'text-white' : 'text-emerald-400'" />
               <span>{{ isRoomOwnerRole ? 'บิล & รายได้ค่าเช่า' : 'จัดการใบแจ้งหนี้ & บิล' }}</span>
@@ -171,7 +171,7 @@
               to="/maintenance"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/maintenance' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/maintenance' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Wrench class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/maintenance' ? 'text-white' : 'text-sky-400'" />
               <span>แจ้งซ่อม & ติดตาม</span>
@@ -182,9 +182,9 @@
               to="/announcements"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/announcements' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/announcements' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <Megaphone class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/announcements' ? 'text-white' : 'text-purple-400'" />
+              <Megaphone class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/announcements' ? 'text-white' : 'text-cyan-400'" />
               <span>ข่าวสาร & ประกาศ</span>
             </router-link>
 
@@ -193,7 +193,7 @@
               to="/parcels"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/parcels' || route.path === '/admin/parcels' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/parcels' || route.path === '/admin/parcels' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Package class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="(route.path === '/parcels' || route.path === '/admin/parcels') ? 'text-white' : 'text-amber-400'" />
               <span>จัดการพัสดุ</span>
@@ -212,7 +212,7 @@
               to="/admin/users"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/admin/users' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/admin/users' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <ShieldCheck class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/admin/users' ? 'text-white' : 'text-rose-400'" />
               <span>จัดการแอดมิน</span>
@@ -223,7 +223,7 @@
               to="/admin/audit-logs"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/admin/audit-logs' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/admin/audit-logs' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <History class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/admin/audit-logs' ? 'text-white' : 'text-slate-400'" />
               <span>ประวัติการใช้งาน</span>
@@ -234,7 +234,7 @@
               to="/features"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/features' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/features' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Sparkles class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/features' ? 'text-white' : 'text-amber-400'" />
               <span>ตั้งค่าฟีเจอร์</span>
@@ -244,9 +244,9 @@
               to="/profile"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
-              :class="route.path === '/profile' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+              :class="route.path === '/profile' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
-              <User class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/profile' ? 'text-white' : 'text-indigo-400'" />
+              <User class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/profile' ? 'text-white' : 'text-teal-400'" />
               <span>โปรไฟล์ของฉัน</span>
             </router-link>
           </div>
@@ -257,7 +257,7 @@
       <div class="p-3 border-t border-slate-800/80 shrink-0 bg-slate-950/40 space-y-2.5">
         <div class="px-2 py-1.5 bg-slate-800/50 rounded-xl border border-slate-700/50 flex items-center justify-between">
           <div class="flex items-center gap-2 min-w-0">
-            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
               {{ (authStore.currentUser?.email || 'A')[0].toUpperCase() }}
             </div>
             <div class="min-w-0">
@@ -265,7 +265,7 @@
               <div class="text-xs font-semibold text-white truncate">{{ authStore.currentUser?.email }}</div>
             </div>
           </div>
-          <span class="text-[9px] font-bold px-1.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full font-mono uppercase">
+          <span class="text-[9px] font-bold px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-full font-mono uppercase">
             {{ (authStore.currentUser?.role || 'Admin').toUpperCase() }}
           </span>
         </div>
@@ -317,12 +317,12 @@
           </button>
 
           <!-- Building Switcher Capsule -->
-          <div id="tour-building-selector" class="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/90 px-3 py-1.5 rounded-xl shadow-2xs">
-            <Building2 class="w-4 h-4 text-purple-700 shrink-0" />
+          <div id="tour-building-selector" class="flex items-center gap-2 bg-gradient-to-r from-cyan-50 to-teal-50 border border-cyan-200/90 px-3 py-1.5 rounded-xl shadow-2xs">
+            <Building2 class="w-4 h-4 text-cyan-700 shrink-0" />
             <select
               :value="buildingStore.activeBuildingId"
               @change="handleBuildingChange"
-              class="bg-white/90 border border-purple-200 text-purple-950 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 cursor-pointer min-w-[150px] sm:min-w-[180px]"
+              class="bg-white/90 border border-cyan-200 text-cyan-950 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 cursor-pointer min-w-[150px] sm:min-w-[180px]"
             >
               <option value="">🌐 ภาพรวมทั้งหมด (ทุกหอพัก)</option>
               <option v-if="buildingStore.buildings.length === 0" value="" disabled>
@@ -343,7 +343,7 @@
 
         <div v-else-if="!authStore.loading">
           <router-link to="/login">
-            <Button class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-md shadow-purple-600/20">
+            <Button class="bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-md shadow-cyan-600/20">
               เข้าสู่ระบบ
             </Button>
           </router-link>

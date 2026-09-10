@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header Title Banner -->
-    <div class="bg-gradient-to-r from-rose-900 via-purple-900 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-rose-900 via-cyan-900 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 bg-rose-500/30 border border-rose-400/40 rounded-full text-xs font-bold tracking-wider uppercase text-rose-200">
@@ -16,7 +16,7 @@
 
       <button
         @click="showCreateModal = !showCreateModal"
-        class="px-5 py-2.5 bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
+        class="px-5 py-2.5 bg-gradient-to-r from-rose-500 to-cyan-600 hover:from-rose-600 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
       >
         <span>{{ showCreateModal ? '✕ ปิดฟอร์ม' : '➕ บรอดแคสต์ประกาศใหม่ (New Broadcast)' }}</span>
       </button>
@@ -132,7 +132,7 @@
           <button
             type="submit"
             :disabled="submitting || uploadingImage"
-            class="px-6 py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-700 hover:to-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            class="px-6 py-3 bg-gradient-to-r from-rose-600 to-cyan-600 hover:from-rose-700 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
           >
             <span>🚀 ตรวจสอบและส่ง LINE Broadcast</span>
           </button>
@@ -158,8 +158,8 @@
               <span
                 class="text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1"
                 :class="{
-                  'bg-purple-50 border-purple-200 text-purple-800': item.targetType === 'ALL' || item.targetType === 'all',
-                  'bg-indigo-50 border-indigo-200 text-indigo-800': item.targetType === 'BUILDING' || item.targetType === 'building',
+                  'bg-cyan-50 border-cyan-200 text-cyan-800': item.targetType === 'ALL' || item.targetType === 'all',
+                  'bg-teal-50 border-teal-200 text-teal-800': item.targetType === 'BUILDING' || item.targetType === 'building',
                   'bg-amber-50 border-amber-200 text-amber-800': item.targetType === 'FLOOR' || item.targetType === 'floor'
                 }"
               >

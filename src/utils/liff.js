@@ -159,6 +159,21 @@ export function logoutLiff() {
 }
 
 /**
+ * ปิดหน้าต่าง LIFF WebView เมื่อทำงานใน LINE In-App
+ */
+export function closeLiffWindow() {
+  try {
+    if (typeof liff.closeWindow === 'function') {
+      liff.closeWindow();
+      return true;
+    }
+  } catch (err) {
+    console.warn('Error during liff.closeWindow():', err);
+  }
+  return false;
+}
+
+/**
  * ตรวจสอบว่าแอปกำลังทำงานอยู่ภายใน LINE App (In-App Browser/LIFF WebView) หรือไม่
  */
 export function isInLiffClient() {
