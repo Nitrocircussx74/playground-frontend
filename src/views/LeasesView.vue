@@ -240,6 +240,7 @@ const fetchLeases = async () => {
 };
 
 import { startTour } from '@/utils/tours';
+import { formatDate } from '@/utils/formatters';
 
 onMounted(() => {
   buildingStore.fetchBuildings();
@@ -277,8 +278,5 @@ const openMoveOutWizard = (lease) => {
   showMoveOutModal.value = true;
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH');
-};
+
 </script>

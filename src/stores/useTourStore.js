@@ -15,11 +15,6 @@ export const useTourStore = defineStore('tour', {
     markTourAsSeen(tourKey) {
       this.seenTours[tourKey] = true;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.seenTours));
-    },
-
-    resetAllTours() {
-      this.seenTours = {};
-      localStorage.removeItem(STORAGE_KEY);
     }
   }
 });

@@ -716,6 +716,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import TenantSecurityTab from '@/components/TenantSecurityTab.vue';
+import { formatShortDate as formatDate, formatCurrency } from '@/utils/formatters';
 
 const route = useRoute();
 const router = useRouter();
@@ -895,26 +896,6 @@ const goBack = () => {
   } else {
     router.push('/tenants');
   }
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '-';
-  return d.toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-const formatCurrency = (val) => {
-  const num = Number(val) || 0;
-  return new Intl.NumberFormat('th-TH', {
-    style: 'currency',
-    currency: 'THB',
-    maximumFractionDigits: 2
-  }).format(num);
 };
 
 const getInvoicePaymentBehavior = (inv) => {

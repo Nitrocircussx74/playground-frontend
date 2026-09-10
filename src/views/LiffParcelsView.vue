@@ -396,6 +396,7 @@ import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import QRCode from 'qrcode';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
+import { formatDateTime as formatDate } from '@/utils/formatters';
 
 const featureStore = useFeatureStore();
 const loading = ref(true);
@@ -494,11 +495,6 @@ const fetchParcels = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 </script>
 

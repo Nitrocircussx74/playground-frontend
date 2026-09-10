@@ -739,6 +739,7 @@ import { useAnnouncements } from '@/composables/useAnnouncements';
 import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
+import { formatShortDate as formatDate } from '@/utils/formatters';
 import QRCode from 'qrcode';
 import {
   CreditCard,
@@ -863,15 +864,6 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
   } catch (err) {
     console.warn('Live action metrics fetch warning:', err);
   }
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
 };
 
 const openAnnouncementModal = (item) => {

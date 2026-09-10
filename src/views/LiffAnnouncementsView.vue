@@ -251,6 +251,7 @@ import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import { useAnnouncements } from '@/composables/useAnnouncements';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
+import { formatShortDate as formatDate } from '@/utils/formatters';
 
 const { markAsRead, markAllAsRead, isRead, checkUnread, unreadCount } = useAnnouncements();
 const featureStore = useFeatureStore();
@@ -259,15 +260,6 @@ const loading = ref(true);
 const announcements = ref([]);
 const lineUserId = ref('');
 const selectedAnnouncement = ref(null);
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
 
 const openDetail = (item) => {
   selectedAnnouncement.value = item;

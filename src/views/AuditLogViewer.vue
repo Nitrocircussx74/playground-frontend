@@ -272,7 +272,8 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import auditLogService from '@/services/auditLogService';
+import api from '@/utils/api';
+import { formatDate } from '@/utils/formatters';
 
 const logs = ref([]);
 const loading = ref(false);
@@ -301,13 +302,15 @@ const fetchLogs = async () => {
   loading.value = true;
   error.value = '';
   try {
-    const res = await auditLogService.getAuditLogs({
-      page: meta.page,
-      limit: meta.limit,
-      action: filters.action || undefined,
-      entity: filters.entity || undefined,
-      startDate: filters.startDate || undefined,
-      endDate: filters.endDate || undefined
+    const { data: res } = await api.get('/api/admin/audit-logs', {
+      params: {
+        page: meta.page,
+        limit: meta.limit,
+        action: filters.action || undefined,
+        entity: filters.entity || undefined,
+        startDate: filters.startDate || undefined,
+        endDate: filters.endDate || undefined
+      }
     });
     logs.value = res.data || [];
     meta.total = res.meta?.total || 0;
@@ -369,11 +372,6 @@ const getActionBadgeClass = (action) => {
 const truncateUuid = (uuid) => {
   if (!uuid) return '';
   return uuid.length > 12 ? `${uuid.slice(0, 8)}...` : uuid;
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('th-TH');
 };
 
 const formatTime = (dateStr) => {

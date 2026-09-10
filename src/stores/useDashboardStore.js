@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import dashboardService from '@/services/dashboardService';
+import { downloadBlob } from '@/utils/downloadHelper';
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
@@ -87,14 +88,7 @@ export const useDashboardStore = defineStore('dashboard', {
       this.isLoading = true;
       try {
         const blob = await dashboardService.downloadCsv({ billingCycle });
-        const url = window.URL.createObjectURL(new Blob([blob], { type: 'text/csv;charset=utf-8;' }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `invoices_report_${billingCycle || 'all'}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
+        downloadBlob(new Blob([blob], { type: 'text/csv;charset=utf-8;' }), `invoices_report_${billingCycle || 'all'}.csv`);
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to export CSV';
       } finally {
@@ -106,14 +100,7 @@ export const useDashboardStore = defineStore('dashboard', {
       this.isLoading = true;
       try {
         const blob = await dashboardService.downloadPdf({ billingCycle });
-        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `financial_report_${billingCycle || 'current'}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
+        downloadBlob(new Blob([blob], { type: 'application/pdf' }), `financial_report_${billingCycle || 'current'}.pdf`);
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to export PDF';
       } finally {

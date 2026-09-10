@@ -229,6 +229,7 @@
 import { ref, reactive, computed, watch } from 'vue';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
+import { formatDate } from '@/utils/formatters';
 import MoveOutWizardModal from '@/components/MoveOutWizardModal.vue';
 
 const props = defineProps({
@@ -301,8 +302,5 @@ const handleTerminateSubmit = async () => {
   }
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH');
-};
+
 </script>
