@@ -23,6 +23,18 @@ export const authService = {
   },
 
   /**
+   * เข้าสู่ระบบสำหรับลูกบ้านผ่าน Web Browser ปกติ (Dual-Mode Login ไม่ผ่าน LINE)
+   * @param {Object} credentials - { phoneNumber: string, pin: string }
+   */
+  async loginWeb(credentials) {
+    const response = await api.post('/api/auth/web/login', {
+      phone_number: credentials.phone || credentials.phoneNumber || credentials.phone_number,
+      pin: credentials.pin
+    });
+    return response.data; // { success: true, accessToken, user, tenant }
+  },
+
+  /**
    * เข้าสู่ระบบด้วยเบอร์โทรศัพท์และรหัสผ่าน (Local Password)
    * @param {Object} credentials - { phoneNumber: string, password: string }
    */

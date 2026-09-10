@@ -83,14 +83,20 @@
               </h1>
               <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '-' }}</p>
 
-              <!-- Current Active Room Badge -->
-              <div class="pt-0.5">
+              <!-- Current Active Room Badge & Role Badge -->
+              <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
                 <span class="px-2.5 py-0.5 bg-white/20 backdrop-blur-xs text-white font-medium text-[11px] rounded-full border border-white/30 inline-flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span>ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber || '-' }}</span>
                   <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="text-[10px] text-white/80">
                     ({{ selectedRoom?.buildingName || tenantProfile.buildingName }})
                   </span>
+                </span>
+                <span
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"
+                  :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-400/25 text-amber-100 border border-amber-300/40' : 'bg-sky-400/25 text-sky-100 border border-sky-300/40'"
+                >
+                  <span>{{ tenantProfile.isPrimaryTenant !== false ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}</span>
                 </span>
               </div>
             </div>
@@ -553,6 +559,99 @@
         </div>
       </div>
 
+      <!-- 3.8 Roommates & Co-Residents Section (สมาชิกในห้องพัก) -->
+      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+              <Users class="w-4 h-4" />
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-800">
+                สมาชิกร่วมห้องพัก
+              </h2>
+              <p class="text-[10px] text-slate-400 mt-0.5">
+                ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber }} ({{ 1 + (tenantProfile.roommates?.length || 0) }} คน)
+              </p>
+            </div>
+          </div>
+
+          <button
+            v-if="tenantProfile.isPrimaryTenant !== false"
+            @click="handleCreateRoommateInvite"
+            :disabled="generatingInvite"
+            class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            :style="{ backgroundColor: themeColor }"
+          >
+            <UserPlus class="w-3.5 h-3.5" />
+            <span>{{ generatingInvite ? 'กำลังสร้าง...' : 'เชิญรูมเมท' }}</span>
+          </button>
+        </div>
+
+        <!-- Roommates List -->
+        <div class="space-y-2 pt-1">
+          <!-- Self (Current User) -->
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <img
+                v-if="tenantProfile.avatarUrl"
+                :src="tenantProfile.avatarUrl"
+                class="w-8 h-8 rounded-full object-cover border border-white shadow-2xs shrink-0"
+              />
+              <div v-else class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
+                {{ tenantInitial }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-800 truncate flex items-center gap-1.5">
+                  <span>{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span>
+                  <span class="text-[9px] px-1.5 py-0.2 bg-indigo-100 text-indigo-700 rounded-md font-semibold">คุณ</span>
+                </div>
+                <div class="text-[10px] text-slate-400 font-mono">{{ tenantProfile.phone || '-' }}</div>
+              </div>
+            </div>
+            <span
+              class="px-2 py-0.5 text-[9px] font-bold rounded-full shrink-0"
+              :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'"
+            >
+              {{ tenantProfile.isPrimaryTenant !== false ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}
+            </span>
+          </div>
+
+          <!-- Other Roommates -->
+          <template v-if="tenantProfile.roommates && tenantProfile.roommates.length > 0">
+            <div
+              v-for="mate in tenantProfile.roommates"
+              :key="mate.id"
+              class="p-2.5 rounded-xl bg-white border border-slate-100/90 hover:border-slate-200 flex items-center justify-between gap-3 transition-colors"
+            >
+              <div class="flex items-center gap-2.5 min-w-0">
+                <img
+                  v-if="mate.linePictureUrl"
+                  :src="mate.linePictureUrl"
+                  class="w-8 h-8 rounded-full object-cover border border-slate-100 shadow-2xs shrink-0"
+                />
+                <div v-else class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0">
+                  {{ (mate.firstName || 'R').charAt(0) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-slate-800 truncate">
+                    {{ mate.name || `${mate.firstName} ${mate.lastName}` }}
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-mono">{{ mate.phone || '-' }}</div>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-slate-100 text-slate-600 shrink-0">
+                👥 ผู้อยู่อาศัยร่วม
+              </span>
+            </div>
+          </template>
+
+          <div v-else class="p-3 text-center rounded-xl bg-slate-50/50 border border-dashed border-slate-200/80 text-[11px] text-slate-400">
+            ยังไม่มีผู้อยู่อาศัยร่วมในห้องนี้ แตะปุ่ม "เชิญรูมเมท" เพื่อแชร์รหัสเชิญ
+          </div>
+        </div>
+      </div>
+
       <!-- 4. Personal Profile & Settings Link Card -->
       <router-link
         to="/liff/settings"
@@ -605,6 +704,59 @@
         >
           ปิดหน้าต่าง
         </button>
+      </div>
+    </div>
+
+    <!-- Roommate Invite Modal -->
+    <div v-if="showRoommateModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl space-y-4 border border-slate-100 text-center relative animate-in fade-in zoom-in-95 duration-150">
+        <button @click="showRoommateModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded-lg cursor-pointer">
+          <X class="w-5 h-5" />
+        </button>
+
+        <div class="space-y-1 pt-1">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-2">
+            <UserPlus class="w-5 h-5" />
+          </div>
+          <h3 class="text-base font-bold text-slate-900">เชิญรูมเมทเข้าห้องพัก</h3>
+          <p class="text-xs text-slate-500">
+            แชร์รหัสเชิญหรือ QR Code ให้เพื่อนร่วมห้องสแกนเพื่อผูกบัญชี LINE
+          </p>
+        </div>
+
+        <!-- QR Code -->
+        <div v-if="roommateQrUrl" class="py-1">
+          <img :src="roommateQrUrl" alt="Roommate Invite QR" class="w-44 h-44 mx-auto rounded-2xl border border-slate-100 p-2 bg-white shadow-2xs" />
+        </div>
+
+        <!-- Invite Code Box -->
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รหัสเชิญรูมเมท (6 หลัก)</div>
+          <div class="text-2xl font-black font-mono tracking-widest text-indigo-600" :style="{ color: themeColor }">
+            {{ roommateInviteData?.code }}
+          </div>
+          <div class="text-[10px] text-slate-400">
+            ห้อง {{ roommateInviteData?.roomNumber }} | หมดอายุใน 7 วัน
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2 pt-1">
+          <button
+            @click="copyRoommateCode"
+            class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+            :style="{ backgroundColor: themeColor }"
+          >
+            <Copy class="w-3.5 h-3.5" />
+            <span>คัดลอกรหัสเชิญ</span>
+          </button>
+          <button
+            @click="showRoommateModal = false"
+            class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+          >
+            ปิดหน้าต่าง
+          </button>
+        </div>
       </div>
     </div>
 
@@ -753,7 +905,10 @@ import {
   X,
   DoorClosed,
   Check,
-  CheckCircle2
+  CheckCircle2,
+  Users,
+  UserPlus,
+  Copy
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -774,6 +929,10 @@ const cachedTenant = authStore.tenant || null;
 const loading = ref(!cachedTenant?.firstName);
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
+const showRoommateModal = ref(false);
+const generatingInvite = ref(false);
+const roommateInviteData = ref(null);
+const roommateQrUrl = ref('');
 const sessionExpired = ref(false);
 const imageLoadError = ref(false);
 const inviteCodeInput = ref('');
@@ -944,8 +1103,9 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = data.roomNumber || '-';
       tenantProfile.rooms = data.rooms || [];
       tenantProfile.phone = data.phone || '';
-      // ใช้รูปโปรไฟล์สดจาก LIFF SDK (onMounted ด้านล่างดึงมาก่อนหน้านี้) เป็นหลักเสมอถ้ามี เพราะเป็นข้อมูลล่าสุดจริง
-      // ค่อย fallback ไปใช้ค่าที่แคชไว้ใน DB เมื่อดึงจาก LIFF ไม่ได้ (เช่น เปิดนอกแอป LINE) ป้องกันไม่ให้ค่าเก่า/ค้างใน DB มาทับรูปที่ถูกต้อง
+      tenantProfile.residentRole = data.residentRole || 'PRIMARY';
+      tenantProfile.isPrimaryTenant = data.isPrimaryTenant ?? true;
+      tenantProfile.roommates = data.roommates || [];
       if (data.linePictureUrl && !tenantProfile.avatarUrl) {
         tenantProfile.avatarUrl = data.linePictureUrl;
       }
@@ -1002,6 +1162,33 @@ const handleLinkRoom = async () => {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถผูกห้องพักได้');
   } finally {
     linkingRoom.value = false;
+  }
+};
+
+const handleCreateRoommateInvite = async () => {
+  generatingInvite.value = true;
+  try {
+    const res = await api.post('/api/v1/liff/invites/roommate');
+    if (res.data?.success && res.data?.data) {
+      roommateInviteData.value = res.data.data;
+      const inviteLink = `${window.location.origin}/liff/register?invite=${res.data.data.code}`;
+      roommateQrUrl.value = await QRCode.toDataURL(inviteLink, { margin: 1, width: 260 });
+      showRoommateModal.value = true;
+    }
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถสร้างรหัสเชิญได้');
+  } finally {
+    generatingInvite.value = false;
+  }
+};
+
+const copyRoommateCode = async () => {
+  if (!roommateInviteData.value?.code) return;
+  try {
+    await navigator.clipboard.writeText(roommateInviteData.value.code);
+    await showSuccess('คัดลอกแล้ว', `คัดลอกรหัส ${roommateInviteData.value.code} เรียบร้อยแล้ว`);
+  } catch (e) {
+    console.warn('Clipboard write error:', e);
   }
 };
 

@@ -9,11 +9,12 @@ export const useAuthStore = defineStore('auth', {
     accessToken: null,
     isInitialized: false,
 
-    // LIFF Tenant Authentication State (Memory-only เช่นกัน - ห้ามเก็บ Access Token ลง LocalStorage)
+    // LIFF & Web Portal Tenant Authentication State (แยกอิสระจาก CMS Admin)
     tenant: null,
     liffToken: null,
     isLiffReady: false,
     liffProfile: null,
+    isWebTenant: false,
     loading: false
   }),
 
@@ -26,7 +27,7 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    // CMS Admin Actions
+    // 🏢 CMS Admin Actions
     setAccessToken(token) {
       this.accessToken = token;
     },
@@ -40,13 +41,25 @@ export const useAuthStore = defineStore('auth', {
       this.accessToken = null;
     },
 
-    // LIFF Tenant Actions
+    // 👤 LIFF & Web Tenant Actions (Isolated from CMS Admin)
     setLiffAuth(token, tenantData = null) {
-      // เก็บ Access Token ไว้ใน Memory (Pinia State) เท่านั้น ห้ามเขียนลง LocalStorage
-      // เพราะเสี่ยงต่อการถูกขโมยผ่าน XSS - เมื่อรีเฟรชหน้าให้ใช้ restoreLiffSession() แทน
       this.liffToken = token;
       if (tenantData) {
         this.tenant = tenantData;
+      }
+    },
+
+    setTenantWebAuth(token, tenantData = null) {
+      this.liffToken = token;
+      this.isWebTenant = true;
+      if (tenantData) {
+        this.tenant = tenantData;
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('horhub_tenant_token', token);
+        if (tenantData) {
+          localStorage.setItem('horhub_tenant_data', JSON.stringify(tenantData));
+        }
       }
     },
 
@@ -57,21 +70,38 @@ export const useAuthStore = defineStore('auth', {
     clearLiffAuth() {
       this.tenant = null;
       this.liffToken = null;
+      this.isWebTenant = false;
       if (typeof window !== 'undefined') {
-        // ล้าง Token เก่าที่อาจตกค้างอยู่ใน LocalStorage จากเวอร์ชันก่อนหน้า (Migration Cleanup)
         localStorage.removeItem('liff_token');
+        localStorage.removeItem('horhub_tenant_token');
+        localStorage.removeItem('horhub_tenant_data');
       }
     },
 
     /**
-     * กู้คืน Session ของลูกบ้านหลังรีเฟรชหน้า/เปิดแอปใหม่ โดยไม่ต้องพึ่ง LocalStorage
-     * ใช้ LINE ID Token ที่ LIFF SDK เก็บ Session ไว้ให้เอง (ปลอดภัยกว่าเพราะควบคุมโดย LINE)
-     * แลกเป็น Access Token ใหม่ผ่าน Silent Login ทุกครั้งที่ต้องใช้งาน
+     * กู้คืน Session ของลูกบ้าน (รองรับทั้ง LINE LIFF และ Web Portal)
      * @returns {Promise<boolean>} true หากกู้คืน Session สำเร็จ
      */
     async restoreLiffSession() {
       if (this.liffToken) return true;
 
+      // 1. ตรวจสอบ Web Tenant Session ใน LocalStorage ก่อน
+      if (typeof window !== 'undefined') {
+        const storedTenantToken = localStorage.getItem('horhub_tenant_token');
+        const storedTenantData = localStorage.getItem('horhub_tenant_data');
+        if (storedTenantToken) {
+          this.liffToken = storedTenantToken;
+          this.isWebTenant = true;
+          if (storedTenantData) {
+            try {
+              this.tenant = JSON.parse(storedTenantData);
+            } catch {}
+          }
+          return true;
+        }
+      }
+
+      // 2. ถ้าไม่มี Web Tenant ให้ลองกู้คืนผ่าน LINE LIFF Silent Login
       try {
         await initLiff();
         if (!isLiffLoggedIn()) return false;

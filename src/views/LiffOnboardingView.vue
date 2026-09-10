@@ -8,6 +8,10 @@
         </div>
 
         <div class="space-y-1">
+          <div v-if="buildingName && buildingName !== 'หอพัก'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50/80 border border-emerald-200/80 rounded-full text-xs font-bold text-emerald-800 shadow-xs mb-1">
+            <Building2 class="w-3.5 h-3.5 text-emerald-600" />
+            <span>{{ buildingName }}</span>
+          </div>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
             HorHub <span class="text-emerald-600 font-semibold">(หอฮับ)</span>
           </h1>
@@ -212,17 +216,20 @@ import {
   Phone,
   KeyRound,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Building2
 } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile, getLiffIdToken } from '@/utils/liff';
 import api from '@/utils/api';
 import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { showSuccess, showConfirm } from '@/utils/swal';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const { fetchAndApplyBuildingTheme, buildingName } = useDynamicTheme();
 const activeMode = ref('phone');
 const phoneInput = ref('');
 const pinInput = ref('');
@@ -241,6 +248,11 @@ const form = reactive({
 });
 
 onMounted(async () => {
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+  if (targetBuilding) {
+    fetchAndApplyBuildingTheme(targetBuilding);
+  }
+
   if (route.query.code) {
     form.inviteCode = String(route.query.code).trim().toUpperCase();
     activeMode.value = 'invite';
@@ -267,10 +279,11 @@ const handleVerifyByPhone = async () => {
   errorMessage.value = '';
 
   const cleanPhone = phoneInput.value.trim();
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
 
   try {
     // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน
-    const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone });
+    const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone, building: targetBuilding || undefined });
 
     if (phoneStatus?.isExistingUser) {
       // พบบัญชีเดิมในระบบ HorHub -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) แล้วผูกกับตึกนี้
@@ -284,6 +297,7 @@ const handleVerifyByPhone = async () => {
     // 2. กรณีลูกบ้านใหม่
     const payload = {
       phone: cleanPhone,
+      building: targetBuilding || undefined,
       lineDisplayName: lineDisplayName.value || null,
       linePictureUrl: linePictureUrl.value || null,
       lineStatusMessage: lineStatusMessage.value || null
@@ -309,11 +323,14 @@ const handleLinkAndLogin = async () => {
   submitting.value = true;
   errorMessage.value = '';
 
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+
   try {
     const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     const payload = {
       phone: phoneInput.value.trim(),
       pin: pinInput.value,
+      building: targetBuilding || undefined,
       lineIdToken: idToken,
       lineDisplayName: lineDisplayName.value || null,
       linePictureUrl: linePictureUrl.value || null,

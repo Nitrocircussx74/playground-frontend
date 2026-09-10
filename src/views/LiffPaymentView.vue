@@ -197,6 +197,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { initLiff } from '@/utils/liff';
 import api from '@/utils/api';
 import { showError, showSuccess } from '@/utils/swal';
@@ -204,6 +205,7 @@ import { captureAndDownloadElement, downloadImage } from '@/utils/downloadHelper
 import { Download, QrCode } from 'lucide-vue-next';
 
 const route = useRoute();
+const authStore = useAuthStore();
 const invoiceId = route.params.invoiceId;
 
 const qrCardRef = ref(null);
@@ -293,18 +295,27 @@ const handleSaveQrCode = async () => {
 
   savingQr.value = true;
   try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/qr-image?token=${encodeURIComponent(token)}`;
     const filename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
+
     if (qrCardRef.value) {
-      await captureAndDownloadElement(qrCardRef.value, filename);
+      await captureAndDownloadElement(qrCardRef.value, filename, directUrl);
     } else {
-      await downloadImage(qrData.value.qrDataUrl, filename);
+      await downloadImage(qrData.value.qrDataUrl, filename, directUrl);
     }
   } catch (err) {
     console.error('Save QR error:', err);
     try {
       if (qrData.value?.qrDataUrl) {
+        const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+        const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+        const token = authStore.liffToken || '';
+        const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/qr-image?token=${encodeURIComponent(token)}`;
         const fallbackFilename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
-        await downloadImage(qrData.value.qrDataUrl, fallbackFilename);
+        await downloadImage(qrData.value.qrDataUrl, fallbackFilename, directUrl);
         return;
       }
     } catch (fallbackErr) {

@@ -175,7 +175,7 @@
                   class="px-3 py-1 rounded-full text-[11px] font-black uppercase border shadow-2xs inline-flex items-center gap-1.5"
                   :class="getUserRoleBadgeClass(user.role).badge"
                 >
-                  <span>{{ isOwnerRole(user.role) ? '👑' : '👔' }}</span>
+                  <span>{{ isOwnerRole(user.role) ? '👑' : (isRoomOwnerRole(user.role) ? '🔑' : '👔') }}</span>
                   <span>{{ user.role }}</span>
                 </span>
               </td>
@@ -185,6 +185,11 @@
                 <div v-if="isOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-800 border border-purple-200 rounded-xl text-[11px] font-bold shadow-2xs">
                   <span>🌐</span>
                   <span>ทุกตึกในระบบ (Full System Access)</span>
+                </div>
+
+                <div v-else-if="isRoomOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-[11px] font-bold shadow-2xs">
+                  <span>🔑</span>
+                  <span>เฉพาะห้องที่ครอบครองกรรมสิทธิ์ (Room-Scoped Access)</span>
                 </div>
 
                 <div v-else-if="user.buildingPermissions?.length > 0" class="flex flex-wrap gap-1.5">
@@ -298,7 +303,8 @@
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-extrabold focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
             >
               <option value="MANAGER">👔 MANAGER (ผู้จัดการหอพักประจำตึก)</option>
-              <option value="OWNER">👑 OWNER (เจ้าของหอพัก - สิทธิ์สูงสุดดูได้ทุกตึก)</option>
+              <option value="ROOM_OWNER">🔑 ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
+              <option value="OWNER">👑 OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์สูงสุดดูได้ทุกตึก)</option>
             </select>
           </div>
 
@@ -331,8 +337,13 @@
             </div>
           </div>
 
-          <div v-else-if="isOwnerRole(form.role)" class="p-3 bg-purple-50 border border-purple-200 rounded-2xl text-xs text-purple-950 font-semibold flex items-center gap-2">
+          <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 font-semibold flex items-center gap-2">
             <span>🔑</span>
+            <span>ระดับสิทธิ์ <span class="font-black text-amber-700">ROOM_OWNER</span> สามารถเข้าดูและจัดการเฉพาะห้องพักที่ตนเองมีกรรมสิทธิ์ในระบบเท่านั้น</span>
+          </div>
+
+          <div v-else-if="isOwnerRole(form.role)" class="p-3 bg-purple-50 border border-purple-200 rounded-2xl text-xs text-purple-950 font-semibold flex items-center gap-2">
+            <span>🌐</span>
             <span>ระดับสิทธิ์ <span class="font-black text-purple-700">{{ form.role }}</span> สามารถเข้าถึงและจัดการข้อมูลทุกตึกในระบบได้โดยอัตโนมัติ</span>
           </div>
 
@@ -384,8 +395,9 @@ const selectedRoleFilter = ref('ALL');
 
 const roleFilterOptions = [
   { label: 'ทั้งหมด', value: 'ALL' },
-  { label: '👑 Owners', value: 'OWNER' },
-  { label: '👔 Managers', value: 'MANAGER' }
+  { label: '👑 เจ้าของตึก (Owners)', value: 'OWNER' },
+  { label: '🔑 เจ้าของห้อง (Room Owners)', value: 'ROOM_OWNER' },
+  { label: '👔 ผู้จัดการตึก (Managers)', value: 'MANAGER' }
 ];
 
 const form = reactive({
@@ -427,19 +439,28 @@ const isOwnerRole = (role) => {
   return ['OWNER', 'SUPERADMIN', 'SUPER_ADMIN', 'owner', 'super_admin', 'superadmin'].includes((role || '').toUpperCase());
 };
 
+const isRoomOwnerRole = (role) => {
+  return ['ROOM_OWNER', 'INVESTOR', 'room_owner', 'investor'].includes((role || '').toUpperCase());
+};
+
 const ownerCount = computed(() => {
   return users.value.filter((u) => isOwnerRole(u.role)).length;
 });
 
 const managerCount = computed(() => {
-  return users.value.filter((u) => !isOwnerRole(u.role)).length;
+  return users.value.filter((u) => !isOwnerRole(u.role) && !isRoomOwnerRole(u.role)).length;
+});
+
+const roomOwnerCount = computed(() => {
+  return users.value.filter((u) => isRoomOwnerRole(u.role)).length;
 });
 
 const filteredUsers = computed(() => {
   return users.value.filter((u) => {
     // 1. Role Filter
     if (selectedRoleFilter.value === 'OWNER' && !isOwnerRole(u.role)) return false;
-    if (selectedRoleFilter.value === 'MANAGER' && isOwnerRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'ROOM_OWNER' && !isRoomOwnerRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'MANAGER' && (isOwnerRole(u.role) || isRoomOwnerRole(u.role))) return false;
 
     // 2. Search Query Filter
     if (searchQuery.value.trim()) {
@@ -458,6 +479,12 @@ const getUserRoleBadgeClass = (role) => {
     return {
       badge: 'bg-rose-100 text-rose-800 border-rose-200',
       bgGradient: 'bg-gradient-to-tr from-rose-600 to-amber-600'
+    };
+  }
+  if (isRoomOwnerRole(role)) {
+    return {
+      badge: 'bg-amber-100 text-amber-800 border-amber-200',
+      bgGradient: 'bg-gradient-to-tr from-amber-500 to-orange-500'
     };
   }
   return {
@@ -483,7 +510,13 @@ const openEditModal = (user) => {
   form.name = user.name;
   form.email = user.email;
   form.password = '';
-  form.role = isOwnerRole(user.role) ? 'OWNER' : 'MANAGER';
+  if (isOwnerRole(user.role)) {
+    form.role = 'OWNER';
+  } else if (isRoomOwnerRole(user.role)) {
+    form.role = 'ROOM_OWNER';
+  } else {
+    form.role = 'MANAGER';
+  }
   form.buildingIds = user.buildingPermissions ? user.buildingPermissions.map((p) => p.buildingId) : [];
   showModal.value = true;
 };

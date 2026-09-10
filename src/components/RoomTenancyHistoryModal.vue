@@ -36,8 +36,69 @@
       </div>
 
       <div class="p-6 space-y-6">
-        <!-- Tab 1: Current Tenant & Move-Out Action -->
+        <!-- Tab 1: Current Tenant, Room Owner & Occupants -->
         <div v-if="activeTab === 'current'" class="space-y-4">
+          <!-- Room Owner Card -->
+          <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl text-xs space-y-2">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <span class="text-base">👑</span>
+                <div>
+                  <div class="font-bold text-slate-800">
+                    เจ้าของห้อง (Owner): {{ currentRoomOwnerName }}
+                  </div>
+                  <div v-if="room?.owner" class="text-[11px] text-slate-500 font-mono">
+                    {{ room?.owner?.phone || '-' }} | {{ room?.owner?.email || '-' }}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                  {{ room?.owner ? 'มีกรรมสิทธิ์' : 'กรรมสิทธิ์โครงการ' }}
+                </span>
+                <button
+                  v-if="!isEditingOwner"
+                  type="button"
+                  @click="openEditOwner"
+                  class="px-2 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1"
+                >
+                  <span>✏️ เปลี่ยน</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline Owner Selector -->
+            <div v-if="isEditingOwner" class="pt-2 border-t border-indigo-100/80 flex flex-col sm:flex-row items-center gap-2">
+              <select
+                v-model="selectedOwnerId"
+                class="w-full sm:flex-1 bg-white border border-indigo-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              >
+                <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
+                <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
+                  👑 {{ owner.name }} ({{ owner.phone || owner.email }})
+                </option>
+              </select>
+              <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  @click="isEditingOwner = false"
+                  class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="button"
+                  :disabled="savingOwner"
+                  @click="handleSaveOwner"
+                  class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {{ savingOwner ? 'กำลังบันทึก...' : '💾 บันทึก' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Lease Card -->
           <div v-if="activeLease" class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 p-5 rounded-2xl space-y-3">
             <div class="flex items-center justify-between border-b border-emerald-200/60 pb-3">
               <div>
@@ -79,6 +140,61 @@
               >
                 <span>🚨 แจ้งย้ายออก / สิ้นสุดสัญญา (Terminate Lease)</span>
               </button>
+            </div>
+          </div>
+
+          <!-- Room Residents Section (สมาชิกในห้องพัก) -->
+          <div v-if="room?.status === 'occupied' || residents.length > 0" class="bg-white border border-slate-200 p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">👥</span>
+                <span class="text-xs font-bold text-slate-800">สมาชิกผู้อยู่อาศัยในห้อง ({{ residents.length }} คน)</span>
+              </div>
+              <button
+                @click="showAddResidentModal = true"
+                class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <span>➕ เพิ่มรูมเมท</span>
+              </button>
+            </div>
+
+            <div v-if="residents.length > 0" class="space-y-2">
+              <div
+                v-for="res in residents"
+                :key="res.id"
+                class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
+              >
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center">
+                    {{ (res.tenant?.firstName || 'U').charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="font-bold text-slate-800">
+                      {{ res.tenant?.firstName }} {{ res.tenant?.lastName }}
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono">{{ res.tenant?.phone || '-' }}</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                    :class="res.role === 'PRIMARY' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-sky-100 text-sky-800 border border-sky-200'"
+                  >
+                    {{ res.role === 'PRIMARY' ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}
+                  </span>
+                  <button
+                    v-if="res.role !== 'PRIMARY'"
+                    @click="handleRemoveResident(res.tenantId)"
+                    class="text-rose-500 hover:text-rose-700 p-1 text-xs cursor-pointer"
+                    title="นำออกจากห้อง"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center py-3 text-xs text-slate-400">
+              ยังไม่มีข้อมูลผู้อยู่อาศัยในห้องนี้
             </div>
           </div>
 
@@ -220,6 +336,81 @@
           @close="showMoveOutWizard = false"
           @completed="handleMoveOutCompleted"
         />
+
+        <!-- Add Resident Modal -->
+        <div v-if="showAddResidentModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                <span>👥</span>
+                <span>เพิ่มผู้อยู่อาศัยร่วม (ห้อง {{ room?.roomNumber }})</span>
+              </h3>
+              <button @click="showAddResidentModal = false" class="text-slate-400 hover:text-slate-700 text-sm">✕</button>
+            </div>
+
+            <form @submit.prevent="handleAddResident" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
+                <input
+                  v-model="newResidentForm.firstName"
+                  type="text"
+                  placeholder="เช่น สมศักดิ์"
+                  required
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
+                <input
+                  v-model="newResidentForm.lastName"
+                  type="text"
+                  placeholder="เช่น มั่นคง"
+                  required
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
+                <input
+                  v-model="newResidentForm.phone"
+                  type="tel"
+                  placeholder="เช่น 0812345678"
+                  required
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">เลขบัตรประชาชน (ไม่บังคับ)</label>
+                <input
+                  v-model="newResidentForm.idCard"
+                  type="text"
+                  placeholder="13 หลัก"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div class="pt-2 flex gap-2">
+                <button
+                  type="button"
+                  @click="showAddResidentModal = false"
+                  class="flex-1 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  :disabled="addingResident"
+                  class="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+                >
+                  {{ addingResident ? 'กำลังบันทึก...' : 'บันทึก' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -242,18 +433,81 @@ const emit = defineEmits(['close', 'updated']);
 const activeTab = ref('current');
 const loading = ref(false);
 const leases = ref([]);
+const residents = ref([]);
+const roomOwners = ref([]);
+const isEditingOwner = ref(false);
+const savingOwner = ref(false);
+const selectedOwnerId = ref(null);
+const localRoomOwner = ref(null);
+
+const currentRoomOwnerName = computed(() => {
+  if (localRoomOwner.value !== undefined) {
+    return localRoomOwner.value?.name || 'หอพักดูแลเอง (ไม่มีเจ้าของร่วม)';
+  }
+  return props.room?.owner?.name || 'หอพักดูแลเอง (ไม่มีเจ้าของร่วม)';
+});
+
 const showMoveOutWizard = ref(false);
+const showAddResidentModal = ref(false);
+const addingResident = ref(false);
+const newResidentForm = reactive({
+  firstName: '',
+  lastName: '',
+  phone: '',
+  idCard: ''
+});
 const selectedLease = ref(null);
 
 const activeLease = computed(() => leases.value.find((l) => l.status === 'ACTIVE'));
+
+const openEditOwner = async () => {
+  selectedOwnerId.value = props.room?.ownerId || props.room?.owner?.id || null;
+  isEditingOwner.value = true;
+  if (roomOwners.value.length === 0) {
+    try {
+      const res = await api.get('/api/admin/room-owners');
+      roomOwners.value = res.data.data || [];
+    } catch (err) {
+      console.error('Failed to load room owners:', err);
+    }
+  }
+};
+
+const handleSaveOwner = async () => {
+  if (!props.room?.id) return;
+  savingOwner.value = true;
+  try {
+    const res = await api.put(`/api/v1/rooms/${props.room.id}`, {
+      ownerId: selectedOwnerId.value
+    });
+    const updated = res.data.data;
+    localRoomOwner.value = updated.owner;
+    isEditingOwner.value = false;
+    await showSuccess('สำเร็จ!', 'อัปเดตเจ้าของห้องเรียบร้อยแล้ว');
+    emit('updated');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถเปลี่ยนเจ้าของห้องได้');
+  } finally {
+    savingOwner.value = false;
+  }
+};
 
 const fetchHistory = async () => {
   if (!props.room?.id) return;
 
   loading.value = true;
   try {
-    const res = await api.get(`/api/admin/rooms/${props.room.id}/history`);
-    leases.value = res.data.data;
+    const [historyRes, residentsRes] = await Promise.allSettled([
+      api.get(`/api/admin/rooms/${props.room.id}/history`),
+      api.get(`/api/admin/rooms/${props.room.id}/residents`)
+    ]);
+
+    if (historyRes.status === 'fulfilled') {
+      leases.value = historyRes.value.data.data;
+    }
+    if (residentsRes.status === 'fulfilled') {
+      residents.value = residentsRes.value.data.data || [];
+    }
   } catch (err) {
     console.error('Failed to fetch room history:', err);
   } finally {
@@ -261,10 +515,50 @@ const fetchHistory = async () => {
   }
 };
 
+const handleAddResident = async () => {
+  if (!newResidentForm.firstName || !newResidentForm.lastName || !newResidentForm.phone) return;
+  addingResident.value = true;
+  try {
+    await api.post(`/api/admin/rooms/${props.room.id}/residents`, {
+      firstName: newResidentForm.firstName,
+      lastName: newResidentForm.lastName,
+      phone: newResidentForm.phone,
+      idCard: newResidentForm.idCard || undefined,
+      role: 'CO_RESIDENT'
+    });
+    await showSuccess('สำเร็จ', 'เพิ่มผู้อยู่อาศัยร่วมเรียบร้อยแล้ว');
+    showAddResidentModal.value = false;
+    newResidentForm.firstName = '';
+    newResidentForm.lastName = '';
+    newResidentForm.phone = '';
+    newResidentForm.idCard = '';
+    fetchHistory();
+    emit('updated');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถเพิ่มผู้อยู่อาศัยร่วมได้');
+  } finally {
+    addingResident.value = false;
+  }
+};
+
+const handleRemoveResident = async (tenantId) => {
+  try {
+    await api.delete(`/api/admin/rooms/${props.room.id}/residents/${tenantId}`);
+    await showSuccess('สำเร็จ', 'นำผู้อยู่อาศัยออกจากห้องเรียบร้อยแล้ว');
+    fetchHistory();
+    emit('updated');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถนำผู้อยู่อาศัยออกได้');
+  }
+};
+
 watch(
   () => props.show,
   (isShown) => {
     if (isShown && props.room?.id) {
+      isEditingOwner.value = false;
+      localRoomOwner.value = props.room?.owner;
+      selectedOwnerId.value = props.room?.ownerId || props.room?.owner?.id || null;
       fetchHistory();
     }
   }

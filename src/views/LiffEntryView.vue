@@ -337,6 +337,7 @@ import { initLiff, isLiffLoggedIn, loginLiff, getLiffProfile, getLiffIdToken, ge
 import api from '@/utils/api';
 import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { showSuccess, showWarning, showConfirm } from '@/utils/swal';
 import {
   UserPlus,
@@ -345,12 +346,14 @@ import {
   Bell,
   Package,
   Wrench,
-  Receipt
+  Receipt,
+  Building2
 } from 'lucide-vue-next';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const { fetchAndApplyBuildingTheme, buildingName } = useDynamicTheme();
 
 const loading = ref(true);
 const statusText = ref('กำลังเชื่อมต่อ LINE SDK...');
@@ -457,6 +460,11 @@ const recheckFriendshipInEntry = async () => {
 };
 
 onMounted(async () => {
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+  if (targetBuilding) {
+    fetchAndApplyBuildingTheme(targetBuilding);
+  }
+
   try {
     statusText.value = 'กำลังยืนยันตัวตนบัญชี LINE...';
     await initLiff();
@@ -477,7 +485,7 @@ onMounted(async () => {
     // ทั้งที่เข้ามาจาก Rich Menu/ลิงก์ LINE จริงๆ แล้วโดนเด้งไป WebLogin (เบอร์โทร+PIN) ทันทีอย่างผิดๆ
     // แก้โดยไม่พึ่ง isInClient() แล้ว: ลอง loginLiff() ก่อนเสมอ (จำกัด 1 ครั้งต่อ Session กัน Loop)
     // เพราะ liff.login() รองรับทั้งสองบริบทอยู่แล้ว (ในแอป LINE เข้าแบบ Silent, นอกแอปจะ Redirect ผ่าน
-    // LINE Login OAuth) ถ้าเรียกไม่สำเร็จจริงๆ (LIFF ใช้งานไม่ได้เลย) ค่อย Fallback ไปหน้า WebLogin
+    // LINE Login OAuth) ถ้าเรียกไม่สำเร็จจริงๆ (LIFF ไม่พร้อมใช้งานเลย) ค่อย Fallback ไปหน้า WebLogin
     const loginAttempted = sessionStorage.getItem('liff_auto_login_attempted');
     if (!loginAttempted) {
       sessionStorage.setItem('liff_auto_login_attempted', 'true');
@@ -488,7 +496,6 @@ onMounted(async () => {
     }
 
     // ลองแล้วในเซสชันนี้ (หรือ LIFF ใช้งานไม่ได้เลย) ยังไม่ล็อกอิน -> พาไปหน้า WebLogin (เบอร์โทร+PIN)
-    const targetBuilding = route.query.building || route.query.buildingId;
     router.replace({
       path: '/web/login',
       query: {
@@ -508,10 +515,11 @@ const handleVerifyByPhone = async () => {
   phoneErrorMessage.value = '';
 
   const cleanPhone = verifyPhoneInput.value.trim();
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
 
   try {
     // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน (Centralized Identity Check)
-    const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone });
+    const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone, building: targetBuilding || undefined });
 
     if (phoneStatus?.isExistingUser) {
       // ผู้ใช้เดิมที่มีบัญชีอยู่แล้วในระบบ -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) เพื่อผูกบัญชีทันที
@@ -525,6 +533,7 @@ const handleVerifyByPhone = async () => {
     // 2. หากเป็นลูกบ้านใหม่หรือไม่เคยตั้ง PIN -> ทำการ verify phone ตามปกติ
     const payload = {
       phone: cleanPhone,
+      building: targetBuilding || undefined,
       lineDisplayName: lineProfile.value?.displayName || null,
       linePictureUrl: lineProfile.value?.pictureUrl || null,
       lineStatusMessage: lineProfile.value?.statusMessage || null
@@ -558,11 +567,14 @@ const handleLinkAndLogin = async () => {
   verifyingPhone.value = true;
   phoneErrorMessage.value = '';
 
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+
   try {
     const idToken = getLiffIdToken() || (import.meta.env.DEV && typeof window !== 'undefined' ? localStorage.getItem('dev_line_user_id') : null);
     const payload = {
       phone: verifyPhoneInput.value.trim(),
       pin: existingPinInput.value,
+      building: targetBuilding || undefined,
       lineIdToken: idToken,
       lineDisplayName: lineProfile.value?.displayName || null,
       linePictureUrl: lineProfile.value?.pictureUrl || null,
