@@ -26,6 +26,7 @@
 - **HTTP Client**: **Axios** (`src/utils/api.js`) - ตั้งค่า `withCredentials: true` รองรับ HTTP-Only Cookie จาก `playground-api`
 - **Language Policy**: ตอบผู้ใช้และเขียนข้อความคอมเมนต์เป็น **ภาษาไทย** เท่านั้น
 - **Maintenance & Issue Tracking**: Backend (`playground-api`) ยังแยก 2 ตาราง/Endpoint กันจริง (`maintenance-requests` ระบบเดิม กับ `issues` ระบบใหม่ที่รองรับทั้งซ่อม/ร้องเรียน/อื่นๆ) แต่ Frontend Unify การแสดงผลเป็นหน้าเดียวแล้วทั้งฝั่ง Admin (`MaintenanceView.vue` Kanban) และฝั่ง LIFF (`IssueHistory.vue`) - การเขียนข้อมูลใหม่จากฝั่งลูกบ้านให้ผ่าน `/liff/issues` เท่านั้น (`/liff/maintenance` เป็นแค่ Redirect เพื่อ Backward-compat)
+- **LIFF Entry Detection**: [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) **ห้าม** ใช้ `liff.isInClient()` ตัดสินว่าอยู่ใน LINE App หรือไม่อีกต่อไป (ค่านี้ Unreliable ถ้า `liff.init()` ล้มเงียบๆ หรือผู้ใช้เปิดผ่าน External Browser) — ให้ลอง `loginLiff()` ก่อนเสมอ (LINE SDK จัดการทั้ง Silent Login ในแอปและ OAuth Redirect นอกแอปให้เอง) ถ้าเรียกไม่สำเร็จจริงๆ ค่อย Fallback ไป `/web/login`
 
 ---
 
@@ -69,9 +70,9 @@ yarn preview
    - `router/index.js`: กำหนดเส้นทาง และเขียน `router.beforeEach` สำหรับตรวจสอบสิทธิ์ก่อนเข้าถึงหน้าต่างๆ
    - `views/`: หน้าจอการทำงานหลัก (`LoginView.vue`, `DashboardView.vue`, `ProfileView.vue`)
 3. **Security Standards**:
-   - **ห้าม** เก็บ Access Token ลงใน `localStorage` หรือ `sessionStorage` (บังคับใช้แล้วทั้งฝั่ง Admin และฝั่ง LIFF - `liffToken` ใน `stores/auth.js` เป็น Memory-only)
+   - **ห้าม** เก็บ Access Token ลงใน `localStorage` หรือ `sessionStorage` ฝั่ง Admin และฝั่ง LIFF ที่ Login ผ่าน LINE (`liffToken` ใน `stores/auth.js` เป็น Memory-only, กู้คืนผ่าน `restoreLiffSession()` ด้วย LINE ID Token Silent Login แทนการเก็บ Token ไว้)
+   - **ข้อยกเว้น**: ลูกบ้านที่ Login ผ่าน [WebLogin.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/WebLogin.vue) (เบอร์โทร+PIN แบบไม่ผ่าน LINE) — `setTenantWebAuth()` ใน `stores/auth.js` **ตั้งใจ** เก็บ Token ลง `localStorage` (`horhub_tenant_token`) เพราะไม่มี LINE SDK ให้ Silent Re-Auth ได้เหมือนฝั่ง LIFF จำเป็นต้องคง Session ไว้ข้าม Page Reload
    - Refresh Token บริหารจัดการผ่าน HTTP-Only Cookie จาก Node.js Backend เสมอ
-   - ฝั่ง LIFF ใช้ `restoreLiffSession()` ใน `stores/auth.js` กู้คืน Session ด้วย LINE ID Token ผ่าน Silent Login (`authService.silentLoginLiff()`) แทนการเก็บ Token ไว้ - Pattern เดียวกับ Refresh Token ฝั่ง Admin
    - กลไก Dev-only Bypass ใดๆ (เช่น `dev_line_user_id`, Header `X-Line-User-Id`) ต้อง Gate ด้วย `import.meta.env.DEV` เสมอ ห้ามมี Mock/Hardcoded User ID หลุดไปกับ Production Build เด็ดขาด
 4. **Language Policy**: ความคิดเห็นในโค้ด (Comments) และเอกสารคำอธิบาย ให้ใช้ **ภาษาไทย** เป็นหลัก
 
