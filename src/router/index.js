@@ -12,6 +12,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
     meta: { isCms: true }
   },
+  {
+    path: '/web/login',
+    name: 'WebLogin',
+    component: () => import('@/views/WebLogin.vue'),
+    meta: { isTenantWeb: true, title: 'เข้าสู่ระบบลูกบ้าน (Web Portal)' }
+  },
   // หมายเหตุ: เดิมมี /pin-login, /setup-pin, /change-pin แบบ Top-level ซ้ำกับชุดใต้ /liff/*
   // แต่ใช้ Component เดียวกันทุกอย่างและไม่มีที่ไหนในแอปลิงก์มาเลย - ตัดออกเหลือชุดเดียวใต้ /liff/*
   // ที่มี LiffLayout ห่ออยู่ (ดูด้านล่างในหมวด LINE / LIFF Tenant Portal Routes)
@@ -311,12 +317,32 @@ async function cmsNavigationGuard(to, from, next) {
 }
 
 async function liffNavigationGuard(to, from, next) {
-  // 🔗 รองรับ LINE Deep Link ผ่าน liff.state query parameter
+  // 🏢 1. ดึงและคงค่า Target Building จาก Query Param (?building=... หรือ ?buildingId=...)
+  const targetBuilding =
+    to.query.building ||
+    to.query.buildingId ||
+    (typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('building') || new URLSearchParams(window.location.search).get('buildingId')
+      : null);
+
+  if (targetBuilding && typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem('liff_target_building', String(targetBuilding).trim());
+  }
+
+  // 🔗 2. รองรับ LINE Deep Link ผ่าน liff.state query parameter
   const liffState = to.query['liff.state'] || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('liff.state') : null);
 
   if (liffState && to.path === '/liff') {
     try {
       const decodedState = decodeURIComponent(liffState);
+      if (decodedState.includes('?')) {
+        const params = new URLSearchParams(decodedState.split('?')[1]);
+        const stateBld = params.get('building') || params.get('buildingId');
+        if (stateBld && typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('liff_target_building', String(stateBld).trim());
+        }
+      }
+
       let targetPath = decodedState.startsWith('/liff')
         ? decodedState
         : `/liff${decodedState.startsWith('/') ? '' : '/'}${decodedState}`;
@@ -335,8 +361,17 @@ async function liffNavigationGuard(to, from, next) {
 
   const authStore = useAuthStore();
 
-  // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินอยู่แล้ว (Memory หรือกู้คืนผ่าน Silent Login ด้วย LINE ID Token)
-  // เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด - ไม่พึ่ง LocalStorage แล้ว
+  // 🌐 หากเป็นหน้า Web Login สำหรับลูกบ้าน
+  if (to.path === '/web/login' || to.meta.isTenantWeb) {
+    const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
+    if (hasSession && !to.query.force) {
+      return next({ path: to.query.redirect || '/liff/invoices' });
+    }
+    return next();
+  }
+
+  // ⚡ Fast-track: หากผู้ใช้เคยล็อกอินอยู่แล้ว (Memory หรือกู้คืนผ่าน Silent Login ด้วย LINE ID Token / Web Tenant)
+  // เมื่อเข้าหน้า /liff ให้ตรงไปหน้าแรกทันทีโดยไม่ต้องผ่านหน้าโหลด
   if (to.path === '/liff' || to.path === '/liff/') {
     const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
     if (hasSession) {
@@ -346,10 +381,11 @@ async function liffNavigationGuard(to, from, next) {
   }
 
   // 🔒 กันหน้าที่ต้อง Login ก่อนเข้า (invoices, payment, profile ฯลฯ) ไม่ให้เห็นหน้าเปล่า/ยิง API แล้วเจอ 401
-  // ก่อนเด้งกลับ - เช็ค Session ในหน่วยความจำก่อน แล้วลอง Silent Login ด้วย LINE ID Token เป็นทางสำรอง
+  // ก่อนเด้งกลับ - เช็ค Session ในหน่วยความจำก่อน แล้วลองกู้คืน session
   if (to.meta?.requiresLiffAuth) {
     const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
     if (!hasSession) {
+      // ตรวจสอบว่าเปิดจากภายนอกที่ไม่ใช่ LINE หรือไม่ ถ้าใช่ให้ส่งไป /web/login
       return next({ path: '/liff', query: { redirect: to.fullPath } });
     }
   }
@@ -358,7 +394,7 @@ async function liffNavigationGuard(to, from, next) {
 }
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path.startsWith('/liff') || to.meta.isLiff) {
+  if (to.path.startsWith('/liff') || to.meta.isLiff || to.path === '/web/login' || to.meta.isTenantWeb) {
     return liffNavigationGuard(to, from, next);
   } else {
     return cmsNavigationGuard(to, from, next);

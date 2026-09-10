@@ -4,13 +4,13 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)</span>
+          <span>{{ isRoomOwnerRole ? '🏢 ห้องพักของฉัน (My Owned Rooms)' : 'จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)' }}</span>
           <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
             {{ filteredRooms.length }} ยูนิต
           </span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-          ภาพรวมห้องพักอาศัย หน้าร้านค้า จุดวางตู้บริการ/เต่าบิน ที่จอดรถ และห้องเก็บของ
+          {{ isRoomOwnerRole ? 'รายการห้องพักและยูนิตที่คุณถือครองกรรมสิทธิ์ พร้อมประวัติสัญญาและสถานะผู้เช่า' : 'ภาพรวมห้องพักอาศัย หน้าร้านค้า จุดวางตู้บริการ/เต่าบิน ที่จอดรถ และห้องเก็บของ' }}
         </p>
       </div>
 
@@ -24,6 +24,7 @@
         </button>
 
         <button
+          v-if="!isRoomOwnerRole"
           @click="showImportModal = true"
           class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
@@ -32,6 +33,7 @@
         </button>
 
         <button
+          v-if="!isRoomOwnerRole"
           @click="showCreateModal = !showCreateModal"
           class="px-3.5 py-2 bg-white hover:bg-slate-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
@@ -209,6 +211,29 @@
           </select>
         </div>
 
+        <!-- 10. Room Owner (Landlord/Investor) -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700">👑 เจ้าของห้อง / นักลงทุน (Room Owner)</label>
+            <button
+              type="button"
+              @click="showQuickCreateOwnerModal = true"
+              class="text-xs text-purple-600 hover:text-purple-800 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+            >
+              <span>➕ เพิ่มเจ้าของใหม่</span>
+            </button>
+          </div>
+          <select
+            v-model="form.ownerId"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+          >
+            <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
+            <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
+              👑 {{ owner.name }} ({{ owner.phone || owner.email }})
+            </option>
+          </select>
+        </div>
+
         <div class="col-span-full flex justify-end gap-2 pt-2">
           <button
             type="button"
@@ -325,6 +350,89 @@
       :show="showImportModal"
       @close="showImportModal = false"
     />
+
+    <!-- Quick Create Room Owner Modal -->
+    <div
+      v-if="showQuickCreateOwnerModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+    >
+      <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2 font-black text-slate-900 text-sm">
+            <span class="text-base">👑</span>
+            <span>เพิ่มรายชื่อเจ้าของห้อง / นักลงทุน (New Room Owner)</span>
+          </div>
+          <button @click="showQuickCreateOwnerModal = false" class="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+        </div>
+
+        <form @submit.prevent="handleQuickCreateOwner" class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล *</label>
+            <input
+              v-model="quickOwnerForm.name"
+              type="text"
+              required
+              placeholder="เช่น คุณสมชาย ลงทุนดี"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">อีเมล (สำหรับเข้าสู่ระบบ) *</label>
+            <input
+              v-model="quickOwnerForm.email"
+              type="email"
+              required
+              placeholder="owner@example.com"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ (ไม่บังคับ)</label>
+            <input
+              v-model="quickOwnerForm.phone"
+              type="tel"
+              placeholder="081-xxx-xxxx"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">รหัสผ่านเริ่มต้น *</label>
+            <input
+              v-model="quickOwnerForm.password"
+              type="password"
+              required
+              minlength="6"
+              placeholder="•••••••• (อย่างน้อย 6 ตัวอักษร)"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            />
+          </div>
+
+          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 font-medium">
+            💡 บัญชีนี้จะมีระดับสิทธิ์ <strong>ROOM_OWNER</strong> สามารถเข้าดูและจัดการได้เฉพาะห้องที่ผูกไว้เท่านั้น
+          </div>
+
+          <div class="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              @click="showQuickCreateOwnerModal = false"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              :disabled="creatingOwner"
+              class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+            >
+              {{ creatingOwner ? 'กำลังสร้าง...' : '🚀 บันทึกเจ้าของห้อง' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -332,7 +440,9 @@
 import { reactive, ref, computed, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
+import { useAuthStore } from '@/stores/auth';
 import { showSuccess, showError } from '@/utils/swal';
+import api from '@/utils/api';
 import RoomOverviewCard from '@/components/RoomOverviewCard.vue';
 import RoomInviteModal from '@/components/RoomInviteModal.vue';
 import RoomImportModal from '@/components/RoomImportModal.vue';
@@ -351,6 +461,12 @@ import {
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
+const authStore = useAuthStore();
+
+const isRoomOwnerRole = computed(() => {
+  const role = (authStore.currentUser?.role || authStore.user?.role || '').toLowerCase();
+  return ['room_owner', 'investor'].includes(role);
+});
 
 const showCheckinModal = ref(false);
 const selectedRoomIdForCheckin = ref('');
@@ -367,6 +483,7 @@ const selectedRoomForInvite = ref(null);
 
 const showHistoryModal = ref(false);
 const selectedRoomForHistory = ref(null);
+const roomOwners = ref([]);
 
 // Category Unit Type Filters
 const activeTypeFilter = ref('all');
@@ -435,12 +552,60 @@ const form = reactive({
   locationZone: '',
   billingModel: 'fixed',
   revSharePercent: null,
+  ownerId: null,
   buildingId: buildingStore.activeBuildingId || ''
 });
+
+const showQuickCreateOwnerModal = ref(false);
+const creatingOwner = ref(false);
+const quickOwnerForm = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  password: ''
+});
+
+const handleQuickCreateOwner = async () => {
+  if (!quickOwnerForm.name || !quickOwnerForm.email || !quickOwnerForm.password) return;
+  creatingOwner.value = true;
+  try {
+    const res = await api.post('/api/admin/users', {
+      name: quickOwnerForm.name,
+      email: quickOwnerForm.email,
+      phone: quickOwnerForm.phone || undefined,
+      password: quickOwnerForm.password,
+      role: 'ROOM_OWNER',
+      buildingIds: []
+    });
+    await showSuccess('สำเร็จ!', 'สร้างบัญชีเจ้าของห้องเรียบร้อยแล้ว');
+    const newOwner = res.data.data;
+    await fetchRoomOwners();
+    form.ownerId = newOwner?.id || null;
+    showQuickCreateOwnerModal.value = false;
+    quickOwnerForm.name = '';
+    quickOwnerForm.email = '';
+    quickOwnerForm.phone = '';
+    quickOwnerForm.password = '';
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถสร้างเจ้าของห้องได้');
+  } finally {
+    creatingOwner.value = false;
+  }
+};
+
+const fetchRoomOwners = async () => {
+  try {
+    const res = await api.get('/api/admin/room-owners');
+    roomOwners.value = res.data?.data || [];
+  } catch (err) {
+    console.warn('Failed to fetch room owners:', err.message);
+  }
+};
 
 onMounted(() => {
   buildingStore.fetchBuildings();
   roomStore.fetchRooms(buildingStore.activeBuildingId);
+  fetchRoomOwners();
   if (buildingStore.activeBuildingId) {
     form.buildingId = buildingStore.activeBuildingId;
   }

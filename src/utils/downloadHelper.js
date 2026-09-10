@@ -65,9 +65,9 @@ export async function downloadOrSharePdf(blob, filename = 'document.pdf', fallba
 
 /**
  * แสดง Popup รูปภาพพร้อมวิธีบันทึกรูปภาพลงเครื่องสำหรับ Mobile / LINE LIFF (Android & iOS)
- * รองรับทั้งการ แตะค้างเพื่อบันทึกรูป (Long-press to save) และ Native Save Dialog
+ * รองรับทั้งการ แตะค้างเพื่อบันทึกรูป (Long-press to save), External Browser Download และ Native Share Sheet
  */
-export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.png') {
+export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.png', fallbackDirectUrl = '') {
   let file = null;
   try {
     const res = await fetch(dataUrl);
@@ -94,17 +94,17 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
         
         <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 10px 12px; width: 100%; text-align: left; box-sizing: border-box;">
           <div style="font-weight: 700; color: #312e81; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
-            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรี (Android & iOS):</span>
+            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรี:</span>
           </div>
           <p style="font-size: 11px; color: #3730a3; margin: 0; line-height: 1.45;">
-            แตะค้างที่รูปภาพด้านบน แล้วเลือก <b>"บันทึกรูปภาพ" (Save Image)</b> หรือ <b>"ดาวน์โหลดรูปภาพ"</b> ลงเครื่อง
+            กดปุ่ม <b>"ดาวน์โหลดรูปภาพ"</b> ด้านล่าง หรือแตะค้างที่รูปภาพเพื่อเลือก <b>"บันทึกรูปภาพ"</b> ลงเครื่อง
           </p>
         </div>
       </div>
     `,
     showConfirmButton: true,
-    confirmButtonText: canNativeShare ? '📥 บันทึกลงอัลบั้มรูป' : 'เสร็จสิ้น / ปิดหน้าต่าง',
-    showCancelButton: canNativeShare,
+    confirmButtonText: '📥 ดาวน์โหลดรูปภาพ QR Code',
+    showCancelButton: true,
     cancelButtonText: 'ปิดหน้าต่าง',
     buttonsStyling: false,
     customClass: {
@@ -114,18 +114,31 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
       cancelButton: 'w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 cursor-pointer block text-center'
     },
     preConfirm: async () => {
+      // 1. กรณีเปิดบน LINE App Client และมี fallback direct url -> เปิด external browser ให้ระบบดาวน์โหลดรูปภาพลงเครื่องทันที
+      if (isInLiffClient() && fallbackDirectUrl) {
+        openExternalWindow(fallbackDirectUrl);
+        showToast('กำลังดาวน์โหลดรูปภาพ...', 'success');
+        return;
+      }
+
+      // 2. ถ้าเครื่องรองรับ Web Share API สำหรับไฟล์ (iOS Safari / Mobile Chrome)
       if (canNativeShare && file) {
         try {
           await navigator.share({
             files: [file],
             title: 'PromptPay QR Code'
           });
+          return;
         } catch (shareErr) {
           if (shareErr.name !== 'AbortError') {
             console.warn('Native share error:', shareErr);
           }
         }
       }
+
+      // 3. Fallback ดาวน์โหลดผ่าน DOM anchor blob
+      downloadBlob(dataUrl, filename);
+      showToast('กำลังบันทึกรูปภาพ...', 'success');
     }
   });
 }
@@ -136,8 +149,9 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
  * 
  * @param {string|Blob} dataUrlOrBlob - Data URL (base64) หรือ Blob ของรูปภาพ
  * @param {string} filename - ชื่อไฟล์รูป เช่น promptpay-qr.png
+ * @param {string} fallbackDirectUrl - URL ดาวน์โหลดตรงสำหรับเปิดบน external browser เมื่ออยู่ใน LINE LIFF
  */
-export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png') {
+export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png', fallbackDirectUrl = '') {
   try {
     let blobOrUrl = dataUrlOrBlob;
     if (typeof dataUrlOrBlob === 'string' && (dataUrlOrBlob.startsWith('http://') || dataUrlOrBlob.startsWith('https://') || dataUrlOrBlob.startsWith('/'))) {
@@ -149,7 +163,7 @@ export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png'
     // ตรวจสอบว่าเป็น Mobile หรือ LINE LIFF หรือไม่
     const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
     if (isMobile || isInLiffClient()) {
-      await showQrImagePreviewModal(downloadHref, filename);
+      await showQrImagePreviewModal(downloadHref, filename, fallbackDirectUrl);
     } else {
       showToast('บันทึกรูปภาพเรียบร้อยแล้ว', 'success');
     }
@@ -165,8 +179,9 @@ export async function downloadImage(dataUrlOrBlob, filename = 'promptpay-qr.png'
  * Capture เฉพาะส่วนการ์ด QR Code (DOM Element) แล้วดาวน์โหลดเป็นรูปภาพลงเครื่อง (รองรับทั้ง iOS และ Android)
  * @param {HTMLElement} element - DOM Element ที่ต้องการ Capture เช่น การ์ด PromptPay
  * @param {string} filename - ชื่อไฟล์รูป เช่น promptpay-qr-card.png
+ * @param {string} fallbackDirectUrl - URL ดาวน์โหลดตรงสำหรับเปิดบน external browser เมื่ออยู่ใน LINE LIFF
  */
-export async function captureAndDownloadElement(element, filename = 'promptpay-qr-card.png') {
+export async function captureAndDownloadElement(element, filename = 'promptpay-qr-card.png', fallbackDirectUrl = '') {
   if (!element) {
     throw new Error('ไม่พบ Element สำหรับ Capture');
   }
@@ -185,7 +200,7 @@ export async function captureAndDownloadElement(element, filename = 'promptpay-q
     });
 
     const dataUrl = canvas.toDataURL('image/png', 1.0);
-    return await downloadImage(dataUrl, filename);
+    return await downloadImage(dataUrl, filename, fallbackDirectUrl);
   } catch (err) {
     console.error('Capture and download element error:', err);
     throw err;

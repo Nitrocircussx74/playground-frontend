@@ -81,12 +81,20 @@
       </div>
     </div>
 
-    <!-- Tenant Details Info Bar -->
-    <div class="pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
-      <span class="text-slate-400">ผู้เช่า:</span>
-      <span class="font-bold text-slate-900 truncate max-w-[150px]">
-        {{ room.tenant ? `${room.tenant.firstName} ${room.tenant.lastName}` : '— ว่าง —' }}
-      </span>
+    <!-- Tenant & Room Owner Details Info Bar -->
+    <div class="pt-3 border-t border-slate-200/80 space-y-1 text-xs text-slate-600">
+      <div v-if="room.owner" class="flex items-center justify-between">
+        <span class="text-slate-400 flex items-center gap-1"><span>👑</span> เจ้าของ:</span>
+        <span class="font-bold text-indigo-700 truncate max-w-[150px]">
+          {{ room.owner.name }}
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">ผู้เช่า:</span>
+        <span class="font-bold text-slate-900 truncate max-w-[150px]">
+          {{ room.tenant ? `${room.tenant.firstName} ${room.tenant.lastName}` : '— ว่าง —' }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

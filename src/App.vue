@@ -72,13 +72,14 @@
           </router-link>
         </div>
 
-        <!-- 2. จัดการตึก & ห้องพัก (Building & Rooms) -->
+        <!-- 2. ผังอาคาร & ยูนิต (Buildings & Units) -->
         <div>
           <div class="px-3 text-[10px] font-extrabold tracking-wider text-slate-400 uppercase mb-1.5">
-            Building & Rooms
+            {{ isRoomOwnerRole ? 'My Units & Tenants' : 'Buildings & Units' }}
           </div>
           <div class="space-y-1">
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/buildings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -89,6 +90,7 @@
             </router-link>
 
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/building-settings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -105,7 +107,7 @@
               :class="route.path === '/rooms' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <DoorOpen class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/rooms' ? 'text-white' : 'text-indigo-400'" />
-              <span>จัดการห้องพัก</span>
+              <span>{{ isRoomOwnerRole ? 'ห้องพักของฉัน (My Rooms)' : 'จัดการห้องพัก' }}</span>
             </router-link>
 
             <router-link
@@ -133,10 +135,11 @@
         <!-- 3. การเงิน & มิเตอร์ (Billing & Utilities) -->
         <div>
           <div class="px-3 text-[10px] font-extrabold tracking-wider text-slate-400 uppercase mb-1.5">
-            Billing & Utilities
+            {{ isRoomOwnerRole ? 'Financial & Billing' : 'Billing & Utilities' }}
           </div>
           <div class="space-y-1">
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/meter-readings"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -153,7 +156,7 @@
               :class="route.path === '/invoices' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
             >
               <Receipt class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/invoices' ? 'text-white' : 'text-emerald-400'" />
-              <span>จัดการใบแจ้งหนี้ & บิล</span>
+              <span>{{ isRoomOwnerRole ? 'บิล & รายได้ค่าเช่า' : 'จัดการใบแจ้งหนี้ & บิล' }}</span>
             </router-link>
           </div>
         </div>
@@ -175,6 +178,7 @@
             </router-link>
 
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/announcements"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -185,6 +189,7 @@
             </router-link>
 
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/parcels"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -225,6 +230,7 @@
             </router-link>
 
             <router-link
+              v-if="!isRoomOwnerRole"
               to="/features"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -403,6 +409,11 @@ const triggerHelpTour = () => {
 };
 
 const isMobileMenuOpen = ref(false);
+
+const isRoomOwnerRole = computed(() => {
+  const role = (authStore.currentUser?.role || authStore.user?.role || '').toLowerCase();
+  return ['room_owner', 'investor'].includes(role);
+});
 
 const isOwnerRole = computed(() => {
   const role = (authStore.currentUser?.role || authStore.user?.role || '').toLowerCase();

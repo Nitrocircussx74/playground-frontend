@@ -6,6 +6,10 @@
         <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/80 text-indigo-600 flex items-center justify-center mx-auto">
           <Building2 class="w-6 h-6" />
         </div>
+        <div v-if="buildingName && buildingName !== 'หอพัก'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50/80 border border-indigo-200/80 rounded-full text-xs font-bold text-indigo-800 shadow-xs">
+          <Building2 class="w-3.5 h-3.5 text-indigo-600" />
+          <span>{{ buildingName }}</span>
+        </div>
         <h1 class="text-xl font-bold text-slate-900 tracking-tight">ลงทะเบียนผู้เช่าใหม่</h1>
         <p class="text-xs text-slate-500">กรอกรหัสเชิญและข้อมูลส่วนตัวเพื่อผูกบัญชีกับห้องพัก</p>
       </div>
@@ -154,8 +158,10 @@ import {
 } from 'lucide-vue-next';
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 
 const route = useRoute();
+const { fetchAndApplyBuildingTheme, buildingName } = useDynamicTheme();
 const loading = ref(false);
 const verifying = ref(false);
 const errorMessage = ref('');
@@ -171,6 +177,11 @@ const form = reactive({
 });
 
 onMounted(async () => {
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+  if (targetBuilding) {
+    fetchAndApplyBuildingTheme(targetBuilding);
+  }
+
   if (route.query.inviteCode) {
     form.inviteCode = String(route.query.inviteCode).toUpperCase();
     verifyCode();

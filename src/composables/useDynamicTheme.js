@@ -160,6 +160,30 @@ export function useDynamicTheme() {
     return null;
   };
 
+  /**
+   * ดึงข้อมูลธีมสาธารณะของตึกโดยตรงผ่าน Building Code/ID (ใช้ตอน Onboarding/Register ก่อน Login)
+   */
+  const fetchAndApplyBuildingTheme = async (buildingParam) => {
+    if (!buildingParam) return null;
+    try {
+      const res = await api.get('/api/v1/liff/building-info', {
+        params: { building: buildingParam }
+      });
+      if (res.data?.success && res.data?.data) {
+        applyTheme({
+          themeColor: res.data.data.themeColor,
+          logoUrl: res.data.data.logoUrl,
+          buildingName: res.data.data.name,
+          buildingId: res.data.data.id
+        });
+        return res.data.data;
+      }
+    } catch (err) {
+      console.warn('Could not fetch building public theme:', err.message);
+    }
+    return null;
+  };
+
   return {
     themeColor: computed(() => currentThemeColor.value),
     logoUrl: computed(() => currentLogoUrl.value),
@@ -168,6 +192,7 @@ export function useDynamicTheme() {
     applyTheme,
     resetTheme,
     fetchAndApplyTheme,
+    fetchAndApplyBuildingTheme,
     hexToRgb,
     hexToHsl,
     adjustBrightness

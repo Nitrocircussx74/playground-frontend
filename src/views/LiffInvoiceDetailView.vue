@@ -354,18 +354,27 @@ const handleSaveQrCode = async () => {
 
   savingQr.value = true;
   try {
+    const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+    const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    const token = authStore.liffToken || '';
+    const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/qr-image?token=${encodeURIComponent(token)}`;
     const filename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
+
     if (qrCardRef.value) {
-      await captureAndDownloadElement(qrCardRef.value, filename);
+      await captureAndDownloadElement(qrCardRef.value, filename, directUrl);
     } else {
-      await downloadImage(dataUrl, filename);
+      await downloadImage(dataUrl, filename, directUrl);
     }
   } catch (err) {
     console.error('Save QR error:', err);
     try {
       if (dataUrl) {
+        const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+        const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+        const token = authStore.liffToken || '';
+        const directUrl = `${cleanBaseUrl}/api/v1/liff/invoices/${invoiceId}/qr-image?token=${encodeURIComponent(token)}`;
         const fallbackFilename = `promptpay-qr-${invoice.value?.invoiceNumber || invoice.value?.room?.roomNumber || 'invoice'}.png`;
-        await downloadImage(dataUrl, fallbackFilename);
+        await downloadImage(dataUrl, fallbackFilename, directUrl);
         return;
       }
     } catch (fallbackErr) {

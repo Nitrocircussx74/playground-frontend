@@ -117,9 +117,13 @@
                   <Input
                     v-model="form.phone"
                     :disabled="isReadOnly"
-                    placeholder="เช่น 02-123-4567"
-                    class="bg-white"
+                    placeholder="เช่น 02-123-4567 หรือ 081-234-5678"
+                    class="bg-white font-mono"
                   />
+                  <div v-if="phoneValidation.message" class="text-[11px] font-medium flex items-center gap-1" :class="phoneValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
+                    <span>{{ phoneValidation.icon }}</span>
+                    <span>{{ phoneValidation.message }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -373,19 +377,50 @@
                   <Input
                     v-model="form.promptpayNum"
                     :disabled="isReadOnly"
-                    placeholder="เช่น 0812345678 หรือ เลขประจำตัวผู้เสียภาษี"
+                    placeholder="เช่น 0812345678 หรือ เลขประจำตัวผู้เสียภาษี 13 หลัก"
                     class="bg-white font-mono font-semibold"
                   />
+                  <!-- Real-time PromptPay Validation Badge -->
+                  <div v-if="promptPayValidation.message" class="text-[11px] font-medium flex items-center gap-1.5" :class="promptPayValidation.isValid ? 'text-emerald-600' : 'text-rose-500'">
+                    <span>{{ promptPayValidation.icon }}</span>
+                    <span>{{ promptPayValidation.message }}</span>
+                    <span v-if="promptPayValidation.formatted" class="text-slate-500 font-mono font-semibold">({{ promptPayValidation.formatted }})</span>
+                  </div>
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ชื่อธนาคารผู้รับโอน</label>
-                  <Input
-                    v-model="form.bankName"
+                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>ชื่อธนาคารผู้รับโอน</span>
+                    <span v-if="activeBankObj" class="text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1" :style="{ backgroundColor: activeBankObj.bgColor, color: activeBankObj.textColor }">
+                      <span>{{ activeBankObj.icon }}</span>
+                      <span>{{ activeBankObj.code }}</span>
+                    </span>
+                  </label>
+                  <select
+                    v-model="selectedBankCode"
                     :disabled="isReadOnly"
-                    placeholder="เช่น ธนาคารกสิกรไทย (KBANK)"
-                    class="bg-white"
-                  />
+                    class="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans cursor-pointer transition-all"
+                  >
+                    <option value="" disabled>-- เลือกธนาคารผู้รับโอน (Official Thai Banks) --</option>
+                    <option
+                      v-for="bank in THAI_BANKS"
+                      :key="bank.code"
+                      :value="bank.code"
+                    >
+                      {{ bank.icon }} {{ bank.officialName }}
+                    </option>
+                  </select>
+                  
+                  <!-- Custom Bank Input if 'OTHER' selected -->
+                  <div v-if="selectedBankCode === 'OTHER'" class="pt-1.5">
+                    <Input
+                      :value="form.bankName"
+                      @input="onCustomBankInput"
+                      :disabled="isReadOnly"
+                      placeholder="ระบุชื่อธนาคารหรือสถาบันการเงินเอง..."
+                      class="bg-white text-xs"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -395,9 +430,10 @@
                   <Input
                     v-model="form.bankAccountName"
                     :disabled="isReadOnly"
-                    placeholder="เช่น บริษัท หอพักสุขสบาย จำกัด"
+                    placeholder="เช่น บริษัท หอพักสุขสบาย จำกัด หรือ นายสมชาย ใจดี"
                     class="bg-white"
                   />
+                  <p class="text-[11px] text-slate-400">ชื่อเจ้าของบัญชีสำหรับให้ผู้เช่าตรวจสอบชื่อก่อนกดยืนยันโอนเงิน</p>
                 </div>
 
                 <div class="space-y-1.5">
@@ -405,9 +441,13 @@
                   <Input
                     v-model="form.bankAccountNo"
                     :disabled="isReadOnly"
-                    placeholder="เช่น 123-4-56789-0"
+                    placeholder="เช่น 123-4-56789-0 (10-12 หลัก)"
                     class="bg-white font-mono"
                   />
+                  <div v-if="bankAccountValidation.message" class="text-[11px] font-medium flex items-center gap-1" :class="bankAccountValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
+                    <span>{{ bankAccountValidation.icon }}</span>
+                    <span>{{ bankAccountValidation.message }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -532,9 +572,12 @@
                     v-model="form.dueDateDay"
                     :disabled="isReadOnly"
                     placeholder="5"
-                    class="bg-white"
+                    class="bg-white font-mono"
                   />
-                  <span class="text-[11px] text-slate-500">เช่น วันที่ 5 ของทุกเดือน</span>
+                  <div class="text-[11px] font-medium flex items-center gap-1" :class="dueDateValidation.isValid ? 'text-slate-500' : 'text-rose-500'">
+                    <span>{{ dueDateValidation.icon }}</span>
+                    <span>{{ dueDateValidation.message }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -733,7 +776,11 @@
         </TabsContent>
 
         <!-- 💬 Tab 5: LINE Official Account & LIFF (การตั้งค่า LINE OA ประจำตึก) -->
-        <TabsContent value="line">
+        <!-- 💬 Tab 5: LINE Official Account & LIFF -->
+        <TabsContent value="line" class="space-y-6">
+          <!-- LINE Messaging Quota Monitor Card -->
+          <LineQuotaCard ref="lineQuotaCardRef" :building-id="buildingStore.activeBuildingId" />
+
           <Card class="border-slate-200 shadow-xs rounded-2xl">
             <CardHeader class="border-b border-slate-100 bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-white">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -791,7 +838,11 @@
                     placeholder="เช่น @horhub_building_a"
                     class="bg-white font-mono text-xs"
                   />
-                  <p class="text-[11px] text-slate-400">ID บัญชี LINE OA สำหรับแสดงและค้นหา</p>
+                  <div v-if="lineSettingsValidation.oaError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
+                    <span>⚠️</span>
+                    <span>{{ lineSettingsValidation.oaError }}</span>
+                  </div>
+                  <p v-else class="text-[11px] text-slate-400">ID บัญชี LINE OA สำหรับแสดงและค้นหา</p>
                 </div>
 
                 <div class="space-y-1.5">
@@ -828,7 +879,11 @@
                     placeholder="เช่น 2011289517-SB8YziXL"
                     class="bg-white font-mono text-xs"
                   />
-                  <p class="text-[11px] text-slate-400">รหัส LIFF ID สำหรับเปิด Web App ของตึกนี้ผ่านห้องแชต LINE</p>
+                  <div v-if="lineSettingsValidation.liffError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
+                    <span>⚠️</span>
+                    <span>{{ lineSettingsValidation.liffError }}</span>
+                  </div>
+                  <p v-else class="text-[11px] text-slate-400">รหัส LIFF ID สำหรับเปิด Web App ของตึกนี้ผ่านห้องแชต LINE</p>
                 </div>
 
                 <!-- 2. Channel Secret -->
@@ -850,7 +905,11 @@
                     placeholder="กรอก Channel Secret (32 ตัวอักษร)"
                     class="bg-white font-mono text-xs"
                   />
-                  <p class="text-[11px] text-slate-400">ใช้สำหรับตรวจสอบ Signature ความปลอดภัยของ Webhook</p>
+                  <div v-if="lineSettingsValidation.secretError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
+                    <span>⚠️</span>
+                    <span>{{ lineSettingsValidation.secretError }}</span>
+                  </div>
+                  <p v-else class="text-[11px] text-slate-400">ใช้สำหรับตรวจสอบ Signature ความปลอดภัยของ Webhook</p>
                 </div>
 
                 <!-- 3. Channel Access Token (Long-Lived) -->
@@ -878,6 +937,9 @@
               </div>
             </CardContent>
           </Card>
+
+          <!-- LINE Notification Delivery History Logs -->
+          <DeliveryLogsTab :building-id="buildingStore.activeBuildingId" />
         </TabsContent>
       </Tabs>
     </div>
@@ -919,10 +981,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import LineQuotaCard from '@/components/LineQuotaCard.vue';
+import DeliveryLogsTab from '@/components/DeliveryLogsTab.vue';
+import { THAI_BANKS, findBank } from '@/constants/thaiBanks';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
 
+const lineQuotaCardRef = ref(null);
 const activeTab = ref('general');
 const isLoading = ref(false);
 const isSaving = ref(false);
@@ -934,6 +1000,7 @@ const showSecret = ref(false);
 const showToken = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+const customBankName = ref('');
 
 // Preset Palette for LIFF Dynamic Theming
 const presetColors = [
@@ -976,6 +1043,106 @@ const form = ref({
   lineChannelSecret: '',
   lineLiffId: '',
   lineAddFriendUrl: ''
+});
+
+/**
+ * Bank Selection Helpers & Active Bank Object
+ */
+const selectedBankCode = computed({
+  get: () => {
+    if (!form.value.bankName) return '';
+    const found = findBank(form.value.bankName);
+    return found ? found.code : 'OTHER';
+  },
+  set: (val) => {
+    if (val === 'OTHER') {
+      if (!customBankName.value) customBankName.value = form.value.bankName || '';
+      form.value.bankName = customBankName.value;
+    } else {
+      const found = THAI_BANKS.find(b => b.code === val);
+      if (found) {
+        form.value.bankName = found.officialName;
+      } else {
+        form.value.bankName = '';
+      }
+    }
+  }
+});
+
+const activeBankObj = computed(() => {
+  if (!form.value.bankName) return null;
+  return findBank(form.value.bankName);
+});
+
+const onCustomBankInput = (e) => {
+  customBankName.value = e.target.value;
+  form.value.bankName = e.target.value;
+};
+
+/**
+ * Real-time Validation Rules & Formatting Helpers
+ */
+const promptPayValidation = computed(() => {
+  const raw = (form.value.promptpayNum || '').trim();
+  if (!raw) {
+    return { isValid: false, message: 'กรุณาระบุหมายเลข PromptPay (จำเป็นสำหรับการสร้าง QR Code และรับชำระเงิน)', icon: '⚠️', type: 'empty' };
+  }
+  const clean = raw.replace(/[^0-9]/g, '');
+  if (clean.length === 10) {
+    if (/^(06|08|09)/.test(clean)) {
+      const formatted = `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6)}`;
+      return { isValid: true, message: 'เบอร์โทรศัพท์มือถือ (10 หลัก)', formatted, icon: '📱', type: 'mobile' };
+    }
+    return { isValid: false, message: 'เบอร์มือถือต้องขึ้นต้นด้วย 06, 08 หรือ 09', icon: '⚠️', type: 'invalid' };
+  }
+  if (clean.length === 13) {
+    const formatted = `${clean.slice(0, 1)}-${clean.slice(1, 5)}-${clean.slice(5, 10)}-${clean.slice(10, 12)}-${clean.slice(12)}`;
+    return { isValid: true, message: 'เลขประจำตัวประชาชน / ผู้เสียภาษี (13 หลัก)', formatted, icon: '🪪', type: 'id' };
+  }
+  if (clean.length === 15) {
+    return { isValid: true, message: 'e-Wallet ID (15 หลัก)', formatted: clean, icon: '💳', type: 'wallet' };
+  }
+  return { isValid: false, message: 'หมายเลข PromptPay ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน/ผู้เสียภาษี 13 หลัก', icon: '⚠️', type: 'invalid' };
+});
+
+const bankAccountValidation = computed(() => {
+  const raw = (form.value.bankAccountNo || '').trim();
+  if (!raw) return { isValid: true, message: '' };
+  const clean = raw.replace(/[^0-9]/g, '');
+  if (clean.length >= 10 && clean.length <= 12) {
+    return { isValid: true, message: `เลขที่บัญชีถูกต้อง (${clean.length} หลัก)`, icon: '✅' };
+  }
+  return { isValid: false, message: `เลขที่บัญชีธนาคารมาตรฐานควรมี 10 - 12 หลัก (ปัจจุบันมี ${clean.length} หลัก)`, icon: '⚠️' };
+});
+
+const phoneValidation = computed(() => {
+  const raw = (form.value.phone || '').trim();
+  if (!raw) return { isValid: true, message: '' };
+  const clean = raw.replace(/[^0-9]/g, '');
+  if (clean.length === 9 || clean.length === 10) {
+    return { isValid: true, message: 'รูปแบบเบอร์โทรศัพท์ถูกต้อง', icon: '✅' };
+  }
+  return { isValid: false, message: 'เบอร์โทรศัพท์ติดต่อควรมี 9 - 10 หลัก (เช่น 02-xxx-xxxx หรือ 08x-xxx-xxxx)', icon: '⚠️' };
+});
+
+const dueDateValidation = computed(() => {
+  const day = Number(form.value.dueDateDay);
+  if (!day || isNaN(day) || day < 1 || day > 31) {
+    return { isValid: false, message: 'วันกำหนดชำระต้องอยู่ระหว่างวันที่ 1 ถึง 31 ของเดือน', icon: '⚠️' };
+  }
+  return { isValid: true, message: `กำหนดชำระทุกวันที่ ${day} ของทุกเดือน`, icon: '📅' };
+});
+
+const lineSettingsValidation = computed(() => {
+  const oaId = (form.value.lineOaId || '').trim();
+  const liffId = (form.value.lineLiffId || '').trim();
+  const secret = (form.value.lineChannelSecret || '').trim();
+
+  const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horhub)' : null;
+  const liffError = liffId && !/^\d{10}-[A-Za-z0-9_-]{6,}$/.test(liffId) ? 'รูปแบบ LIFF ID ควรเป็นตัวเลข 10 หลักตามด้วยขีด (เช่น 2011289517-SB8YziXL)' : null;
+  const secretError = secret && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
+
+  return { oaError, liffError, secretError };
 });
 
 /**
@@ -1152,6 +1319,37 @@ const fetchBuildingSettings = async () => {
 const saveSettings = async () => {
   if (isReadOnly.value) return;
 
+  // Validation Checks
+  if (!form.value.name?.trim()) {
+    errorMessage.value = 'กรุณาระบุชื่ออาคาร/ตึก';
+    activeTab.value = 'general';
+    return;
+  }
+
+  if (form.value.promptpayNum && !promptPayValidation.value.isValid) {
+    errorMessage.value = promptPayValidation.value.message;
+    activeTab.value = 'financial';
+    return;
+  }
+
+  if (form.value.bankAccountNo && !bankAccountValidation.value.isValid) {
+    errorMessage.value = bankAccountValidation.value.message;
+    activeTab.value = 'financial';
+    return;
+  }
+
+  if (form.value.phone && !phoneValidation.value.isValid) {
+    errorMessage.value = phoneValidation.value.message;
+    activeTab.value = 'general';
+    return;
+  }
+
+  if (!dueDateValidation.value.isValid) {
+    errorMessage.value = dueDateValidation.value.message;
+    activeTab.value = 'financial';
+    return;
+  }
+
   isSaving.value = true;
   successMessage.value = '';
   errorMessage.value = '';
@@ -1164,6 +1362,9 @@ const saveSettings = async () => {
 
     successMessage.value = 'บันทึกข้อมูลการตั้งค่าตึกสำเร็จเรียบร้อยแล้ว!';
     await buildingStore.fetchBuildings();
+    if (lineQuotaCardRef.value?.fetchQuota) {
+      lineQuotaCardRef.value.fetchQuota();
+    }
 
     setTimeout(() => {
       successMessage.value = '';
