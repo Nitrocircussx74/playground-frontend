@@ -963,7 +963,12 @@ const openLineLinkModal = async () => {
     if (res.success && res.data) {
       generatedInviteCode.value = res.data.inviteCode;
       // Generate QR Code containing LIFF Onboarding URL with prefilled code
-      const liffUrl = `${window.location.origin}/liff/onboarding?code=${res.data.inviteCode}`;
+      // ต้องใช้ https://liff.line.me/{LIFF_ID}/... (ไม่ใช่ window.location.origin) มิฉะนั้นสแกนแล้วจะเปิดเป็นเว็บปกติ
+      // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js และ TenantSecurityTab.vue
+      const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+      const liffUrl = liffId
+        ? `https://liff.line.me/${liffId}/onboarding?code=${res.data.inviteCode}`
+        : `${window.location.origin}/liff/onboarding?code=${res.data.inviteCode}`;
       qrCodeDataUrl.value = await QRCode.toDataURL(liffUrl, {
         width: 300,
         margin: 2,

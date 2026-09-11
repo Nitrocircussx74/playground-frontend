@@ -187,6 +187,12 @@ const handleRevokeInvite = async (inviteId) => {
 };
 
 const getShareUrl = (code) => {
+  // ต้องใช้ https://liff.line.me/{LIFF_ID}/... ไม่ใช่ window.location.origin มิฉะนั้นลิงก์ที่แชร์ไปจะเปิดเป็นเว็บปกติ
+  // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js
+  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+  if (liffId) {
+    return `https://liff.line.me/${liffId}/register?inviteCode=${code}`;
+  }
   return `${window.location.origin}/liff/register?inviteCode=${code}`;
 };
 

@@ -965,6 +965,8 @@ import {
   Store,
   Coffee,
   Car,
+  CalendarCheck,
+  Vote,
   Radio,
   Check,
   CheckCircle2,
@@ -1245,7 +1247,12 @@ const handleCreateRoommateInvite = async () => {
     const res = await api.post('/api/v1/liff/invites/roommate');
     if (res.data?.success && res.data?.data) {
       roommateInviteData.value = res.data.data;
-      const inviteLink = `${window.location.origin}/liff/register?invite=${res.data.data.code}`;
+      // ต้องใช้ https://liff.line.me/{LIFF_ID}/... ไม่ใช่ window.location.origin มิฉะนั้นสแกน/แชร์แล้วจะเปิดเป็นเว็บปกติ
+      // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js
+      const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+      const inviteLink = liffId
+        ? `https://liff.line.me/${liffId}/register?invite=${res.data.data.code}`
+        : `${window.location.origin}/liff/register?invite=${res.data.data.code}`;
       roommateQrUrl.value = await QRCode.toDataURL(inviteLink, { margin: 1, width: 260 });
       showRoommateModal.value = true;
     }
@@ -1307,6 +1314,36 @@ const quickActionsConfig = [
     iconClass: 'text-sky-600',
     route: '/liff/announcements',
     featureKey: 'ENABLE_ANNOUNCEMENTS'
+  },
+  {
+    id: 'facility',
+    title: 'จองพื้นที่ส่วนกลาง',
+    subtitle: 'ฟิตเนส สระว่ายน้ำ ฯลฯ',
+    icon: CalendarCheck,
+    bgClass: 'bg-indigo-50',
+    iconClass: 'text-indigo-600',
+    route: '/liff/facility-bookings',
+    featureKey: 'ENABLE_FACILITY_BOOKING'
+  },
+  {
+    id: 'vehicles',
+    title: 'ยานพาหนะ & แขก',
+    subtitle: 'ลงทะเบียนรถ & บัตรผู้มาเยือน',
+    icon: Car,
+    bgClass: 'bg-cyan-50',
+    iconClass: 'text-cyan-600',
+    route: '/liff/vehicles',
+    featureKey: 'ENABLE_VEHICLE_MANAGEMENT'
+  },
+  {
+    id: 'polls',
+    title: 'โหวต & แบบสำรวจ',
+    subtitle: 'ร่วมแสดงความคิดเห็น',
+    icon: Vote,
+    bgClass: 'bg-purple-50',
+    iconClass: 'text-purple-600',
+    route: '/liff/polls',
+    featureKey: 'ENABLE_VOTING'
   }
 ];
 

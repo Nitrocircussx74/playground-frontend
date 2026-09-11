@@ -175,4 +175,23 @@
 - แก้ปุ่ม "ลงทะเบียนด้วยรหัสเชิญ" ใน `LiffEntryView.vue` ให้ฉลาดขึ้น (เช็คเบอร์โทร/สถานะก่อนแล้วพาไปหน้าที่ถูกต้องอัตโนมัติ แทนที่จะพาไปหน้าเดียวตายตัว) — หรือรวม 2 ระบบ Invite Code เป็นระบบเดียวฝั่ง Backend
 - ตัดสินใจว่าสี Emerald ในหน้า LIFF ควรเปลี่ยนเป็น HorHub Teal ด้วยหรือไม่ (บาง Component ใช้เป็น Brand บาง Component ใช้เป็น Success Semantic ปนกัน ต้องแยกทีละจุด)
 
-### STATUS: 🟢 COMPLETE & VERIFIED
+---
+
+## 📅 [2026-09-11] - Facility Booking / Vehicle & Visitor / Voting Modules (Frontend) + แก้บั๊ก Invite QR ไม่เปิด LIFF + Auto-Login รวมศูนย์
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **หน้าจอใหม่ 6 หน้า** รองรับ Backend 3 โมดูลใหม่ (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16 คู่กัน) — ตามรูปแบบ [AdminParcelView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/AdminParcelView.vue)/[LiffParcelsView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffParcelsView.vue) เป๊ะ (เรียก `@/utils/api` ตรงๆ ไม่มี Store/Service แยก):
+   - `AdminFacilityBookingView.vue` + `LiffFacilityBookingView.vue` (`/facility-bookings`, `/liff/facility-bookings`)
+   - `AdminVehicleView.vue` + `LiffVehicleView.vue` (`/vehicles`, `/liff/vehicles`)
+   - `AdminPollView.vue` + `LiffPollView.vue` (`/polls`, `/liff/polls`)
+   - เพิ่ม `ENABLE_FACILITY_BOOKING`/`ENABLE_VOTING` ใน [FeatureSettingsView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/FeatureSettingsView.vue) (ไอคอน/สี), เพิ่มเมนู Sidebar ใน [App.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/App.vue) ที่พลาดไปตอนแรก (สร้าง Route ไว้แต่ลืมผูกเมนู ผู้ใช้ถามว่า "menu อยู่ไหน" ถึงรู้ตัว)
+2. **🐛 แก้บั๊ก Invite QR/ลิงก์ไม่เปิด LIFF (ผู้ใช้รายงานว่าสแกนแล้วไม่เปิด LIFF)**: ไล่หาต้นตอเจอ 4 จุดสร้างลิงก์ผิดรูปแบบเหมือนกันหมด (`${window.location.origin}/liff/...` แทน `https://liff.line.me/{LIFF_ID}/...`):
+   - [TenantDetail.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/TenantDetail.vue) — Modal "เชื่อมต่อบัญชี LINE ให้ผู้เช่า" (จุดที่ผู้ใช้เจอจริงในภาพหน้าจอ)
+   - [TenantSecurityTab.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/TenantSecurityTab.vue) — Modal เดียวกันแต่โค้ดซ้ำอีกชุด เรียกจากแท็บ "ความปลอดภัย" หน้าเดียวกัน
+   - [RoomInviteModal.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/RoomInviteModal.vue) — ลิงก์เชิญรูมเมทที่แอดมินคัดลอกไปแชร์
+   - [LiffProfileView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffProfileView.vue) — QR เชิญรูมเมทที่ลูกบ้านสร้างเอง
+   - แก้ทั้ง 4 จุดให้ใช้ `VITE_LINE_LIFF_ID`/`VITE_LIFF_ID` ประกอบเป็น `https://liff.line.me/{LIFF_ID}/...` เหมือน Pattern ที่ `router/index.js`/`utils/liff.js` ใช้อยู่แล้ว (Fallback เป็นของเดิมถ้าไม่มี Env Var ตั้งไว้)
+3. **🐛 แก้บั๊กต่อเนื่อง "กรุณาเข้าสู่ระบบก่อน" หลังแก้ข้อ 2**: สแกน QR ที่แก้แล้วเปิด LIFF ถูกแล้ว แต่ยัง 401 เพราะ [LiffOnboardingView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffOnboardingView.vue) ไม่เคยเรียก `loginLiff()` เลย (มีแค่ `LiffEntryView.vue` ที่ทำ) — ผู้ใช้ถามต่อว่า "ถ้ามาผ่าน liff ควร auto login ทุกครั้ง" เลย**ย้าย Auto-Login ไปรวมศูนย์ที่ `liffNavigationGuard`** (`router/index.js`) แทนที่จะเขียนเช็คซ้ำทีละหน้า — Guard เรียก `isLiffLoggedIn()`/`loginLiff()` ให้ทุกหน้าที่ผ่าน Guard นี้อัตโนมัติ (จำกัด 1 ครั้ง/Session เหมือนเดิม) ลบโค้ด Auto-Login ที่เพิ่งแปะไว้ใน `LiffOnboardingView.vue` ทิ้งเพราะซ้ำกับ Guard แล้ว
+4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16)

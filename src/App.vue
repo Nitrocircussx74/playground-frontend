@@ -198,6 +198,39 @@
               <Package class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="(route.path === '/parcels' || route.path === '/admin/parcels') ? 'text-white' : 'text-amber-400'" />
               <span>จัดการพัสดุ</span>
             </router-link>
+
+            <router-link
+              v-if="!isRoomOwnerRole"
+              to="/facility-bookings"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/facility-bookings' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <CalendarCheck class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/facility-bookings' ? 'text-white' : 'text-indigo-400'" />
+              <span>จองพื้นที่ส่วนกลาง</span>
+            </router-link>
+
+            <router-link
+              v-if="!isRoomOwnerRole"
+              to="/vehicles"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/vehicles' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <Car class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/vehicles' ? 'text-white' : 'text-cyan-400'" />
+              <span>ยานพาหนะ/ผู้มาเยือน</span>
+            </router-link>
+
+            <router-link
+              v-if="!isRoomOwnerRole"
+              to="/polls"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/polls' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <Vote class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/polls' ? 'text-white' : 'text-violet-400'" />
+              <span>โหวต & แบบสำรวจ</span>
+            </router-link>
           </div>
         </div>
 
@@ -388,7 +421,10 @@ import {
   Menu,
   X,
   CircleHelp,
-  Sparkles
+  Sparkles,
+  CalendarCheck,
+  Car,
+  Vote
 } from 'lucide-vue-next';
 import { startTour } from '@/utils/tours';
 

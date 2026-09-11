@@ -258,6 +258,8 @@ onMounted(async () => {
     activeMode.value = 'invite';
   }
 
+  // หมายเหตุ: auto-login ผ่าน LINE (loginLiff) ย้ายไปเช็ครวมที่ router guard (liffNavigationGuard) แล้ว
+  // ครอบคลุมทุกหน้าที่มาผ่าน LIFF ไม่ต้องเช็คซ้ำในแต่ละหน้าอีก — ถึงตรงนี้ถือว่าล็อกอิน LINE แล้ว (หรือไม่ใช่ LIFF context จริง)
   try {
     await initLiff();
     if (isLiffLoggedIn()) {

@@ -173,7 +173,9 @@ import {
   Car,
   QrCode,
   ReceiptText,
-  HelpCircle
+  HelpCircle,
+  CalendarCheck,
+  Vote
 } from 'lucide-vue-next';
 
 const featureStore = useFeatureStore();
@@ -203,7 +205,9 @@ const featureTitles = {
   ENABLE_ANNOUNCEMENTS: 'ข่าวสาร & ประกาศหอพัก',
   ENABLE_DIGITAL_ID: 'บัตรประจำตัวผู้เช่าดิจิทัล (Digital ID)',
   ENABLE_RECEIPT_HISTORY: 'ประวัติใบเสร็จรับเงิน E-Receipt',
-  ENABLE_VEHICLE_MANAGEMENT: 'จัดการยานพาหนะและทะเบียนรถ'
+  ENABLE_VEHICLE_MANAGEMENT: 'จัดการยานพาหนะและทะเบียนรถ',
+  ENABLE_FACILITY_BOOKING: 'จองพื้นที่ส่วนกลาง',
+  ENABLE_VOTING: 'โหวต & แบบสำรวจความเห็น'
 };
 
 const getFeatureTitle = (key) => {
@@ -226,6 +230,10 @@ const getFeatureIcon = (key) => {
       return ReceiptText;
     case 'ENABLE_VEHICLE_MANAGEMENT':
       return Car;
+    case 'ENABLE_FACILITY_BOOKING':
+      return CalendarCheck;
+    case 'ENABLE_VOTING':
+      return Vote;
     default:
       return HelpCircle;
   }
@@ -247,6 +255,10 @@ const getFeatureIconBg = (key) => {
       return 'bg-teal-50 text-teal-600';
     case 'ENABLE_VEHICLE_MANAGEMENT':
       return 'bg-cyan-50 text-cyan-600';
+    case 'ENABLE_FACILITY_BOOKING':
+      return 'bg-indigo-50 text-indigo-600';
+    case 'ENABLE_VOTING':
+      return 'bg-violet-50 text-violet-600';
     default:
       return 'bg-slate-50 text-slate-600';
   }
