@@ -266,7 +266,47 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Action ออกจากระบบ (Logout Logic ครอบคลุมทั้ง Web และ LIFF)
+     * Action ออกจากระบบสำหรับลูกบ้าน (Tenant Logout)
+     * แยก Channel ชัดเจน: ถ้าเข้าผ่าน Web Portal จะจบเซสชันเว็บแล้วพาไป /web/login
+     * ถ้าเข้าผ่าน LINE LIFF จะปิดหน้าต่าง LINE App หรือ logout LINE session
+     */
+    async logoutTenant() {
+      this.loading = true;
+      const wasWebTenant = this.isWebTenant;
+      try {
+        this.clearLiffAuth();
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('dev_line_user_id');
+        }
+
+        if (wasWebTenant) {
+          return { channel: 'web', redirect: '/web/login' };
+        } else {
+          try {
+            const liff = (await import('@line/liff')).default;
+            if (typeof liff.isInClient === 'function' && liff.isInClient()) {
+              if (typeof liff.closeWindow === 'function') {
+                liff.closeWindow();
+              }
+              return { channel: 'line_client', closed: true };
+            } else if (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) {
+              if (typeof liff.logout === 'function') {
+                liff.logout();
+              }
+              return { channel: 'line_external', redirect: '/liff' };
+            }
+          } catch (liffErr) {
+            console.warn('LIFF logout warning:', liffErr);
+          }
+          return { channel: 'line', redirect: '/liff' };
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
+     * Action ออกจากระบบสำหรับ CMS Admin
      */
     async logout() {
       this.loading = true;
@@ -275,27 +315,7 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.warn('Logout server request failed:', error);
       } finally {
-        // 1. เคลียร์ State ใน Pinia และ LocalStorage
         this.clearAuth();
-        this.clearLiffAuth();
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('dev_line_user_id');
-        }
-
-        // 2. ตรวจสอบ LINE LIFF SDK:
-        // ข้อควรระวัง: คำสั่ง liff.logout() ใช้ได้เฉพาะบน External Browser เท่านั้น
-        // หากทำงานใน LINE App (isInClient() === true) จะไม่มีการ logout LINE App session
-        try {
-          const liff = (await import('@line/liff')).default;
-          if (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) {
-            if (typeof liff.isInClient === 'function' && !liff.isInClient()) {
-              liff.logout();
-            }
-          }
-        } catch (liffErr) {
-          console.warn('LIFF logout check skipped:', liffErr);
-        }
-
         this.loading = false;
       }
     }

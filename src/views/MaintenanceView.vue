@@ -4,13 +4,13 @@
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
       <div class="space-y-1">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-teal-500/20">
             <Kanban class="w-5 h-5" />
           </div>
           <div>
             <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <span>ศูนย์รวมแจ้งซ่อม & ร้องเรียน</span>
-              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100/80 hidden sm:inline-block">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100/80 hidden sm:inline-block">
                 Unified Service Board
               </span>
             </h1>
@@ -33,7 +33,7 @@
 
         <button
           @click="showNewModal = true"
-          class="px-4 py-2.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+          class="px-4 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-teal-700 hover:from-cyan-700 hover:to-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <Plus class="w-4 h-4" />
           <span>สร้างใบแจ้งซ่อมใหม่</span>
@@ -73,7 +73,7 @@
       </div>
 
       <!-- Search Input -->
-      <div class="relative bg-slate-50/80 hover:bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 rounded-2xl border border-slate-200/80 transition-all flex items-center px-3.5 py-2 min-w-[260px]">
+      <div class="relative bg-slate-50/80 hover:bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-500/20 rounded-2xl border border-slate-200/80 transition-all flex items-center px-3.5 py-2 min-w-[260px]">
         <Search class="w-4 h-4 text-slate-400 shrink-0 mr-2" />
         <input
           v-model="searchQuery"
@@ -130,7 +130,7 @@
                 </span>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
-                  <DoorClosed class="w-3 h-3 text-indigo-600" />
+                  <DoorClosed class="w-3 h-3 text-teal-600" />
                   <span>ห้อง {{ item.room?.roomNumber || '-' }}</span>
                 </span>
               </div>
@@ -143,7 +143,7 @@
 
             <!-- Title & Description -->
             <div class="space-y-1">
-              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-indigo-600 transition-colors line-clamp-1">
+              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-teal-600 transition-colors line-clamp-1">
                 {{ item.title }}
               </h4>
               <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed whitespace-pre-line">
@@ -234,7 +234,7 @@
                 </span>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
-                  <DoorClosed class="w-3 h-3 text-indigo-600" />
+                  <DoorClosed class="w-3 h-3 text-teal-600" />
                   <span>ห้อง {{ item.room?.roomNumber || '-' }}</span>
                 </span>
               </div>
@@ -416,8 +416,8 @@
               <component :is="getCategoryIcon(selectedTicket.category)" class="w-3.5 h-3.5 inline mr-1" />
               {{ getCategoryLabel(selectedTicket.category) }}
             </span>
-            <span class="text-xs text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-xl border border-indigo-100 font-mono font-bold flex items-center gap-1">
-              <DoorClosed class="w-3.5 h-3.5 text-indigo-500" />
+            <span class="text-xs text-teal-700 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-100 font-mono font-bold flex items-center gap-1">
+              <DoorClosed class="w-3.5 h-3.5 text-teal-500" />
               ห้อง {{ selectedTicket.room?.roomNumber || '-' }} {{ selectedTicket.building?.name ? `(${selectedTicket.building.name})` : '' }}
             </span>
           </div>
@@ -433,7 +433,7 @@
         <!-- Tenant Information Card -->
         <div class="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-2xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs shadow-2xs">
+            <div class="w-9 h-9 rounded-2xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs shadow-2xs">
               {{ getTenantAvatarInitial(selectedTicket) }}
             </div>
             <div>
@@ -525,7 +525,7 @@
                 v-model="editForm.technicianName"
                 type="text"
                 placeholder="e.g. ช่างสมชาย"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden font-medium"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden font-medium"
               />
             </div>
             <div>
@@ -586,7 +586,7 @@
                 :key="idx"
                 type="button"
                 @click="editForm.adminNote = chip"
-                class="px-2.5 py-1 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 shrink-0 cursor-pointer transition-colors"
+                class="px-2.5 py-1 rounded-lg bg-teal-50/70 hover:bg-teal-100 text-teal-700 border border-teal-100 shrink-0 cursor-pointer transition-colors"
               >
                 + {{ chip }}
               </button>
@@ -596,7 +596,7 @@
               v-model="editForm.adminNote"
               rows="3"
               placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่รับเรื่องแล้ว กำลังส่งช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden leading-relaxed"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden leading-relaxed"
             ></textarea>
           </div>
 
@@ -624,7 +624,7 @@
               <button
                 type="submit"
                 :disabled="submitting"
-                class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
+                class="px-5 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl font-bold shadow-md shadow-teal-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
               >
                 {{ submitting ? 'กำลังบันทึก...' : 'บันทึก & ตอบกลับ' }}
               </button>
@@ -639,7 +639,7 @@
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
               <Wrench class="w-4 h-4" />
             </div>
             <h3 class="text-base font-bold text-slate-900">สร้างใบแจ้งซ่อมใหม่ (Manual)</h3>
@@ -658,7 +658,7 @@
             <select
               v-model="newForm.roomId"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden"
             >
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
@@ -674,7 +674,7 @@
               type="text"
               placeholder="e.g. เครื่องปรับอากาศมีเสียงดัง / หลอดไฟห้องน้ำเสีย"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden"
             />
           </div>
 
@@ -685,7 +685,7 @@
               rows="3"
               placeholder="ระบุอาการชำรุด หรือตำแหน่งที่ต้องการให้ช่างเข้าตรวจสอบ..."
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-hidden leading-relaxed"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden leading-relaxed"
             ></textarea>
           </div>
 
@@ -695,7 +695,7 @@
               type="file"
               accept="image/*"
               @change="handleFileChange"
-              class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer"
+              class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer"
             />
             <div v-if="newForm.imageUrl" class="mt-2">
               <img :src="resolveImageUrl(newForm.imageUrl)" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
@@ -713,7 +713,7 @@
             <button
               type="submit"
               :disabled="submitting || uploading"
-              class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
+              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-teal-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
             >
               {{ submitting ? 'กำลังบันทึก...' : 'สร้างตั๋วแจ้งซ่อม' }}
             </button>
@@ -902,10 +902,10 @@ const categoryFilters = computed(() => {
   const otherCount = unifiedTickets.value.filter((i) => i.category === 'OTHER').length;
 
   return [
-    { value: 'ALL', label: 'ทั้งหมด', count: allCount, icon: Sparkles, iconClass: 'text-indigo-400' },
+    { value: 'ALL', label: 'ทั้งหมด', count: allCount, icon: Sparkles, iconClass: 'text-teal-400' },
     { value: 'REPAIR', label: 'แจ้งซ่อมบำรุง', count: repairCount, icon: Wrench, iconClass: 'text-amber-500' },
     { value: 'COMPLAINT', label: 'ข้อร้องเรียน', count: complaintCount, icon: MessageSquareWarning, iconClass: 'text-rose-500' },
-    { value: 'OTHER', label: 'เรื่องอื่นๆ', count: otherCount, icon: HelpCircle, iconClass: 'text-purple-500' }
+    { value: 'OTHER', label: 'เรื่องอื่นๆ', count: otherCount, icon: HelpCircle, iconClass: 'text-cyan-500' }
   ];
 });
 
@@ -951,7 +951,7 @@ const getCategoryBadgeClass = (category) => {
   const cat = (category || '').toUpperCase();
   if (cat === 'REPAIR') return 'bg-amber-50 text-amber-700 border-amber-200/80';
   if (cat === 'COMPLAINT') return 'bg-rose-50 text-rose-700 border-rose-200/80';
-  return 'bg-purple-50 text-purple-700 border-purple-200/80';
+  return 'bg-cyan-50 text-cyan-700 border-cyan-200/80';
 };
 
 // Data Fetching

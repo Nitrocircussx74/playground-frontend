@@ -1,29 +1,60 @@
 <template>
-  <div class="space-y-5 pb-6 font-sans text-slate-800 selection:bg-indigo-500 selection:text-white">
+  <div class="space-y-5 pb-6 font-sans text-slate-800 selection:bg-teal-500 selection:text-white">
     <!-- Loading Skeleton State -->
     <div v-if="loading" class="space-y-4 animate-pulse">
-      <!-- Header Skeleton -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-slate-200/70 skeleton-shimmer space-y-3.5">
-        <div class="flex items-start gap-3.5">
-          <div class="w-14 h-14 rounded-full bg-slate-300/80 shrink-0"></div>
-          <div class="space-y-2 flex-1 pt-1">
-            <div class="h-4 w-32 bg-slate-300/80 rounded-lg"></div>
-            <div class="h-3 w-24 bg-slate-300/60 rounded-md"></div>
-            <div class="h-5 w-20 bg-slate-300/60 rounded-full"></div>
+      <!-- 1. Header Profile Skeleton -->
+      <div class="p-5 sm:p-6 rounded-3xl bg-slate-900/10 border border-slate-200/60 shadow-xs space-y-4">
+        <div class="flex items-center justify-between gap-3.5 flex-wrap sm:flex-nowrap">
+          <div class="flex items-center gap-3.5">
+            <div class="w-14 h-14 rounded-full bg-slate-200 shrink-0"></div>
+            <div class="space-y-2 flex-1">
+              <div class="h-5 w-36 bg-slate-200 rounded-lg"></div>
+              <div class="h-3.5 w-24 bg-slate-200 rounded-md"></div>
+              <div class="h-5 w-28 bg-slate-200 rounded-full"></div>
+            </div>
           </div>
-        </div>
-        <div class="pt-3 border-t border-slate-300/40 flex justify-between">
-          <div class="h-7 w-24 bg-slate-300/60 rounded-xl"></div>
-          <div class="h-7 w-24 bg-slate-300/60 rounded-xl"></div>
+          <div class="flex items-center gap-2">
+            <div class="h-8 w-20 bg-slate-200 rounded-xl"></div>
+            <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Quick Actions Skeleton (Grid responsive) -->
+      <!-- 2. Action Items / Alerts Skeleton -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="h-4 w-28 bg-slate-200 rounded-md"></div>
+          <div class="h-5 w-16 bg-slate-200 rounded-full"></div>
+        </div>
+        <div class="h-16 w-full bg-slate-100 rounded-2xl"></div>
+      </div>
+
+      <!-- 3. Quick Actions Grid Skeleton (4 cards) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div v-for="i in 4" :key="i" class="p-4 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-2.5">
-          <div class="w-9 h-9 rounded-xl bg-slate-100 skeleton-shimmer"></div>
-          <div class="h-3.5 w-20 bg-slate-100 rounded-md skeleton-shimmer"></div>
-          <div class="h-2.5 w-28 bg-slate-100 rounded-md skeleton-shimmer"></div>
+        <div v-for="i in 4" :key="i" class="p-4 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-2xl bg-slate-100"></div>
+          <div class="space-y-1.5">
+            <div class="h-4 w-20 bg-slate-200 rounded-md"></div>
+            <div class="h-3 w-28 bg-slate-100 rounded-md"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Recent Announcements Skeleton -->
+      <div class="p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3.5">
+        <div class="flex items-center justify-between">
+          <div class="h-4 w-32 bg-slate-200 rounded-md"></div>
+          <div class="h-4 w-12 bg-slate-200 rounded-md"></div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="h-4 w-3/4 bg-slate-200 rounded-md"></div>
+            <div class="h-3 w-1/2 bg-slate-100 rounded-md"></div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="h-4 w-2/3 bg-slate-200 rounded-md"></div>
+            <div class="h-3 w-1/3 bg-slate-100 rounded-md"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -81,7 +112,7 @@
               <h1 class="font-bold text-base sm:text-lg truncate text-white">
                 {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
               </h1>
-              <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '-' }}</p>
+              <p class="text-xs text-teal-100/90 font-mono">{{ tenantProfile.phone || '-' }}</p>
 
               <!-- Current Active Room Badge & Role Badge -->
               <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
@@ -125,6 +156,32 @@
         </div>
       </div>
 
+      <!-- 1.5 Web Tenant LINE Binding Banner (แนะนำให้ผูก LINE OA หากยังไม่มี LINE ID) -->
+      <div
+        v-if="!tenantProfile.lineUserId && !currentLineUserId"
+        class="p-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 shadow-xs"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-sm shadow-[#06C755]/20">
+            <MessageSquare class="w-5 h-5 fill-current text-white" />
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-slate-800">
+              รับแจ้งเตือนบิลและพัสดุผ่าน LINE
+            </div>
+            <div class="text-[11px] text-slate-500">
+              เพิ่มเพื่อนกับ LINE Official เพื่อรับการแจ้งเตือนแบบเรียลไทม์
+            </div>
+          </div>
+        </div>
+        <button
+          @click="openAddFriendLine()"
+          class="shrink-0 px-3.5 py-2 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-xl text-xs font-bold shadow-xs transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>เพิ่มเพื่อน</span>
+        </button>
+      </div>
+
       <!-- 2. Multi-Room Selector (Shown if > 1 room) -->
       <div v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
@@ -136,7 +193,7 @@
           </div>
           <button
             @click="showLinkRoomModal = true"
-            class="text-xs font-semibold hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-1 text-indigo-600"
+            class="text-xs font-semibold hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-1 text-teal-600"
             :style="{ color: themeColor }"
           >
             <PlusCircle class="w-3.5 h-3.5" />
@@ -152,33 +209,34 @@
             @click="selectRoom(room)"
             class="p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative overflow-hidden active:scale-[0.99]"
             :class="selectedRoomId === room.id 
-              ? 'bg-indigo-50/60 border-indigo-200 shadow-2xs' 
+              ? 'bg-teal-50/60 border-teal-200 shadow-2xs' 
               : 'bg-slate-50/60 hover:bg-slate-100/70 border-slate-100/90 text-slate-600'"
           >
             <!-- Left: Room Icon & Room Details -->
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <div
-                class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
-                :class="selectedRoomId === room.id 
-                  ? 'bg-indigo-600 text-white shadow-xs' 
+                class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 overflow-hidden"
+                :class="selectedRoomId === room.id
+                  ? 'bg-teal-600 text-white shadow-xs'
                   : 'bg-white text-slate-500 border border-slate-200/60'"
-                :style="selectedRoomId === room.id ? { backgroundColor: themeColor } : {}"
+                :style="selectedRoomId === room.id && !room.logoUrl ? { backgroundColor: themeColor } : {}"
               >
-                <DoorClosed class="w-4.5 h-4.5" />
+                <img v-if="room.logoUrl" :src="room.logoUrl" alt="" class="w-full h-full object-contain p-1" />
+                <component v-else :is="getRoomIcon(room.unitType)" class="w-4.5 h-4.5" />
               </div>
               
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span
                     class="text-xs font-bold truncate"
-                    :class="selectedRoomId === room.id ? 'text-indigo-950 font-extrabold' : 'text-slate-800'"
+                    :class="selectedRoomId === room.id ? 'text-teal-950 font-extrabold' : 'text-slate-800'"
                     :style="selectedRoomId === room.id ? { color: themeColor } : {}"
                   >
                     ห้อง {{ room.roomNumber }}
                   </span>
                   <span
                     v-if="selectedRoomId === room.id"
-                    class="px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-indigo-100 text-indigo-700"
+                    class="px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-teal-100 text-teal-700"
                     :style="{ backgroundColor: `${themeColor}18`, color: themeColor }"
                   >
                     ใช้งานอยู่
@@ -302,7 +360,7 @@
           <div
             v-if="featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST') && activeMaintenance.length > 0"
             @click="router.push('/liff/issues')"
-            class="p-4 bg-gradient-to-r from-sky-50/95 via-indigo-50/40 to-white rounded-2xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+            class="p-4 bg-gradient-to-r from-sky-50/95 via-teal-50/40 to-white rounded-2xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
@@ -400,7 +458,7 @@
               </span>
             </div>
             <div>
-              <div class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition-colors">
+              <div class="font-bold text-xs text-slate-800 group-hover:text-teal-600 transition-colors">
                 {{ menu.title }}
               </div>
               <div class="text-[10px] text-slate-400 font-medium truncate mt-0.5">{{ menu.subtitle }}</div>
@@ -463,7 +521,7 @@
               {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
             </span>
           </div>
-          <div v-else class="p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white flex items-center justify-between">
+          <div v-else class="p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-600 text-white flex items-center justify-between">
             <span class="text-[10px] font-semibold bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-xs">
               {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
             </span>
@@ -524,7 +582,7 @@
                     {{ item.building?.name || 'ประกาศทั่วไป' }}
                   </span>
                 </div>
-                <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border-b border-slate-100/80 flex items-center justify-between">
+                <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-teal-500/10 border-b border-slate-100/80 flex items-center justify-between">
                   <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                     {{ item.building?.name || 'ประกาศทั่วไป' }}
                   </span>
@@ -563,7 +621,7 @@
       <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+            <div class="w-7 h-7 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
               <Users class="w-4 h-4" />
             </div>
             <div>
@@ -580,7 +638,7 @@
             v-if="tenantProfile.isPrimaryTenant !== false"
             @click="handleCreateRoommateInvite"
             :disabled="generatingInvite"
-            class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             :style="{ backgroundColor: themeColor }"
           >
             <UserPlus class="w-3.5 h-3.5" />
@@ -598,13 +656,13 @@
                 :src="tenantProfile.avatarUrl"
                 class="w-8 h-8 rounded-full object-cover border border-white shadow-2xs shrink-0"
               />
-              <div v-else class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
+              <div v-else class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center shrink-0">
                 {{ tenantInitial }}
               </div>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-800 truncate flex items-center gap-1.5">
                   <span>{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span>
-                  <span class="text-[9px] px-1.5 py-0.2 bg-indigo-100 text-indigo-700 rounded-md font-semibold">คุณ</span>
+                  <span class="text-[9px] px-1.5 py-0.2 bg-teal-100 text-teal-700 rounded-md font-semibold">คุณ</span>
                 </div>
                 <div class="text-[10px] text-slate-400 font-mono">{{ tenantProfile.phone || '-' }}</div>
               </div>
@@ -658,20 +716,20 @@
         class="p-4 bg-white hover:bg-slate-50 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
       >
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+          <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
             <User class="w-4.5 h-4.5" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5 flex-wrap">
+            <div class="font-bold text-xs text-slate-800 group-hover:text-teal-600 transition-colors flex items-center gap-1.5 flex-wrap">
               <span>โปรไฟล์และการตั้งค่า</span>
-              <span class="px-2 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-600 rounded-full border border-indigo-100">Settings</span>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-teal-50 text-teal-600 rounded-full border border-teal-100">Settings</span>
             </div>
             <div class="text-[11px] text-slate-400 font-medium mt-0.5 truncate">
               เปลี่ยนรหัส PIN, ข้อมูลผู้เช่า, รถยนต์/มอเตอร์ไซค์
             </div>
           </div>
         </div>
-        <div class="w-7 h-7 rounded-xl bg-slate-50 group-hover:bg-indigo-50 group-hover:text-indigo-600 flex items-center justify-center transition-all text-slate-400 shrink-0 ml-2">
+        <div class="w-7 h-7 rounded-xl bg-slate-50 group-hover:bg-teal-50 group-hover:text-teal-600 flex items-center justify-center transition-all text-slate-400 shrink-0 ml-2">
           <ChevronRight class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </div>
       </router-link>
@@ -695,7 +753,7 @@
 
         <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-1 text-slate-600 font-mono">
           <div>ผู้เช่า: <span class="font-bold text-slate-800">{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span></div>
-          <div>ห้องพัก: <span class="font-bold text-indigo-600">{{ formattedRooms }}</span></div>
+          <div>ห้องพัก: <span class="font-bold text-teal-600">{{ formattedRooms }}</span></div>
         </div>
 
         <button
@@ -715,7 +773,7 @@
         </button>
 
         <div class="space-y-1 pt-1">
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-2">
+          <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-2">
             <UserPlus class="w-5 h-5" />
           </div>
           <h3 class="text-base font-bold text-slate-900">เชิญรูมเมทเข้าห้องพัก</h3>
@@ -732,7 +790,7 @@
         <!-- Invite Code Box -->
         <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5">
           <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รหัสเชิญรูมเมท (6 หลัก)</div>
-          <div class="text-2xl font-black font-mono tracking-widest text-indigo-600" :style="{ color: themeColor }">
+          <div class="text-2xl font-black font-mono tracking-widest text-teal-600" :style="{ color: themeColor }">
             {{ roommateInviteData?.code }}
           </div>
           <div class="text-[10px] text-slate-400">
@@ -744,7 +802,7 @@
         <div class="space-y-2 pt-1">
           <button
             @click="copyRoommateCode"
-            class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+            class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-teal-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
             :style="{ backgroundColor: themeColor }"
           >
             <Copy class="w-3.5 h-3.5" />
@@ -780,7 +838,7 @@
               type="text"
               placeholder="เช่น ROOM-A102-XYZ"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-mono text-center uppercase focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-mono text-center uppercase focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
@@ -795,7 +853,7 @@
             <button
               type="submit"
               :disabled="linkingRoom"
-              class="flex-1 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors disabled:opacity-50"
+              class="flex-1 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold text-xs transition-colors disabled:opacity-50"
             >
               {{ linkingRoom ? 'กำลังผูกห้อง...' : 'ยืนยันผูกห้อง' }}
             </button>
@@ -888,7 +946,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { useAnnouncements } from '@/composables/useAnnouncements';
-import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff, openAddFriendLine } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 import { formatShortDate as formatDate } from '@/utils/formatters';
@@ -904,11 +962,18 @@ import {
   PlusCircle,
   X,
   DoorClosed,
+  Store,
+  Coffee,
+  Car,
+  CalendarCheck,
+  Vote,
+  Radio,
   Check,
   CheckCircle2,
   Users,
   UserPlus,
-  Copy
+  Copy,
+  MessageSquare
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -925,8 +990,17 @@ const {
   markAsRead
 } = useAnnouncements();
 
-const cachedTenant = authStore.tenant || null;
-const loading = ref(!cachedTenant?.firstName);
+// ไอคอนตามประเภทห้อง/ยูนิต (Mapping เดียวกับ getUnitTypeIcon ใน RoomOverviewCard.vue ฝั่ง CMS Admin)
+const unitTypeIconMap = {
+  commercial_shop: Store,
+  vending_spot: Coffee,
+  parking: Car,
+  storage: Package,
+  billboard_rooftop: Radio
+};
+const getRoomIcon = (unitType) => unitTypeIconMap[unitType] || DoorClosed;
+
+const loading = ref(true);
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
 const showRoommateModal = ref(false);
@@ -1037,12 +1111,13 @@ const closeAnnouncementModal = () => {
 };
 
 const tenantProfile = reactive({
-  firstName: cachedTenant?.firstName || '',
-  lastName: cachedTenant?.lastName || '',
-  roomNumber: cachedTenant?.roomNumber || '',
-  rooms: cachedTenant?.rooms || [],
-  phone: cachedTenant?.phone || '',
-  avatarUrl: cachedTenant?.avatarUrl || cachedTenant?.linePictureUrl || ''
+  firstName: authStore.tenant?.firstName || '',
+  lastName: authStore.tenant?.lastName || '',
+  roomNumber: authStore.tenant?.roomNumber || '',
+  rooms: authStore.tenant?.rooms || [],
+  phone: authStore.tenant?.phone || '',
+  lineUserId: authStore.tenant?.lineUserId || '',
+  avatarUrl: authStore.tenant?.avatarUrl || authStore.tenant?.linePictureUrl || ''
 });
 
 const tenantInitial = computed(() => {
@@ -1103,6 +1178,7 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = data.roomNumber || '-';
       tenantProfile.rooms = data.rooms || [];
       tenantProfile.phone = data.phone || '';
+      tenantProfile.lineUserId = data.lineUserId || '';
       tenantProfile.residentRole = data.residentRole || 'PRIMARY';
       tenantProfile.isPrimaryTenant = data.isPrimaryTenant ?? true;
       tenantProfile.roommates = data.roommates || [];
@@ -1171,7 +1247,12 @@ const handleCreateRoommateInvite = async () => {
     const res = await api.post('/api/v1/liff/invites/roommate');
     if (res.data?.success && res.data?.data) {
       roommateInviteData.value = res.data.data;
-      const inviteLink = `${window.location.origin}/liff/register?invite=${res.data.data.code}`;
+      // ต้องใช้ https://liff.line.me/{LIFF_ID}/... ไม่ใช่ window.location.origin มิฉะนั้นสแกน/แชร์แล้วจะเปิดเป็นเว็บปกติ
+      // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js
+      const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+      const inviteLink = liffId
+        ? `https://liff.line.me/${liffId}/register?invite=${res.data.data.code}`
+        : `${window.location.origin}/liff/register?invite=${res.data.data.code}`;
       roommateQrUrl.value = await QRCode.toDataURL(inviteLink, { margin: 1, width: 260 });
       showRoommateModal.value = true;
     }
@@ -1199,8 +1280,8 @@ const quickActionsConfig = [
     title: 'บิลค่าเช่า',
     subtitle: 'ชำระเงิน & ดูยอดเงิน',
     icon: CreditCard,
-    bgClass: 'bg-indigo-50',
-    iconClass: 'text-indigo-600',
+    bgClass: 'bg-teal-50',
+    iconClass: 'text-teal-600',
     route: '/liff/invoices',
     featureKey: 'ENABLE_LINE_PAYMENT'
   },
@@ -1233,6 +1314,36 @@ const quickActionsConfig = [
     iconClass: 'text-sky-600',
     route: '/liff/announcements',
     featureKey: 'ENABLE_ANNOUNCEMENTS'
+  },
+  {
+    id: 'facility',
+    title: 'จองพื้นที่ส่วนกลาง',
+    subtitle: 'ฟิตเนส สระว่ายน้ำ ฯลฯ',
+    icon: CalendarCheck,
+    bgClass: 'bg-indigo-50',
+    iconClass: 'text-indigo-600',
+    route: '/liff/facility-bookings',
+    featureKey: 'ENABLE_FACILITY_BOOKING'
+  },
+  {
+    id: 'vehicles',
+    title: 'ยานพาหนะ & แขก',
+    subtitle: 'ลงทะเบียนรถ & บัตรผู้มาเยือน',
+    icon: Car,
+    bgClass: 'bg-cyan-50',
+    iconClass: 'text-cyan-600',
+    route: '/liff/vehicles',
+    featureKey: 'ENABLE_VEHICLE_MANAGEMENT'
+  },
+  {
+    id: 'polls',
+    title: 'โหวต & แบบสำรวจ',
+    subtitle: 'ร่วมแสดงความคิดเห็น',
+    icon: Vote,
+    bgClass: 'bg-purple-50',
+    iconClass: 'text-purple-600',
+    route: '/liff/polls',
+    featureKey: 'ENABLE_VOTING'
   }
 ];
 
@@ -1256,42 +1367,46 @@ onMounted(async () => {
   featureStore.fetchFeatures();
 
   try {
-    await initLiff();
-    if (isLiffLoggedIn()) {
-      const profile = await getLiffProfile();
-      if (profile?.userId) {
-        currentLineUserId.value = profile.userId;
-        if (profile.pictureUrl) {
-          tenantProfile.avatarUrl = profile.pictureUrl;
-          imageLoadError.value = false;
+    try {
+      await initLiff();
+      if (isLiffLoggedIn()) {
+        const profile = await getLiffProfile();
+        if (profile?.userId) {
+          currentLineUserId.value = profile.userId;
+          if (profile.pictureUrl) {
+            tenantProfile.avatarUrl = profile.pictureUrl;
+            imageLoadError.value = false;
+          }
         }
+      } else if (!authStore.liffToken && !localStorage.getItem('dev_line_user_id')) {
+        authStore.clearLiffAuth();
+        router.replace('/liff');
+        return;
       }
-    } else if (!authStore.liffToken && !localStorage.getItem('dev_line_user_id')) {
-      authStore.clearLiffAuth();
-      router.replace('/liff');
-      return;
+    } catch (err) {
+      console.warn('LIFF init fallback mode:', err.message);
     }
-  } catch (err) {
-    console.warn('LIFF init fallback mode:', err.message);
+
+    await fetchTenantProfile(currentLineUserId.value);
+    await Promise.allSettled([
+      checkUnread(currentLineUserId.value),
+      fetchLiveActionMetrics(currentLineUserId.value)
+    ]);
+
+    if (currentLineUserId.value || tenantProfile.phone) {
+      api.patch('/api/v1/liff/auth/sync-profile', {
+        lineUserId: currentLineUserId.value || undefined,
+        lineDisplayName: tenantProfile.firstName,
+        linePictureUrl: tenantProfile.avatarUrl,
+        phone: tenantProfile.phone || undefined,
+        roomNumber: tenantProfile.roomNumber || undefined
+      }).catch(() => {});
+    }
+
+    const payload = `TENANT-ID:${tenantProfile.firstName}-ROOMS-${tenantProfile.roomNumber}-${Date.now()}`;
+    digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
+  } finally {
+    loading.value = false;
   }
-
-  await fetchTenantProfile(currentLineUserId.value);
-  await Promise.allSettled([
-    checkUnread(currentLineUserId.value),
-    fetchLiveActionMetrics(currentLineUserId.value)
-  ]);
-
-  if (currentLineUserId.value || tenantProfile.phone) {
-    api.patch('/api/v1/liff/auth/sync-profile', {
-      lineUserId: currentLineUserId.value || undefined,
-      lineDisplayName: tenantProfile.firstName,
-      linePictureUrl: tenantProfile.avatarUrl,
-      phone: tenantProfile.phone || undefined,
-      roomNumber: tenantProfile.roomNumber || undefined
-    }).catch(() => {});
-  }
-
-  const payload = `TENANT-ID:${tenantProfile.firstName}-ROOMS-${tenantProfile.roomNumber}-${Date.now()}`;
-  digitalIdQrUrl.value = await QRCode.toDataURL(payload, { margin: 1, width: 260 });
 });
 </script>

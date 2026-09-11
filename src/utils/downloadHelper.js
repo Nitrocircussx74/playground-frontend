@@ -110,7 +110,7 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
     customClass: {
       popup: 'rounded-3xl border border-slate-100 shadow-2xl p-5 font-sans max-w-xs sm:max-w-sm w-full',
       actions: 'w-full flex flex-col gap-2 mt-3 px-0',
-      confirmButton: 'w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/20 cursor-pointer block text-center',
+      confirmButton: 'w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-teal-600/20 cursor-pointer block text-center',
       cancelButton: 'w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 cursor-pointer block text-center'
     },
     preConfirm: async () => {

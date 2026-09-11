@@ -11,13 +11,13 @@
 
       <!-- Modal Header -->
       <div class="flex items-center gap-3.5 border-b border-slate-100 pb-4">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-md shadow-purple-600/30 shrink-0">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-cyan-600/30 shrink-0">
           <UserPlus class="w-6 h-6" />
         </div>
         <div>
           <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <span>ลงทะเบียนผู้เช่าใหม่ & ทำสัญญาเข้าพัก</span>
-            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
               Walk-in / ไม่ใช้ LINE
             </span>
           </h2>
@@ -32,7 +32,7 @@
         <!-- Section 1: ข้อมูลผู้เช่า -->
         <div class="space-y-3">
           <div class="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <User class="w-3.5 h-3.5 text-purple-600" />
+            <User class="w-3.5 h-3.5 text-cyan-600" />
             <span>1. ข้อมูลส่วนตัวผู้เช่า (Tenant Profile)</span>
           </div>
 
@@ -44,7 +44,7 @@
                 type="text"
                 placeholder="เช่น สมชาย"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -55,7 +55,7 @@
                 type="text"
                 placeholder="เช่น ใจดี"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -66,7 +66,7 @@
                 type="tel"
                 placeholder="เช่น 0812345678"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 font-mono"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
               />
             </div>
 
@@ -76,7 +76,7 @@
                 v-model="form.idCard"
                 type="text"
                 placeholder="เลข 13 หลัก หรือ Passport ID"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 font-mono"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
               />
             </div>
           </div>
@@ -85,7 +85,7 @@
         <!-- Section 2: เลือกห้องพัก / พื้นที่เช่า -->
         <div class="space-y-3 pt-2 border-t border-slate-100">
           <div class="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <DoorOpen class="w-3.5 h-3.5 text-indigo-600" />
+            <DoorOpen class="w-3.5 h-3.5 text-teal-600" />
             <span>2. เลือกห้องพัก / พื้นที่เช่า (Room / Space)</span>
           </div>
 
@@ -96,7 +96,7 @@
                 v-model="form.roomId"
                 @change="handleRoomSelect"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer font-medium"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer font-medium"
               >
                 <option value="" disabled>-- กรุณาเลือกห้องพักที่ว่าง --</option>
                 <option v-for="r in availableRooms" :key="r.id" :value="r.id">
@@ -121,7 +121,7 @@
                 v-model="form.startDate"
                 type="date"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -130,7 +130,7 @@
               <input
                 v-model="form.expectedEndDate"
                 type="date"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
 
@@ -141,7 +141,7 @@
                 type="number"
                 step="100"
                 placeholder="เช่น 5000"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 font-mono"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
               />
             </div>
 
@@ -151,7 +151,7 @@
                 v-model="form.adminNote"
                 type="text"
                 placeholder="เช่น ผู้เช่า Walk-in ชำระเงินสดแล้ว"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
               />
             </div>
           </div>
@@ -170,7 +170,7 @@
           <button
             type="submit"
             :disabled="submitting"
-            class="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
+            class="px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/25 flex items-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95"
           >
             <span v-if="submitting">กำลังบันทึกข้อมูล...</span>
             <span v-else class="flex items-center gap-1.5">

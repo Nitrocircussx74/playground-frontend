@@ -141,4 +141,57 @@
    - Backend แก้ `Content-Disposition` จาก `inline` เป็น `attachment` ที่ Endpoint PDF ใบแจ้งหนี้/ใบเสร็จ (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 12) — เป็นสาเหตุหลักที่ทำให้ Android ดาวน์โหลดไม่ได้
 5. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
 
+---
+
+## 📅 [2026-09-10] - Audit Flow Login ลูกบ้านผ่าน LINE/Web, แก้บั๊ก Web Login พัง & LINE Entry Bounce ผิดที่
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **Audit Flow Login ลูกบ้านทั้งผ่าน LINE และผ่านเว็บปกติ**: ไล่ตรวจ [WebLogin.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/WebLogin.vue), [LiffPinLogin.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffPinLogin.vue), [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue), router guard และฝั่ง Backend ที่เกี่ยวข้องทั้งหมด (ดูช่องโหว่ความปลอดภัยที่พบและแก้ใน `playground-api/docs/ACTIVITY_LOG.md` Phase 13)
+2. **แก้บั๊ก Web Login พังทุกครั้งแม้เบอร์โทร/PIN ถูกต้อง**: [WebLogin.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/WebLogin.vue) — `handleWebLogin` อ้างตัวแปร `tenant`/`user`/`rooms`/`building`/`accessToken` โดยไม่เคย Destructure จาก `res.data.data` เลย → Login สำเร็จทุกครั้งแต่โยน `ReferenceError` แล้วโดน `catch` กลืนไปแสดงเป็น "เบอร์โทรศัพท์หรือรหัส PIN ไม่ถูกต้อง" ทำให้ลูกบ้านที่ Login ผ่านเว็บ (ไม่ผ่าน LINE) เข้าระบบไม่ได้เลย — แก้ให้ Destructure ค่าจาก Response ให้ครบ
+3. **แก้บั๊กเข้าจาก Rich Menu/LIFF Link แล้วโดนเด้งไปหน้า Web Login ผิดๆ**: [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) — เดิมเช็ค `liff.isInClient()` ก่อนตัดสินใจว่าจะ Auto-Login ด้วย LINE หรือเด้งไป `/web/login` แต่ค่านี้ไม่น่าเชื่อถือ 100% (LIFF `init()` ล้มเงียบๆ ได้ถ้า Endpoint URL ไม่ตรงกับ Origin ปัจจุบัน, หรือผู้ใช้เปิดผ่าน LINE แบบ External Browser) ทำให้ลูกบ้านที่เข้าจาก Rich Menu/ลิงก์ LINE จริงๆ โดนเด้งไปหน้าเบอร์โทร+PIN ผิดๆ แทนที่จะได้ Login ด้วย LINE — แก้โดยไม่พึ่ง `isInClient()` อีกต่อไป: ลอง `loginLiff()` ก่อนเสมอ (จำกัด 1 ครั้งต่อ Session กัน Loop เหมือนเดิม) เพราะ `liff.login()` รองรับทั้งสองบริบทอยู่แล้วผ่าน LINE Login OAuth Redirect ถ้าเรียกไม่สำเร็จจริงๆ ค่อย Fallback ไปหน้า Web Login
+4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors)
+5. **รวม Commit งาน UI ที่ค้างอยู่**: Commit งานที่พัฒนาไว้ก่อนหน้าแต่ยังไม่เคย Commit เข้า Git History — UI จัดการ Room Owner (มอบหมายเจ้าของห้อง, แสดงใน [RoomOverviewCard.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/RoomOverviewCard.vue)/[RoomTenancyHistoryModal.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/RoomTenancyHistoryModal.vue)), [LineQuotaCard.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/LineQuotaCard.vue) และ [DeliveryLogsTab.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/DeliveryLogsTab.vue) สำหรับติดตามโควต้า/ประวัติการส่งแจ้งเตือน LINE ราย Building, `thaiBanks` constants และ `ui/progress` component — Build ผ่านครบก่อน Commit
+
 ### STATUS: 🟢 COMPLETE & VERIFIED
+
+---
+
+## 📅 [2026-09-10] - LIFF Client Redirect Guard, Brand Color Rebrand (Teal), Room Type/Building Icons
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **Debug Session ทดสอบ Onboarding จริง**: ไล่ตาม User ทดสอบ Flow "ผูกบัญชี → ตั้ง PIN" ผ่าน Browser/Tunnel จนพบว่าระบบมี **Invite Code 2 ชุดซ้อนกัน** ที่หน้าตาคล้ายกันจนสับสนได้ง่าย: `/liff/onboarding` (LiffOnboardingView.vue, ใช้ `Tenant.inviteCode` — สำหรับผู้เช่า**เดิม**ที่มีข้อมูลอยู่แล้ว) กับ `/liff/register` (LiffRegisterView.vue, ใช้ `RoomInvite.code` — สำหรับผู้เช่า**ใหม่**เอี่ยม) ปุ่ม "ลงทะเบียนด้วยรหัสเชิญ" ที่ [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) พาไปแค่หน้าเดียว (`/liff/register`) ทำให้ผู้เช่าเดิมที่มีรหัสเชิญแบบแรกเข้าผิดหน้าแล้วเจอ "ไม่พบรหัสเชิญ" — **ยังไม่ได้แก้ในรอบนี้** (เป็น Backend Design Issue ข้ามระบบ ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 14 ข้อ 4) บันทึกไว้เป็น Follow-up
+2. **LIFF Client Redirect Guard** ([router/index.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/router/index.js)): เพิ่ม Check ต้นทาง `liffNavigationGuard` — ถ้าเปิดหน้า `/liff/*` ผ่าน Browser ธรรมดา (ไม่ใช่แอป LINE จริง, เช็คด้วย `liff.isInClient()`) จะ `window.location.href` เด้งไปเปิดผ่าน `https://liff.line.me/<LIFF_ID><path เดิม>` ให้อัตโนมัติ (LINE จัดการเปิดแอป LINE ต่อเองถ้ามีติดตั้ง) กันปัญหา LINE ID Token Verify ไม่ผ่านเพราะไม่มี Session LINE จริงที่เจอกันมาทั้ง Session — **ปิดกลไกนี้ใน `import.meta.env.DEV`** (ไม่งั้นจะไปรบกวนการทดสอบผ่าน Browser ด้วย `?devLineUserId=`) และเว้น `/web/login`/`isTenantWeb` ไว้เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
+3. **Dev Testing Convenience** ([main.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/main.js)): พบว่าโค้ดเดิมมีแค่ "อ่าน"/"ลบ" `localStorage.dev_line_user_id` (`utils/liff.js`, `utils/api.js`) แต่ไม่เคยมีจุด "ตั้งค่า" เลยสักที่ — เพิ่ม Dev-only Bootstrap อ่าน Query Param `?devLineUserId=xxx` แล้ว Persist ลง localStorage ให้ครั้งเดียว ใช้ร่วมกับ `LINE_AUTH_MOCK_MODE=true` ฝั่ง Backend เพื่อทดสอบผ่าน Browser ธรรมดาได้แบบไม่ต้องพึ่งมือถือจริง (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 15 เรื่อง Mock Mode)
+4. **Brand Color Rebrand — HorHub Teal**: Sample สีจากไฟล์โลโก้จริง (`public/horhub-app-icon.png` ฯลฯ) ด้วยสคริปต์อ่าน Pixel ได้ค่าเฉลี่ยใกล้เคียง Tailwind `cyan-700` (`#0E7490`) มากที่สุด — สีเดิมของทั้งระบบ (Purple/Indigo ฝั่ง CMS, Blue-500 Default ฝั่ง Theme) ไม่ตรงกับโลโก้เลย:
+   - Sed ทั่ว `src/` แทนที่ Tailwind Class `purple-*` → `cyan-*` และ `indigo-*` → `teal-*` (คงเฉดเดิมทุกจุด 50-950) ครอบคลุม 55 ไฟล์ทั่วทั้ง CMS Admin
+   - `tailwind.config.js`, `assets/main.css`, `composables/useDynamicTheme.js`: เปลี่ยน Default `--theme-primary`/Fallback จาก Blue (`#3B82F6` / `59 130 246`) เป็น Teal (`#0E7490` / `14 116 144`)
+   - `components/common/CycleDatePicker.vue`: `--dp-primary-color` จาก Purple (`#9333ea`) เป็น Cyan (`#0891b2`)
+   - `views/BuildingSettingsView.vue`: เพิ่ม Preset สี **"HorHub Teal"** เป็นตัวเลือกแรกในรายการสีให้แอดมินเลือกได้ (นอกเหนือจาก Blue/Ruby/Emerald/Indigo/Amber/Sky/Rose/Slate เดิม) และเปลี่ยน Default ฟอร์มสร้าง/แก้ตึกให้เป็น HorHub Teal
+   - **ตั้งใจไม่แตะ**: Preset สีอื่นๆ ที่ให้แอดมินเลือกเอง (เป็น Theme เฉพาะของแต่ละตึก ไม่ใช่ของแอป), สี Categorical ใน Chart ของ `DashboardView.vue` (Indigo/Emerald แยกแยะ Data Series คนละเรื่องกับ Brand), สี Emerald ในหน้า LIFF (`LiffOnboardingView.vue` ฯลฯ) ที่ยังไม่ชัดว่าเป็น Brand หรือ Semantic Success Color ปนกัน — รอ Confirm ก่อนแก้เพิ่ม
+5. **ไอคอนห้องพักตามประเภท + โลโก้ตึก** ([LiffProfileView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffProfileView.vue)): Multi-Room Selector เดิมใช้ไอคอนประตู (`DoorClosed`) เดียวกันทุกห้องไม่ว่าจะเป็นห้องพักจริงหรือ Unit ประเภทอื่น (เช่น `vending_spot` ตู้เต่าบิน) — เพิ่ม `getRoomIcon(unitType)` reuse Mapping เดียวกับ `getUnitTypeIcon` ใน `RoomOverviewCard.vue` ฝั่ง CMS Admin (🏪 ร้านค้า, ☕ ตู้บริการ, 🚗 ที่จอดรถ, 📦 ห้องเก็บของ, 📡 ป้าย/ดาดฟ้า, 🚪 ห้องพักปกติ) และถ้าตึกนั้นตั้งโลโก้ไว้ (`room.logoUrl`) ให้แสดงโลโก้ตึกแทนไอคอนเลย ช่วยแยกห้องข้ามหลายตึกของผู้เช่าคนเดียวได้ง่ายขึ้น
+6. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน (ระหว่างทางเจอ Duplicate Import `Package` ของตัวเองทำ Build พังชั่วคราว แก้แล้ว)
+
+### ⏭️ งานที่เหลือ (Follow-up Items):
+- แก้ปุ่ม "ลงทะเบียนด้วยรหัสเชิญ" ใน `LiffEntryView.vue` ให้ฉลาดขึ้น (เช็คเบอร์โทร/สถานะก่อนแล้วพาไปหน้าที่ถูกต้องอัตโนมัติ แทนที่จะพาไปหน้าเดียวตายตัว) — หรือรวม 2 ระบบ Invite Code เป็นระบบเดียวฝั่ง Backend
+- ตัดสินใจว่าสี Emerald ในหน้า LIFF ควรเปลี่ยนเป็น HorHub Teal ด้วยหรือไม่ (บาง Component ใช้เป็น Brand บาง Component ใช้เป็น Success Semantic ปนกัน ต้องแยกทีละจุด)
+
+---
+
+## 📅 [2026-09-11] - Facility Booking / Vehicle & Visitor / Voting Modules (Frontend) + แก้บั๊ก Invite QR ไม่เปิด LIFF + Auto-Login รวมศูนย์
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **หน้าจอใหม่ 6 หน้า** รองรับ Backend 3 โมดูลใหม่ (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16 คู่กัน) — ตามรูปแบบ [AdminParcelView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/AdminParcelView.vue)/[LiffParcelsView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffParcelsView.vue) เป๊ะ (เรียก `@/utils/api` ตรงๆ ไม่มี Store/Service แยก):
+   - `AdminFacilityBookingView.vue` + `LiffFacilityBookingView.vue` (`/facility-bookings`, `/liff/facility-bookings`)
+   - `AdminVehicleView.vue` + `LiffVehicleView.vue` (`/vehicles`, `/liff/vehicles`)
+   - `AdminPollView.vue` + `LiffPollView.vue` (`/polls`, `/liff/polls`)
+   - เพิ่ม `ENABLE_FACILITY_BOOKING`/`ENABLE_VOTING` ใน [FeatureSettingsView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/FeatureSettingsView.vue) (ไอคอน/สี), เพิ่มเมนู Sidebar ใน [App.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/App.vue) ที่พลาดไปตอนแรก (สร้าง Route ไว้แต่ลืมผูกเมนู ผู้ใช้ถามว่า "menu อยู่ไหน" ถึงรู้ตัว)
+2. **🐛 แก้บั๊ก Invite QR/ลิงก์ไม่เปิด LIFF (ผู้ใช้รายงานว่าสแกนแล้วไม่เปิด LIFF)**: ไล่หาต้นตอเจอ 4 จุดสร้างลิงก์ผิดรูปแบบเหมือนกันหมด (`${window.location.origin}/liff/...` แทน `https://liff.line.me/{LIFF_ID}/...`):
+   - [TenantDetail.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/TenantDetail.vue) — Modal "เชื่อมต่อบัญชี LINE ให้ผู้เช่า" (จุดที่ผู้ใช้เจอจริงในภาพหน้าจอ)
+   - [TenantSecurityTab.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/TenantSecurityTab.vue) — Modal เดียวกันแต่โค้ดซ้ำอีกชุด เรียกจากแท็บ "ความปลอดภัย" หน้าเดียวกัน
+   - [RoomInviteModal.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/components/RoomInviteModal.vue) — ลิงก์เชิญรูมเมทที่แอดมินคัดลอกไปแชร์
+   - [LiffProfileView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffProfileView.vue) — QR เชิญรูมเมทที่ลูกบ้านสร้างเอง
+   - แก้ทั้ง 4 จุดให้ใช้ `VITE_LINE_LIFF_ID`/`VITE_LIFF_ID` ประกอบเป็น `https://liff.line.me/{LIFF_ID}/...` เหมือน Pattern ที่ `router/index.js`/`utils/liff.js` ใช้อยู่แล้ว (Fallback เป็นของเดิมถ้าไม่มี Env Var ตั้งไว้)
+3. **🐛 แก้บั๊กต่อเนื่อง "กรุณาเข้าสู่ระบบก่อน" หลังแก้ข้อ 2**: สแกน QR ที่แก้แล้วเปิด LIFF ถูกแล้ว แต่ยัง 401 เพราะ [LiffOnboardingView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffOnboardingView.vue) ไม่เคยเรียก `loginLiff()` เลย (มีแค่ `LiffEntryView.vue` ที่ทำ) — ผู้ใช้ถามต่อว่า "ถ้ามาผ่าน liff ควร auto login ทุกครั้ง" เลย**ย้าย Auto-Login ไปรวมศูนย์ที่ `liffNavigationGuard`** (`router/index.js`) แทนที่จะเขียนเช็คซ้ำทีละหน้า — Guard เรียก `isLiffLoggedIn()`/`loginLiff()` ให้ทุกหน้าที่ผ่าน Guard นี้อัตโนมัติ (จำกัด 1 ครั้ง/Session เหมือนเดิม) ลบโค้ด Auto-Login ที่เพิ่งแปะไว้ใน `LiffOnboardingView.vue` ทิ้งเพราะซ้ำกับ Guard แล้ว
+4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16)

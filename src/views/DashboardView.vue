@@ -24,7 +24,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <!-- Billing Cycle Selector -->
         <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200/90 shadow-2xs">
-          <Calendar class="w-4 h-4 text-purple-600 shrink-0" />
+          <Calendar class="w-4 h-4 text-cyan-600 shrink-0" />
           <label class="text-xs font-bold text-slate-600">รอบบิล:</label>
           <CycleDatePicker v-model="selectedCycle" />
         </div>
@@ -53,7 +53,7 @@
         <button
           @click="handleExportPdf"
           :disabled="dashboardStore.isLoading"
-          class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95"
+          class="px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95"
         >
           <FileText class="w-3.5 h-3.5" />
           <span>PDF</span>
@@ -64,12 +64,12 @@
     <!-- Dashboard Mode Banner -->
     <div
       class="p-4 sm:p-5 rounded-3xl border flex items-center justify-between shadow-2xs transition-all relative overflow-hidden"
-      :class="isConsolidatedMode ? 'bg-gradient-to-r from-slate-900 via-purple-950 to-indigo-950 text-white border-purple-800/80 shadow-purple-950/20' : 'bg-gradient-to-r from-purple-50/70 via-indigo-50/50 to-white border-purple-200/80 text-slate-900'"
+      :class="isConsolidatedMode ? 'bg-gradient-to-r from-slate-900 via-cyan-950 to-teal-950 text-white border-cyan-800/80 shadow-cyan-950/20' : 'bg-gradient-to-r from-cyan-50/70 via-teal-50/50 to-white border-cyan-200/80 text-slate-900'"
     >
       <div class="flex items-center gap-3.5 z-10">
         <div
           class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0 shadow-xs"
-          :class="isConsolidatedMode ? 'bg-white/10 border border-white/20 text-white' : 'bg-purple-600 text-white shadow-purple-500/20'"
+          :class="isConsolidatedMode ? 'bg-white/10 border border-white/20 text-white' : 'bg-cyan-600 text-white shadow-cyan-500/20'"
         >
           <Globe v-if="isConsolidatedMode" class="w-5 h-5" />
           <Building2 v-else class="w-5 h-5" />
@@ -80,7 +80,7 @@
               {{ isConsolidatedMode ? 'โหมดภาพรวมทุกหอพัก (Consolidated Portfolio)' : `สรุปผลประกอบการ: ${activeBuildingName}` }}
             </h2>
           </div>
-          <p class="text-xs mt-0.5" :class="isConsolidatedMode ? 'text-purple-200' : 'text-slate-500'">
+          <p class="text-xs mt-0.5" :class="isConsolidatedMode ? 'text-cyan-200' : 'text-slate-500'">
             {{ isConsolidatedMode ? 'แสดงผลสรุปรายรับรวม อัตราครองห้องรวม และการเปรียบเทียบระหว่างตึกทั้งหมดในระบบ' : 'แสดงข้อมูลสถิติและสถานะเฉพาะหอพักที่เลือกอยู่' }}
           </p>
         </div>
@@ -89,7 +89,7 @@
       <div class="hidden sm:flex items-center gap-2 z-10">
         <span
           class="px-3.5 py-1 rounded-full text-xs font-bold shrink-0"
-          :class="isConsolidatedMode ? 'bg-purple-500/25 text-purple-200 border border-purple-400/30' : 'bg-white text-purple-800 border border-purple-200 shadow-2xs'"
+          :class="isConsolidatedMode ? 'bg-cyan-500/25 text-cyan-200 border border-cyan-400/30' : 'bg-white text-cyan-800 border border-cyan-200 shadow-2xs'"
         >
           {{ isConsolidatedMode ? '🏢 ทุกอาคาร' : `🏢 ${activeBuildingName}` }}
         </span>
@@ -107,7 +107,7 @@
 
     <!-- Loading State Skeleton -->
     <div v-if="dashboardStore.isLoading && !summary.occupancy?.totalRooms" class="p-16 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
-      <div class="animate-spin w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+      <div class="animate-spin w-10 h-10 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-4"></div>
       <div class="font-bold text-slate-800 text-sm">กำลังโหลดข้อมูลแดชบอร์ด...</div>
       <div class="text-xs text-slate-400 mt-1">กรุณารอสักครู่ ระบบกำลังประมวลผลข้อมูลสถิติ</div>
     </div>
@@ -124,14 +124,14 @@
             v-for="b in summary.buildingBreakdown"
             :key="b.id"
             @click="selectBuilding(b.id)"
-            class="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs hover:shadow-md hover:border-purple-400 cursor-pointer transition-all space-y-3 group card-hover"
+            class="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs hover:shadow-md hover:border-cyan-400 cursor-pointer transition-all space-y-3 group card-hover"
           >
             <div class="flex items-center justify-between">
-              <h4 class="font-bold text-slate-900 group-hover:text-purple-600 transition-colors flex items-center gap-2">
-                <Building class="w-4 h-4 text-purple-600" />
+              <h4 class="font-bold text-slate-900 group-hover:text-cyan-600 transition-colors flex items-center gap-2">
+                <Building class="w-4 h-4 text-cyan-600" />
                 <span>{{ b.name }}</span>
               </h4>
-              <span class="text-xs text-purple-600 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+              <span class="text-xs text-cyan-600 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
                 <span>เลือกตึกนี้</span>
                 <span>→</span>
               </span>
@@ -140,7 +140,7 @@
             <div class="grid grid-cols-2 gap-2 text-xs pt-1">
               <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
                 <div class="text-slate-500 text-[11px]">รายได้เดือนนี้</div>
-                <div class="font-extrabold font-mono text-purple-700 text-sm">฿{{ b.currentRevenue?.toLocaleString() }}</div>
+                <div class="font-extrabold font-mono text-cyan-700 text-sm">฿{{ b.currentRevenue?.toLocaleString() }}</div>
               </div>
               <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
                 <div class="text-slate-500 text-[11px]">อัตราครองห้อง</div>
@@ -154,7 +154,7 @@
       <!-- 1. Top KPI Summary Cards (4 Cards) -->
       <div id="tour-kpi-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <!-- Card 1: Revenue -->
-        <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-2xs hover:shadow-md transition-all card-hover relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-2xs hover:shadow-md transition-all card-hover relative overflow-hidden flex flex-col justify-between">
           <div class="flex items-start justify-between">
             <div>
               <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รายรับเดือนนี้ (Revenue)</div>
@@ -162,7 +162,7 @@
                 ฿{{ Number(summary.financial?.currentTotal || 0).toLocaleString() }}
               </div>
             </div>
-            <div class="w-10 h-10 rounded-2xl bg-purple-100/80 text-purple-700 flex items-center justify-center font-bold shadow-2xs shrink-0">
+            <div class="w-10 h-10 rounded-2xl bg-cyan-100/80 text-cyan-700 flex items-center justify-center font-bold shadow-2xs shrink-0">
               <DollarSign class="w-5 h-5" />
             </div>
           </div>
@@ -258,7 +258,7 @@
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <BarChart3 class="w-4 h-4 text-purple-600" />
+                <BarChart3 class="w-4 h-4 text-cyan-600" />
                 <span>แนวโน้มรายรับ 6 เดือนย้อนหลัง (Revenue Trend)</span>
               </h3>
               <p class="text-xs text-slate-500">แสดงการกระจายรายรับจำแนกตามค่าเช่า ค่าน้ำไฟ และค่าส่วนกลาง</p>
@@ -274,7 +274,7 @@
         <div class="p-5 sm:p-6 bg-white border border-slate-200/90 rounded-3xl shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-              <PieChart class="w-4 h-4 text-indigo-600" />
+              <PieChart class="w-4 h-4 text-teal-600" />
               <span>สัดส่วนสถานะห้องพัก (Room Status)</span>
             </h3>
             <p class="text-xs text-slate-500">สัดส่วนห้องพักมีคนอยู่ / ว่าง / ซ่อมบำรุง</p>
@@ -290,9 +290,9 @@
               <div class="text-[10px] text-emerald-700 font-medium">มีผู้เช่า</div>
               <div class="font-bold text-emerald-900 font-mono">{{ summary.occupancy?.occupiedRooms || 0 }} ห้อง</div>
             </div>
-            <div class="bg-indigo-50/70 p-2 rounded-xl border border-indigo-100">
-              <div class="text-[10px] text-indigo-700 font-medium">ห้องว่าง</div>
-              <div class="font-bold text-indigo-900 font-mono">{{ summary.occupancy?.availableRooms || 0 }} ห้อง</div>
+            <div class="bg-teal-50/70 p-2 rounded-xl border border-teal-100">
+              <div class="text-[10px] text-teal-700 font-medium">ห้องว่าง</div>
+              <div class="font-bold text-teal-900 font-mono">{{ summary.occupancy?.availableRooms || 0 }} ห้อง</div>
             </div>
             <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
               <div class="text-[10px] text-slate-500 font-medium">ซ่อมบำรุง</div>
@@ -348,7 +348,7 @@
                       {{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : '-' }}
                     </td>
                     <td class="p-3.5 text-slate-500 font-mono">
-                      <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">
+                      <span class="bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">
                         {{ inv.billingCycle }}
                       </span>
                     </td>
@@ -388,7 +388,7 @@
 
               <router-link
                 to="/leases"
-                class="px-3 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold border border-purple-200 transition-all flex items-center gap-1"
+                class="px-3 py-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-bold border border-cyan-200 transition-all flex items-center gap-1"
               >
                 <span>ดูทั้งหมด</span>
                 <span>➔</span>

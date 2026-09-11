@@ -10,7 +10,7 @@
       <button
         v-if="featureStore.isEnabled('ENABLE_RECEIPT_HISTORY')"
         @click="fetchHistory"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 text-xs font-semibold text-indigo-600 transition-colors"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50/80 hover:bg-teal-100 text-xs font-semibold text-teal-600 transition-colors"
       >
         <RotateCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
         <span>รีเฟรช</span>

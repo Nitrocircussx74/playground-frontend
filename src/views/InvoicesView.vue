@@ -6,7 +6,7 @@
         <button
           @click="activeTab = 'all-invoices'"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'all-invoices' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :class="activeTab === 'all-invoices' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>🧾</span>
           <span>ใบแจ้งหนี้ทั้งหมด (All Invoices)</span>
@@ -15,7 +15,7 @@
         <button
           @click="activeTab = 'draft-review'"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'draft-review' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
           <span>📝</span>
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
@@ -52,7 +52,7 @@
         <button
           v-if="activeTab === 'all-invoices'"
           @click="openCreateModal"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
+          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer"
         >
           <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
         </button>
@@ -74,7 +74,7 @@
               ค้างชำระ {{ unpaidCount }} รายการ
             </span>
           </div>
-          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-indigo-600 hover:underline font-semibold cursor-pointer">🔄 Refresh</button>
+          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-teal-600 hover:underline font-semibold cursor-pointer">🔄 Refresh</button>
         </div>
 
         <div class="overflow-x-auto">
@@ -99,7 +99,7 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
               <tr v-for="inv in invoiceStore.invoices" :key="inv.id" class="hover:bg-slate-50/60 transition-colors">
-                <td class="p-3.5 font-mono text-xs font-bold text-purple-700">{{ inv.invoiceNumber }}</td>
+                <td class="p-3.5 font-mono text-xs font-bold text-cyan-700">{{ inv.invoiceNumber }}</td>
                 <td class="p-3.5 font-bold text-slate-900">ห้อง {{ inv.room?.roomNumber }} {{ inv.room?.building?.name ? `(${inv.room.building.name})` : '' }}</td>
                 <td class="p-3.5 text-xs text-slate-600 font-medium">
                   <div class="flex items-center gap-1">
@@ -119,7 +119,7 @@
                 </td>
                 <td class="p-3.5 text-xs">
                   <div v-if="Number(inv.otherFee) > 0">
-                    <span class="font-mono font-semibold text-indigo-700">฿{{ Number(inv.otherFee).toLocaleString() }}</span>
+                    <span class="font-mono font-semibold text-teal-700">฿{{ Number(inv.otherFee).toLocaleString() }}</span>
                     <div v-if="inv.otherFeeNote" class="text-[10px] text-slate-400 truncate max-w-28">{{ inv.otherFeeNote }}</div>
                   </div>
                   <span v-else class="text-slate-300">-</span>
@@ -133,10 +133,10 @@
                 <td class="p-3.5 font-mono font-black text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
                 <td class="p-3.5">
                   <div v-if="inv.slipUrl" class="flex items-center gap-1.5">
-                    <a :href="inv.slipUrl" target="_blank" class="text-xs text-indigo-600 font-semibold hover:underline">View Slip</a>
+                    <a :href="inv.slipUrl" target="_blank" class="text-xs text-teal-600 font-semibold hover:underline">View Slip</a>
                   </div>
                   <div v-else-if="inv.status !== 'paid'" class="flex items-center">
-                    <label class="cursor-pointer text-xs text-slate-500 hover:text-indigo-600 font-medium">
+                    <label class="cursor-pointer text-xs text-slate-500 hover:text-teal-600 font-medium">
                       <span>+ Upload Slip</span>
                       <input type="file" class="hidden" accept="image/*" @change="(e) => handleUploadSlip(inv.id, e)" />
                     </label>
@@ -181,7 +181,7 @@
                   <!-- Print Invoice / Receipt Button -->
                   <button
                     @click="openPrintModal(inv)"
-                    class="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                    class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
                   >
                     🖨️ พิมพ์บิล
                   </button>
@@ -300,7 +300,7 @@
               <div class="flex items-center gap-2">
                 <button
                   @click="triggerPrint"
-                  class="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>🖨️ สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
                 </button>
@@ -309,7 +309,7 @@
             </div>
 
             <!-- 📄 Print Content Paper Box -->
-            <div id="printable-receipt" class="p-8 bg-white text-slate-900 font-sans space-y-6 relative border-t-4 border-purple-600">
+            <div id="printable-receipt" class="p-8 bg-white text-slate-900 font-sans space-y-6 relative border-t-4 border-cyan-600">
               <!-- Watermark Stamp for PAID -->
               <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-2xl font-black text-3xl uppercase tracking-widest text-center select-none">
                 ชำระเงินแล้ว<br/><span class="text-lg font-bold">PAID OFFICIAL</span>
@@ -318,7 +318,7 @@
               <!-- Document Header -->
               <div class="flex justify-between items-start border-b border-slate-200 pb-6">
                 <div>
-                  <div class="text-xl font-black tracking-tight text-purple-900 uppercase">
+                  <div class="text-xl font-black tracking-tight text-cyan-900 uppercase">
                     {{ printingInvoice?.room?.building?.name || 'หอพักสมาร์ทโดรม (Dormitory)' }}
                   </div>
                   <p class="text-xs text-slate-500 mt-1 font-semibold">ใบแจ้งหนี้ / ใบเสร็จรับเงิน (Invoice & Official Receipt)</p>
@@ -329,7 +329,7 @@
 
                 <div class="text-right">
                   <div class="text-[10px] font-bold text-slate-400 uppercase">เลขที่เอกสาร / No.</div>
-                  <div class="text-base font-black font-mono text-purple-900">{{ printingInvoice?.invoiceNumber }}</div>
+                  <div class="text-base font-black font-mono text-cyan-900">{{ printingInvoice?.invoiceNumber }}</div>
                   <div class="text-xs text-slate-500 font-mono mt-1">วันที่ออกบิล: {{ formatDate(printingInvoice?.createdAt) }}</div>
                 </div>
               </div>
@@ -347,7 +347,7 @@
                 <div class="text-right">
                   <div class="text-[10px] font-bold text-slate-400 uppercase">ห้องพัก & รอบบิล / Room & Cycle</div>
                   <div class="font-extrabold text-slate-900 text-sm mt-0.5">ห้อง {{ printingInvoice?.room?.roomNumber }}</div>
-                  <div class="text-purple-700 font-bold font-mono mt-0.5">ประจำรอบบิล: {{ printingInvoice?.billingCycle }}</div>
+                  <div class="text-cyan-700 font-bold font-mono mt-0.5">ประจำรอบบิล: {{ printingInvoice?.billingCycle }}</div>
                 </div>
               </div>
 
@@ -391,7 +391,7 @@
                 <tfoot>
                   <tr class="border-t-2 border-slate-900 bg-slate-50 font-bold">
                     <td class="p-3 text-slate-900 text-sm">ยอดเงินสุทธิทั้งสิ้น (Grand Total)</td>
-                    <td class="p-3 text-right font-mono text-base text-purple-900 font-black">
+                    <td class="p-3 text-right font-mono text-base text-cyan-900 font-black">
                       ฿{{ Number(printingInvoice?.grandTotal || 0).toLocaleString() }}
                     </td>
                   </tr>

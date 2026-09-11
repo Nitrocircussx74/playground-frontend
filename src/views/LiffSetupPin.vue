@@ -17,7 +17,7 @@
       <!-- Icon Badge -->
       <div
         class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
-        :class="isResetMode ? 'bg-amber-50 border border-amber-100 text-amber-600' : 'bg-indigo-50 border border-indigo-100 text-indigo-600'"
+        :class="isResetMode ? 'bg-amber-50 border border-amber-100 text-amber-600' : 'bg-teal-50 border border-teal-100 text-teal-600'"
       >
         <KeyRound v-if="isResetMode" class="w-6 h-6" />
         <ShieldCheck v-else class="w-6 h-6" />
@@ -32,7 +32,7 @@
       <div class="space-y-1">
         <span
           class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border"
-          :class="isResetMode ? 'bg-amber-50 text-amber-700 border-amber-200/80' : 'bg-indigo-50 text-indigo-600 border-indigo-100'"
+          :class="isResetMode ? 'bg-amber-50 text-amber-700 border-amber-200/80' : 'bg-teal-50 text-teal-600 border-teal-100'"
         >
           {{ isResetMode ? 'รีเซ็ตรหัส PIN • ' : '' }}ขั้นตอนที่ {{ step }} จาก 2
         </span>
@@ -67,7 +67,7 @@
           class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
           :class="[
             index <= enteredPin.length
-              ? (isResetMode ? 'bg-amber-500 scale-110 shadow-sm shadow-amber-300/40 ring-4 ring-amber-100/70' : 'bg-indigo-600 scale-110 shadow-sm shadow-indigo-300/40 ring-4 ring-indigo-100/70')
+              ? (isResetMode ? 'bg-amber-500 scale-110 shadow-sm shadow-amber-300/40 ring-4 ring-amber-100/70' : 'bg-teal-600 scale-110 shadow-sm shadow-teal-300/40 ring-4 ring-teal-100/70')
               : 'bg-slate-200/60 border border-slate-200'
           ]"
         ></div>
@@ -78,8 +78,8 @@
         <div v-if="errorMessage" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
           <span>{{ errorMessage }}</span>
         </div>
-        <div v-else-if="isLoading" class="text-xs font-medium mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse" :class="isResetMode ? 'text-amber-600' : 'text-indigo-600'">
-          <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="isResetMode ? 'bg-amber-600' : 'bg-indigo-600'"></span>
+        <div v-else-if="isLoading" class="text-xs font-medium mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse" :class="isResetMode ? 'text-amber-600' : 'text-teal-600'">
+          <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="isResetMode ? 'bg-amber-600' : 'bg-teal-600'"></span>
           <span>{{ isResetMode ? 'กำลังรีเซ็ตรหัส PIN...' : 'กำลังบันทึกรหัส PIN...' }}</span>
         </div>
         <div v-else class="h-5 mt-2"></div>

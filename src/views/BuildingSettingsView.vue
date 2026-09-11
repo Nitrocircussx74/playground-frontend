@@ -57,7 +57,7 @@
 
     <!-- Loading Skeleton -->
     <div v-if="isLoading" class="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-xs">
-      <div class="animate-spin inline-block w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full mb-3"></div>
+      <div class="animate-spin inline-block w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full mb-3"></div>
       <p class="text-sm font-semibold">กำลังโหลดข้อมูลการตั้งค่าตึก...</p>
     </div>
 
@@ -163,7 +163,7 @@
                       <Input
                         v-model="form.themeColor"
                         :disabled="isReadOnly"
-                        placeholder="#3B82F6"
+                        placeholder="#0E7490"
                         class="bg-white font-mono uppercase text-xs"
                       />
                     </div>
@@ -177,7 +177,7 @@
                         @click="form.themeColor = color.hex"
                         :disabled="isReadOnly"
                         class="px-2 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer"
-                        :class="form.themeColor?.toLowerCase() === color.hex.toLowerCase() ? 'ring-2 ring-purple-600 border-transparent shadow-xs bg-purple-50 text-purple-800' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'"
+                        :class="form.themeColor?.toLowerCase() === color.hex.toLowerCase() ? 'ring-2 ring-cyan-600 border-transparent shadow-xs bg-cyan-50 text-cyan-800' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'"
                       >
                         <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: color.hex }"></span>
                         <span>{{ color.name }}</span>
@@ -215,10 +215,10 @@
                         <div class="flex flex-wrap items-center gap-2">
                           <label
                             v-if="!isReadOnly"
-                            class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold rounded-xl transition-all shadow-2xs hover:shadow-xs"
+                            class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 text-xs font-bold rounded-xl transition-all shadow-2xs hover:shadow-xs"
                             :class="{ 'opacity-50 pointer-events-none': isUploadingLogo }"
                           >
-                            <span v-if="isUploadingLogo" class="animate-spin w-3.5 h-3.5 border-2 border-purple-600 border-t-transparent rounded-full"></span>
+                            <span v-if="isUploadingLogo" class="animate-spin w-3.5 h-3.5 border-2 border-cyan-600 border-t-transparent rounded-full"></span>
                             <span v-else>📷</span>
                             <span>{{ isUploadingLogo ? 'กำลังอัปโหลด...' : (form.logoUrl ? 'เปลี่ยนรูปโลโก้' : 'อัปโหลดรูปโลโก้') }}</span>
                             <input
@@ -254,8 +254,8 @@
                   <div
                     class="p-4 rounded-2xl text-white shadow-md relative overflow-hidden transition-all duration-300"
                     :style="{
-                      background: `linear-gradient(135deg, ${form.themeColor || '#3B82F6'}, ${adjustBrightness(form.themeColor || '#3B82F6', -25)})`,
-                      boxShadow: `0 10px 15px -3px ${form.themeColor || '#3B82F6'}40`
+                      background: `linear-gradient(135deg, ${form.themeColor || '#0E7490'}, ${adjustBrightness(form.themeColor || '#0E7490', -25)})`,
+                      boxShadow: `0 10px 15px -3px ${form.themeColor || '#0E7490'}40`
                     }"
                   >
                     <div class="flex items-center justify-between">
@@ -299,7 +299,7 @@
                       class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md text-xs font-bold rounded-xl shadow-md transition-all"
                       :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
                     >
-                      <span v-if="isUploadingCover" class="animate-spin w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full"></span>
+                      <span v-if="isUploadingCover" class="animate-spin w-3 h-3 border-2 border-cyan-600 border-t-transparent rounded-full"></span>
                       <span v-else>📷</span>
                       <span>{{ isUploadingCover ? 'กำลังอัปโหลด...' : 'เปลี่ยนรูปหน้าปก' }}</span>
                       <input
@@ -325,10 +325,10 @@
                 <!-- Dropzone / Empty State for Cover Image -->
                 <div
                   v-else
-                  class="p-6 border-2 border-dashed border-slate-200 hover:border-purple-300 rounded-2xl bg-slate-50/50 hover:bg-purple-50/20 text-center transition-all"
+                  class="p-6 border-2 border-dashed border-slate-200 hover:border-cyan-300 rounded-2xl bg-slate-50/50 hover:bg-cyan-50/20 text-center transition-all"
                 >
                   <div class="max-w-xs mx-auto space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mx-auto shadow-2xs">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-xl mx-auto shadow-2xs">
                       🖼️
                     </div>
                     <div>
@@ -337,7 +337,7 @@
                     </div>
                     <label
                       v-if="!isReadOnly"
-                      class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-purple-600/20"
+                      class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-cyan-600/20"
                       :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
                     >
                       <span v-if="isUploadingCover" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
@@ -399,7 +399,7 @@
                   <select
                     v-model="selectedBankCode"
                     :disabled="isReadOnly"
-                    class="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans cursor-pointer transition-all"
+                    class="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans cursor-pointer transition-all"
                   >
                     <option value="" disabled>-- เลือกธนาคารผู้รับโอน (Official Thai Banks) --</option>
                     <option
@@ -455,7 +455,7 @@
               <div class="space-y-2 p-4 bg-slate-50 rounded-2xl border border-slate-200">
                 <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
                   <span>📱 รูปภาพ PromptPay QR Code ประจำตึก</span>
-                  <span class="text-[11px] text-purple-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
+                  <span class="text-[11px] text-cyan-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
                 </label>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -481,7 +481,7 @@
                     @click="generatePromptPayQr"
                     :disabled="isGeneratingQr || !form.promptpayNum"
                     variant="outline"
-                    class="text-xs font-bold border-purple-300 text-purple-700 hover:bg-purple-100 shrink-0 shadow-2xs"
+                    class="text-xs font-bold border-cyan-300 text-cyan-700 hover:bg-cyan-100 shrink-0 shadow-2xs"
                   >
                     <span>⚡</span>
                     <span>{{ isGeneratingQr ? 'กำลังสร้าง...' : 'สร้าง QR อัตโนมัติ' }}</span>
@@ -496,13 +496,13 @@
                   :disabled="isReadOnly"
                   rows="3"
                   placeholder="เช่น ชำระเงินภายในวันที่ 5 ของทุกเดือน ชำระแล้วกรุณาแนบสลิปผ่านทางระบบ LIFF"
-                  class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500"
+                  class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500"
                 ></textarea>
               </div>
 
               <!-- 📲 Authentic PromptPay QR Code Preview Box -->
               <div class="mt-4 p-6 bg-slate-900 text-white rounded-3xl shadow-lg border border-slate-800 text-center space-y-4 max-w-sm mx-auto">
-                <div class="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 text-xs font-bold px-3 py-1 rounded-full border border-purple-500/30">
+                <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 text-xs font-bold px-3 py-1 rounded-full border border-cyan-500/30">
                   <span>📲 PromptPay QR Code ประจำตึก</span>
                 </div>
 
@@ -597,7 +597,7 @@
                     class="text-[10px] font-bold px-2.5 py-1 rounded-full border"
                     :class="{
                       'bg-emerald-100 text-emerald-800 border-emerald-300': form.lateFeeType === 'NONE',
-                      'bg-indigo-100 text-indigo-800 border-indigo-300': form.lateFeeType === 'DAILY',
+                      'bg-teal-100 text-teal-800 border-teal-300': form.lateFeeType === 'DAILY',
                       'bg-amber-100 text-amber-800 border-amber-300': form.lateFeeType === 'FLAT'
                     }"
                   >
@@ -610,14 +610,14 @@
                   <!-- Option 1: NONE -->
                   <label
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
-                    :class="form.lateFeeType === 'NONE' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                    :class="form.lateFeeType === 'NONE' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
                       type="radio"
                       v-model="form.lateFeeType"
                       value="NONE"
                       :disabled="isReadOnly"
-                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                      class="mt-0.5 text-cyan-600 focus:ring-cyan-500"
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">ไม่มีค่าปรับ (None)</div>
@@ -628,14 +628,14 @@
                   <!-- Option 2: DAILY -->
                   <label
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
-                    :class="form.lateFeeType === 'DAILY' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                    :class="form.lateFeeType === 'DAILY' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
                       type="radio"
                       v-model="form.lateFeeType"
                       value="DAILY"
                       :disabled="isReadOnly"
-                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                      class="mt-0.5 text-cyan-600 focus:ring-cyan-500"
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">คิดรายวัน (Daily Fee)</div>
@@ -646,14 +646,14 @@
                   <!-- Option 3: FLAT -->
                   <label
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
-                    :class="form.lateFeeType === 'FLAT' ? 'bg-white border-purple-500 ring-2 ring-purple-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
+                    :class="form.lateFeeType === 'FLAT' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
                       type="radio"
                       v-model="form.lateFeeType"
                       value="FLAT"
                       :disabled="isReadOnly"
-                      class="mt-0.5 text-purple-600 focus:ring-purple-500"
+                      class="mt-0.5 text-cyan-600 focus:ring-cyan-500"
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">เหมาจ่ายครั้งเดียว (Flat Fee)</div>
@@ -699,11 +699,11 @@
                 </div>
 
                 <!-- Live Simulation Preview Box -->
-                <div v-if="form.lateFeeType !== 'NONE'" class="p-3.5 bg-purple-50/70 border border-purple-100 rounded-xl text-xs text-purple-900 space-y-1">
+                <div v-if="form.lateFeeType !== 'NONE'" class="p-3.5 bg-cyan-50/70 border border-cyan-100 rounded-xl text-xs text-cyan-900 space-y-1">
                   <div class="font-bold flex items-center gap-1.5">
                     <span>💡 ตัวอย่างการคำนวณจริง:</span>
                   </div>
-                  <div class="text-[11px] text-purple-800 leading-relaxed">
+                  <div class="text-[11px] text-cyan-800 leading-relaxed">
                     หากบิลครบกำหนดชำระวันที่ <strong>{{ form.dueDateDay || 5 }}</strong>
                     <span v-if="Number(form.gracePeriodDays) > 0"> (ผ่อนผันให้ <strong>{{ form.gracePeriodDays }}</strong> วัน ถึงวันที่ <strong>{{ (Number(form.dueDateDay) || 5) + Number(form.gracePeriodDays) }}</strong>)</span>
                     และลูกบ้านมาชำระช้ากว่ากำหนด <strong>5 วัน</strong>:
@@ -768,7 +768,7 @@
                   :disabled="isReadOnly"
                   rows="6"
                   placeholder="1. ห้ามส่งเสียงดังหลังเวลา 22:00 น.&#10;2. ห้ามเลี้ยงสัตว์เลี้ยงทุกชนิด&#10;3. ห้ามสูบบุหรี่ภายในห้องพักและระเบียง"
-                  class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans"
+                  class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans"
                 ></textarea>
               </div>
             </CardContent>
@@ -893,7 +893,7 @@
                     <button
                       type="button"
                       @click="showSecret = !showSecret"
-                      class="text-[11px] text-purple-600 hover:text-purple-800 font-semibold cursor-pointer"
+                      class="text-[11px] text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
                     >
                       {{ showSecret ? 'ซ่อน' : 'แสดง' }}
                     </button>
@@ -919,7 +919,7 @@
                     <button
                       type="button"
                       @click="showToken = !showToken"
-                      class="text-[11px] text-purple-600 hover:text-purple-800 font-semibold cursor-pointer"
+                      class="text-[11px] text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
                     >
                       {{ showToken ? 'ซ่อน' : 'แสดง' }}
                     </button>
@@ -930,7 +930,7 @@
                     :rows="showToken ? 3 : 2"
                     :class="{ 'font-sans blur-xs select-none': !showToken }"
                     placeholder="กรอก Channel Access Token (v2.1) ที่ออกให้จาก LINE Developers Console..."
-                    class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-purple-600 disabled:bg-slate-100 disabled:text-slate-500 font-mono transition-all"
+                    class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500 font-mono transition-all"
                   ></textarea>
                   <p class="text-[11px] text-slate-400">ใช้สำหรับสั่ง Push Flex Message แจ้งเตือนค่าน้ำ-ไฟ บิลชำระเงิน และพัสดุเข้าห้องพัก</p>
                 </div>
@@ -951,13 +951,13 @@
     >
       <div class="max-w-5xl mx-auto flex items-center justify-between">
         <div class="text-xs text-slate-500 hidden sm:block">
-          <span>สิทธิ์ปัจจุบัน: <strong class="text-purple-700">OWNER / Super Admin</strong> (สามารถบันทึกการเปลี่ยนแปลงได้)</span>
+          <span>สิทธิ์ปัจจุบัน: <strong class="text-cyan-700">OWNER / Super Admin</strong> (สามารถบันทึกการเปลี่ยนแปลงได้)</span>
         </div>
 
         <Button
           @click="saveSettings"
           :disabled="isSaving"
-          class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md shadow-purple-600/30 flex items-center justify-center gap-2 cursor-pointer"
+          class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md shadow-cyan-600/30 flex items-center justify-center gap-2 cursor-pointer"
         >
           <span v-if="isSaving" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
           <span v-else>💾</span>
@@ -1004,6 +1004,7 @@ const customBankName = ref('');
 
 // Preset Palette for LIFF Dynamic Theming
 const presetColors = [
+  { name: 'HorHub Teal', hex: '#0E7490' },
   { name: 'น้ำเงิน (Blue)', hex: '#3B82F6' },
   { name: 'แดง (Ruby)', hex: '#EF4444' },
   { name: 'เขียว (Emerald)', hex: '#10B981' },
@@ -1018,7 +1019,7 @@ const presetColors = [
 const form = ref({
   name: '',
   address: '',
-  themeColor: '#3B82F6',
+  themeColor: '#0E7490',
   logoUrl: '',
   phone: '',
   coverImageUrl: '',
@@ -1280,7 +1281,7 @@ const fetchBuildingSettings = async () => {
     form.value = {
       name: buildingData.name || '',
       address: buildingData.address || '',
-      themeColor: buildingData.themeColor || '#3B82F6',
+      themeColor: buildingData.themeColor || '#0E7490',
       logoUrl: buildingData.logoUrl || '',
       phone: settingData.phone || '',
       coverImageUrl: settingData.coverImageUrl || '',

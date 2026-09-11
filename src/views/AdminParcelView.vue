@@ -120,7 +120,7 @@
                 {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : (item.room?.tenant ? `${item.room.tenant.firstName} ${item.room.tenant.lastName}` : 'N/A') }}
               </td>
               <td class="p-3.5 font-bold text-orange-700 text-xs">🚚 {{ item.courier }}</td>
-              <td class="p-3.5 font-mono text-xs text-indigo-700 font-semibold">{{ item.trackingNumber || '-' }}</td>
+              <td class="p-3.5 font-mono text-xs text-teal-700 font-semibold">{{ item.trackingNumber || '-' }}</td>
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(item.receivedAt) }}</td>
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ item.pickedUpAt ? formatDate(item.pickedUpAt) : '-' }}</td>
               <td class="p-3.5">

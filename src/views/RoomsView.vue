@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
           <span>{{ isRoomOwnerRole ? '🏢 ห้องพักของฉัน (My Owned Rooms)' : 'จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)' }}</span>
-          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 border border-cyan-200">
             {{ filteredRooms.length }} ยูนิต
           </span>
         </h1>
@@ -17,7 +17,7 @@
       <div class="flex flex-wrap items-center gap-2.5">
         <button
           @click="openCheckinModal()"
-          class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+          class="px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <UserPlus class="w-3.5 h-3.5" />
           <span>+ เช็คอินผู้เช่า (Walk-in)</span>
@@ -35,7 +35,7 @@
         <button
           v-if="!isRoomOwnerRole"
           @click="showCreateModal = !showCreateModal"
-          class="px-3.5 py-2 bg-white hover:bg-slate-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
+          class="px-3.5 py-2 bg-white hover:bg-slate-50 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <Plus class="w-3.5 h-3.5" />
           <span>{{ showCreateModal ? 'ปิดแบบฟอร์ม' : '+ เพิ่มยูนิตใหม่' }}</span>
@@ -58,7 +58,7 @@
         :key="type.value"
         @click="activeTypeFilter = type.value"
         class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
-        :class="activeTypeFilter === type.value ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
+        :class="activeTypeFilter === type.value ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
       >
         <span>{{ type.icon }}</span>
         <span>{{ type.label }}</span>
@@ -83,13 +83,13 @@
     </div>
 
     <!-- Create Room / Rental Unit Form Panel -->
-    <div v-if="showCreateModal" class="p-6 bg-white border border-purple-200/90 rounded-3xl shadow-md space-y-4">
+    <div v-if="showCreateModal" class="p-6 bg-white border border-cyan-200/90 rounded-3xl shadow-md space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-          <Store class="w-5 h-5 text-purple-600" />
+          <Store class="w-5 h-5 text-cyan-600" />
           <span>เพิ่มยูนิต / พื้นที่เช่าใหม่ (New Rental Unit / Space)</span>
         </h2>
-        <span class="text-xs font-bold px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full flex items-center gap-1.5">
+        <span class="text-xs font-bold px-3 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-full flex items-center gap-1.5">
           <Building2 class="w-3.5 h-3.5" />
           <span>ตึก: {{ activeBuildingName }}</span>
         </span>
@@ -101,7 +101,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">ประเภทพื้นที่เช่า (Unit Type)</label>
           <select
             v-model="form.unitType"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
             <option value="residential">🚪 ห้องพักอาศัย (Residential)</option>
             <option value="commercial_shop">🏪 ร้านค้า / ล็อคหน้าร้าน (Shop / Kiosk)</option>
@@ -120,7 +120,7 @@
             type="text"
             :placeholder="getPlaceholderByUnitType(form.unitType)"
             required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 font-mono"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
           />
         </div>
 
@@ -133,7 +133,7 @@
             min="0"
             placeholder="เช่น 1, 2"
             required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
           />
         </div>
 
@@ -145,7 +145,7 @@
             type="number"
             step="0.1"
             placeholder="เช่น 24.5"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
           />
         </div>
 
@@ -158,7 +158,7 @@
             step="100"
             placeholder="เช่น 4500"
             required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
           />
         </div>
 
@@ -169,7 +169,7 @@
             v-model="form.locationZone"
             type="text"
             placeholder="เช่น ชั้น 1 ริมถนน, ลานจอด A"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
           />
         </div>
 
@@ -178,7 +178,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">รูปแบบการคิดเงิน (Billing Model)</label>
           <select
             v-model="form.billingModel"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
             <option value="fixed">💵 เหมาจ่ายรายเดือนคงที่ (Fixed Rent)</option>
             <option value="revenue_share">📊 ส่วนแบ่งยอดขาย (Revenue Share / GP %)</option>
@@ -203,7 +203,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">สถานะเริ่มต้น (Status)</label>
           <select
             v-model="form.status"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
             <option value="available">🟢 ว่างพร้อมให้เช่า (Available)</option>
             <option value="occupied">🔵 มีผู้เช่า (Occupied)</option>
@@ -218,14 +218,14 @@
             <button
               type="button"
               @click="showQuickCreateOwnerModal = true"
-              class="text-xs text-purple-600 hover:text-purple-800 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+              class="text-xs text-cyan-600 hover:text-cyan-800 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
             >
               <span>➕ เพิ่มเจ้าของใหม่</span>
             </button>
           </div>
           <select
             v-model="form.ownerId"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
             <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
             <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
@@ -254,7 +254,7 @@
     </div>
 
     <div v-if="roomStore.isLoading && !showCreateModal" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
-      <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       กำลังโหลดข้อมูลพื้นที่เช่า...
     </div>
 
@@ -290,7 +290,7 @@
             <!-- 2. ทางเลือกไม่ผ่าน LINE (Walk-in) -->
             <button
               @click="openCheckinModal(room)"
-              class="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
+              class="w-full py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
               title="แอดมินกรอกข้อมูลและทำสัญญาเข้าพักทันที"
             >
               <UserPlus class="w-3.5 h-3.5" />
@@ -312,7 +312,7 @@
         <div v-else class="grid grid-cols-1 gap-2">
           <button
             @click="openHistoryModal(room)"
-            class="w-full py-2 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:border-purple-300"
+            class="w-full py-2 bg-white hover:bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:border-cyan-300"
           >
             <History class="w-3.5 h-3.5" />
             <span>📜 ดูประวัติสัญญาเช่า</span>
@@ -373,7 +373,7 @@
               type="text"
               required
               placeholder="เช่น คุณสมชาย ลงทุนดี"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
           </div>
 
@@ -384,7 +384,7 @@
               type="email"
               required
               placeholder="owner@example.com"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
           </div>
 
@@ -394,7 +394,7 @@
               v-model="quickOwnerForm.phone"
               type="tel"
               placeholder="081-xxx-xxxx"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
           </div>
 
@@ -406,7 +406,7 @@
               required
               minlength="6"
               placeholder="•••••••• (อย่างน้อย 6 ตัวอักษร)"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
           </div>
 
@@ -425,7 +425,7 @@
             <button
               type="submit"
               :disabled="creatingOwner"
-              class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer"
             >
               {{ creatingOwner ? 'กำลังสร้าง...' : '🚀 บันทึกเจ้าของห้อง' }}
             </button>

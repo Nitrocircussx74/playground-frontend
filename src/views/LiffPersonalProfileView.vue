@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-5 pb-6 font-sans text-slate-900 selection:bg-indigo-600 selection:text-white relative">
+  <div class="space-y-5 pb-6 font-sans text-slate-900 selection:bg-teal-600 selection:text-white relative">
     <!-- Ambient Light Background Ornaments -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="absolute -top-24 -left-24 w-80 h-80 bg-indigo-100/30 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-80 h-80 bg-teal-100/30 rounded-full blur-3xl"></div>
       <div class="absolute top-1/2 -right-24 w-80 h-80 bg-emerald-100/25 rounded-full blur-3xl"></div>
     </div>
 
@@ -68,12 +68,12 @@
                   ลูกบ้าน
                 </span>
               </div>
-              <p class="text-xs text-indigo-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
+              <p class="text-xs text-teal-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
               <div class="flex items-center gap-2 pt-0.5">
                 <span class="text-[11px] font-semibold text-yellow-300">
                   ห้อง {{ tenantProfile.roomNumber || '-' }}
                 </span>
-                <span v-if="tenantProfile.buildingName" class="text-[11px] text-indigo-100/80">
+                <span v-if="tenantProfile.buildingName" class="text-[11px] text-teal-100/80">
                   • ตึก {{ tenantProfile.buildingName }}
                 </span>
               </div>
@@ -82,7 +82,7 @@
 
           <!-- Digital ID & Quick Status -->
           <div class="mt-4 pt-3.5 border-t border-white/20 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-1.5 text-xs text-indigo-100/90">
+            <div class="flex items-center gap-1.5 text-xs text-teal-100/90">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span>LINE Verified</span>
             </div>
@@ -112,7 +112,7 @@
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-slate-50 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600"
+                class="w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-slate-50 text-slate-600 group-hover:bg-teal-50 group-hover:text-teal-600"
               >
                 <component :is="menu.icon" class="w-4 h-4" />
               </div>
@@ -162,7 +162,7 @@
 
         <div class="p-3 bg-slate-50 rounded-2xl text-xs space-y-1 text-slate-600 font-mono">
           <div>ผู้เช่า: <span class="font-bold text-slate-900">{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span></div>
-          <div>ห้องพัก: <span class="font-bold text-indigo-600">ห้อง {{ tenantProfile.roomNumber || '-' }}</span></div>
+          <div>ห้องพัก: <span class="font-bold text-teal-600">ห้อง {{ tenantProfile.roomNumber || '-' }}</span></div>
         </div>
 
         <button
@@ -182,7 +182,7 @@
         </button>
 
         <div class="space-y-1 pt-2 text-center">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-xl font-bold">
+          <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto text-xl font-bold">
             <Lock class="w-6 h-6" />
           </div>
           <h3 class="text-base font-bold text-slate-900">ตั้งรหัสผ่านสำหรับเบราว์เซอร์</h3>
@@ -198,7 +198,7 @@
               placeholder="••••••••"
               minlength="6"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-indigo-600 focus:bg-white"
+              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-teal-600 focus:bg-white"
             />
           </div>
 
@@ -210,11 +210,11 @@
               placeholder="••••••••"
               minlength="6"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-indigo-600 focus:bg-white"
+              class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:border-teal-600 focus:bg-white"
             />
           </div>
 
-          <div class="p-3 bg-indigo-50/70 rounded-2xl border border-indigo-100 text-[11px] text-indigo-900 leading-relaxed">
+          <div class="p-3 bg-teal-50/70 rounded-2xl border border-teal-100 text-[11px] text-teal-900 leading-relaxed">
             📱 เบอร์โทรสำหรับล็อกอินของคุณคือ: <span class="font-bold">{{ tenantProfile.phone || 'เบอร์ที่ลงทะเบียนไว้' }}</span>
           </div>
 
@@ -229,7 +229,7 @@
             <button
               type="submit"
               :disabled="savingPassword"
-              class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
+              class="flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition-all disabled:opacity-50 cursor-pointer"
             >
               {{ savingPassword ? 'กำลังบันทึก...' : 'บันทึกรหัสผ่าน' }}
             </button>
@@ -408,18 +408,20 @@ const handleTenantLogout = async () => {
   if (!isConfirmed) return;
 
   try {
-    await authStore.logout();
+    const result = await authStore.logoutTenant();
     await showSuccess('ออกจากระบบสำเร็จ', 'ลบข้อมูลการเข้าใช้งานเรียบร้อยแล้ว');
 
-    const liffModule = await import('@/utils/liff');
-    if (liffModule?.default && typeof liffModule.default.isInClient === 'function' && liffModule.default.isInClient()) {
-      liffModule.default.closeWindow();
+    if (result.channel === 'web') {
+      router.replace('/web/login');
+    } else if (result.channel === 'line_client') {
+      const { closeLiffWindow } = await import('@/utils/liff');
+      closeLiffWindow();
     } else {
       router.replace('/liff');
     }
   } catch (err) {
     console.error('Tenant logout error:', err);
-    router.replace('/liff');
+    router.replace(authStore.isWebTenant ? '/web/login' : '/liff');
   }
 };
 

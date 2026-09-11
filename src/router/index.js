@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { initLiff, isInLiffClient, isLiffLoggedIn, loginLiff } from '@/utils/liff';
 
 const routes = [
   {
@@ -111,6 +112,24 @@ const routes = [
     path: '/admin/parcels',
     name: 'AdminParcelsDirect',
     component: () => import('@/views/AdminParcelView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/facility-bookings',
+    name: 'AdminFacilityBookings',
+    component: () => import('@/views/AdminFacilityBookingView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/vehicles',
+    name: 'AdminVehicles',
+    component: () => import('@/views/AdminVehicleView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/polls',
+    name: 'AdminPolls',
+    component: () => import('@/views/AdminPollView.vue'),
     meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
   },
   {
@@ -243,6 +262,24 @@ const routes = [
         meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
       },
       {
+        path: 'facility-bookings',
+        name: 'LiffFacilityBookings',
+        component: () => import('@/views/LiffFacilityBookingView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จองพื้นที่ส่วนกลาง' }
+      },
+      {
+        path: 'vehicles',
+        name: 'LiffVehicles',
+        component: () => import('@/views/LiffVehicleView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการยานพาหนะ/ผู้มาเยือน' }
+      },
+      {
+        path: 'polls',
+        name: 'LiffPolls',
+        component: () => import('@/views/LiffPollView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'โหวต/แบบสำรวจ' }
+      },
+      {
         path: 'issues',
         name: 'LiffIssueHistory',
         component: () => import('@/views/IssueHistory.vue'),
@@ -317,6 +354,35 @@ async function cmsNavigationGuard(to, from, next) {
 }
 
 async function liffNavigationGuard(to, from, next) {
+  // 📱 0. หากเปิดผ่าน Browser ธรรมดา (ไม่ใช่ LINE App จริง) ให้เด้งไปเปิดผ่าน LINE แทนทันที
+  // กัน User สับสน/ติดปัญหา LINE ID Token verify ไม่ได้แบบที่เจอกันมา (LIFF ต้องพึ่ง Session จริงของ LINE
+  // เสมอ Browser ธรรมดาไม่มีทางได้ Token จริง) — ข้ามใน Dev Mode ไว้ให้ยังทดสอบผ่าน Browser ด้วย
+  // ?devLineUserId= ได้ตามปกติ, ข้าม /web/login เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
+  const isWebLoginRoute = to.path === '/web/login' || to.meta?.isTenantWeb;
+  if (!import.meta.env.DEV && !isWebLoginRoute && typeof window !== 'undefined') {
+    await initLiff();
+    if (!isInLiffClient()) {
+      const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+      if (liffId) {
+        window.location.href = `https://liff.line.me/${liffId}${to.fullPath}`;
+        return; // กำลังจะออกจากหน้านี้อยู่แล้ว ไม่ต้อง next() ต่อ
+      }
+    }
+  }
+
+  // 🔑 0.5 Auto-login ผ่าน LINE ให้ทุกหน้าที่มาผ่าน LIFF โดยไม่ต้องรอแต่ละหน้าเขียนเช็คเอง (ก่อนหน้านี้มีแค่
+  // LiffEntryView.vue ที่เช็ค พอเข้าหน้าอื่นตรง ๆ ด้วย Deep Link เช่น /liff/onboarding, /liff/register เลยไม่มี
+  // LINE ID Token ให้ Backend ตรวจ แล้วโดน 401 "กรุณาเข้าสู่ระบบผ่าน LINE ก่อนใช้งาน" — ย้ายมาเช็ครวมที่นี่ที่
+  // เดียวแทน ครอบคลุมทุก Route ที่ผ่าน Guard นี้) จำกัด 1 ครั้งต่อ Session กัน Loop เหมือนเดิม
+  if (!isWebLoginRoute && typeof window !== 'undefined' && !isLiffLoggedIn()) {
+    const loginAttempted = sessionStorage.getItem('liff_auto_login_attempted');
+    if (!loginAttempted) {
+      sessionStorage.setItem('liff_auto_login_attempted', 'true');
+      const loginStarted = await loginLiff(undefined, 'aggressive');
+      if (loginStarted) return; // liff.login() จะ Redirect ออกจากหน้านี้เอง (หรือ Login แบบ Silent ในแอป LINE)
+    }
+  }
+
   // 🏢 1. ดึงและคงค่า Target Building จาก Query Param (?building=... หรือ ?buildingId=...)
   const targetBuilding =
     to.query.building ||

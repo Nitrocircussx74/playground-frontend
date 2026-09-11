@@ -3,7 +3,7 @@ import api from '@/utils/api';
 import { initLiff } from '@/utils/liff';
 
 // Global singleton state so all components and layouts share the exact same active theme
-const currentThemeColor = ref('#3B82F6');
+const currentThemeColor = ref('#0E7490'); // HorHub Brand Teal (สีเดียวกับโลโก้)
 const currentLogoUrl = ref(null);
 const currentBuildingName = ref('หอพัก');
 const currentBuildingId = ref(null);
@@ -13,7 +13,7 @@ const currentBuildingId = ref(null);
  */
 export function hexToRgb(hex) {
   if (!hex || typeof hex !== 'string') {
-    return { r: 59, g: 130, b: 246 };
+    return { r: 14, g: 116, b: 144 };
   }
 
   let cleanHex = hex.replace('#', '').trim();
@@ -25,7 +25,7 @@ export function hexToRgb(hex) {
   }
 
   if (cleanHex.length !== 6) {
-    return { r: 59, g: 130, b: 246 };
+    return { r: 14, g: 116, b: 144 };
   }
 
   const num = parseInt(cleanHex, 16);
@@ -98,7 +98,7 @@ export function useDynamicTheme() {
    * นำค่าสีและโลโก้ที่ได้จาก API มาประมวลผลและ Inject ลงใน :root ของเอกสาร
    */
   const applyTheme = (themeData = {}) => {
-    const rawColor = themeData.themeColor || themeData.theme_color || '#3B82F6';
+    const rawColor = themeData.themeColor || themeData.theme_color || '#0E7490';
     const logo = themeData.logoUrl || themeData.logo_url || null;
     const buildingName = themeData.buildingName || 'หอพัก';
     const buildingId = themeData.buildingId || null;
@@ -136,7 +136,7 @@ export function useDynamicTheme() {
    */
   const resetTheme = () => {
     applyTheme({
-      themeColor: '#3B82F6',
+      themeColor: '#0E7490',
       logoUrl: null,
       buildingName: 'หอพัก',
       buildingId: null

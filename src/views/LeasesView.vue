@@ -57,7 +57,7 @@
           v-model="searchQuery"
           type="text"
           placeholder="ค้นหาเลขห้อง หรือชื่อผู้เช่า..."
-          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
         />
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
       </div>
@@ -65,7 +65,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="p-12 text-center text-slate-500">
-      <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       กำลังโหลดข้อมูลสัญญาเช่า...
     </div>
 
@@ -146,7 +146,7 @@
           <router-link
             v-if="item.tenantId || item.tenant?.id"
             :to="`/tenants/${item.tenantId || item.tenant?.id}`"
-            class="w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+            class="w-full py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
             <span>👤 โปรไฟล์ 360°</span>
           </router-link>

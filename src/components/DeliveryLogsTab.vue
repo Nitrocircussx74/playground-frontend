@@ -40,7 +40,7 @@
             @input="debouncedSearch"
             type="text"
             placeholder="ค้นหาเลขห้อง, ชื่อลูกบ้าน, หรือข้อความ..."
-            class="w-full pl-8.5 pr-3 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-purple-600 transition-all font-sans"
+            class="w-full pl-8.5 pr-3 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 transition-all font-sans"
           />
         </div>
 
@@ -50,7 +50,7 @@
           <select
             v-model="selectedStatus"
             @change="fetchLogs(1)"
-            class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-purple-600 cursor-pointer"
+            class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"
           >
             <option value="ALL">ทั้งหมด (All Status)</option>
             <option value="SUCCESS">✅ ส่งสำเร็จ (Success)</option>
@@ -64,7 +64,7 @@
           <select
             v-model="selectedType"
             @change="fetchLogs(1)"
-            class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-purple-600 cursor-pointer"
+            class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"
           >
             <option value="ALL">ทั้งหมด (All Types)</option>
             <option value="INVOICE">🧾 บิลค่าเช่า (Invoice)</option>
@@ -80,7 +80,7 @@
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
       <!-- Loading State -->
       <div v-if="isLoading && logs.length === 0" class="p-12 text-center text-slate-500 space-y-3">
-        <div class="animate-spin inline-block w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full"></div>
+        <div class="animate-spin inline-block w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full"></div>
         <p class="text-xs font-semibold">กำลังโหลดประวัติการส่งข้อความ...</p>
       </div>
 
@@ -419,7 +419,7 @@ const getTypeBadgeClass = (type) => {
     case 'PARCEL':
       return 'bg-amber-50 text-amber-700 border-amber-200';
     case 'MAINTENANCE':
-      return 'bg-purple-50 text-purple-700 border-purple-200';
+      return 'bg-cyan-50 text-cyan-700 border-cyan-200';
     default:
       return 'bg-slate-50 text-slate-700 border-slate-200';
   }

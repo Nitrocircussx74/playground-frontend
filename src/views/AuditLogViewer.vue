@@ -28,7 +28,7 @@
           <select
             v-model="filters.action"
             @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           >
             <option value="">ทั้งหมด (All Actions)</option>
             <option value="CREATE">➕ CREATE (เพิ่มข้อมูล)</option>
@@ -43,7 +43,7 @@
           <select
             v-model="filters.entity"
             @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           >
             <option value="">ทั้งหมด (All Modules)</option>
             <option value="INVOICE">📄 ใบแจ้งหนี้ (INVOICE)</option>
@@ -62,7 +62,7 @@
             v-model="filters.startDate"
             type="date"
             @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
 
@@ -73,7 +73,7 @@
             v-model="filters.endDate"
             type="date"
             @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
       </div>
@@ -88,7 +88,7 @@
     <!-- Data Table Panel -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
       <div v-if="loading && logs.length === 0" class="p-12 text-center text-slate-500">
-        <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดบันทึกประวัติการใช้งาน...
       </div>
 
@@ -120,12 +120,12 @@
               <!-- Admin User -->
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2.5">
-                  <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-700 to-indigo-700 text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-700 to-teal-700 text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
                     {{ log.admin?.name?.slice(0, 2).toUpperCase() || 'AD' }}
                   </div>
                   <div>
                     <div class="font-bold text-slate-900">{{ log.admin?.name || 'Unknown Admin' }}</div>
-                    <div class="text-[10px] text-purple-600 font-semibold">{{ log.admin?.email || 'N/A' }}</div>
+                    <div class="text-[10px] text-cyan-600 font-semibold">{{ log.admin?.email || 'N/A' }}</div>
                   </div>
                 </div>
               </td>
@@ -152,7 +152,7 @@
                 <button
                   v-if="log.oldValues || log.newValues"
                   @click="openDiffModal(log)"
-                  class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ml-auto"
+                  class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ml-auto"
                 >
                   <span>🔍 ดูรายละเอียด Diff</span>
                 </button>
@@ -192,17 +192,17 @@
     <div v-if="selectedLog" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
         <!-- Modal Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-purple-900 to-indigo-900 text-white flex items-center justify-between">
+        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 to-teal-900 text-white flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xl">📊</span>
             <div>
               <h3 class="font-bold text-base text-white">เปรียบเทียบการเปลี่ยนแปลง (Data Diff Inspection)</h3>
-              <p class="text-xs text-purple-200">
+              <p class="text-xs text-cyan-200">
                 โมดูล {{ selectedLog.entity }} | โดย {{ selectedLog.admin?.name }} ({{ formatDate(selectedLog.createdAt) }})
               </p>
             </div>
           </div>
-          <button @click="selectedLog = null" class="text-purple-300 hover:text-white p-1 rounded-lg">✕</button>
+          <button @click="selectedLog = null" class="text-cyan-300 hover:text-white p-1 rounded-lg">✕</button>
         </div>
 
         <!-- Modal Body: Diff View -->

@@ -34,7 +34,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="p-16 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-4">
-      <div class="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div class="w-10 h-10 border-4 border-cyan-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p class="text-sm text-slate-600 font-medium">กำลังโหลดข้อมูลโปรไฟล์ผู้เช่าแบบ 360°...</p>
     </div>
 
@@ -45,7 +45,7 @@
       <p class="text-xs text-slate-500">{{ error || 'ไม่พบเรคคอร์ดของผู้เช่ารายนี้ในระบบ' }}</p>
       <button
         @click="goBack"
-        class="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer"
+        class="mt-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer"
       >
         กลับไปหน้าหลัก
       </button>
@@ -54,10 +54,10 @@
     <!-- Content State -->
     <div v-else class="space-y-6">
       <!-- 👑 Header Section (360-degree Profile Summary Card) -->
-      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-purple-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-cyan-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
         <!-- Accent Glow background decoration -->
-        <div class="absolute -top-24 -right-24 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-teal-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <!-- Profile Info Left -->
@@ -68,11 +68,11 @@
                 v-if="tenant.linePictureUrl"
                 :src="tenant.linePictureUrl"
                 :alt="tenant.firstName"
-                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-purple-500/40 shadow-lg"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-cyan-500/40 shadow-lg"
               />
               <div
                 v-else
-                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center ring-4 ring-purple-500/40 shadow-lg"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center ring-4 ring-cyan-500/40 shadow-lg"
               >
                 {{ tenant.firstName ? tenant.firstName.charAt(0).toUpperCase() : '👤' }}
               </div>
@@ -111,17 +111,45 @@
                 >
                   ⚪ ย้ายออกแล้ว
                 </span>
+
+                <!-- Access Channel Badges -->
+                <span
+                  v-if="isLineConnected"
+                  class="px-2.5 py-1 rounded-full text-xs font-bold bg-[#06C755]/20 text-emerald-300 border border-[#06C755]/40 flex items-center gap-1.5 shadow-xs"
+                  title="ลูกบ้านผูกบัญชี LINE OA สำหรับใช้งานผ่าน LINE LIFF เรียบร้อยแล้ว"
+                >
+                  <span>💬</span>
+                  <span>LINE LIFF Active</span>
+                </span>
+
+                <span
+                  v-if="hasSetPin"
+                  class="px-2.5 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center gap-1.5 shadow-xs"
+                  title="ลูกบ้านตั้งรหัส PIN 6 หลักแล้ว สามารถเข้าใช้งาน Web Portal หรือสแกน LINE บนคอมพิวเตอร์ได้"
+                >
+                  <span>🌐</span>
+                  <span>Web Portal (PIN 6 หลัก)</span>
+                </span>
+
+                <span
+                  v-if="!isLineConnected && !hasSetPin"
+                  class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-xs"
+                  title="ลูกบ้านลงทะเบียนแบบ Walk-in ยังไม่ได้เปิดใช้งาน LINE หรือตั้ง PIN"
+                >
+                  <span>⚠️</span>
+                  <span>รอเปิดใช้งาน (Walk-in)</span>
+                </span>
               </div>
 
               <!-- Contact & Identity Attributes -->
               <div class="flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs sm:text-sm text-slate-300">
                 <div class="flex items-center gap-1.5 font-medium">
-                  <span class="text-purple-400">📞</span>
+                  <span class="text-cyan-400">📞</span>
                   <a :href="`tel:${tenant.phone}`" class="hover:underline hover:text-white font-mono">{{ tenant.phone || '-' }}</a>
                 </div>
 
                 <div v-if="tenant.idCard" class="flex items-center gap-1.5 font-medium">
-                  <span class="text-purple-400">🪪</span>
+                  <span class="text-cyan-400">🪪</span>
                   <span class="font-mono">เลขบัตร: {{ tenant.idCard }}</span>
                 </div>
 
@@ -137,7 +165,7 @@
                 <span
                   v-for="r in activeRoomsList"
                   :key="r.id"
-                  class="bg-purple-900/60 text-purple-200 border border-purple-700/60 px-2.5 py-1 rounded-lg font-bold"
+                  class="bg-cyan-900/60 text-cyan-200 border border-cyan-700/60 px-2.5 py-1 rounded-lg font-bold"
                 >
                   🏠 {{ r.building?.name || 'อาคาร' }} - ห้อง {{ r.roomNumber }} (ชั้น {{ r.floor }})
                 </span>
@@ -244,14 +272,14 @@
                     v-for="lease in tenant.leaseContracts"
                     :key="lease.id"
                     class="p-5 rounded-2xl border transition-all space-y-3"
-                    :class="lease.status === 'ACTIVE' ? 'bg-purple-50/40 border-purple-200 shadow-2xs' : 'bg-slate-50/60 border-slate-200'"
+                    :class="lease.status === 'ACTIVE' ? 'bg-cyan-50/40 border-cyan-200 shadow-2xs' : 'bg-slate-50/60 border-slate-200'"
                   >
                     <!-- Lease Item Header -->
                     <div class="flex flex-wrap items-center justify-between gap-2">
                       <div class="flex items-center gap-2.5">
                         <div
                           class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-2xs"
-                          :class="lease.status === 'ACTIVE' ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-700'"
+                          :class="lease.status === 'ACTIVE' ? 'bg-cyan-600 text-white' : 'bg-slate-200 text-slate-700'"
                         >
                           🏠
                         </div>
@@ -289,13 +317,13 @@
                         <span class="text-slate-400 block text-[10px]">วันสิ้นสุดสัญญา:</span>
                         <span class="font-bold text-slate-800">
                           {{ lease.actualEndDate ? formatDate(lease.actualEndDate) : formatDate(lease.expectedEndDate) }}
-                          <span v-if="lease.status === 'ACTIVE'" class="text-purple-600 font-normal"> (ปัจจุบัน)</span>
+                          <span v-if="lease.status === 'ACTIVE'" class="text-cyan-600 font-normal"> (ปัจจุบัน)</span>
                         </span>
                       </div>
 
                       <div class="col-span-2 sm:col-span-1">
                         <span class="text-slate-400 block text-[10px]">เงินประกัน/มัดจำ:</span>
-                        <span class="font-bold text-purple-700">{{ formatCurrency(lease.depositAmount) }}</span>
+                        <span class="font-bold text-cyan-700">{{ formatCurrency(lease.depositAmount) }}</span>
                       </div>
                     </div>
 
@@ -327,7 +355,7 @@
                   </h3>
                   <span
                     class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase"
-                    :class="canManageNotes ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-500'"
+                    :class="canManageNotes ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-100 text-slate-500'"
                   >
                     {{ canManageNotes ? 'OWNER / MANAGER ONLY' : 'READ ONLY' }}
                   </span>
@@ -367,7 +395,7 @@
                     rows="6"
                     :disabled="!canManageNotes || savingNotes"
                     placeholder="พิมพ์บันทึกภายใน เช่น จ่ายค่าเช่าตรงเวลา, มักขอผ่อนผันค่าน้ำไฟ, มีเสียงดังรบกวนห้องข้างเคียง..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:bg-slate-100 disabled:text-slate-500"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 disabled:bg-slate-100 disabled:text-slate-500"
                   ></textarea>
                 </div>
 
@@ -376,7 +404,7 @@
                   <button
                     @click="saveInternalNotes"
                     :disabled="savingNotes"
-                    class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span v-if="savingNotes" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                     <span>{{ savingNotes ? 'กำลังบันทึก...' : '💾 บันทึกข้อมูลภายใน' }}</span>
@@ -417,7 +445,7 @@
               <!-- Metric 3: Total Invoices -->
               <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
                 <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">จำนวนบิลทั้งหมด</div>
-                <div class="text-xl sm:text-2xl font-extrabold text-purple-700">{{ tenant.invoices?.length || 0 }} ใบ</div>
+                <div class="text-xl sm:text-2xl font-extrabold text-cyan-700">{{ tenant.invoices?.length || 0 }} ใบ</div>
                 <div class="text-[10px] text-slate-400">ประวัติออกบิลย้อนหลัง</div>
               </div>
 
@@ -469,7 +497,7 @@
                   </thead>
                   <tbody class="divide-y divide-slate-100">
                     <tr v-for="inv in tenant.invoices" :key="inv.id" class="hover:bg-slate-50/80 transition-colors">
-                      <td class="py-3.5 px-4 font-mono font-bold text-purple-700">{{ inv.invoiceNumber }}</td>
+                      <td class="py-3.5 px-4 font-mono font-bold text-cyan-700">{{ inv.invoiceNumber }}</td>
                       <td class="py-3.5 px-4 font-medium">{{ inv.billingCycle }}</td>
                       <td class="py-3.5 px-4 font-semibold">ห้อง {{ inv.room?.roomNumber || '-' }}</td>
                       <td class="py-3.5 px-4 font-extrabold text-slate-900">{{ formatCurrency(inv.grandTotal) }}</td>
@@ -537,7 +565,7 @@
               <!-- Metric 4: Total Repair Cost -->
               <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
                 <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ค่าซ่อมแซมรวม</div>
-                <div class="text-xl sm:text-2xl font-extrabold text-purple-700">{{ formatCurrency(totalRepairCost) }}</div>
+                <div class="text-xl sm:text-2xl font-extrabold text-cyan-700">{{ formatCurrency(totalRepairCost) }}</div>
                 <div class="text-[10px] text-slate-400">รวมทุกรายการแจ้งซ่อม</div>
               </div>
             </div>
@@ -568,7 +596,7 @@
                 <div
                   v-for="req in tenant.maintenanceRequests"
                   :key="req.id"
-                  class="p-5 rounded-2xl border bg-slate-50/70 border-slate-200 hover:border-purple-300 transition-all space-y-3"
+                  class="p-5 rounded-2xl border bg-slate-50/70 border-slate-200 hover:border-cyan-300 transition-all space-y-3"
                 >
                   <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="space-y-1">
@@ -608,7 +636,7 @@
 
                     <div>
                       <span class="text-slate-400 block text-[10px]">ค่าซ่อมแซม:</span>
-                      <span class="font-bold text-purple-700">{{ formatCurrency(req.repairCost) }}</span>
+                      <span class="font-bold text-cyan-700">{{ formatCurrency(req.repairCost) }}</span>
                     </div>
 
                     <div v-if="Number(req.repairCost || 0) > 0">
@@ -628,7 +656,7 @@
                   </div>
 
                   <!-- Admin Note if present -->
-                  <div v-if="req.adminNote" class="p-2.5 bg-purple-50/60 border border-purple-200/70 rounded-xl text-xs text-purple-900">
+                  <div v-if="req.adminNote" class="p-2.5 bg-cyan-50/60 border border-cyan-200/70 rounded-xl text-xs text-cyan-900">
                     <span class="font-bold">📝 บันทึกแอดมิน/ช่าง:</span> {{ req.adminNote }}
                   </div>
                 </div>
@@ -759,6 +787,14 @@ const canManageNotes = computed(() => {
 });
 
 // Computed Statuses
+const isLineConnected = computed(() => {
+  return !!tenant.value?.lineUserId;
+});
+
+const hasSetPin = computed(() => {
+  return !!tenant.value?.pinHash;
+});
+
 const isCurrentlyRenting = computed(() => {
   if (!tenant.value?.leaseContracts) return false;
   return tenant.value.leaseContracts.some((l) => l.status === 'ACTIVE');
@@ -927,7 +963,12 @@ const openLineLinkModal = async () => {
     if (res.success && res.data) {
       generatedInviteCode.value = res.data.inviteCode;
       // Generate QR Code containing LIFF Onboarding URL with prefilled code
-      const liffUrl = `${window.location.origin}/liff/onboarding?code=${res.data.inviteCode}`;
+      // ต้องใช้ https://liff.line.me/{LIFF_ID}/... (ไม่ใช่ window.location.origin) มิฉะนั้นสแกนแล้วจะเปิดเป็นเว็บปกติ
+      // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js และ TenantSecurityTab.vue
+      const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+      const liffUrl = liffId
+        ? `https://liff.line.me/${liffId}/onboarding?code=${res.data.inviteCode}`
+        : `${window.location.origin}/liff/onboarding?code=${res.data.inviteCode}`;
       qrCodeDataUrl.value = await QRCode.toDataURL(liffUrl, {
         width: 300,
         margin: 2,

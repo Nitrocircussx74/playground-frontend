@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-900 font-sans selection:bg-purple-600 selection:text-white">
+  <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-900 font-sans selection:bg-cyan-600 selection:text-white">
     <!-- Ambient Glow Background Meshes -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-600/30 rounded-full blur-[100px]"></div>
-      <div class="absolute top-1/2 -right-40 w-[30rem] h-[30rem] bg-indigo-600/25 rounded-full blur-[120px]"></div>
+      <div class="absolute -top-40 -left-40 w-96 h-96 bg-cyan-600/30 rounded-full blur-[100px]"></div>
+      <div class="absolute top-1/2 -right-40 w-[30rem] h-[30rem] bg-teal-600/25 rounded-full blur-[120px]"></div>
       <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/20 rounded-full blur-[100px]"></div>
     </div>
 
     <!-- Login Card Container -->
     <div class="w-full max-w-md relative z-10">
-      <Card class="border-slate-800/80 bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-950/50 rounded-3xl overflow-hidden text-slate-100">
+      <Card class="border-slate-800/80 bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-cyan-950/50 rounded-3xl overflow-hidden text-slate-100">
         <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
           <div class="relative mx-auto inline-flex">
-            <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-xl shadow-purple-600/30 ring-4 ring-purple-500/20 overflow-hidden">
+            <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-xl shadow-cyan-600/30 ring-4 ring-cyan-500/20 overflow-hidden">
               <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain rounded-xl" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
@@ -23,7 +23,7 @@
 
           <div>
             <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
-              HorHub <span class="text-purple-400 font-bold">(หอฮับ)</span>
+              HorHub <span class="text-cyan-400 font-bold">(หอฮับ)</span>
             </CardTitle>
             <p class="text-[11px] font-semibold text-emerald-400 tracking-wide mt-1">
               A Central Platform for Living and Management
@@ -68,7 +68,7 @@
             <div class="space-y-1.5">
               <label for="identifier" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
-                  <User class="w-3.5 h-3.5 text-purple-400" />
+                  <User class="w-3.5 h-3.5 text-cyan-400" />
                   <span>เบอร์โทรศัพท์ หรือ อีเมล</span>
                 </div>
               </label>
@@ -80,13 +80,13 @@
                 required
                 data-testid="identifier-input"
                 :disabled="authStore.loading"
-                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all text-xs"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 h-11 transition-all text-xs"
               />
             </div>
 
             <div class="space-y-1.5">
               <label for="password" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Lock class="w-3.5 h-3.5 text-purple-400" />
+                <Lock class="w-3.5 h-3.5 text-cyan-400" />
                 <span>รหัสผ่าน (Password)</span>
               </label>
               <Input
@@ -97,7 +97,7 @@
                 required
                 data-testid="password-input"
                 :disabled="authStore.loading"
-                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 h-11 transition-all text-xs"
+                class="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 h-11 transition-all text-xs"
               />
             </div>
 
@@ -112,7 +112,7 @@
               <button
                 type="button"
                 @click="fillDemoAccount"
-                class="text-[11px] font-bold text-purple-400 hover:text-purple-300 underline underline-offset-2 transition-colors cursor-pointer"
+                class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
               >
                 ⚡ แอดมิน Demo
               </button>
@@ -121,7 +121,7 @@
             <Button
               type="submit"
               data-testid="login-button"
-              class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-purple-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
+              class="w-full bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
               :disabled="authStore.loading"
             >
               <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
@@ -138,8 +138,8 @@
 
         <CardFooter class="px-6 sm:px-8 pb-8 pt-2">
           <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-2">
-            <div class="flex items-center gap-1.5 text-purple-300 font-bold">
-              <ShieldCheck class="w-4 h-4 text-purple-400 shrink-0" />
+            <div class="flex items-center gap-1.5 text-cyan-300 font-bold">
+              <ShieldCheck class="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Hybrid Authentication Security</span>
             </div>
             <div class="text-slate-400 leading-relaxed">

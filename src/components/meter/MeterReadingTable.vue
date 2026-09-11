@@ -41,20 +41,20 @@
           <div class="text-[11px] font-bold text-amber-700 uppercase">อัตราค่าไฟฟ้า</div>
           <div class="text-sm font-extrabold text-amber-900 mt-0.5">฿{{ rates.electricRate }} / หน่วย</div>
         </div>
-        <div class="p-3 bg-purple-50/70 border border-purple-100 rounded-xl">
-          <div class="text-[11px] font-bold text-purple-700 uppercase">ค่าส่วนกลางประจำเดือน</div>
-          <div class="text-sm font-extrabold text-purple-900 mt-0.5">฿{{ rates.commonFee }} / ห้อง</div>
+        <div class="p-3 bg-cyan-50/70 border border-cyan-100 rounded-xl">
+          <div class="text-[11px] font-bold text-cyan-700 uppercase">ค่าส่วนกลางประจำเดือน</div>
+          <div class="text-sm font-extrabold text-cyan-900 mt-0.5">฿{{ rates.commonFee }} / ห้อง</div>
         </div>
-        <div class="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl">
-          <div class="text-[11px] font-bold text-indigo-700 uppercase">ห้องที่มีผู้เช่า (Occupied)</div>
-          <div class="text-sm font-extrabold text-indigo-900 mt-0.5">{{ rows.length }} ห้องพัก</div>
+        <div class="p-3 bg-teal-50/70 border border-teal-100 rounded-xl">
+          <div class="text-[11px] font-bold text-teal-700 uppercase">ห้องที่มีผู้เช่า (Occupied)</div>
+          <div class="text-sm font-extrabold text-teal-900 mt-0.5">{{ rows.length }} ห้องพัก</div>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-xs">
-      <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       กำลังโหลดรายชื่อห้องและมิเตอร์ย้อนหลัง...
     </div>
 
@@ -195,7 +195,7 @@
                   v-model.number="row.otherFee"
                   type="number"
                   placeholder="0"
-                  class="w-20 px-2 py-1 border border-slate-300 rounded-lg text-xs font-mono font-semibold focus:outline-none focus:border-indigo-500"
+                  class="w-20 px-2 py-1 border border-slate-300 rounded-lg text-xs font-mono font-semibold focus:outline-none focus:border-teal-500"
                 />
                 <input
                   v-model="row.otherFeeNote"
@@ -206,7 +206,7 @@
               </td>
 
               <!-- Grand Total Estimate -->
-              <td class="p-3.5 text-right font-mono font-bold text-indigo-900 text-sm sm:text-base">
+              <td class="p-3.5 text-right font-mono font-bold text-teal-900 text-sm sm:text-base">
                 ฿{{ calculateGrandTotal(row).toLocaleString() }}
               </td>
             </tr>
@@ -232,7 +232,7 @@
           id="tour-btn-generate-invoices"
           @click="handleGenerateInvoices"
           :disabled="submitting || totalErrors > 0"
-          class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-purple-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-cyan-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <span>🚀</span>
           <span>{{ submitting ? 'กำลังออกบิล Draft (Transaction)...' : 'คำนวณ & ออกบิลแบบ Draft' }}</span>

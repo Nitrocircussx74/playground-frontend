@@ -3,11 +3,11 @@
     <div class="max-w-md mx-auto space-y-5">
       <!-- Header -->
       <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/80 text-indigo-600 flex items-center justify-center mx-auto">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100/80 text-teal-600 flex items-center justify-center mx-auto">
           <Building2 class="w-6 h-6" />
         </div>
-        <div v-if="buildingName && buildingName !== 'หอพัก'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50/80 border border-indigo-200/80 rounded-full text-xs font-bold text-indigo-800 shadow-xs">
-          <Building2 class="w-3.5 h-3.5 text-indigo-600" />
+        <div v-if="buildingName && buildingName !== 'หอพัก'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-50/80 border border-teal-200/80 rounded-full text-xs font-bold text-teal-800 shadow-xs">
+          <Building2 class="w-3.5 h-3.5 text-teal-600" />
           <span>{{ buildingName }}</span>
         </div>
         <h1 class="text-xl font-bold text-slate-900 tracking-tight">ลงทะเบียนผู้เช่าใหม่</h1>
@@ -23,7 +23,7 @@
           <h2 class="text-lg font-bold text-slate-900">ลงทะเบียนสำเร็จ</h2>
           <p class="text-xs text-slate-600 leading-relaxed">
             ยินดีต้อนรับคุณ <span class="font-semibold text-slate-900">{{ successData.tenant.firstName }} {{ successData.tenant.lastName }}</span><br />
-            เข้าสู่ <span class="font-bold text-indigo-600">ห้อง {{ successData.room.roomNumber }}</span>
+            เข้าสู่ <span class="font-bold text-teal-600">ห้อง {{ successData.room.roomNumber }}</span>
           </p>
         </div>
 
@@ -31,7 +31,7 @@
           <!-- หากยังไม่เคยตั้งรหัส PIN ให้พาไปตั้งค่าก่อนเข้าใช้งาน เพื่อป้องกันบัญชีตั้งแต่ครั้งแรก -->
           <router-link
             :to="successData.hasPin ? '/liff/profile' : '/liff/setup-pin'"
-            class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs"
+            class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs"
           >
             <span>{{ successData.hasPin ? 'ไปยังหน้าหลักผู้เช่า' : 'ตั้งรหัส PIN 6 หลัก' }}</span>
             <ArrowRight class="w-3.5 h-3.5" />
@@ -47,12 +47,12 @@
         </div>
 
         <!-- Verified Room Information Banner -->
-        <div v-if="verifiedRoom" class="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl space-y-1">
-          <div class="text-xs font-semibold text-indigo-900 flex items-center gap-1.5">
-            <CheckCircle2 class="w-3.5 h-3.5 text-indigo-600" />
-            <span>รหัสถูกต้อง: <strong class="text-indigo-600 font-bold">ห้อง {{ verifiedRoom.roomNumber }} (ชั้น {{ verifiedRoom.floor }})</strong></span>
+        <div v-if="verifiedRoom" class="p-3.5 bg-teal-50/70 border border-teal-100 rounded-xl space-y-1">
+          <div class="text-xs font-semibold text-teal-900 flex items-center gap-1.5">
+            <CheckCircle2 class="w-3.5 h-3.5 text-teal-600" />
+            <span>รหัสถูกต้อง: <strong class="text-teal-600 font-bold">ห้อง {{ verifiedRoom.roomNumber }} (ชั้น {{ verifiedRoom.floor }})</strong></span>
           </div>
-          <div class="text-[11px] text-indigo-700 pl-5">
+          <div class="text-[11px] text-teal-700 pl-5">
             ค่าเช่า: <span class="font-semibold font-mono">฿{{ Number(verifiedRoom.price).toLocaleString() }}</span> / เดือน
           </div>
         </div>
@@ -69,7 +69,7 @@
                 type="button"
                 @click="verifyCode"
                 :disabled="verifying || !form.inviteCode"
-                class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 disabled:opacity-50"
+                class="text-[11px] font-semibold text-teal-600 hover:text-teal-800 disabled:opacity-50"
               >
                 {{ verifying ? 'กำลังตรวจสอบ...' : 'ตรวจสอบรหัส' }}
               </button>
@@ -82,7 +82,7 @@
               placeholder="กรอกรหัสเชิญ 6 หลัก เช่น X9K2P4"
               required
               maxlength="10"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 placeholder:font-sans placeholder:text-slate-400 placeholder:font-normal uppercase focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 placeholder:font-sans placeholder:text-slate-400 placeholder:font-normal uppercase focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
@@ -94,7 +94,7 @@
                 type="text"
                 placeholder="สมชาย"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-indigo-400"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-teal-400"
               />
             </div>
 
@@ -105,7 +105,7 @@
                 type="text"
                 placeholder="ใจดี"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-indigo-400"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-teal-400"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@
               type="tel"
               placeholder="0812345678"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
@@ -128,14 +128,14 @@
               type="text"
               placeholder="1100200300401"
               maxlength="13"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-indigo-400"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-teal-400"
             />
           </div>
 
           <button
             type="submit"
             :disabled="loading"
-            class="w-full py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 mt-1 flex items-center justify-center gap-1.5"
+            class="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 mt-1 flex items-center justify-center gap-1.5"
           >
             <UserPlus class="w-4 h-4" />
             <span>{{ loading ? 'กำลังลงทะเบียน...' : 'ยืนยันลงทะเบียนผูกห้องพัก' }}</span>

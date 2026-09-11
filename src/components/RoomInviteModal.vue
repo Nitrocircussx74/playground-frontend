@@ -20,7 +20,7 @@
         <button
           @click="handleGenerateInvite"
           :disabled="generating"
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
         >
           {{ generating ? 'กำลังสร้าง...' : '⚡ สร้างรหัสเชิญ' }}
         </button>
@@ -187,6 +187,12 @@ const handleRevokeInvite = async (inviteId) => {
 };
 
 const getShareUrl = (code) => {
+  // ต้องใช้ https://liff.line.me/{LIFF_ID}/... ไม่ใช่ window.location.origin มิฉะนั้นลิงก์ที่แชร์ไปจะเปิดเป็นเว็บปกติ
+  // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js
+  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
+  if (liffId) {
+    return `https://liff.line.me/${liffId}/register?inviteCode=${code}`;
+  }
   return `${window.location.origin}/liff/register?inviteCode=${code}`;
 };
 

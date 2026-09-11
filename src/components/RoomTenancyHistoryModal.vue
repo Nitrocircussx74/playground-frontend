@@ -22,14 +22,14 @@
         <button
           @click="activeTab = 'current'"
           class="py-3 border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'current' ? 'border-purple-600 text-purple-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+          :class="activeTab === 'current' ? 'border-cyan-600 text-cyan-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
         >
           👤 ผู้เช่าปัจจุบัน & การย้ายออก
         </button>
         <button
           @click="activeTab = 'history'"
           class="py-3 border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'history' ? 'border-purple-600 text-purple-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
+          :class="activeTab === 'history' ? 'border-cyan-600 text-cyan-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
         >
           📜 ประวัติสัญญาเช่าทั้งหมด ({{ leases.length }})
         </button>
@@ -39,7 +39,7 @@
         <!-- Tab 1: Current Tenant, Room Owner & Occupants -->
         <div v-if="activeTab === 'current'" class="space-y-4">
           <!-- Room Owner Card -->
-          <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl text-xs space-y-2">
+          <div class="bg-teal-50/60 border border-teal-100 p-4 rounded-2xl text-xs space-y-2">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2.5">
                 <span class="text-base">👑</span>
@@ -53,14 +53,14 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-700">
                   {{ room?.owner ? 'มีกรรมสิทธิ์' : 'กรรมสิทธิ์โครงการ' }}
                 </span>
                 <button
                   v-if="!isEditingOwner"
                   type="button"
                   @click="openEditOwner"
-                  class="px-2 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1"
+                  class="px-2 py-1 bg-white hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1"
                 >
                   <span>✏️ เปลี่ยน</span>
                 </button>
@@ -68,10 +68,10 @@
             </div>
 
             <!-- Inline Owner Selector -->
-            <div v-if="isEditingOwner" class="pt-2 border-t border-indigo-100/80 flex flex-col sm:flex-row items-center gap-2">
+            <div v-if="isEditingOwner" class="pt-2 border-t border-teal-100/80 flex flex-col sm:flex-row items-center gap-2">
               <select
                 v-model="selectedOwnerId"
-                class="w-full sm:flex-1 bg-white border border-indigo-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                class="w-full sm:flex-1 bg-white border border-teal-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
               >
                 <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
                 <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
@@ -90,7 +90,7 @@
                   type="button"
                   :disabled="savingOwner"
                   @click="handleSaveOwner"
-                  class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                  class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   {{ savingOwner ? 'กำลังบันทึก...' : '💾 บันทึก' }}
                 </button>
@@ -152,7 +152,7 @@
               </div>
               <button
                 @click="showAddResidentModal = true"
-                class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                class="px-2.5 py-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
               >
                 <span>➕ เพิ่มรูมเมท</span>
               </button>
@@ -356,7 +356,7 @@
                   type="text"
                   placeholder="เช่น สมศักดิ์"
                   required
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -367,7 +367,7 @@
                   type="text"
                   placeholder="เช่น มั่นคง"
                   required
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -378,7 +378,7 @@
                   type="tel"
                   placeholder="เช่น 0812345678"
                   required
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -388,7 +388,7 @@
                   v-model="newResidentForm.idCard"
                   type="text"
                   placeholder="13 หลัก"
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -403,7 +403,7 @@
                 <button
                   type="submit"
                   :disabled="addingResident"
-                  class="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+                  class="flex-1 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer"
                 >
                   {{ addingResident ? 'กำลังบันทึก...' : 'บันทึก' }}
                 </button>
