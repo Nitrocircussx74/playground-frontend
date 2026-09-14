@@ -28,134 +28,141 @@ const routes = [
     path: '/403',
     name: 'Forbidden',
     component: () => import('@/views/ForbiddenView.vue'),
-    meta: { isCms: true }
+    meta: { isCms: true, title: 'ไม่มีสิทธิ์เข้าถึง' }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/DashboardView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'แดชบอร์ดภาพรวม' }
   },
   {
     path: '/rooms',
     name: 'Rooms',
     component: () => import('@/views/RoomsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการห้องพัก' }
   },
   {
     path: '/leases',
     name: 'Leases',
     component: () => import('@/views/LeasesView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'สัญญาเช่า' }
   },
   {
     path: '/tenants',
     name: 'Tenants',
     component: () => import('@/views/TenantsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ข้อมูลผู้เช่า' }
   },
   {
     path: '/tenants/:id',
     name: 'TenantDetail',
     component: () => import('@/views/TenantDetail.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายละเอียดผู้เช่า' }
   },
   {
     path: '/admin/tenants/:id',
     name: 'TenantDetailAdmin',
     component: () => import('@/views/TenantDetail.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายละเอียดผู้เช่า' }
   },
   {
     path: '/buildings',
     name: 'Buildings',
     component: () => import('@/views/BuildingManagementView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการข้อมูลอาคาร' }
   },
   {
     path: '/building-settings',
     name: 'BuildingSettings',
     component: () => import('@/views/BuildingSettingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตั้งค่าอาคาร' }
   },
   {
     path: '/meter-readings',
     name: 'MeterReadings',
     component: () => import('@/views/MeterReadingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จดบันทึกมิเตอร์' }
   },
   {
     path: '/invoices',
     name: 'Invoices',
     component: () => import('@/views/InvoicesView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการบิลค่าเช่า' }
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: () => import('@/views/MaintenanceView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการรายการแจ้งซ่อม' }
   },
   {
     path: '/announcements',
     name: 'Announcements',
     component: () => import('@/views/AnnouncementsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ข่าวสารและประกาศ' }
   },
   {
     path: '/parcels',
     name: 'AdminParcels',
     component: () => import('@/views/AdminParcelView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการพัสดุ' }
   },
   {
     path: '/admin/parcels',
     name: 'AdminParcelsDirect',
     component: () => import('@/views/AdminParcelView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการพัสดุ' }
   },
   {
     path: '/facility-bookings',
     name: 'AdminFacilityBookings',
     component: () => import('@/views/AdminFacilityBookingView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จองพื้นที่ส่วนกลาง' }
   },
   {
     path: '/vehicles',
     name: 'AdminVehicles',
     component: () => import('@/views/AdminVehicleView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการยานพาหนะ' }
   },
   {
     path: '/polls',
     name: 'AdminPolls',
     component: () => import('@/views/AdminPollView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'แบบสำรวจและโหวต' }
   },
   {
     path: '/features',
     name: 'FeatureSettings',
     component: () => import('@/views/FeatureSettingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตั้งค่าฟีเจอร์' }
   },
   {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, title: 'โปรไฟล์ผู้ดูแล' }
   },
   {
     path: '/admin/users',
     name: 'AdminUserManagement',
     component: () => import('@/views/AdminUserManagementView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'], title: 'จัดการผู้ใช้งาน' }
   },
   {
     path: '/admin/audit-logs',
     name: 'AuditLogViewer',
     component: () => import('@/views/AuditLogViewer.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'], title: 'ประวัติการทำงานระบบ' }
   },
+  {
+    path: '/admin/feedback',
+    name: 'AdminFeedback',
+    component: () => import('@/views/AdminFeedbackView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin', 'admin'], title: 'ข้อเสนอแนะ' }
+  },
+
 
   // 📱 2. LINE / LIFF Tenant Portal Routes (แยก Guard ทำงานอิสระเฉพาะของฝั่ง LINE)
   {
@@ -421,7 +428,7 @@ async function liffNavigationGuard(to, from, next) {
         return next({ path: targetPath, query: cleanQuery });
       }
     } catch (err) {
-      console.warn('⚠️ ไม่สามารถ parse liff.state ได้:', err);
+      console.warn('ไม่สามารถ parse liff.state ได้:', err);
     }
   }
 
@@ -467,4 +474,19 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
+router.afterEach((to) => {
+  if (typeof document !== 'undefined') {
+    const pageTitle = to.meta?.title;
+    if (pageTitle) {
+      document.title = `${pageTitle} | HorHub`;
+    } else if (to.meta?.isCms) {
+      document.title = 'HorHub CMS - ระบบจัดการหอพักและอพาร์ตเมนต์';
+    } else {
+      document.title = 'HorHub - ระบบจัดการหอพักและอพาร์ตเมนต์อัจฉริยะ';
+    }
+  }
+});
+
 export default router;
+
+

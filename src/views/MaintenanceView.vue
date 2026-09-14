@@ -181,7 +181,7 @@
                 class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer active:scale-95"
               >
                 <Zap class="w-3 h-3 text-blue-500" />
-                <span>➔ กำลังทำ</span>
+                <span>กำลังทำ</span>
               </button>
             </div>
           </div>
@@ -278,7 +278,7 @@
                 class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer active:scale-95"
               >
                 <CheckCircle2 class="w-3 h-3 text-emerald-600" />
-                <span>➔ เสร็จสิ้น</span>
+                <span>เสร็จสิ้น</span>
               </button>
             </div>
           </div>

@@ -5,7 +5,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <span>⚡</span>
+            <Zap class="w-5 h-5 text-amber-500" />
             <span>ตารางจดมิเตอร์ประจำเดือน (Fast Meter Data Entry)</span>
           </h2>
           <p class="text-xs sm:text-sm text-slate-500 mt-1">
@@ -25,7 +25,7 @@
             :disabled="loading"
             class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5"
           >
-            <span>🔄</span>
+            <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" />
             <span>ดึงข้อมูลล่าสุด</span>
           </button>
         </div>
@@ -60,7 +60,7 @@
 
     <!-- Empty State -->
     <div v-else-if="rows.length === 0" class="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2">
-      <div class="text-3xl">🚪</div>
+      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><DoorOpen class="w-6 h-6" /></div>
       <p class="font-semibold text-slate-700">ไม่พบห้องพักที่มีผู้เช่า (Occupied) ในตึกนี้</p>
       <p class="text-xs text-slate-500">กรุณาเพิ่มผู้เช่าในหน้าจัดการห้องพักเพื่อเริ่มออกบิลประจำเดือน</p>
     </div>
@@ -74,10 +74,10 @@
               <th class="p-3.5 w-12 text-center">#</th>
               <th class="p-3.5 min-w-[130px]">ห้อง / ผู้เช่า</th>
               <th class="p-3.5 min-w-[220px] bg-amber-50/40 border-l border-r border-amber-100">
-                ⚡ มิเตอร์ไฟ (เก่า ➔ ใหม่ ➔ หน่วย)
+                มิเตอร์ไฟ (เก่า → ใหม่ → หน่วย)
               </th>
               <th class="p-3.5 min-w-[220px] bg-cyan-50/40 border-r border-cyan-100">
-                💧 มิเตอร์น้ำ (เก่า ➔ ใหม่ ➔ หน่วย)
+                มิเตอร์น้ำ (เก่า → ใหม่ → หน่วย)
               </th>
               <th class="p-3.5 min-w-[130px]">ค่าอื่นๆ (บาท)</th>
               <th class="p-3.5 min-w-[120px] text-right">ยอดรวมประมาณ</th>
@@ -99,7 +99,7 @@
                   <span>Room {{ row.roomNumber }}</span>
                 </div>
                 <div class="text-xs text-slate-500 truncate max-w-[140px]">
-                  👤 {{ row.tenant ? `${row.tenant.firstName} ${row.tenant.lastName}` : 'ไม่มีชื่อ' }}
+                  {{ row.tenant ? `${row.tenant.firstName} ${row.tenant.lastName}` : 'ไม่มีชื่อ' }}
                 </div>
               </td>
 
@@ -111,7 +111,7 @@
                     <div class="w-16 text-center py-1 bg-amber-100/60 rounded-lg text-xs font-mono font-bold text-amber-900">
                       {{ row.previousElectricReading }}
                     </div>
-                    <span class="text-slate-400 font-bold">➔</span>
+                    <span class="text-slate-400 font-bold">→</span>
                     <!-- Current Electric Input -->
                     <input
                       v-model.number="row.currentElectricReading"
@@ -138,10 +138,10 @@
 
                   <!-- Electric Validation Badges -->
                   <div v-if="row.electricError" class="text-[10px] font-bold text-rose-600 flex items-center gap-1">
-                    <span>⚠️</span> <span>{{ row.electricError }}</span>
+                    <AlertCircle class="w-3.5 h-3.5 text-rose-500 inline mr-1" /><span>{{ row.electricError }}</span>
                   </div>
                   <div v-else-if="row.electricWarning" class="text-[10px] font-bold text-amber-700 flex items-center gap-1">
-                    <span>⚡</span> <span>{{ row.electricWarning }}</span>
+                    <Zap class="w-5 h-5 text-amber-500" /> <span>{{ row.electricWarning }}</span>
                   </div>
                 </div>
               </td>
@@ -154,7 +154,7 @@
                     <div class="w-16 text-center py-1 bg-cyan-100/60 rounded-lg text-xs font-mono font-bold text-cyan-900">
                       {{ row.previousWaterReading }}
                     </div>
-                    <span class="text-slate-400 font-bold">➔</span>
+                    <span class="text-slate-400 font-bold">→</span>
                     <!-- Current Water Input -->
                     <input
                       v-model.number="row.currentWaterReading"
@@ -181,10 +181,10 @@
 
                   <!-- Water Validation Badges -->
                   <div v-if="row.waterError" class="text-[10px] font-bold text-rose-600 flex items-center gap-1">
-                    <span>⚠️</span> <span>{{ row.waterError }}</span>
+                    <AlertCircle class="w-3.5 h-3.5 text-rose-500 inline mr-1" /><span>{{ row.waterError }}</span>
                   </div>
                   <div v-else-if="row.waterWarning" class="text-[10px] font-bold text-amber-700 flex items-center gap-1">
-                    <span>💧</span> <span>{{ row.waterWarning }}</span>
+                    <AlertTriangle class="w-3.5 h-3.5 text-amber-500 inline mr-1" /><span>{{ row.waterWarning }}</span>
                   </div>
                 </div>
               </td>
@@ -218,13 +218,13 @@
       <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="text-xs text-slate-600 flex items-center gap-4">
           <span class="flex items-center gap-1 font-semibold text-rose-600" v-if="totalErrors > 0">
-            <span>🔴</span> <span>มีข้อผิดพลาด {{ totalErrors }} จุด (โปรดแก้ไขก่อนบันทึก)</span>
+            <AlertCircle class="w-4 h-4 text-rose-600 inline mr-1" /><span>มีข้อผิดพลาด {{ totalErrors }} จุด (โปรดแก้ไขก่อนบันทึก)</span>
           </span>
           <span class="flex items-center gap-1 font-semibold text-amber-600" v-if="totalWarnings > 0">
-            <span>🟠</span> <span>หน่วยการใช้งานสูง {{ totalWarnings }} ห้อง</span>
+            <AlertTriangle class="w-4 h-4 text-amber-600 inline mr-1" /><span>หน่วยการใช้งานสูง {{ totalWarnings }} ห้อง</span>
           </span>
           <span v-if="totalErrors === 0" class="text-emerald-600 font-semibold flex items-center gap-1">
-            <span>✅</span> <span>ข้อมูลครบถ้วนพร้อมออกบิล</span>
+            <CheckCircle2 class="w-4 h-4 text-emerald-600 inline mr-1" /><span>ข้อมูลครบถ้วนพร้อมออกบิล</span>
           </span>
         </div>
 
@@ -234,7 +234,7 @@
           :disabled="submitting || totalErrors > 0"
           class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-cyan-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          <span>🚀</span>
+          <Zap class="w-4 h-4" />
           <span>{{ submitting ? 'กำลังออกบิล Draft (Transaction)...' : 'คำนวณ & ออกบิลแบบ Draft' }}</span>
         </button>
       </div>
@@ -243,6 +243,7 @@
 </template>
 
 <script setup>
+import { CheckCircle2, DoorOpen, Droplet, AlertCircle, Zap, AlertTriangle, RefreshCw } from 'lucide-vue-next';
 import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue';
 import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';

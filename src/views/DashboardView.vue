@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-white p-1 border border-slate-200/80 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
-          <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+          <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="48" height="48" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -88,10 +88,11 @@
 
       <div class="hidden sm:flex items-center gap-2 z-10">
         <span
-          class="px-3.5 py-1 rounded-full text-xs font-bold shrink-0"
+          class="px-3.5 py-1 rounded-full text-xs font-bold shrink-0 flex items-center gap-1.5"
           :class="isConsolidatedMode ? 'bg-cyan-500/25 text-cyan-200 border border-cyan-400/30' : 'bg-white text-cyan-800 border border-cyan-200 shadow-2xs'"
         >
-          {{ isConsolidatedMode ? '🏢 ทุกอาคาร' : `🏢 ${activeBuildingName}` }}
+          <Building2 class="w-3.5 h-3.5" />
+          <span>{{ isConsolidatedMode ? 'ทุกอาคาร' : activeBuildingName }}</span>
         </span>
       </div>
     </div>
@@ -102,7 +103,9 @@
         <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
         <span>{{ dashboardStore.errorMessage }}</span>
       </div>
-      <button @click="dashboardStore.errorMessage = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer">✕</button>
+      <button @click="dashboardStore.errorMessage = ''" class="text-rose-500 hover:text-rose-700 cursor-pointer">
+        <X class="w-4 h-4" />
+      </button>
     </div>
 
     <!-- Loading State Skeleton -->
@@ -116,7 +119,7 @@
       <!-- Building Comparison Section (Visible in Consolidated Mode) -->
       <div v-if="isConsolidatedMode && summary.buildingBreakdown?.length > 0" class="space-y-3">
         <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-          <span>🏢 เปรียบเทียบผลประกอบการระหว่างตึก (Building Breakdown)</span>
+          <span>เปรียบเทียบผลประกอบการระหว่างตึก (Building Breakdown)</span>
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -341,7 +344,7 @@
                   <tr v-for="inv in summary.debt?.debtors" :key="inv.id" class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3.5 font-bold text-slate-900 font-mono">
                       <span class="bg-slate-100 text-slate-800 px-2 py-1 rounded-lg border border-slate-200">
-                        🚪 {{ inv.room?.roomNumber }}
+                        {{ inv.room?.roomNumber }}
                       </span>
                     </td>
                     <td class="p-3.5 font-medium text-slate-800">
@@ -363,7 +366,7 @@
                   </tr>
                   <tr v-if="!summary.debt?.debtors || summary.debt?.debtors.length === 0">
                     <td colspan="5" class="p-10 text-center text-slate-400">
-                      <div class="text-3xl mb-1.5">🎉</div>
+                      <div class="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto text-emerald-600 mb-1.5"><CheckCircle2 class="w-5 h-5" /></div>
                       <div class="font-bold text-slate-700 text-sm">ไม่มีรายการห้องค้างชำระในระบบ</div>
                       <div class="text-xs text-slate-400 mt-0.5">ลูกบ้านทุกคนชำระค่าเช่าตรงเวลาเรียบร้อย</div>
                     </td>
@@ -391,7 +394,7 @@
                 class="px-3 py-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-bold border border-cyan-200 transition-all flex items-center gap-1"
               >
                 <span>ดูทั้งหมด</span>
-                <span>➔</span>
+                <ArrowRight class="w-3.5 h-3.5" />
               </router-link>
             </div>
 
@@ -409,12 +412,12 @@
                   <tr v-for="lease in summary.expiringLeases" :key="lease.id" class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3.5 font-bold text-slate-900 font-mono">
                       <span class="bg-slate-100 text-slate-800 px-2 py-1 rounded-lg border border-slate-200">
-                        🚪 {{ lease.room?.roomNumber }}
+                        {{ lease.room?.roomNumber }}
                       </span>
                     </td>
                     <td class="p-3.5 font-medium text-slate-800">
                       <div>{{ lease.tenant ? `${lease.tenant.firstName} ${lease.tenant.lastName}` : '-' }}</div>
-                      <span class="block text-[10px] text-slate-400 font-mono mt-0.5">📞 {{ lease.tenant?.phone || '-' }}</span>
+                      <span class="block text-[10px] text-slate-400 font-mono mt-0.5">{{ lease.tenant?.phone || '-' }}</span>
                     </td>
                     <td class="p-3.5 font-bold text-amber-700 font-mono">
                       {{ lease.expectedEndDate ? new Date(lease.expectedEndDate).toLocaleDateString('th-TH') : '-' }}
@@ -425,7 +428,7 @@
                   </tr>
                   <tr v-if="!summary.expiringLeases || summary.expiringLeases.length === 0">
                     <td colspan="4" class="p-10 text-center text-slate-400">
-                      <div class="text-3xl mb-1.5">📑</div>
+                      <div class="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-1.5"><FileText class="w-5 h-5" /></div>
                       <div class="font-bold text-slate-700 text-sm">ไม่มีสัญญาที่กำลังจะหมดอายุใน 30 วัน</div>
                       <div class="text-xs text-slate-400 mt-0.5">สัญญาเช่าทุกห้องยังอยู่ในช่วงเวลาปกติ</div>
                     </td>
@@ -476,23 +479,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import {
-  Calendar,
-  Building2,
-  Building,
-  RefreshCw,
-  FileSpreadsheet,
-  FileText,
-  DollarSign,
-  AlertTriangle,
-  Home,
-  Wrench,
-  Globe,
-  AlertCircle,
-  BarChart3,
-  PieChart,
-  MessageSquare
-} from 'lucide-vue-next';
+import { DollarSign, FileSpreadsheet, AlertTriangle, AlertCircle, CheckCircle2, DoorOpen, Home, BarChart3, ArrowRight, X, RefreshCw, Building, PieChart, FileText, Calendar, MessageSquare, Globe, Building2, Wrench } from 'lucide-vue-next';
 import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Bar, Doughnut } from 'vue-chartjs';

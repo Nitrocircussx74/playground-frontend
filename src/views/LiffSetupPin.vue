@@ -261,7 +261,7 @@ const submitSetupPin = async () => {
         authStore.setLiffAuth(token, tenantData);
       }
 
-      const successTitle = isResetMode.value ? 'รีเซ็ตรหัส PIN สำเร็จ! 🎉' : 'ตั้งรหัส PIN สำเร็จ! 🎉';
+      const successTitle = isResetMode.value ? 'รีเซ็ตรหัส PIN สำเร็จ!' : 'ตั้งรหัส PIN สำเร็จ!';
       const successText = isResetMode.value
         ? 'คุณสามารถใช้รหัส PIN ใหม่นี้เข้าใช้งานหอพักได้ทันที'
         : 'คุณสามารถใช้รหัส PIN นี้เข้าใช้งานหอพักได้ทันที';

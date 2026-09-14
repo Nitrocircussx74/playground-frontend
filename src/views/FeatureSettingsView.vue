@@ -37,9 +37,9 @@
           v-model="buildingStore.activeBuildingId"
           class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 font-medium focus:outline-hidden focus:border-teal-400 cursor-pointer w-full sm:w-auto min-w-[240px]"
         >
-          <option :value="null">🌐 ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
+          <option :value="null">ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
           <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
-            🏢 {{ b.name }}
+            {{ b.name }}
           </option>
         </select>
       </div>

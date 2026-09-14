@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /web/login
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://horhub.com/sitemap.xml

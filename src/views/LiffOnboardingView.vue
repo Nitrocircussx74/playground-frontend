@@ -4,7 +4,7 @@
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
         <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
-          <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+          <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
 
         <div class="space-y-1">
@@ -350,7 +350,7 @@ const handleLinkAndLogin = async () => {
 
       const pinCreated = res.pinCreated ?? res.data?.pinCreated;
       await showSuccess(
-        pinCreated ? 'ตั้งรหัส PIN ใหม่และเข้าสู่ระบบสำเร็จ! 🎉' : 'เชื่อมต่อบัญชีสำเร็จ! 🎉',
+        pinCreated ? 'ตั้งรหัส PIN ใหม่และเข้าสู่ระบบสำเร็จ!' : 'เชื่อมต่อบัญชีสำเร็จ!',
         `ยินดีต้อนรับคุณ ${existingUserName.value || 'ลูกบ้าน'} เข้าสู่ระบบหอพัก`
       );
       router.replace('/liff/profile');

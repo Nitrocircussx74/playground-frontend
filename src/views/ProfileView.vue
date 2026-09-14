@@ -22,7 +22,7 @@
         :disabled="loading"
         class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md border border-white/15 transition-all shadow-xs"
       >
-        <span>🔄 Refresh Profile</span>
+        <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>Refresh Profile</span>
       </button>
     </div>
 
@@ -31,7 +31,7 @@
       <Card class="border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>👤</span>
+            <User class="w-5 h-5 text-cyan-600" />
             <span>ข้อมูลส่วนตัว & สิทธิ์การเข้าถึงตึก</span>
           </CardTitle>
           <CardDescription class="text-xs text-slate-500">
@@ -70,14 +70,14 @@
           <!-- Building Permissions Read-Only List -->
           <div class="space-y-2 pt-1">
             <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-              <span>🏢 ตึกที่คุณมีสิทธิ์ดูแล (Read-Only)</span>
+              <span>ตึกที่คุณมีสิทธิ์ดูแล (Read-Only)</span>
               <span v-if="isOwner" class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
                 เข้าถึงได้ทุกตึก (Owner Level)
               </span>
             </h4>
 
             <div v-if="isOwner" class="p-3 bg-teal-50/60 border border-teal-100 rounded-xl text-xs text-teal-900 font-medium">
-              🔑 ในฐานะ <span class="font-bold">OWNER</span> คุณมีสิทธิ์เข้าถึงและจัดการข้อมูลตึกและห้องพักทั้งหมดในระบบโดยปริยาย
+              ในฐานะ <span class="font-bold">OWNER</span> คุณมีสิทธิ์เข้าถึงและจัดการข้อมูลตึกและห้องพักทั้งหมดในระบบโดยปริยาย
             </div>
 
             <div v-else-if="assignedBuildings.length > 0" class="flex flex-wrap gap-2">
@@ -86,13 +86,13 @@
                 :key="b.id"
                 class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
               >
-                <span>🏢</span>
+                <Building2 class="w-4 h-4" />
                 <span>{{ b.name }}</span>
               </div>
             </div>
 
             <div v-else class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-medium">
-              ⚠️ ยังไม่มีการมอบหมายสิทธิ์ดูแลตึกใดๆ กรุณาติดต่อ OWNER เพื่อเปิดสิทธิ์
+              ยังไม่มีการมอบหมายสิทธิ์ดูแลตึกใดๆ กรุณาติดต่อ OWNER เพื่อเปิดสิทธิ์
             </div>
           </div>
         </CardContent>
@@ -102,7 +102,7 @@
       <Card class="border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>🔒</span>
+            <Lock class="w-4 h-4" />
             <span>เปลี่ยนรหัสผ่าน (Change Password)</span>
           </CardTitle>
           <CardDescription class="text-xs text-slate-500">
@@ -152,7 +152,7 @@
                 :disabled="updatingPwd"
                 class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <span>{{ updatingPwd ? 'กำลังบันทึก...' : '💾 บันทึกรหัสผ่านใหม่' }}</span>
+                <span>{{ updatingPwd ? 'กำลังบันทึก...' : 'บันทึกรหัสผ่านใหม่' }}</span>
               </button>
             </div>
           </form>
@@ -163,6 +163,7 @@
 </template>
 
 <script setup>
+import { RefreshCw, User, Building2, Lock, Save } from 'lucide-vue-next';
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import adminService from '@/services/adminService';

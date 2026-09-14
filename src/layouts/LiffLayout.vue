@@ -17,9 +17,13 @@
           
           <div v-else class="flex items-center gap-2">
             <img
-              :src="logoUrl || '/horhub-app-icon.png'"
+              :src="logoUrl || '/horhub-app-icon.webp'"
               alt="HorHub Logo"
+              width="32"
+              height="32"
               class="w-8 h-8 rounded-xl object-contain border border-slate-200/80 bg-white p-0.5 shadow-2xs"
+              loading="eager"
+              decoding="async"
             />
           </div>
         </div>
@@ -45,6 +49,7 @@
           >
             LIFF
           </span>
+          <NotificationBell v-if="showBottomNav" mode="tenant" />
           <button
             v-if="authStore.isWebTenant"
             @click="handleLogout"
@@ -165,6 +170,7 @@ import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { useAnnouncements } from '@/composables/useAnnouncements';
 import { initLiff, getLiffFriendship, openAddFriendLine, isLiffLoggedIn, closeLiffWindow } from '@/utils/liff';
 import { showSuccess, showWarning, showConfirm } from '@/utils/swal';
+import NotificationBell from '@/components/NotificationBell.vue';
 import {
   ChevronLeft,
   Home,

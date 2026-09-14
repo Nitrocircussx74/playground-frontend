@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">🏢 บริหารจัดการตึก / อาคาร (Building Management)</h1>
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2"><Building2 class="w-6 h-6 text-cyan-600" /><span>บริหารจัดการตึก / อาคาร (Building Management)</span></h1>
         <p class="text-sm text-slate-500">จัดการข้อมูลตึก/สาขา ธีมสี โลโก้ LIFF และตั้งค่า PromptPay QR Code ชำระเงินแยกตามตึก</p>
       </div>
 
@@ -39,7 +39,7 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold shadow-2xs shrink-0"
               :style="{ backgroundColor: b.themeColor || '#0E7490' }"
             >
-              🏢
+              <Building2 class="w-5 h-5" />
             </div>
             <div>
               <h3 class="font-bold text-slate-900 text-base">{{ b.name }}</h3>
@@ -105,7 +105,7 @@
             @click="openEditSettingModal(b)"
             class="px-3 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-semibold transition-all"
           >
-            ⚙️ แก้ไขธีม & QR
+            แก้ไขธีม & QR
           </button>
         </div>
       </div>
@@ -115,8 +115,8 @@
     <div v-if="showCreateModal" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5 border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-lg font-bold text-slate-900">🏢 เพิ่มตึก/อาคารใหม่</h3>
-          <button @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+          <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2"><Building2 class="w-5 h-5 text-cyan-600" /><span>เพิ่มตึก/อาคารใหม่</span></h3>
+          <button @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 font-bold"><X class="w-4 h-4" /></button>
         </div>
 
         <form @submit.prevent="handleCreateBuilding" class="space-y-4 text-xs">
@@ -164,7 +164,7 @@
               <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg border border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0">
                   <img v-if="createForm.logoUrl" :src="createForm.logoUrl" alt="Logo" class="w-full h-full object-contain" />
-                  <span v-else class="text-xs">🏢</span>
+                  <Building2 v-else class="w-4 h-4 text-slate-400" />
                 </div>
                 <label class="cursor-pointer flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-all">
                   <span>{{ isUploadingCreateLogo ? 'กำลังอัปโหลด...' : (createForm.logoUrl ? 'เปลี่ยนรูป' : 'อัปโหลดรูป') }}</span>
@@ -177,7 +177,7 @@
                   class="text-rose-500 hover:text-rose-700 font-bold px-1"
                   title="ลบรูป"
                 >
-                  ✕
+                  <X class="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -217,8 +217,11 @@
     <div v-if="showEditModal" class="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5 border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-lg font-bold text-slate-900">⚙️ ตั้งค่าธีม & บัญชี {{ selectedBuilding?.name }}</h3>
-          <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+          <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Settings class="w-5 h-5 text-cyan-600" />
+            <span>ตั้งค่าธีม & บัญชี {{ selectedBuilding?.name }}</span>
+          </h3>
+          <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 font-bold"><X class="w-4 h-4" /></button>
         </div>
 
         <form @submit.prevent="handleUpdateSetting" class="space-y-4 text-xs">
@@ -245,7 +248,7 @@
               <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg border border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0">
                   <img v-if="editForm.logoUrl" :src="editForm.logoUrl" alt="Logo" class="w-full h-full object-contain" />
-                  <span v-else class="text-xs">🏢</span>
+                  <Building2 v-else class="w-4 h-4 text-slate-400" />
                 </div>
                 <label class="cursor-pointer flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-all">
                   <span>{{ isUploadingEditLogo ? 'กำลังอัปโหลด...' : (editForm.logoUrl ? 'เปลี่ยนรูป' : 'อัปโหลดรูป') }}</span>
@@ -258,7 +261,7 @@
                   class="text-rose-500 hover:text-rose-700 font-bold px-1"
                   title="ลบรูป"
                 >
-                  ✕
+                  <X class="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -319,6 +322,7 @@
 </template>
 
 <script setup>
+import { Building2, Settings, X, Plus, Edit } from 'lucide-vue-next';
 import { ref, reactive, onMounted } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';

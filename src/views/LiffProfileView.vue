@@ -127,7 +127,7 @@
                   class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"
                   :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-400/25 text-amber-100 border border-amber-300/40' : 'bg-sky-400/25 text-sky-100 border border-sky-300/40'"
                 >
-                  <span>{{ tenantProfile.isPrimaryTenant !== false ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}</span>
+                  <span>{{ tenantProfile.isPrimaryTenant !== false ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}</span>
                 </span>
               </div>
             </div>
@@ -671,7 +671,7 @@
               class="px-2 py-0.5 text-[9px] font-bold rounded-full shrink-0"
               :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'"
             >
-              {{ tenantProfile.isPrimaryTenant !== false ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}
+              {{ tenantProfile.isPrimaryTenant !== false ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}
             </span>
           </div>
 
@@ -699,7 +699,7 @@
                 </div>
               </div>
               <span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-slate-100 text-slate-600 shrink-0">
-                👥 ผู้อยู่อาศัยร่วม
+                ผู้อยู่อาศัยร่วม
               </span>
             </div>
           </template>

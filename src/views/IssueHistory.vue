@@ -160,7 +160,7 @@
           >
             <div class="flex items-center gap-2 text-teal-900 font-extrabold text-xs">
               <span class="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold shadow-2xs">
-                ✓
+                
               </span>
               <span>ข้อความตอบกลับจากแอดมิน / ช่างซ่อม</span>
             </div>

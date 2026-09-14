@@ -27,7 +27,7 @@
               @click="showVehicleForm = true"
               class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold"
             >
-              ➕ ลงทะเบียนรถใหม่
+              ลงทะเบียนรถใหม่
             </button>
 
             <div v-for="v in myVehicles" :key="v.id" class="bg-white rounded-2xl border border-slate-100/90 shadow-xs p-4 flex items-center justify-between gap-3">
@@ -65,7 +65,7 @@
               @click="showVisitorForm = true"
               class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold"
             >
-              ➕ แจ้งแขกล่วงหน้า
+              แจ้งแขกล่วงหน้า
             </button>
 
             <div v-for="v in myVisitors" :key="v.id" class="bg-white rounded-2xl border border-slate-100/90 shadow-xs p-4 flex items-center justify-between gap-3">
@@ -93,7 +93,7 @@
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
           <div class="px-5 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white flex items-center justify-between">
             <h3 class="font-bold text-sm">ลงทะเบียนยานพาหนะ</h3>
-            <button @click="showVehicleForm = false" class="text-cyan-100 hover:text-white">✕</button>
+            <button @click="showVehicleForm = false" class="text-cyan-100 hover:text-white">&times;</button>
           </div>
           <form @submit.prevent="handleRegisterVehicle" class="p-5 space-y-4">
             <div>
@@ -126,7 +126,7 @@
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
           <div class="px-5 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white flex items-center justify-between">
             <h3 class="font-bold text-sm">แจ้งแขกล่วงหน้า</h3>
-            <button @click="showVisitorForm = false" class="text-cyan-100 hover:text-white">✕</button>
+            <button @click="showVisitorForm = false" class="text-cyan-100 hover:text-white">&times;</button>
           </div>
           <form @submit.prevent="handleCreateVisitor" class="p-5 space-y-4">
             <div>

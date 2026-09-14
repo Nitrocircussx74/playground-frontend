@@ -10,6 +10,24 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-vue': ['vue', 'vue-router', 'pinia'],
+          'vendor-ui': ['lucide-vue-next', 'radix-vue', 'sweetalert2'],
+          'vendor-charts': ['chart.js', 'vue-chartjs']
+        }
+      }
+    }
+  },
+  preview: {
+    port: 5173,
+    headers: {
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    }
+  },
   server: {
     port: 5173,
     host: true,
@@ -22,3 +40,5 @@ export default defineConfig({
     }
   }
 })
+
+

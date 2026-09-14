@@ -90,7 +90,7 @@
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
           <div class="px-5 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-between">
             <h3 class="font-bold text-sm">จอง: {{ bookingFacility.name }}</h3>
-            <button @click="bookingFacility = null" class="text-indigo-100 hover:text-white">✕</button>
+            <button @click="bookingFacility = null" class="text-indigo-100 hover:text-white">&times;</button>
           </div>
           <form @submit.prevent="handleBook" class="p-5 space-y-4">
             <div>

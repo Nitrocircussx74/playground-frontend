@@ -2,7 +2,10 @@
   <div class="space-y-6 font-sans">
     <!-- Header Banner -->
     <div class="bg-gradient-to-r from-cyan-600 via-sky-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl">
-      <h1 class="text-2xl font-black tracking-tight text-white">🚗 จัดการยานพาหนะ/ผู้มาเยือน (Vehicle & Visitor)</h1>
+      <div class="flex items-center gap-2 mb-1">
+        <Car class="w-6 h-6 text-cyan-200" />
+        <h1 class="text-2xl font-black tracking-tight text-white">จัดการยานพาหนะ/ผู้มาเยือน (Vehicle & Visitor)</h1>
+      </div>
       <p class="text-xs text-cyan-100/80 mt-1 max-w-xl">
         อนุมัติ/ปฏิเสธทะเบียนรถของลูกบ้าน และดูรายชื่อแขกที่แจ้งล่วงหน้า
       </p>
@@ -46,11 +49,13 @@
                   </td>
                   <td class="p-3.5 text-right space-x-1.5">
                     <template v-if="v.status === 'PENDING'">
-                      <button @click="handleApprove(v.id)" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer">
-                        ✅ อนุมัติ
+                      <button @click="handleApprove(v.id)" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1">
+                        <CheckCircle2 class="w-3.5 h-3.5" />
+                        <span>อนุมัติ</span>
                       </button>
-                      <button @click="handleReject(v.id)" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer">
-                        ปฏิเสธ
+                      <button @click="handleReject(v.id)" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1">
+                        <X class="w-3.5 h-3.5" />
+                        <span>ปฏิเสธ</span>
                       </button>
                     </template>
                   </td>
@@ -108,8 +113,9 @@
 import { ref, onMounted, watch } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
-import { showError } from '@/utils/swal';
+import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
+import { Car, CheckCircle2, X } from 'lucide-vue-next';
 
 const buildingStore = useBuildingStore();
 
@@ -147,7 +153,8 @@ const fetchVisitors = async (bId) => {
 
 const handleApprove = async (id) => {
   try {
-    await api.patch(`/api/admin/vehicles/${id}/approve`);
+    await api.patch(`/api/admin/vehicles/${id}/status`, { status: 'APPROVED' });
+    showSuccess('สำเร็จ', 'อนุมัติทะเบียนรถเรียบร้อย');
     loadData();
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถอนุมัติได้');
@@ -155,8 +162,11 @@ const handleApprove = async (id) => {
 };
 
 const handleReject = async (id) => {
+  const confirmed = await showConfirm('ยืนยันปฏิเสธ', 'ต้องการปฏิเสธทะเบียนรถนี้ใช่หรือไม่?');
+  if (!confirmed) return;
   try {
-    await api.patch(`/api/admin/vehicles/${id}/reject`);
+    await api.patch(`/api/admin/vehicles/${id}/status`, { status: 'REJECTED' });
+    showSuccess('สำเร็จ', 'ปฏิเสธทะเบียนรถเรียบร้อย');
     loadData();
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถปฏิเสธได้');

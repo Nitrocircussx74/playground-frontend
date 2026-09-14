@@ -1,7 +1,7 @@
 import { initLiff, isInLiffClient, openExternalWindow } from '@/utils/liff';
-import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
 import { showToast } from '@/utils/swal';
+
 
 /**
  * ดาวน์โหลด Blob ลงเครื่องผ่าน Object URL + Anchor Element (คลิกแล้วเคลียร์ทิ้งอัตโนมัติ)
@@ -94,7 +94,7 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
         
         <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 10px 12px; width: 100%; text-align: left; box-sizing: border-box;">
           <div style="font-weight: 700; color: #312e81; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
-            <span>📱</span> <span>วิธีบันทึกลงแกลเลอรี:</span>
+            <span>วิธีบันทึกลงแกลเลอรี:</span>
           </div>
           <p style="font-size: 11px; color: #3730a3; margin: 0; line-height: 1.45;">
             กดปุ่ม <b>"ดาวน์โหลดรูปภาพ"</b> ด้านล่าง หรือแตะค้างที่รูปภาพเพื่อเลือก <b>"บันทึกรูปภาพ"</b> ลงเครื่อง
@@ -103,7 +103,7 @@ export async function showQrImagePreviewModal(dataUrl, filename = 'promptpay-qr.
       </div>
     `,
     showConfirmButton: true,
-    confirmButtonText: '📥 ดาวน์โหลดรูปภาพ QR Code',
+    confirmButtonText: 'ดาวน์โหลดรูปภาพ QR Code',
     showCancelButton: true,
     cancelButtonText: 'ปิดหน้าต่าง',
     buttonsStyling: false,
@@ -187,6 +187,7 @@ export async function captureAndDownloadElement(element, filename = 'promptpay-q
   }
 
   try {
+    const { default: html2canvas } = await import('html2canvas');
     const canvas = await html2canvas(element, {
       scale: 3, // High-res retina quality
       useCORS: true,

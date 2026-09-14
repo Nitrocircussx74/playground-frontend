@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>👥</span>
+          <Users class="w-6 h-6 text-cyan-600" />
           <span>ทะเบียนผู้เช่า & ระบบ CRM (Tenant CRM & History)</span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-500">
@@ -74,21 +74,21 @@
           class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg transition-all cursor-pointer"
           :class="selectedFilter === 'ACTIVE' ? 'bg-emerald-600 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
         >
-          🟢 กำลังเช่า ({{ activeTenantsCount }})
+          กำลังเช่า ({{ activeTenantsCount }})
         </button>
         <button
           @click="selectedFilter = 'ENDED'"
           class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg transition-all cursor-pointer"
           :class="selectedFilter === 'ENDED' ? 'bg-slate-700 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
         >
-          ⚪ ย้ายออก ({{ endedTenantsCount }})
+          ย้ายออก ({{ endedTenantsCount }})
         </button>
         <button
           @click="selectedFilter = 'BLACKLIST'"
           class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg transition-all cursor-pointer"
           :class="selectedFilter === 'BLACKLIST' ? 'bg-rose-600 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
         >
-          🔴 Blacklist ({{ blacklistedTenantsCount }})
+          Blacklist ({{ blacklistedTenantsCount }})
         </button>
       </div>
 
@@ -100,7 +100,7 @@
           placeholder="ค้นหาชื่อ, เบอร์โทร, เลขบัตร..."
           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
         />
-        <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+        <span class="absolute left-3 top-2.5 text-slate-400"><Search class="w-4 h-4" /></span>
       </div>
     </div>
 
@@ -131,7 +131,7 @@
                 v-else
                 class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-lg flex items-center justify-center ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
               >
-                {{ t.firstName ? t.firstName.charAt(0).toUpperCase() : '👤' }}
+                {{ t.firstName ? t.firstName.charAt(0).toUpperCase() : 'U' }}
               </div>
 
               <div>
@@ -139,7 +139,7 @@
                   {{ t.firstName }} {{ t.lastName }}
                 </div>
                 <div class="text-xs text-slate-500 flex items-center gap-1 font-mono">
-                  <span>📞</span>
+                  <Phone class="w-3.5 h-3.5 text-slate-400" />
                   <span>{{ t.phone || '-' }}</span>
                 </div>
               </div>
@@ -151,19 +151,19 @@
                 v-if="t.isBlacklisted"
                 class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200"
               >
-                🔴 Blacklist
+                Blacklist
               </span>
               <span
                 v-else-if="isTenantActive(t)"
                 class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200"
               >
-                🟢 กำลังเช่า
+                กำลังเช่า
               </span>
               <span
                 v-else
                 class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"
               >
-                ⚪ ย้ายออก
+                ย้ายออก
               </span>
             </div>
           </div>
@@ -173,7 +173,7 @@
             <div class="flex items-center justify-between">
               <span class="text-slate-500 text-[11px]">ห้องพักปัจจุบัน:</span>
               <span v-if="t.rooms && t.rooms.length > 0" class="font-bold text-cyan-800">
-                🏠 ห้อง {{ t.rooms.map(r => r.roomNumber).join(', ') }}
+                ห้อง {{ t.rooms.map(r => r.roomNumber).join(', ') }}
               </span>
               <span v-else class="text-slate-400 italic text-[11px]">ไม่มีห้องพักผูกอยู่</span>
             </div>
@@ -190,7 +190,7 @@
           :to="`/tenants/${t.id}`"
           class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <span>👤 ดูโปรไฟล์ & ประวัติ 360°</span>
+          <User class="w-3.5 h-3.5" /><span>ดูโปรไฟล์ & ประวัติ 360°</span>
           <span>→</span>
         </router-link>
       </div>
@@ -198,7 +198,7 @@
 
     <!-- Empty State -->
     <div v-else class="p-12 text-center bg-white border border-slate-200 rounded-3xl text-slate-400 space-y-2">
-      <div class="text-4xl">👥</div>
+      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Users class="w-6 h-6" /></div>
       <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้เช่า</div>
       <p class="text-xs">ลองค้นหาด้วยคำค้นอื่น หรือสลับตัวกรองสถานะ</p>
     </div>
@@ -213,6 +213,7 @@
 </template>
 
 <script setup>
+import { Users, Search, Phone, User, Building2 } from 'lucide-vue-next';
 import { ref, computed, onMounted, watch } from 'vue';
 import tenantService from '@/services/tenantService';
 import { useBuildingStore } from '@/stores/useBuildingStore';

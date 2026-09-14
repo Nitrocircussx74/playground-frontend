@@ -3,7 +3,10 @@
     <!-- Header Banner -->
     <div class="bg-gradient-to-r from-indigo-600 via-blue-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black tracking-tight text-white">📅 จองพื้นที่ส่วนกลาง (Facility Booking)</h1>
+        <div class="flex items-center gap-2 mb-1">
+          <CalendarCheck class="w-6 h-6 text-indigo-200" />
+          <h1 class="text-2xl font-black tracking-tight text-white">จองพื้นที่ส่วนกลาง (Facility Booking)</h1>
+        </div>
         <p class="text-xs text-indigo-100/80 mt-1 max-w-xl">
           จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด
         </p>
@@ -11,9 +14,10 @@
       <button
         v-if="activeTab === 'facilities'"
         @click="openCreateFacilityModal"
-        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer"
+        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
       >
-        ➕ เพิ่มพื้นที่ส่วนกลาง
+        <Plus class="w-4 h-4" />
+        <span>เพิ่มพื้นที่ส่วนกลาง</span>
       </button>
     </div>
 
@@ -56,9 +60,10 @@
                     </button>
                     <button
                       @click="handleDeleteFacility(f.id)"
-                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer"
+                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1"
                     >
-                      🗑️ ลบ
+                      <Trash2 class="w-3.5 h-3.5" />
+                      <span>ลบ</span>
                     </button>
                   </td>
                 </tr>
@@ -122,7 +127,9 @@
       <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-between">
           <h3 class="font-bold text-base text-white">เพิ่มพื้นที่ส่วนกลาง</h3>
-          <button @click="showModal = false" class="text-indigo-100 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+          <button @click="showModal = false" class="text-indigo-100 hover:text-white p-1 rounded-lg cursor-pointer">
+            <X class="w-5 h-5" />
+          </button>
         </div>
         <form @submit.prevent="handleCreateFacility" class="p-6 space-y-4">
           <div>
@@ -132,7 +139,7 @@
               required
               type="text"
               placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
             />
           </div>
           <div>
@@ -140,15 +147,16 @@
             <textarea
               v-model="form.description"
               rows="2"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
             ></textarea>
           </div>
           <div class="pt-3 flex gap-3">
             <button type="button" @click="showModal = false" class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold cursor-pointer">
               ยกเลิก
             </button>
-            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer">
-              {{ submitting ? 'กำลังบันทึก...' : '✅ บันทึก' }}
+            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
+              <CheckCircle2 class="w-4 h-4" />
+              <span>{{ submitting ? 'กำลังบันทึก...' : 'บันทึก' }}</span>
             </button>
           </div>
         </form>
@@ -163,6 +171,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
+import { CalendarCheck, Plus, Trash2, X, CheckCircle2 } from 'lucide-vue-next';
 
 const buildingStore = useBuildingStore();
 
@@ -212,7 +221,7 @@ const handleCreateFacility = async () => {
   try {
     const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
     const res = await api.post(`/api/admin/buildings/${bId}/facilities`, form);
-    await showSuccess('สำเร็จ!', res.data.message);
+    await showSuccess('สำเร็จ', res.data.message);
     showModal.value = false;
     loadData();
   } catch (error) {

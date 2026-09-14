@@ -4,10 +4,15 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
-          <h3 class="text-lg font-bold text-slate-900">🔑 รหัสเชิญลงทะเบียนห้อง {{ room?.roomNumber }}</h3>
-          <p class="text-xs text-slate-500">จัดการและสร้าง Invite Code สำหรับผูกผู้เช่าใหม่ผ่าน LINE</p>
+          <div class="flex items-center gap-2">
+            <KeyRound class="w-5 h-5 text-teal-600" />
+            <h3 class="text-lg font-bold text-slate-900">รหัสเชิญลงทะเบียนห้อง {{ room?.roomNumber }}</h3>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">จัดการและสร้าง Invite Code สำหรับผูกผู้เช่าใหม่ผ่าน LINE</p>
         </div>
-        <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer">
+          <X class="w-5 h-5" />
+        </button>
       </div>
 
       <!-- Action Button: Generate New Invite Code -->
@@ -20,17 +25,21 @@
         <button
           @click="handleGenerateInvite"
           :disabled="generating"
-          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
         >
-          {{ generating ? 'กำลังสร้าง...' : '⚡ สร้างรหัสเชิญ' }}
+          <Sparkles class="w-3.5 h-3.5" />
+          <span>{{ generating ? 'กำลังสร้าง...' : 'สร้างรหัสเชิญ' }}</span>
         </button>
       </div>
 
       <!-- Newly Generated Code Alert Box -->
       <div v-if="newlyGenerated" class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
         <div class="flex items-center justify-between text-xs text-emerald-800 font-semibold">
-          <span>🎉 สร้างรหัสเชิญสำเร็จแล้ว!</span>
-          <span class="font-mono">หมดอายุใน 48 ชม.</span>
+          <div class="flex items-center gap-1.5">
+            <Check class="w-4 h-4 text-emerald-600" />
+            <span>สร้างรหัสเชิญสำเร็จแล้ว</span>
+          </div>
+          <span class="font-mono text-[11px]">หมดอายุใน 48 ชม.</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -40,16 +49,18 @@
 
           <button
             @click="copyToClipboard(newlyGenerated.code, 'code')"
-            class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs"
+            class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
           >
-            {{ copiedType === 'code' ? '✓ คัดลอกแล้ว' : '📋 คัดลอกรหัส' }}
+            <component :is="copiedType === 'code' ? Check : Copy" class="w-3.5 h-3.5" />
+            <span>{{ copiedType === 'code' ? 'คัดลอกแล้ว' : 'คัดลอกรหัส' }}</span>
           </button>
 
           <button
             @click="copyToClipboard(getShareUrl(newlyGenerated.code), 'link')"
-            class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs"
+            class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
           >
-            {{ copiedType === 'link' ? '✓ คัดลอกลิงก์แล้ว' : '🔗 คัดลอกลิงก์ LINE' }}
+            <component :is="copiedType === 'link' ? Check : Link" class="w-3.5 h-3.5" />
+            <span>{{ copiedType === 'link' ? 'คัดลอกลิงก์แล้ว' : 'คัดลอกลิงก์' }}</span>
           </button>
         </div>
       </div>
@@ -89,14 +100,15 @@
               <button
                 v-if="!inv.isUsed && new Date(inv.expiresAt) > new Date()"
                 @click="copyToClipboard(getShareUrl(inv.code), inv.id)"
-                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-medium transition-all"
+                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer"
               >
-                {{ copiedType === inv.id ? '✓ คัดลอกแล้ว' : '🔗 ลิงก์' }}
+                <component :is="copiedType === inv.id ? Check : Link" class="w-3 h-3" />
+                <span>{{ copiedType === inv.id ? 'คัดลอกแล้ว' : 'ลิงก์' }}</span>
               </button>
 
               <button
                 @click="handleRevokeInvite(inv.id)"
-                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-[11px] font-medium transition-all"
+                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-[11px] font-medium transition-all cursor-pointer"
               >
                 ยกเลิก
               </button>
@@ -109,9 +121,9 @@
       <div class="pt-2">
         <button
           @click="$emit('close')"
-          class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all"
+          class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition-all cursor-pointer"
         >
-          ปิดหน้าต่าง (Close)
+          ปิดหน้าต่าง
         </button>
       </div>
     </div>
@@ -121,11 +133,12 @@
 <script setup>
 import { ref, watch } from 'vue';
 import api from '@/utils/api';
-import { showError, showConfirm, showToast } from '@/utils/swal';
+import { showSuccess, showError } from '@/utils/swal';
+import { KeyRound, Sparkles, Copy, Link, Check, X } from 'lucide-vue-next';
 
 const props = defineProps({
-  show: Boolean,
-  room: Object
+  show: { type: Boolean, default: false },
+  room: { type: Object, default: null }
 });
 
 const emit = defineEmits(['close']);
@@ -136,71 +149,71 @@ const generating = ref(false);
 const newlyGenerated = ref(null);
 const copiedType = ref('');
 
-watch(
-  () => props.show,
-  (newVal) => {
-    if (newVal && props.room?.id) {
-      fetchInvites();
-      newlyGenerated.value = null;
-    }
-  }
-);
-
 const fetchInvites = async () => {
   if (!props.room?.id) return;
   loading.value = true;
   try {
-    const res = await api.get(`/api/v1/rooms/${props.room.id}/invites`);
-    invites.value = res.data.data || [];
-  } catch (error) {
-    console.error('Failed to fetch invites:', error);
+    const res = await api.get(`/api/v1/invites/room/${props.room.id}`);
+    invites.value = res.data?.data || [];
+  } catch (err) {
+    console.warn('Failed to load invites:', err);
   } finally {
     loading.value = false;
   }
 };
 
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      newlyGenerated.value = null;
+      copiedType.value = '';
+      fetchInvites();
+    }
+  }
+);
+
 const handleGenerateInvite = async () => {
-  if (!props.room?.id) return;
   generating.value = true;
   try {
-    const res = await api.post(`/api/v1/rooms/${props.room.id}/invites`);
-    newlyGenerated.value = res.data.data;
-    showToast('สร้างรหัสเชิญสำเร็จ!');
-    await fetchInvites();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to generate invite code');
+    const res = await api.post('/api/v1/invites', {
+      roomId: props.room.id,
+      expiresInHours: 48
+    });
+    newlyGenerated.value = res.data?.data;
+    fetchInvites();
+    showSuccess('สร้างสำเร็จ', 'สร้างรหัสเชิญเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถสร้างรหัสเชิญได้');
   } finally {
     generating.value = false;
   }
 };
 
-const handleRevokeInvite = async (inviteId) => {
-  const confirmed = await showConfirm('ยกเลิกรหัสเชิญ', 'คุณต้องการยกเลิกรหัสเชิญนี้ใช่หรือไม่?');
-  if (!confirmed) return;
+const handleRevokeInvite = async (id) => {
   try {
-    await api.delete(`/api/v1/rooms/invites/${inviteId}`);
-    showToast('ยกเลิกรหัสเชิญเรียบร้อยแล้ว');
-    await fetchInvites();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to revoke invite');
+    await api.delete(`/api/v1/invites/${id}`);
+    fetchInvites();
+    showSuccess('ยกเลิกสำเร็จ', 'ยกเลิกรหัสเชิญเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', 'ไม่สามารถยกเลิกรหัสเชิญได้');
   }
 };
 
 const getShareUrl = (code) => {
-  // ต้องใช้ https://liff.line.me/{LIFF_ID}/... ไม่ใช่ window.location.origin มิฉะนั้นลิงก์ที่แชร์ไปจะเปิดเป็นเว็บปกติ
-  // ไม่ใช่แอป LIFF ใน LINE — เหมือน pattern เดียวกับ router/index.js, utils/liff.js
-  const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
-  if (liffId) {
-    return `https://liff.line.me/${liffId}/register?inviteCode=${code}`;
-  }
-  return `${window.location.origin}/liff/register?inviteCode=${code}`;
+  const base = window.location.origin;
+  return `${base}/liff/onboarding?code=${code}`;
 };
 
-const copyToClipboard = (text, type) => {
-  navigator.clipboard.writeText(text);
-  copiedType.value = type;
-  setTimeout(() => {
-    copiedType.value = '';
-  }, 2000);
+const copyToClipboard = async (text, type) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    copiedType.value = type;
+    setTimeout(() => {
+      if (copiedType.value === type) copiedType.value = '';
+    }, 2500);
+  } catch (err) {
+    console.error('Copy failed:', err);
+  }
 };
 </script>

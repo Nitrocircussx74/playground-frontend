@@ -8,7 +8,7 @@
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
           :class="activeTab === 'all-invoices' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
-          <span>🧾</span>
+          <Receipt class="w-4 h-4" />
           <span>ใบแจ้งหนี้ทั้งหมด (All Invoices)</span>
         </button>
 
@@ -17,7 +17,7 @@
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
           :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
-          <span>📝</span>
+          <FileEdit class="w-4 h-4" />
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
         </button>
       </div>
@@ -31,7 +31,7 @@
           title="สั่งคำนวณและอัปเดตค่าปรับบิลค้างชำระอัตโนมัติตามนโยบายแต่ละตึก"
         >
           <span v-if="runningLateFees" class="animate-spin w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full"></span>
-          <span v-else>⚡</span>
+          <Zap v-else class="w-3.5 h-3.5" />
           <span>{{ runningLateFees ? 'กำลังคำนวณ...' : 'คำนวณค่าปรับ' }}</span>
         </button>
 
@@ -42,7 +42,7 @@
           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
           title="ส่ง LINE Flex Message แจ้งเตือนไปยังลูกบ้านที่ค้างชำระทั้งหมด"
         >
-          <span>💬</span>
+          <Send class="w-4 h-4" />
           <span>ส่ง LINE เตือนยอดค้างทั้งหมด</span>
           <span v-if="unpaidCount > 0" class="px-1.5 py-0.2 bg-emerald-800 text-white text-[11px] rounded-full font-bold ml-0.5">
             {{ unpaidCount }}
@@ -54,7 +54,8 @@
           @click="openCreateModal"
           class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer"
         >
-          <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
+          <Plus class="w-4 h-4" />
+          <span>ออกบิลปรับแต่ง (Custom Invoice)</span>
         </button>
       </div>
     </div>
@@ -74,7 +75,10 @@
               ค้างชำระ {{ unpaidCount }} รายการ
             </span>
           </div>
-          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-teal-600 hover:underline font-semibold cursor-pointer">🔄 Refresh</button>
+          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-teal-600 hover:underline font-semibold cursor-pointer flex items-center gap-1">
+            <RotateCw class="w-3.5 h-3.5" />
+            <span>รีเฟรช</span>
+          </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -153,7 +157,7 @@
                       'bg-rose-100 border-rose-300 text-rose-800': inv.status === 'overdue'
                     }"
                   >
-                    <span>{{ inv.status === 'paid' ? '✅' : '⏳' }}</span>
+                    <component :is="inv.status === 'paid' ? CheckCircle2 : Clock" class="w-3 h-3" />
                     <span>{{ inv.status.toUpperCase() }}</span>
                   </span>
                 </td>
@@ -163,49 +167,54 @@
                     v-if="inv.status !== 'paid'"
                     @click="handleRemindSingle(inv)"
                     :disabled="sendingReminderId === inv.id"
-                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50 inline-flex items-center gap-1"
                     :title="inv.tenant?.lineUserId ? 'ส่ง LINE แจ้งเตือนบิลค้างชำระ' : 'ลูกบ้านยังไม่ผูก LINE'"
                   >
-                    <span>{{ sendingReminderId === inv.id ? '⏳ กำลังส่ง...' : '💬 เตือน LINE' }}</span>
+                    <Send class="w-3.5 h-3.5" />
+                    <span>{{ sendingReminderId === inv.id ? 'กำลังส่ง...' : 'เตือน LINE' }}</span>
                   </button>
 
                   <!-- Manual Record Payment Button (For Non-Paid Invoices) -->
                   <button
                     v-if="inv.status !== 'paid'"
                     @click="openPaymentModal(inv)"
-                    class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer inline-flex items-center gap-1"
                   >
-                    💵 รับเงินสด
+                    <Banknote class="w-3.5 h-3.5" />
+                    <span>รับเงินสด</span>
                   </button>
 
                   <!-- Print Invoice / Receipt Button -->
                   <button
                     @click="openPrintModal(inv)"
-                    class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                    class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer inline-flex items-center gap-1"
                   >
-                    🖨️ พิมพ์บิล
+                    <Printer class="w-3.5 h-3.5" />
+                    <span>พิมพ์บิล</span>
                   </button>
 
                   <!-- Edit Invoice Button -->
                   <button
                     v-if="inv.status !== 'paid'"
                     @click="openEditModal(inv)"
-                    class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer"
+                    class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer inline-flex items-center gap-1"
                   >
-                    ✏️ แก้ไข
+                    <Edit3 class="w-3.5 h-3.5" />
+                    <span>แก้ไข</span>
                   </button>
 
                   <!-- PDF Export Button -->
                   <button
                     @click="invoiceStore.exportPdf(inv.id, inv.invoiceNumber)"
-                    class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer"
+                    class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer inline-flex items-center gap-1"
                   >
-                    📄 PDF
+                    <FileText class="w-3.5 h-3.5" />
+                    <span>PDF</span>
                   </button>
                 </td>
               </tr>
               <tr v-if="invoiceStore.invoices.length === 0">
-                <td colspan="13" class="p-6 text-center text-slate-400">ยังไม่มีรายการใบแจ้งหนี้</td>
+                <td colspan="14" class="p-6 text-center text-slate-400">ยังไม่มีรายการใบแจ้งหนี้</td>
               </tr>
             </tbody>
           </table>
@@ -221,15 +230,17 @@
         @saved="invoiceStore.fetchInvoices()"
       />
 
-      <!-- 💵 Record Manual Payment Dialog Modal -->
+      <!-- Record Manual Payment Dialog Modal -->
       <div v-if="showPaymentModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
         <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           <div class="px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-800 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-xl">💵</span>
+              <Banknote class="w-5 h-5" />
               <h3 class="font-bold text-base text-white">บันทึกรับชำระเงิน (Record Payment)</h3>
             </div>
-            <button @click="showPaymentModal = false" class="text-emerald-200 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+            <button @click="showPaymentModal = false" class="text-emerald-200 hover:text-white p-1 rounded-lg cursor-pointer">
+              <X class="w-5 h-5" />
+            </button>
           </div>
 
           <form @submit.prevent="handleRecordPayment" class="p-6 space-y-4">
@@ -248,11 +259,11 @@
               <select
                 v-model="paymentForm.paymentMethod"
                 required
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20"
               >
-                <option value="CASH">💵 เงินสดผ่านเคาน์เตอร์ (Cash)</option>
-                <option value="PROMPTPAY">📱 พร้อมเพย์ / สแกน QR (PromptPay)</option>
-                <option value="BANK_TRANSFER">🏦 โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
+                <option value="CASH">เงินสดผ่านเคาน์เตอร์ (Cash)</option>
+                <option value="PROMPTPAY">พร้อมเพย์ / สแกน QR (PromptPay)</option>
+                <option value="BANK_TRANSFER">โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
               </select>
             </div>
 
@@ -262,7 +273,7 @@
                 v-model="paymentForm.note"
                 type="text"
                 placeholder="เช่น รับเงินสดแบงก์ 5,000 บาท ทอน 200 บาท"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
 
@@ -277,23 +288,24 @@
               <button
                 type="submit"
                 :disabled="recordingPayment"
-                class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer"
+                class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
               >
-                {{ recordingPayment ? 'กำลังบันทึก...' : '✅ บันทึกรับเงิน' }}
+                <CheckCircle2 class="w-4 h-4" />
+                <span>{{ recordingPayment ? 'กำลังบันทึก...' : 'บันทึกรับเงิน' }}</span>
               </button>
             </div>
           </form>
         </div>
       </div>
 
-      <!-- 🖨️ Printable Invoice/Receipt Teleport Modal -->
+      <!-- Printable Invoice/Receipt Teleport Modal -->
       <teleport to="body">
         <div v-if="showPrintModal" id="print-modal-root" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
             <!-- Print Toolbar Bar (Hidden during window.print) -->
             <div class="px-6 py-3 bg-slate-900 text-white flex items-center justify-between no-print">
               <div class="flex items-center gap-2">
-                <span class="text-lg">🖨️</span>
+                <Printer class="w-4 h-4 text-cyan-300" />
                 <span class="font-bold text-xs">พรีวิวใบแจ้งหนี้/ใบเสร็จ (Print Preview)</span>
               </div>
 
@@ -302,13 +314,16 @@
                   @click="triggerPrint"
                   class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>🖨️ สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
+                  <Printer class="w-3.5 h-3.5" />
+                  <span>สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
                 </button>
-                <button @click="showPrintModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+                <button @click="showPrintModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">
+                  <X class="w-5 h-5" />
+                </button>
               </div>
             </div>
 
-            <!-- 📄 Print Content Paper Box -->
+            <!-- Print Content Paper Box -->
             <div id="printable-receipt" class="p-8 bg-white text-slate-900 font-sans space-y-6 relative border-t-4 border-cyan-600">
               <!-- Watermark Stamp for PAID -->
               <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-2xl font-black text-3xl uppercase tracking-widest text-center select-none">
@@ -403,14 +418,16 @@
                 <div>
                   <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">สถานะการชำระเงิน</div>
                   <div v-if="printingInvoice?.status === 'paid'" class="text-emerald-700 font-bold flex items-center gap-1.5">
-                    <span>✅ ชำระเงินเรียบร้อยแล้ว</span>
+                    <CheckCircle2 class="w-4 h-4 text-emerald-600 inline-block" />
+                    <span>ชำระเงินเรียบร้อยแล้ว</span>
                     <span class="px-2 py-0.5 bg-emerald-100 rounded-md text-[10px] font-extrabold uppercase font-mono border border-emerald-200">
                       {{ printingInvoice.paymentMethod || 'CASH' }}
                     </span>
                     <span v-if="printingInvoice.paidAt" class="text-slate-500 font-mono text-[10px]">({{ formatDate(printingInvoice.paidAt) }})</span>
                   </div>
-                  <div v-else class="text-amber-700 font-bold flex items-center gap-1">
-                    <span>⏳ รอชำระเงิน (กำหนดชำระ: {{ formatDate(printingInvoice?.dueDate) }})</span>
+                  <div v-else class="text-amber-700 font-bold flex items-center gap-1.5">
+                    <Clock class="w-4 h-4 text-amber-600 inline-block" />
+                    <span>รอชำระเงิน (กำหนดชำระ: {{ formatDate(printingInvoice?.dueDate) }})</span>
                   </div>
                   <div v-if="printingInvoice?.paymentNote" class="text-slate-500 italic mt-1 text-[11px]">
                     หมายเหตุ: {{ printingInvoice.paymentNote }}
@@ -432,6 +449,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
+import { CheckCircle2, Clock } from 'lucide-vue-next';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
@@ -581,7 +599,7 @@ const handleRemindSingle = async (inv) => {
   const confirmed = await showConfirm(
     'ส่ง LINE แจ้งเตือนบิลค้างชำระ?',
     `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนยอดค้างชำระบิล ${inv.invoiceNumber} (ยอด ฿${amountStr}) ไปยังห้อง ${roomNum} (${tenantName}) ใช่หรือไม่?`,
-    '💬 ส่ง LINE แจ้งเตือน',
+    'ส่ง LINE แจ้งเตือน',
     'ยกเลิก'
   );
 
@@ -608,7 +626,7 @@ const handleRemindBulk = async () => {
   const confirmed = await showConfirm(
     'ส่ง LINE เตือนยอดค้างทั้งหมด?',
     `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนไปยังห้องที่ค้างชำระทั้งหมด ${currentUnpaidCount} รายการ ใช่หรือไม่?`,
-    '💬 ส่ง LINE เตือนทั้งหมด',
+    'ส่ง LINE เตือนทั้งหมด',
     'ยกเลิก'
   );
 

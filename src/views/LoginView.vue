@@ -13,7 +13,7 @@
         <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
           <div class="relative mx-auto inline-flex">
             <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-xl shadow-cyan-600/30 ring-4 ring-cyan-500/20 overflow-hidden">
-              <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain rounded-xl" />
+              <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -45,14 +45,14 @@
             >
               <div class="flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-sm font-black text-[#06C755] shadow-xs">
-                  💬
+                  
                 </div>
                 <div class="text-left">
                   <div class="font-extrabold">{{ isLineLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'ล็อกอินด้วย LINE (LINE SSO)' }}</div>
                   <div class="text-[10px] text-white/80 font-normal">สำหรับลูกบ้านที่ผูกบัญชี LINE ไว้แล้ว</div>
                 </div>
               </div>
-              <span class="text-base font-extrabold">➔</span>
+              <ArrowRight class="w-4 h-4" />
             </button>
           </div>
 
@@ -114,7 +114,7 @@
                 @click="fillDemoAccount"
                 class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
               >
-                ⚡ แอดมิน Demo
+                แอดมิน Demo
               </button>
             </div>
 
@@ -167,15 +167,7 @@ import {
   CardContent,
   CardFooter
 } from '@/components/ui/card';
-import {
-  Building2,
-  User,
-  Lock,
-  LogIn,
-  Loader2,
-  AlertCircle,
-  ShieldCheck
-} from 'lucide-vue-next';
+import { Lock, Zap, Loader2, ArrowRight, Building2, ShieldCheck, AlertCircle, User, LogIn } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const router = useRouter();

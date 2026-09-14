@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>📜</span>
+          <FileText class="w-6 h-6 text-cyan-600" />
           <span>จัดการสัญญาเช่า & ประวัติการเข้าอยู่ (Leases & Tenancy)</span>
         </h1>
         <p class="text-sm text-slate-500">
@@ -17,7 +17,7 @@
           @click="fetchLeases"
           class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer"
         >
-          <span>🔄 รีเฟรชข้อมูล</span>
+          <RefreshCw :class="['w-3.5 h-3.5', leaseStore.isLoading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
         </button>
       </div>
     </div>
@@ -39,14 +39,14 @@
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
             :class="selectedStatus === 'ACTIVE' ? 'bg-emerald-600 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
           >
-            🟢 กำลังพักอาศัย ({{ activeLeasesCount }})
+            กำลังพักอาศัย ({{ activeLeasesCount }})
           </button>
           <button
             @click="selectedStatus = 'ENDED'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
             :class="selectedStatus === 'ENDED' ? 'bg-slate-700 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
           >
-            ⚪ ย้ายออกแล้ว ({{ endedLeasesCount }})
+            ย้ายออกแล้ว ({{ endedLeasesCount }})
           </button>
         </div>
       </div>
@@ -59,7 +59,7 @@
           placeholder="ค้นหาเลขห้อง หรือชื่อผู้เช่า..."
           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
         />
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><Search class="w-4 h-4" /></span>
       </div>
     </div>
 
@@ -88,7 +88,7 @@
                 'bg-rose-100 border-rose-300 text-rose-800': item.status === 'CANCELLED'
               }"
             >
-              <span>{{ item.status === 'ACTIVE' ? '🟢 กำลังพักอาศัย' : (item.status === 'ENDED' ? '⚪ ย้ายออกแล้ว' : '🔴 ยกเลิกสัญญา') }}</span>
+              <span>{{ item.status === 'ACTIVE' ? 'กำลังพักอาศัย' : (item.status === 'ENDED' ? 'ย้ายออกแล้ว' : 'ยกเลิกสัญญา') }}</span>
             </span>
 
             <h3 class="text-base font-black text-slate-900 mt-1">
@@ -117,26 +117,26 @@
                 v-else
                 class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-extrabold text-[10px] flex items-center justify-center border border-slate-300"
               >
-                {{ item.tenant?.firstName ? item.tenant.firstName.charAt(0) : '👤' }}
+                {{ item.tenant?.firstName ? item.tenant.firstName.charAt(0) : 'U' }}
               </div>
               <span>{{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : 'ผู้เช่า' }}</span>
             </div>
-            <span class="text-slate-500 font-mono text-[11px] font-normal">📞 {{ item.tenant?.phone || '-' }}</span>
+            <span class="text-slate-500 font-mono text-[11px] font-normal">{{ item.tenant?.phone || '-' }}</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-100">
-            <div>📅 วันเริ่มสัญญา: {{ formatDate(item.startDate) }}</div>
+            <div>วันเริ่มสัญญา: {{ formatDate(item.startDate) }}</div>
             <div class="text-right">
-              📅 วันย้ายออก: <span class="font-bold text-slate-800">{{ item.actualEndDate ? formatDate(item.actualEndDate) : formatDate(item.expectedEndDate) }}</span>
+              วันย้ายออก: <span class="font-bold text-slate-800">{{ item.actualEndDate ? formatDate(item.actualEndDate) : formatDate(item.expectedEndDate) }}</span>
             </div>
           </div>
 
           <div v-if="item.moveOutReason || item.adminNote" class="mt-2 p-2 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
             <div v-if="item.moveOutReason" class="font-medium text-slate-700">
-              <span class="font-bold text-slate-800">📌 เหตุผลย้ายออก:</span> {{ item.moveOutReason }}
+              <span class="font-bold text-slate-800">เหตุผลย้ายออก:</span> {{ item.moveOutReason }}
             </div>
             <div v-if="item.adminNote" class="text-slate-500 italic">
-              <span class="font-semibold text-slate-700">📝 หมายเหตุ:</span> {{ item.adminNote }}
+              <span class="font-semibold text-slate-700">หมายเหตุ:</span> {{ item.adminNote }}
             </div>
           </div>
         </div>
@@ -148,14 +148,14 @@
             :to="`/tenants/${item.tenantId || item.tenant?.id}`"
             class="w-full py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
-            <span>👤 โปรไฟล์ 360°</span>
+            <User class="w-3.5 h-3.5" /><span>โปรไฟล์ 360°</span>
           </router-link>
 
           <button
             @click="openRoomHistory(item.room)"
             class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
-            <span>📜 ประวัติห้อง</span>
+            <History class="w-3.5 h-3.5" /><span>ประวัติห้อง</span>
           </button>
 
           <button
@@ -164,7 +164,7 @@
             @click="openMoveOutWizard(item)"
             class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer"
           >
-            <span>🚨 แจ้งย้ายออก</span>
+            <LogOut class="w-3.5 h-3.5" /><span>แจ้งย้ายออก</span>
           </button>
         </div>
       </div>
@@ -172,7 +172,7 @@
 
     <!-- Empty State -->
     <div v-else class="p-12 text-center bg-white border border-slate-200 rounded-3xl text-slate-400 space-y-2">
-      <div class="text-4xl">📜</div>
+      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><FileText class="w-6 h-6" /></div>
       <div class="text-sm font-bold text-slate-700">ไม่พบรายการสัญญาเช่า</div>
       <p class="text-xs">ลองค้นหาด้วยคำอื่น หรือเลือกตัวกรองสถานะเป็น "ทั้งหมด"</p>
     </div>
@@ -197,6 +197,7 @@
 </template>
 
 <script setup>
+import { FileText, RefreshCw, Search, User, History, LogOut } from 'lucide-vue-next';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';

@@ -25,7 +25,7 @@
           v-if="invoice.status === 'overdue' || Number(invoice.lateFeeCharge) > 0"
           class="p-3.5 bg-rose-50 border border-rose-200/80 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs shadow-2xs"
         >
-          <span class="text-sm shrink-0">⚠️</span>
+          
           <div class="space-y-0.5">
             <div class="font-bold">บิลนี้เกินกำหนดชำระ (ครบกำหนด: {{ formatDate(invoice.dueDate) }})</div>
             <p class="text-[11px] text-rose-700 leading-relaxed">
@@ -38,7 +38,7 @@
           v-else-if="invoice.status === 'pending'"
           class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs shadow-2xs"
         >
-          <span class="text-sm shrink-0">📅</span>
+          
           <div class="space-y-0.5">
             <div class="font-bold">ครบกำหนดชำระ: {{ formatDate(invoice.dueDate) }}</div>
             <p class="text-[11px] text-amber-800 leading-relaxed">
@@ -93,7 +93,7 @@
                 <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
               </div>
               <div class="text-[10px] text-slate-400 font-mono">
-                มิเตอร์: {{ invoice.waterPrevious || 100 }} ➔ {{ invoice.waterCurrent || 115 }} ({{ (invoice.waterCurrent || 115) - (invoice.waterPrevious || 100) }} หน่วย)
+                มิเตอร์: {{ invoice.waterPrevious || 100 }} → {{ invoice.waterCurrent || 115 }} ({{ (invoice.waterCurrent || 115) - (invoice.waterPrevious || 100) }} หน่วย)
               </div>
             </div>
 
@@ -103,7 +103,7 @@
                 <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
               </div>
               <div class="text-[10px] text-slate-400 font-mono">
-                มิเตอร์: {{ invoice.electricPrevious || 1000 }} ➔ {{ invoice.electricCurrent || 1080 }} ({{ (invoice.electricCurrent || 1080) - (invoice.electricPrevious || 1000) }} หน่วย)
+                มิเตอร์: {{ invoice.electricPrevious || 1000 }} → {{ invoice.electricCurrent || 1080 }} ({{ (invoice.electricCurrent || 1080) - (invoice.electricPrevious || 1000) }} หน่วย)
               </div>
             </div>
 
@@ -131,7 +131,7 @@
             <!-- Late Fee Line Item (Red Highlight) -->
             <div v-if="Number(invoice.lateFeeCharge) > 0" class="flex justify-between items-center pt-2 text-rose-600 font-bold bg-rose-50/50 p-2 rounded-xl border border-rose-100">
               <span class="flex items-center gap-1.5">
-                <span>⚠️</span>
+                
                 <span>ค่าปรับชำระล่าช้า (Late Fee)</span>
               </span>
               <span class="font-mono text-sm">+฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</span>
@@ -162,7 +162,7 @@
                   @click="copyPromptPayNumber"
                   class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
                 >
-                  {{ isCopied ? 'คัดลอกแล้ว ✓' : 'คัดลอก' }}
+                  {{ isCopied ? 'คัดลอกแล้ว ' : 'คัดลอก' }}
                 </button>
               </div>
               <div>ยอดเงิน: <span class="font-bold text-emerald-600 text-base font-mono">฿{{ Number(paymentAmount).toLocaleString() }}</span></div>
@@ -417,10 +417,10 @@ onMounted(async () => {
 
 const statusBadgeText = computed(() => {
   const map = {
-    pending: '⏳ รอชำระเงิน',
-    overdue: '🚨 เกินกำหนดชำระ',
-    reviewing: '🔍 กำลังตรวจสอบสลิป',
-    paid: '✓ PAID (ชำระแล้ว)'
+    pending: 'รอชำระเงิน',
+    overdue: 'เกินกำหนดชำระ',
+    reviewing: 'กำลังตรวจสอบสลิป',
+    paid: 'PAID (ชำระแล้ว)'
   };
   return map[invoice.value.status] || invoice.value.status;
 });

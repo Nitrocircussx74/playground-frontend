@@ -5,11 +5,11 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <h3 class="text-lg font-bold text-slate-900">
-            {{ isEditing ? `✏️ แก้ไขใบแจ้งหนี้ ${invoice?.invoiceNumber}` : '📝 สร้างใบแจ้งหนี้แบบปรับแต่ง' }}
+            {{ isEditing ? `แก้ไขใบแจ้งหนี้ ${invoice?.invoiceNumber}` : 'สร้างใบแจ้งหนี้แบบปรับแต่ง' }}
           </h3>
           <p class="text-xs text-slate-500">ปรับแต่งค่าน้ำ, ค่าไฟ, ละเว้นส่วนกลาง หรือเพิ่มรายการค่าบริการอื่นๆ ได้หลายรายการ</p>
         </div>
-        <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 font-bold p-1"><X class="w-4 h-4" /></button>
       </div>
 
       <!-- Form -->
@@ -91,7 +91,7 @@
         <!-- Common Fee Waive Switch Box -->
         <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-2xl flex items-center justify-between">
           <div>
-            <span class="font-bold text-teal-900">🎁 ละเว้น/งดเว้นค่าส่วนกลาง (Waive Common Fee)</span>
+            <span class="font-bold text-teal-900">ละเว้น/งดเว้นค่าส่วนกลาง (Waive Common Fee)</span>
             <p class="text-[11px] text-teal-600">ตั้งค่าส่วนกลางเป็น 0 บาท สำหรับโปรโมชั่นหรือเงื่อนไขพิเศษ</p>
           </div>
 
@@ -104,7 +104,7 @@
         <!-- Dynamic Multiple Other Fees Section -->
         <div class="space-y-2 border-t border-slate-100 pt-3">
           <div class="flex items-center justify-between">
-            <label class="font-bold text-slate-800">📌 รายการค่าบริการอื่นๆ (เพิ่มได้หลายรายการ)</label>
+            <label class="font-bold text-slate-800">รายการค่าบริการอื่นๆ (เพิ่มได้หลายรายการ)</label>
             <button
               type="button"
               @click="addOtherFeeItem"
@@ -138,7 +138,7 @@
                 @click="removeOtherFeeItem(idx)"
                 class="text-rose-500 hover:text-rose-700 font-bold p-1 text-sm"
               >
-                ✕
+                
               </button>
             </div>
           </div>
@@ -182,6 +182,7 @@
 </template>
 
 <script setup>
+import { X, FileText, Tag, Edit3 } from 'lucide-vue-next';
 import { ref, reactive, computed, watch } from 'vue';
 import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import api from '@/utils/api';

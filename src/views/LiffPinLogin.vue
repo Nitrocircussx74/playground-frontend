@@ -162,7 +162,7 @@ const userInitial = computed(() => {
   if (profile.value?.displayName && profile.value.displayName.trim()) {
     return profile.value.displayName.trim().charAt(0).toUpperCase();
   }
-  return '👤';
+  return 'U';
 });
 
 const pressKey = (num) => {

@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>{{ isRoomOwnerRole ? '🏢 ห้องพักของฉัน (My Owned Rooms)' : 'จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)' }}</span>
+          <span>{{ isRoomOwnerRole ? 'ห้องพักของฉัน (My Owned Rooms)' : 'จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)' }}</span>
           <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 border border-cyan-200">
             {{ filteredRooms.length }} ยูนิต
           </span>
@@ -60,7 +60,7 @@
         class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
         :class="activeTypeFilter === type.value ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
       >
-        <span>{{ type.icon }}</span>
+        <component :is="type.icon" class="w-3.5 h-3.5" />
         <span>{{ type.label }}</span>
         <span class="text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold" :class="activeTypeFilter === type.value ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-500'">
           {{ getCountByType(type.value) }}
@@ -103,12 +103,12 @@
             v-model="form.unitType"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
-            <option value="residential">🚪 ห้องพักอาศัย (Residential)</option>
-            <option value="commercial_shop">🏪 ร้านค้า / ล็อคหน้าร้าน (Shop / Kiosk)</option>
-            <option value="vending_spot">☕ จุดวางตู้เต่าบิน / ตู้บริการ (Vending Spot)</option>
-            <option value="parking">🚗 ช่องจอดรถ (Parking Slot)</option>
-            <option value="storage">📦 ห้องสต็อก / ล็อกเกอร์เก็บของ (Storage)</option>
-            <option value="billboard_rooftop">📡 ดาดฟ้า / เสาสัญญาณ / ป้ายโฆษณา (Rooftop)</option>
+            <option value="residential">ห้องพักอาศัย (Residential)</option>
+            <option value="commercial_shop">ร้านค้า / ล็อคหน้าร้าน (Shop / Kiosk)</option>
+            <option value="vending_spot">จุดวางตู้เต่าบิน / ตู้บริการ (Vending Spot)</option>
+            <option value="parking">ช่องจอดรถ (Parking Slot)</option>
+            <option value="storage">ห้องสต็อก / ล็อกเกอร์เก็บของ (Storage)</option>
+            <option value="billboard_rooftop">ดาดฟ้า / เสาสัญญาณ / ป้ายโฆษณา (Rooftop)</option>
           </select>
         </div>
 
@@ -180,9 +180,9 @@
             v-model="form.billingModel"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
-            <option value="fixed">💵 เหมาจ่ายรายเดือนคงที่ (Fixed Rent)</option>
-            <option value="revenue_share">📊 ส่วนแบ่งยอดขาย (Revenue Share / GP %)</option>
-            <option value="metered_only">⚡ คิดตามมิเตอร์จริง (Metered Only)</option>
+            <option value="fixed">เหมาจ่ายรายเดือนคงที่ (Fixed Rent)</option>
+            <option value="revenue_share">ส่วนแบ่งยอดขาย (Revenue Share / GP %)</option>
+            <option value="metered_only">คิดตามมิเตอร์จริง (Metered Only)</option>
           </select>
         </div>
 
@@ -205,31 +205,35 @@
             v-model="form.status"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
-            <option value="available">🟢 ว่างพร้อมให้เช่า (Available)</option>
-            <option value="occupied">🔵 มีผู้เช่า (Occupied)</option>
-            <option value="maintenance">🟠 ปิดปรับปรุง/ซ่อมแซม (Maintenance)</option>
+            <option value="available">ว่างพร้อมให้เช่า (Available)</option>
+            <option value="occupied">มีผู้เช่า (Occupied)</option>
+            <option value="maintenance">ปิดปรับปรุง/ซ่อมแซม (Maintenance)</option>
           </select>
         </div>
 
         <!-- 10. Room Owner (Landlord/Investor) -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-bold text-slate-700">👑 เจ้าของห้อง / นักลงทุน (Room Owner)</label>
+            <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <Crown class="w-3.5 h-3.5 text-amber-500" />
+              <span>เจ้าของห้อง / นักลงทุน (Room Owner)</span>
+            </label>
             <button
               type="button"
               @click="showQuickCreateOwnerModal = true"
-              class="text-xs text-cyan-600 hover:text-cyan-800 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+              class="text-xs text-cyan-600 hover:text-cyan-800 font-bold hover:underline cursor-pointer flex items-center gap-1"
             >
-              <span>➕ เพิ่มเจ้าของใหม่</span>
+              <Plus class="w-3 h-3" />
+              <span>เพิ่มเจ้าของใหม่</span>
             </button>
           </div>
           <select
             v-model="form.ownerId"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
           >
-            <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
+            <option :value="null">ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
             <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
-              👑 {{ owner.name }} ({{ owner.phone || owner.email }})
+              {{ owner.name }} ({{ owner.phone || owner.email }})
             </option>
           </select>
         </div>
@@ -264,7 +268,9 @@
 
     <!-- Empty State -->
     <div v-else-if="filteredRooms.length === 0" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200 space-y-3">
-      <div class="text-4xl">🏢</div>
+      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+        <Building2 class="w-6 h-6" />
+      </div>
       <div class="font-bold text-slate-800 text-base">ไม่พบข้อมูลพื้นที่เช่าตามตัวกรอง</div>
       <p class="text-xs text-slate-400">คุณสามารถเพิ่มยูนิตใหม่ หรือเปลี่ยนแท็บตัวกรองด้านบนได้</p>
     </div>
@@ -315,7 +321,7 @@
             class="w-full py-2 bg-white hover:bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:border-cyan-300"
           >
             <History class="w-3.5 h-3.5" />
-            <span>📜 ดูประวัติสัญญาเช่า</span>
+            <span>ดูประวัติสัญญาเช่า</span>
           </button>
         </div>
       </div>
@@ -359,10 +365,12 @@
       <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div class="flex items-center gap-2 font-black text-slate-900 text-sm">
-            <span class="text-base">👑</span>
+            <Crown class="w-4 h-4 text-amber-500" />
             <span>เพิ่มรายชื่อเจ้าของห้อง / นักลงทุน (New Room Owner)</span>
           </div>
-          <button @click="showQuickCreateOwnerModal = false" class="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+          <button @click="showQuickCreateOwnerModal = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
         <form @submit.prevent="handleQuickCreateOwner" class="space-y-3 text-xs">
@@ -410,8 +418,9 @@
             />
           </div>
 
-          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 font-medium">
-            💡 บัญชีนี้จะมีระดับสิทธิ์ <strong>ROOM_OWNER</strong> สามารถเข้าดูและจัดการได้เฉพาะห้องที่ผูกไว้เท่านั้น
+          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 font-medium flex items-start gap-1.5">
+            <Info class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>บัญชีนี้จะมีระดับสิทธิ์ <strong>ROOM_OWNER</strong> สามารถเข้าดูและจัดการได้เฉพาะห้องที่ผูกไว้เท่านั้น</span>
           </div>
 
           <div class="pt-2 flex justify-end gap-2">
@@ -425,9 +434,10 @@
             <button
               type="submit"
               :disabled="creatingOwner"
-              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer"
+              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
             >
-              {{ creatingOwner ? 'กำลังสร้าง...' : '🚀 บันทึกเจ้าของห้อง' }}
+              <UserPlus class="w-3.5 h-3.5" />
+              <span>{{ creatingOwner ? 'กำลังสร้าง...' : 'บันทึกเจ้าของห้อง' }}</span>
             </button>
           </div>
         </form>
@@ -456,7 +466,16 @@ import {
   Building2,
   History,
   Key,
-  UserPlus
+  UserPlus,
+  Globe,
+  DoorOpen,
+  Coffee,
+  Car,
+  Box,
+  Radio,
+  Crown,
+  Info,
+  X
 } from 'lucide-vue-next';
 
 const roomStore = useRoomStore();
@@ -488,22 +507,22 @@ const roomOwners = ref([]);
 // Category Unit Type Filters
 const activeTypeFilter = ref('all');
 const unitTypeOptions = [
-  { label: 'ทั้งหมด', value: 'all', icon: '🌐' },
-  { label: 'ห้องพักอาศัย', value: 'residential', icon: '🚪' },
-  { label: 'ร้านค้า/หน้าร้าน', value: 'commercial_shop', icon: '🏪' },
-  { label: 'ตู้บริการ/เต่าบิน', value: 'vending_spot', icon: '☕' },
-  { label: 'ที่จอดรถ', value: 'parking', icon: '🚗' },
-  { label: 'ห้องเก็บของ', value: 'storage', icon: '📦' },
-  { label: 'ดาดฟ้า/ป้าย', value: 'billboard_rooftop', icon: '📡' }
+  { label: 'ทั้งหมด', value: 'all', icon: Globe },
+  { label: 'ห้องพักอาศัย', value: 'residential', icon: DoorOpen },
+  { label: 'ร้านค้า/หน้าร้าน', value: 'commercial_shop', icon: Store },
+  { label: 'ตู้บริการ/เต่าบิน', value: 'vending_spot', icon: Coffee },
+  { label: 'ที่จอดรถ', value: 'parking', icon: Car },
+  { label: 'ห้องเก็บของ', value: 'storage', icon: Box },
+  { label: 'ดาดฟ้า/ป้าย', value: 'billboard_rooftop', icon: Radio }
 ];
 
 // Status Sub-Filters
 const activeStatusFilter = ref('all');
 const statusFilterOptions = [
   { label: 'ทั้งหมด (All)', value: 'all' },
-  { label: '🟢 ว่าง (Available)', value: 'available' },
-  { label: '🔵 มีผู้เช่า (Occupied)', value: 'occupied' },
-  { label: '🟠 ซ่อมบำรุง (Maintenance)', value: 'maintenance' }
+  { label: 'ว่าง (Available)', value: 'available' },
+  { label: 'มีผู้เช่า (Occupied)', value: 'occupied' },
+  { label: 'ซ่อมบำรุง (Maintenance)', value: 'maintenance' }
 ];
 
 const getCountByType = (typeValue) => {

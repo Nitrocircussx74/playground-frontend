@@ -100,7 +100,7 @@
               >
                 <option value="" disabled>-- กรุณาเลือกห้องพักที่ว่าง --</option>
                 <option v-for="r in availableRooms" :key="r.id" :value="r.id">
-                  {{ getUnitIcon(r.unitType) }} {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[📍 ${r.locationZone}]` : '' }}
+                  {{ formatUnitType(r.unitType) }} {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[${r.locationZone}]` : '' }}
                 </option>
               </select>
             </div>
@@ -250,14 +250,14 @@ const handleRoomSelect = () => {
   }
 };
 
-const getUnitIcon = (type) => {
+const formatUnitType = (type) => {
   switch (type) {
-    case 'commercial_shop': return '🏪';
-    case 'vending_spot': return '☕';
-    case 'parking': return '🚗';
-    case 'storage': return '📦';
-    case 'billboard_rooftop': return '📡';
-    default: return '🚪';
+    case 'commercial_shop': return '[ร้านค้า]';
+    case 'vending_spot': return '[ตู้หยอดเหรียญ]';
+    case 'parking': return '[ที่จอดรถ]';
+    case 'storage': return '[ห้องเก็บของ]';
+    case 'billboard_rooftop': return '[ป้ายโฆษณา/ดาดฟ้า]';
+    default: return 'ห้อง';
   }
 };
 

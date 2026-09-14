@@ -110,7 +110,7 @@
             @click="bypassFriendshipAndContinue"
             class="w-full py-2 px-3 text-slate-400 hover:text-slate-600 text-[11px] font-medium transition-colors cursor-pointer"
           >
-            เพิ่มเพื่อนแล้ว / ดำเนินการต่อเข้าสู่ระบบ ➔
+            เพิ่มเพื่อนแล้ว / ดำเนินการต่อเข้าสู่ระบบ →
           </button>
         </div>
       </div>
@@ -126,7 +126,7 @@
           <span class="absolute inset-0 rounded-[1.75rem] border-3 border-emerald-500/15"></span>
           <div class="absolute inset-0 rounded-[1.75rem] border-3 border-transparent border-t-emerald-500 border-r-emerald-500 animate-spin"></div>
           <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg shadow-emerald-900/10 ring-1 ring-slate-100 flex items-center justify-center overflow-hidden">
-            <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain" />
+            <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="64" height="64" class="w-full h-full object-contain" loading="eager" decoding="async" />
           </div>
         </div>
         <div class="space-y-1">
@@ -157,7 +157,7 @@
 
           <div class="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-bold flex items-center justify-center text-sm shrink-0">
-              {{ existingUserName ? existingUserName.charAt(0).toUpperCase() : '👤' }}
+              {{ existingUserName ? existingUserName.charAt(0).toUpperCase() : 'U' }}
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">{{ existingUserName || 'ลูกบ้าน HorHub' }}</div>
@@ -375,7 +375,7 @@ const checkEntryFriendship = async () => {
     const friendship = await getLiffFriendship();
     console.log('[LIFF Entry] Friendship status:', friendship);
     if (friendship && friendship.noBotLinked) {
-      console.warn('⚠️ LINE Login Channel has no linked OA bot. Skipping friendship block to prevent endless loop.');
+      console.warn('LINE Login Channel has no linked OA bot. Skipping friendship block to prevent endless loop.');
       needsAddFriend.value = false;
       return true;
     }
@@ -480,7 +480,7 @@ onMounted(async () => {
       return;
     }
 
-    // ⚠️ เดิมเช็ค liff.isInClient() ก่อนตัดสินใจ ทำให้พลาดกรณี liff.init() ล้มเงียบๆ (เช่น Endpoint URL
+    // เดิมเช็ค liff.isInClient() ก่อนตัดสินใจ ทำให้พลาดกรณี liff.init() ล้มเงียบๆ (เช่น Endpoint URL
     // ไม่ตรงกับ origin ปัจจุบัน) หรือผู้ใช้เปิดผ่าน LINE แบบ External Browser — isInClient() จะ false
     // ทั้งที่เข้ามาจาก Rich Menu/ลิงก์ LINE จริงๆ แล้วโดนเด้งไป WebLogin (เบอร์โทร+PIN) ทันทีอย่างผิดๆ
     // แก้โดยไม่พึ่ง isInClient() แล้ว: ลอง loginLiff() ก่อนเสมอ (จำกัด 1 ครั้งต่อ Session กัน Loop)
@@ -548,7 +548,7 @@ const handleVerifyByPhone = async () => {
         authStore.setLiffAuth(accessToken, tenantData);
       }
 
-      await showSuccess('ยืนยันตัวตนสำเร็จ! 🎉', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว กรุณาตั้งรหัส PIN 6 หลัก');
+      await showSuccess('ยืนยันตัวตนสำเร็จ!', res.data.message || 'เชื่อมต่อบัญชี LINE ของคุณกับห้องพักเรียบร้อยแล้ว กรุณาตั้งรหัส PIN 6 หลัก');
       // พาลูกบ้านใหม่ไปตั้งรหัส PIN 6 หลักทันทีเพื่อความปลอดภัยในครั้งต่อไป
       router.replace('/liff/setup-pin');
     } else {
@@ -592,7 +592,7 @@ const handleLinkAndLogin = async () => {
 
       const pinCreated = res.pinCreated ?? res.data?.pinCreated;
       await showSuccess(
-        pinCreated ? 'ตั้งรหัส PIN ใหม่และเข้าสู่ระบบสำเร็จ! 🎉' : 'เชื่อมต่อบัญชีสำเร็จ! 🎉',
+        pinCreated ? 'ตั้งรหัส PIN ใหม่และเข้าสู่ระบบสำเร็จ!' : 'เชื่อมต่อบัญชีสำเร็จ!',
         `ยินดีต้อนรับคุณ ${existingUserName.value || 'ลูกบ้าน'} เข้าสู่ระบบหอพัก`
       );
       router.replace('/liff/profile');

@@ -3,14 +3,18 @@
     <!-- Header Banner -->
     <div class="bg-gradient-to-r from-violet-600 via-purple-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black tracking-tight text-white">🗳️ โหวต & แบบสำรวจความเห็น (Polls)</h1>
+        <div class="inline-flex items-center gap-2 mb-1.5">
+          <Vote class="w-6 h-6 text-violet-200" />
+          <h1 class="text-2xl font-black tracking-tight text-white">โหวต & แบบสำรวจความเห็น (Polls)</h1>
+        </div>
         <p class="text-xs text-violet-100/80 mt-1 max-w-xl">สร้างโพลสอบถามความเห็นลูกบ้าน และดูผลโหวตแบบเรียลไทม์</p>
       </div>
       <button
         @click="openCreateModal"
-        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer"
+        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
       >
-        ➕ สร้างโพลใหม่
+        <Plus class="w-4 h-4" />
+        <span>สร้างโพลใหม่</span>
       </button>
     </div>
 
@@ -45,21 +49,24 @@
         </div>
 
         <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-          <button @click="fetchResults(poll.id)" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 cursor-pointer">
-            🔄 ดูผลโหวต
+          <button @click="fetchResults(poll.id)" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 flex items-center gap-1.5 cursor-pointer">
+            <RotateCw class="w-3.5 h-3.5" />
+            <span>ดูผลโหวต</span>
           </button>
           <button
             v-if="poll.isActive"
             @click="handleClosePoll(poll.id)"
-            class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-semibold border border-amber-200 cursor-pointer"
+            class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-semibold border border-amber-200 flex items-center gap-1.5 cursor-pointer"
           >
-            ปิดรับโหวต
+            <Lock class="w-3.5 h-3.5" />
+            <span>ปิดรับโหวต</span>
           </button>
           <button
             @click="handleDeletePoll(poll.id)"
-            class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer ml-auto"
+            class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 flex items-center gap-1.5 cursor-pointer ml-auto"
           >
-            🗑️ ลบ
+            <Trash2 class="w-3.5 h-3.5" />
+            <span>ลบ</span>
           </button>
         </div>
       </div>
@@ -74,7 +81,9 @@
       <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white flex items-center justify-between">
           <h3 class="font-bold text-base text-white">สร้างโพลใหม่</h3>
-          <button @click="showModal = false" class="text-violet-100 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+          <button @click="showModal = false" class="text-violet-100 hover:text-white p-1 rounded-lg cursor-pointer">
+            <X class="w-5 h-5" />
+          </button>
         </div>
         <form @submit.prevent="handleCreatePoll" class="p-6 space-y-4">
           <div>
@@ -84,7 +93,7 @@
               required
               type="text"
               placeholder="เช่น เห็นด้วยกับการปรับปรุงสระว่ายน้ำหรือไม่?"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
             />
           </div>
           <div>
@@ -96,18 +105,22 @@
                 required
                 class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs"
               />
-              <button v-if="form.options.length > 2" type="button" @click="form.options.splice(idx, 1)" class="text-rose-500 text-xs shrink-0">✕</button>
+              <button v-if="form.options.length > 2" type="button" @click="form.options.splice(idx, 1)" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer">
+                <X class="w-4 h-4" />
+              </button>
             </div>
-            <button type="button" @click="form.options.push('')" class="text-xs text-violet-600 font-semibold hover:underline">
-              + เพิ่มตัวเลือก
+            <button type="button" @click="form.options.push('')" class="text-xs text-violet-600 font-semibold hover:underline cursor-pointer flex items-center gap-1">
+              <Plus class="w-3.5 h-3.5" />
+              <span>เพิ่มตัวเลือก</span>
             </button>
           </div>
           <div class="pt-3 flex gap-3">
             <button type="button" @click="showModal = false" class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold cursor-pointer">
               ยกเลิก
             </button>
-            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer">
-              {{ submitting ? 'กำลังสร้าง...' : '✅ สร้างโพล' }}
+            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer">
+              <CheckCircle2 class="w-4 h-4" />
+              <span>{{ submitting ? 'กำลังสร้าง...' : 'สร้างโพล' }}</span>
             </button>
           </div>
         </form>
@@ -121,6 +134,7 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
+import { Vote, Plus, RotateCw, Lock, Trash2, X, CheckCircle2 } from 'lucide-vue-next';
 
 const buildingStore = useBuildingStore();
 
@@ -139,21 +153,21 @@ const loadData = () => {
 onMounted(loadData);
 watch(() => buildingStore.activeBuildingId, loadData);
 
-const fetchPolls = async (bId) => {
+const fetchPolls = async (buildingId) => {
   try {
-    const res = await api.get(`/api/admin/buildings/${bId}/polls`);
+    const res = await api.get('/api/v1/polls', { params: { buildingId } });
     polls.value = res.data.data;
-  } catch (error) {
-    console.error('Failed to fetch polls:', error);
+  } catch (err) {
+    console.error(err);
   }
 };
 
 const fetchResults = async (pollId) => {
   try {
-    const res = await api.get(`/api/admin/polls/${pollId}/results`);
-    results.value = { ...results.value, [pollId]: res.data.data };
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถดึงผลโหวตได้');
+    const res = await api.get(`/api/v1/polls/${pollId}/results`);
+    results.value[pollId] = res.data.data;
+  } catch (err) {
+    showError('ข้อผิดพลาด', 'ไม่สามารถดึงผลโหวตได้');
   }
 };
 
@@ -164,40 +178,54 @@ const openCreateModal = () => {
 };
 
 const handleCreatePoll = async () => {
+  const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
+  if (!bId) {
+    showError('ข้อผิดพลาด', 'กรุณาเลือกตึกก่อน');
+    return;
+  }
+  const validOpts = form.options.filter(o => o.trim());
+  if (validOpts.length < 2) {
+    showError('ข้อผิดพลาด', 'ต้องมีอย่างน้อย 2 ตัวเลือก');
+    return;
+  }
   submitting.value = true;
   try {
-    const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
-    const res = await api.post(`/api/admin/buildings/${bId}/polls`, {
+    await api.post('/api/v1/polls', {
+      buildingId: bId,
       question: form.question,
-      options: form.options.filter((o) => o.trim())
+      options: validOpts
     });
-    await showSuccess('สำเร็จ!', res.data.message);
+    showSuccess('สำเร็จ', 'สร้างโพลเรียบร้อยแล้ว');
     showModal.value = false;
     loadData();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถสร้างโพลได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถสร้างโพลได้');
   } finally {
     submitting.value = false;
   }
 };
 
-const handleClosePoll = async (id) => {
+const handleClosePoll = async (pollId) => {
+  const isConfirm = await showConfirm('ยืนยันปิดรับโหวต?', 'ลูกบ้านจะไม่สามารถโหวตโพลนี้ได้อีก');
+  if (!isConfirm) return;
   try {
-    await api.patch(`/api/admin/polls/${id}`, { isActive: false });
+    await api.patch(`/api/v1/polls/${pollId}/close`);
+    showSuccess('สำเร็จ', 'ปิดรับโหวตแล้ว');
     loadData();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถปิดโพลได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', 'ไม่สามารถปิดโพลได้');
   }
 };
 
-const handleDeletePoll = async (id) => {
-  const confirmed = await showConfirm('ยืนยันลบ', 'ต้องการลบโพลนี้ใช่หรือไม่?');
-  if (!confirmed) return;
+const handleDeletePoll = async (pollId) => {
+  const isConfirm = await showConfirm('ยืนยันการลบ?', 'โพลและผลโหวตทั้งหมดจะถูกลบถาวร');
+  if (!isConfirm) return;
   try {
-    await api.delete(`/api/admin/polls/${id}`);
+    await api.delete(`/api/v1/polls/${pollId}`);
+    showSuccess('สำเร็จ', 'ลบโพลเรียบร้อยแล้ว');
     loadData();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถลบได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', 'ไม่สามารถลบโพลได้');
   }
 };
 </script>

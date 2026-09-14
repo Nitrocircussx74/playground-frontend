@@ -8,7 +8,7 @@
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
           :class="activeTab === 'fast-table' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
-          <span>⚡</span>
+          <Zap class="w-6 h-6 text-amber-500" />
           <span>ตารางคีย์มิเตอร์ (Fast Entry)</span>
         </button>
 
@@ -17,7 +17,7 @@
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
           :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
-          <span>📝</span>
+          <FileText class="w-4 h-4" />
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
         </button>
 
@@ -26,7 +26,7 @@
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
           :class="activeTab === 'single-history' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
         >
-          <span>📜</span>
+          <History class="w-4 h-4" />
           <span>ประวัติการจดมิเตอร์</span>
         </button>
 
@@ -35,7 +35,7 @@
           @click="showImportModal = true"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-md shadow-teal-600/20 cursor-pointer"
         >
-          <span>📊</span>
+          <BarChart2 class="w-4 h-4" />
           <span>นำเข้าไฟล์ Excel/CSV</span>
         </button>
       </div>
@@ -162,7 +162,7 @@
         </div>
       </div>
     </div>
-    <!-- 📊 Bulk Meter Import Modal -->
+    <!-- Bulk Meter Import Modal -->
     <MeterImportModal
       :show="showImportModal"
       @close="showImportModal = false"
@@ -172,6 +172,7 @@
 </template>
 
 <script setup>
+import { Zap, FileText, History, BarChart2 } from 'lucide-vue-next';
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useMeterStore } from '@/stores/useMeterStore';

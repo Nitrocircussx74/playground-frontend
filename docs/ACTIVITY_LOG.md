@@ -195,3 +195,22 @@
 4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
 
 ### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16)
+
+---
+
+## 📅 [2026-09-11] - In-App Notification Bell (Admin CMS + Tenant LIFF)
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **`src/services/notificationService.js` (ใหม่)**: ครอบ `@/utils/api` เรียก Endpoint กระดิ่งทั้งฝั่ง Admin (`/api/admin/buildings/:id/notifications`) และฝั่ง Tenant (`/api/v1/liff/notifications`) — Interceptor เดิมใน `utils/api.js` แนบ Header/Token ให้อัตโนมัติอยู่แล้วทั้งสองฝั่ง ไม่ต้องตั้งค่าเพิ่ม
+2. **`src/components/NotificationBell.vue` (ใหม่)**: กระดิ่งเดียวใช้ได้ 2 โหมดผ่าน Prop `mode` (`admin` ต้องมี `buildingId`, `tenant` ใช้ตัวตนจาก LIFF Token) — Badge นับ Unread, Dropdown List กด Mark Read + Deep Link ไปหน้าที่เกี่ยวข้องตาม `notificationType`, Poll ทุก 45s (`setInterval`), ปิดเมื่อคลิกนอกกล่องด้วย `document.addEventListener('mousedown', ...)` (ไม่มี Dropdown/Popover Primitive ใน `components/ui/` ให้ใช้ เลยเขียน Outside-Click เองแบบ Native)
+3. **ติดตั้งใน 2 Layout**:
+   - [App.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/App.vue): Header Admin CMS ข้าง Building Switcher — แสดงเฉพาะตอนเลือกตึกแล้ว (`buildingStore.activeBuildingId`) เพราะ Endpoint ฝั่ง Admin สโคปตามตึกเสมอ
+   - [LiffLayout.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/layouts/LiffLayout.vue): Header Tenant หลังป้าย "LIFF"/"Web Portal" (ผู้ใช้ขอย้ายจากก่อนป้ายมาไว้หลังป้าย) — Reuse `showBottomNav` เดิมเป็นตัวเช็คว่าอยู่ในหน้าที่ Login แล้วหรือยัง (True = ไม่ใช่หน้า Entry/Register/Onboarding/PIN)
+4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors)
+5. **🐛 พบบั๊ก Pre-existing ระหว่างรัน `yarn test`**: [LiffLayout.test.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/layouts/LiffLayout.test.js) 4 เทส Fail เพราะ `mount()` ไม่ได้ใส่ Pinia Plugin เลย (`global: { plugins: [router] }` ขาด Pinia) — `useAuthStore()`/`useFeatureStore()` ที่ถูกเรียกไม่มีเงื่อนไขใน `<script setup>` เลยโยน Error ทันทีตอน Mount ไม่เกี่ยวกับโค้ดที่แก้ใน Phase นี้เลย (Component อื่นอีก 2 ไฟล์ Test ผ่านปกติ) — บันทึกไว้เป็น Follow-up ยังไม่ได้แก้
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17)
+
+### ⏭️ งานที่เหลือ (Follow-up Items):
+- แก้ `LiffLayout.test.js` ให้ใส่ `createTestingPinia()` เข้า `global.plugins` (Pre-existing Bug ไม่เกี่ยวกับ Phase นี้)
+- ประกาศข่าวสาร (Announcement Broadcast) ยังไม่ขึ้นกระดิ่ง Tenant — รอ Backend แก้ `sendAnnouncementBroadcast` ให้ Log ก่อน (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17)

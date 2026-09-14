@@ -215,7 +215,7 @@
           </div>
 
           <div class="p-3 bg-teal-50/70 rounded-2xl border border-teal-100 text-[11px] text-teal-900 leading-relaxed">
-            📱 เบอร์โทรสำหรับล็อกอินของคุณคือ: <span class="font-bold">{{ tenantProfile.phone || 'เบอร์ที่ลงทะเบียนไว้' }}</span>
+            เบอร์โทรสำหรับล็อกอินของคุณคือ: <span class="font-bold">{{ tenantProfile.phone || 'เบอร์ที่ลงทะเบียนไว้' }}</span>
           </div>
 
           <div class="flex gap-2 pt-2">
@@ -237,6 +237,12 @@
         </form>
       </div>
     </div>
+
+    <!-- 6. Developer Feedback Modal -->
+    <DeveloperFeedbackModal
+      v-model="showFeedbackModal"
+      platform="TENANT_LIFF"
+    />
   </div>
 </template>
 
@@ -250,6 +256,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { showSuccess, showError, showWarning, showConfirm } from '@/utils/swal';
+import DeveloperFeedbackModal from '@/components/DeveloperFeedbackModal.vue';
 
 import {
   User,
@@ -261,6 +268,7 @@ import {
   ChevronRight,
   Lock,
   KeyRound,
+  MessageSquarePlus,
   X
 } from 'lucide-vue-next';
 
@@ -274,6 +282,7 @@ const loading = ref(true);
 const imageLoadError = ref(false);
 const showQrModal = ref(false);
 const showPasswordModal = ref(false);
+const showFeedbackModal = ref(false);
 const newPasswordInput = ref('');
 const confirmPasswordInput = ref('');
 const savingPassword = ref(false);
@@ -338,6 +347,16 @@ const generalMenusConfig = [
     subtitle: 'ดูประวัติใบเสร็จและการชำระเงินย้อนหลัง',
     icon: Receipt,
     route: '/liff/receipts',
+    featureKey: null
+  },
+  {
+    id: 'developer-feedback',
+    title: 'ส่งข้อเสนอแนะถึงทีมผู้พัฒนา (Developer Feedback)',
+    subtitle: 'แจ้งปัญหาการใช้งาน หรือขอฟีเจอร์ใหม่',
+    icon: MessageSquarePlus,
+    action: () => {
+      showFeedbackModal.value = true;
+    },
     featureKey: null
   },
   {

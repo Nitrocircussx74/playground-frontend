@@ -21,7 +21,7 @@
           <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg mx-auto font-bold"
             :class="verificationResult.autoApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
           >
-            {{ verificationResult.autoApproved ? '✓' : '!' }}
+            {{ verificationResult.autoApproved ? '' : '!' }}
           </div>
 
           <h3 class="text-sm font-bold">
@@ -99,7 +99,7 @@
               <!-- ค่าปรับชำระล่าช้า (Late Fee) -->
               <div v-if="Number(invoice.lateFeeCharge) > 0" class="flex justify-between items-center pt-2 text-rose-600 font-bold bg-rose-50/60 p-2 rounded-xl border border-rose-100 mt-1">
                 <span class="flex items-center gap-1.5">
-                  <span>⚠️</span>
+                  
                   <span>ค่าปรับชำระล่าช้า (Late Fee)</span>
                 </span>
                 <span class="font-mono text-sm font-extrabold">+฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</span>
@@ -128,7 +128,7 @@
                   @click="copyPromptPayNumber"
                   class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
                 >
-                  {{ isCopied ? 'คัดลอกแล้ว ✓' : 'คัดลอก' }}
+                  {{ isCopied ? 'คัดลอกแล้ว ' : 'คัดลอก' }}
                 </button>
               </div>
               <div>ยอดชำระ: <span class="font-bold text-emerald-600 text-base font-mono">฿{{ Number(paymentAmount).toLocaleString() }}</span></div>

@@ -22,7 +22,7 @@
       ></div>
     </transition>
 
-    <!-- 👈 Left Sidebar Navigation Menu (Permanent on Desktop, Drawer on Mobile) -->
+    <!-- Left Sidebar Navigation Menu (Permanent on Desktop, Drawer on Mobile) -->
     <aside
       v-if="authStore.isAuthenticated"
       :class="[
@@ -34,7 +34,7 @@
       <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
         <router-link to="/dashboard" class="flex items-center gap-3 group text-decoration-none">
           <div class="w-10 h-10 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-lg shadow-cyan-600/30 ring-2 ring-cyan-500/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden shrink-0">
-            <img src="/horhub-app-icon.png" alt="HorHub Logo" class="w-full h-full object-contain rounded-xl" />
+            <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="40" height="40" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
           </div>
           <div>
             <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
@@ -274,6 +274,20 @@
             </router-link>
 
             <router-link
+              v-if="isOwnerRole"
+              to="/admin/feedback"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/admin/feedback' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-md shadow-purple-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <MessageSquareMore class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/admin/feedback' ? 'text-white' : 'text-purple-400'" />
+              <div class="flex items-center justify-between w-full">
+                <span>ข้อเสนอแนะผู้พัฒนา</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 bg-purple-500/30 text-purple-300 rounded border border-purple-400/40">DEV</span>
+              </div>
+            </router-link>
+
+            <router-link
               to="/profile"
               @click="isMobileMenuOpen = false"
               class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
@@ -315,7 +329,7 @@
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
-      <!-- 🌟 Modern Frosted Top Header -->
+      <!-- Modern Frosted Top Header -->
       <header class="h-16 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between shadow-2xs shrink-0 z-30">
         <div class="flex items-center gap-3 min-w-0">
           <button
@@ -338,6 +352,20 @@
 
         <!-- Right Side: Building Switcher Dropdown & Guided Tour Help Button -->
         <div v-if="authStore.isAuthenticated" class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <!-- In-App Notification Bell (ต้องเลือกตึกก่อนถึงจะรู้ว่าดึงแจ้งเตือนของตึกไหน) -->
+          <NotificationBell v-if="buildingStore.activeBuildingId" mode="admin" :building-id="buildingStore.activeBuildingId" />
+
+          <!-- Feedback Button -->
+          <button
+            id="btn-feedback"
+            @click="showFeedbackModal = true"
+            title="ส่งความคิดเห็น/แจ้งปัญหาถึงผู้พัฒนา"
+            class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 rounded-xl border border-purple-200/80 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
+          >
+            <MessageSquarePlus class="w-4 h-4 text-purple-600 shrink-0" />
+            <span class="hidden md:inline">ฟีดแบ็ก</span>
+          </button>
+
           <!-- Help Tour Button -->
           <button
             id="btn-help-tour"
@@ -357,12 +385,12 @@
               @change="handleBuildingChange"
               class="bg-white/90 border border-cyan-200 text-cyan-950 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 cursor-pointer min-w-[150px] sm:min-w-[180px]"
             >
-              <option value="">🌐 ภาพรวมทั้งหมด (ทุกหอพัก)</option>
+              <option value="">ภาพรวมทั้งหมด (ทุกหอพัก)</option>
               <option v-if="buildingStore.buildings.length === 0" value="" disabled>
                 {{ buildingStore.isLoading ? 'กำลังโหลดข้อมูลตึก...' : 'ไม่พบข้อมูลตึก' }}
               </option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
-                🏢 {{ b.name }}
+                {{ b.name }}
               </option>
             </select>
           </div>
@@ -392,6 +420,12 @@
         </router-view>
       </main>
     </div>
+
+    <!-- Developer Feedback Modal (Global) -->
+    <DeveloperFeedbackModal
+      v-model="showFeedbackModal"
+      platform="CMS_ADMIN"
+    />
   </div>
 </template>
 
@@ -424,14 +458,19 @@ import {
   Sparkles,
   CalendarCheck,
   Car,
-  Vote
+  Vote,
+  MessageSquareMore,
+  MessageSquarePlus
 } from 'lucide-vue-next';
 import { startTour } from '@/utils/tours';
+import DeveloperFeedbackModal from '@/components/DeveloperFeedbackModal.vue';
+import NotificationBell from '@/components/NotificationBell.vue';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
 const router = useRouter();
 const route = useRoute();
+const showFeedbackModal = ref(false);
 
 const triggerHelpTour = () => {
   const path = route.path;

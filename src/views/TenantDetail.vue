@@ -12,7 +12,7 @@
         </button>
         <div>
           <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>👤</span>
+            <User class="w-5 h-5 text-cyan-600" />
             <span>โปรไฟล์และประวัติผู้เช่า (Tenant 360° Profile)</span>
           </h1>
           <p class="text-xs sm:text-sm text-slate-500">
@@ -26,7 +26,7 @@
           @click="loadTenantData"
           class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
         >
-          <span>🔄</span>
+          <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" />
           <span>รีเฟรชข้อมูล</span>
         </button>
       </div>
@@ -40,7 +40,7 @@
 
     <!-- Error / Not Found State -->
     <div v-else-if="error || !tenant" class="p-12 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-3">
-      <div class="text-5xl">⚠️</div>
+      <div class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 mb-3"><AlertCircle class="w-8 h-8" /></div>
       <h3 class="text-lg font-bold text-slate-800">ไม่พบข้อมูลผู้เช่า</h3>
       <p class="text-xs text-slate-500">{{ error || 'ไม่พบเรคคอร์ดของผู้เช่ารายนี้ในระบบ' }}</p>
       <button
@@ -53,7 +53,7 @@
 
     <!-- Content State -->
     <div v-else class="space-y-6">
-      <!-- 👑 Header Section (360-degree Profile Summary Card) -->
+      <!-- Header Section (360-degree Profile Summary Card) -->
       <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-cyan-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
         <!-- Accent Glow background decoration -->
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -74,10 +74,10 @@
                 v-else
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center ring-4 ring-cyan-500/40 shadow-lg"
               >
-                {{ tenant.firstName ? tenant.firstName.charAt(0).toUpperCase() : '👤' }}
+                {{ tenant.firstName ? tenant.firstName.charAt(0).toUpperCase() : 'U' }}
               </div>
-              <div v-if="tenant.lineUserId" class="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1 rounded-full text-xs shadow-md" title="ผูกบัญชี LINE แล้ว">
-                💬
+              <div v-if="tenant.lineUserId" class="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1 rounded-full shadow-md" title="ผูกบัญชี LINE แล้ว">
+                <MessageSquare class="w-3.5 h-3.5" />
               </div>
             </div>
 
@@ -94,7 +94,7 @@
                   class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1 shadow-xs"
                 >
                   <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                  🔴 Blacklist
+                  Blacklist (แบล็กลิสต์)
                 </span>
 
                 <span
@@ -102,14 +102,14 @@
                   class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 shadow-xs"
                 >
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  🟢 กำลังเช่าอยู่
+                  กำลังเช่าอยู่
                 </span>
 
                 <span
                   v-else
                   class="px-3 py-1 rounded-full text-xs font-bold bg-slate-700 text-slate-300 border border-slate-600 flex items-center gap-1 shadow-xs"
                 >
-                  ⚪ ย้ายออกแล้ว
+                  ย้ายออกแล้ว
                 </span>
 
                 <!-- Access Channel Badges -->
@@ -118,7 +118,7 @@
                   class="px-2.5 py-1 rounded-full text-xs font-bold bg-[#06C755]/20 text-emerald-300 border border-[#06C755]/40 flex items-center gap-1.5 shadow-xs"
                   title="ลูกบ้านผูกบัญชี LINE OA สำหรับใช้งานผ่าน LINE LIFF เรียบร้อยแล้ว"
                 >
-                  <span>💬</span>
+                  <MessageSquare class="w-3.5 h-3.5" />
                   <span>LINE LIFF Active</span>
                 </span>
 
@@ -127,7 +127,7 @@
                   class="px-2.5 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center gap-1.5 shadow-xs"
                   title="ลูกบ้านตั้งรหัส PIN 6 หลักแล้ว สามารถเข้าใช้งาน Web Portal หรือสแกน LINE บนคอมพิวเตอร์ได้"
                 >
-                  <span>🌐</span>
+                  <Globe class="w-3.5 h-3.5" />
                   <span>Web Portal (PIN 6 หลัก)</span>
                 </span>
 
@@ -136,7 +136,7 @@
                   class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-xs"
                   title="ลูกบ้านลงทะเบียนแบบ Walk-in ยังไม่ได้เปิดใช้งาน LINE หรือตั้ง PIN"
                 >
-                  <span>⚠️</span>
+                  <AlertCircle class="w-3.5 h-3.5" />
                   <span>รอเปิดใช้งาน (Walk-in)</span>
                 </span>
               </div>
@@ -144,17 +144,17 @@
               <!-- Contact & Identity Attributes -->
               <div class="flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs sm:text-sm text-slate-300">
                 <div class="flex items-center gap-1.5 font-medium">
-                  <span class="text-cyan-400">📞</span>
+                  <Phone class="w-3.5 h-3.5 text-cyan-400" />
                   <a :href="`tel:${tenant.phone}`" class="hover:underline hover:text-white font-mono">{{ tenant.phone || '-' }}</a>
                 </div>
 
                 <div v-if="tenant.idCard" class="flex items-center gap-1.5 font-medium">
-                  <span class="text-cyan-400">🪪</span>
+                  <CreditCard class="w-3.5 h-3.5 text-cyan-400" />
                   <span class="font-mono">เลขบัตร: {{ tenant.idCard }}</span>
                 </div>
 
                 <div v-if="tenant.lineDisplayName" class="flex items-center gap-1.5 text-emerald-400 font-medium">
-                  <span>💬 LINE:</span>
+                  <span class="flex items-center gap-1"><MessageSquare class="w-3.5 h-3.5 text-emerald-400" /> LINE:</span>
                   <span>{{ tenant.lineDisplayName }}</span>
                 </div>
               </div>
@@ -167,7 +167,7 @@
                   :key="r.id"
                   class="bg-cyan-900/60 text-cyan-200 border border-cyan-700/60 px-2.5 py-1 rounded-lg font-bold"
                 >
-                  🏠 {{ r.building?.name || 'อาคาร' }} - ห้อง {{ r.roomNumber }} (ชั้น {{ r.floor }})
+                  {{ r.building?.name || 'อาคาร' }} - ห้อง {{ r.roomNumber }} (ชั้น {{ r.floor }})
                 </span>
               </div>
 
@@ -177,7 +177,7 @@
                   @click="openLineLinkModal"
                   class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                  <span>💬</span>
+                  <MessageSquare class="w-3.5 h-3.5" />
                   <span>สร้างรหัส/QR เชื่อมต่อบัญชี LINE</span>
                 </button>
                 <span class="text-[11px] text-slate-300">
@@ -205,18 +205,18 @@
         </div>
       </div>
 
-      <!-- 🗂️ Tabs Component Layout -->
+      <!-- Tabs Component Layout -->
       <Tabs v-model="activeTab" class="w-full">
         <!-- Tabs Trigger List Navigation -->
         <div class="bg-white p-2 rounded-2xl border border-slate-200/90 shadow-2xs">
           <TabsList class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-full">
             <TabsTrigger value="overview" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
-              <span>📜</span>
+              <FileText class="w-4 h-4" />
               <span>ภาพรวม & สัญญาเช่า</span>
             </TabsTrigger>
 
             <TabsTrigger value="billing" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
-              <span>🧾</span>
+              <Receipt class="w-4 h-4" />
               <span>ประวัติการชำระเงิน</span>
               <span v-if="latePaymentsCount > 0" class="px-1.5 py-0.5 text-[10px] bg-rose-500 text-white rounded-full font-bold">
                 {{ latePaymentsCount }}
@@ -224,7 +224,7 @@
             </TabsTrigger>
 
             <TabsTrigger value="maintenance" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
-              <span>🛠️</span>
+              <Wrench class="w-4 h-4" />
               <span>ประวัติแจ้งซ่อม</span>
               <span v-if="pendingMaintenanceCount > 0" class="px-1.5 py-0.5 text-[10px] bg-amber-500 text-white rounded-full font-bold">
                 {{ pendingMaintenanceCount }}
@@ -232,13 +232,13 @@
             </TabsTrigger>
 
             <TabsTrigger value="security" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
-              <span>🔐</span>
+              <ShieldCheck class="w-4 h-4" />
               <span>การเข้าถึง & ความปลอดภัย</span>
             </TabsTrigger>
           </TabsList>
         </div>
 
-        <!-- 📌 TAB 1: ภาพรวม & สัญญาเช่า (Overview & Leases) -->
+        <!-- TAB 1: ภาพรวม & สัญญาเช่า (Overview & Leases) -->
         <TabsContent value="overview">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Tenancy History & Rooms -->
@@ -247,7 +247,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div>
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <span>🏠</span>
+                      <Home class="w-4 h-4" />
                       <span>ประวัติการอยู่อาศัย & สัญญาเช่า (Lease History)</span>
                     </h3>
                     <p class="text-xs text-slate-500">
@@ -261,7 +261,7 @@
 
                 <!-- Empty Leases List -->
                 <div v-if="!tenant.leaseContracts || tenant.leaseContracts.length === 0" class="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200/60 text-slate-400 space-y-1">
-                  <div class="text-3xl">📜</div>
+                  <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><FileText class="w-6 h-6" /></div>
                   <div class="text-xs font-bold text-slate-600">ยังไม่มีบันทึกสัญญาเช่า</div>
                   <p class="text-[11px]">ผู้เช่าคนนี้ยังไม่มีประวัติเปิดสัญญาเช่าอย่างเป็นทางการในระบบ</p>
                 </div>
@@ -281,7 +281,7 @@
                           class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-2xs"
                           :class="lease.status === 'ACTIVE' ? 'bg-cyan-600 text-white' : 'bg-slate-200 text-slate-700'"
                         >
-                          🏠
+                          <Home class="w-5 h-5" />
                         </div>
                         <div>
                           <div class="text-sm font-bold text-slate-900">
@@ -302,7 +302,7 @@
                           'bg-rose-100 text-rose-800 border border-rose-300': lease.status === 'CANCELLED'
                         }"
                       >
-                        {{ lease.status === 'ACTIVE' ? '🟢 กำลังพักอาศัย' : lease.status === 'ENDED' ? '⚪ ย้ายออกแล้ว' : '🔴 ยกเลิกสัญญา' }}
+                        {{ lease.status === 'ACTIVE' ? 'กำลังพักอาศัย' : lease.status === 'ENDED' ? 'ย้ายออกแล้ว' : 'ยกเลิกสัญญา' }}
                       </span>
                     </div>
 
@@ -330,11 +330,11 @@
                     <!-- Move Out Reason & Record Details if present -->
                     <div v-if="lease.moveOutReason || lease.moveOutRecord" class="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-xs space-y-1 text-amber-900">
                       <div v-if="lease.moveOutReason" class="font-medium">
-                        <span class="font-bold">📌 เหตุผลที่ย้ายออก:</span> {{ lease.moveOutReason }}
+                        <span class="font-bold">เหตุผลที่ย้ายออก:</span> {{ lease.moveOutReason }}
                       </div>
 
                       <div v-if="lease.moveOutRecord" class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-amber-200/60 text-[11px]">
-                        <span>💰 ยอดคืนมัดจำสุทธิ: <strong>{{ formatCurrency(lease.moveOutRecord.netRefund) }}</strong></span>
+                        <span>ยอดคืนมัดจำสุทธิ: <strong>{{ formatCurrency(lease.moveOutRecord.netRefund) }}</strong></span>
                         <span class="px-2 py-0.5 rounded-md bg-amber-200/60 font-bold">
                           สถานะคืนเงิน: {{ lease.moveOutRecord.refundStatus === 'PAID' ? 'ชำระคืนเรียบร้อย' : 'รอคืนเงิน' }}
                         </span>
@@ -345,12 +345,12 @@
               </div>
             </div>
 
-            <!-- Right 1 Col: Internal Notes Box (🔒 RBAC Controlled for OWNER / MANAGER) -->
+            <!-- Right 1 Col: Internal Notes Box (RBAC Controlled for OWNER / MANAGER) -->
             <div class="space-y-6">
               <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>🔒</span>
+                    <Lock class="w-4 h-4" />
                     <span>บันทึกภายใน (Internal Notes)</span>
                   </h3>
                   <span
@@ -379,7 +379,7 @@
                       class="w-4 h-4 text-rose-600 rounded-md border-slate-300 focus:ring-rose-500 cursor-pointer disabled:cursor-not-allowed"
                     />
                     <label for="blacklist-toggle" class="text-xs font-bold text-slate-800 cursor-pointer select-none">
-                      ⚠️ กำหนดสถานะ Blacklist (ติดแบล็กลิสต์)
+                      กำหนดสถานะ Blacklist (ติดแบล็กลิสต์)
                     </label>
                   </div>
                   <span v-if="notesForm.isBlacklisted" class="text-[11px] font-extrabold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-md">
@@ -407,7 +407,7 @@
                     class="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span v-if="savingNotes" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>{{ savingNotes ? 'กำลังบันทึก...' : '💾 บันทึกข้อมูลภายใน' }}</span>
+                    <span>{{ savingNotes ? 'กำลังบันทึก...' : 'บันทึกข้อมูลภายใน' }}</span>
                   </button>
                 </div>
 
@@ -421,7 +421,7 @@
           </div>
         </TabsContent>
 
-        <!-- 🧾 TAB 2: ประวัติการชำระเงิน (Billing Behavior) -->
+        <!-- TAB 2: ประวัติการชำระเงิน (Billing Behavior) -->
         <TabsContent value="billing">
           <div class="space-y-6">
             <!-- Header Summary Metrics Cards -->
@@ -464,7 +464,7 @@
               <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>🧾</span>
+                    <Receipt class="w-4 h-4" />
                     <span>ตารางประวัติใบแจ้งหนี้และการชำระเงิน (Invoice Log)</span>
                   </h3>
                   <p class="text-xs text-slate-500">
@@ -475,7 +475,7 @@
 
               <!-- Empty Invoices Table -->
               <div v-if="!tenant.invoices || tenant.invoices.length === 0" class="p-12 text-center text-slate-400 space-y-2">
-                <div class="text-4xl">🧾</div>
+                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Receipt class="w-6 h-6" /></div>
                 <div class="text-xs font-bold text-slate-600">ยังไม่มีประวัติใบแจ้งหนี้</div>
                 <p class="text-[11px]">ไม่พบบิลค่าเช่าของผู้เช่ารายนี้ในระบบ</p>
               </div>
@@ -519,10 +519,10 @@
                       </td>
                       <td class="py-3.5 px-4 text-right">
                         <span v-if="getInvoicePaymentBehavior(inv).isLate" class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 text-[11px] font-bold">
-                          ⚠️ จ่ายช้า {{ getInvoicePaymentBehavior(inv).daysLate }} วัน
+                          จ่ายช้า {{ getInvoicePaymentBehavior(inv).daysLate }} วัน
                         </span>
                         <span v-else-if="inv.status === 'paid'" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
-                          🟢 ตรงเวลา
+                          ตรงเวลา
                         </span>
                         <span v-else class="text-slate-400 text-[11px] italic">
                           -
@@ -536,7 +536,7 @@
           </div>
         </TabsContent>
 
-        <!-- 🛠️ TAB 3: ประวัติแจ้งซ่อม (Maintenance Log) -->
+        <!-- TAB 3: ประวัติแจ้งซ่อม (Maintenance Log) -->
         <TabsContent value="maintenance">
           <div class="space-y-6">
             <!-- Summary Metrics Header -->
@@ -575,7 +575,7 @@
               <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>🛠️</span>
+                    <Wrench class="w-4 h-4" />
                     <span>บันทึกการแจ้งซ่อมแซมสิ่งอำนวยความสะดวก (Maintenance Log)</span>
                   </h3>
                   <p class="text-xs text-slate-500">
@@ -586,7 +586,7 @@
 
               <!-- Empty State -->
               <div v-if="!tenant.maintenanceRequests || tenant.maintenanceRequests.length === 0" class="p-12 text-center text-slate-400 space-y-2">
-                <div class="text-4xl">🛠️</div>
+                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Wrench class="w-6 h-6" /></div>
                 <div class="text-xs font-bold text-slate-600">ยังไม่มีรายการแจ้งซ่อม</div>
                 <p class="text-[11px]">ผู้เช่าคนนี้ไม่เคยส่งคำขอแจ้งซ่อมแซมสิ่งของในห้องพัก</p>
               </div>
@@ -620,9 +620,9 @@
                       }"
                     >
                       {{
-                        req.status === 'pending' ? '⏳ รอดำเนินการ' :
-                        req.status === 'in_progress' ? '🔨 กำลังซ่อม' :
-                        req.status === 'resolved' ? '✅ ซ่อมเสร็จสิ้น' : '❌ ยกเลิก'
+                        req.status === 'pending' ? 'รอดำเนินการ' :
+                        req.status === 'in_progress' ? 'กำลังซ่อม' :
+                        req.status === 'resolved' ? 'ซ่อมเสร็จสิ้น' : 'ยกเลิก'
                       }}
                     </span>
                   </div>
@@ -657,7 +657,7 @@
 
                   <!-- Admin Note if present -->
                   <div v-if="req.adminNote" class="p-2.5 bg-cyan-50/60 border border-cyan-200/70 rounded-xl text-xs text-cyan-900">
-                    <span class="font-bold">📝 บันทึกแอดมิน/ช่าง:</span> {{ req.adminNote }}
+                    <span class="font-bold">บันทึกแอดมิน/ช่าง:</span> {{ req.adminNote }}
                   </div>
                 </div>
               </div>
@@ -665,7 +665,7 @@
           </div>
         </TabsContent>
 
-        <!-- 🔐 TAB 4: การเข้าถึงและความปลอดภัย (App Access & Security) -->
+        <!-- TAB 4: การเข้าถึงและความปลอดภัย (App Access & Security) -->
         <TabsContent value="security">
           <TenantSecurityTab :tenant="tenant" @updated="handleSecurityUpdated" />
         </TabsContent>
@@ -679,12 +679,12 @@
           @click="showLineLinkModal = false"
           class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
         >
-          ✕
+          <X class="w-4 h-4" />
         </button>
 
         <div class="text-center space-y-2">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-2xs">
-            💬
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-2xs">
+            <MessageSquare class="w-6 h-6" />
           </div>
           <h3 class="text-lg font-extrabold text-slate-900 tracking-tight">เชื่อมต่อบัญชี LINE ให้ผู้เช่า</h3>
           <p class="text-xs text-slate-500">
@@ -714,7 +714,7 @@
           </div>
 
           <div class="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-[11px] text-emerald-900 space-y-1">
-            <div class="font-bold">📱 วิธีการเชื่อมต่อสำหรับลูกบ้าน:</div>
+            <div class="font-bold">วิธีการเชื่อมต่อสำหรับลูกบ้าน:</div>
             <ol class="list-decimal pl-4 space-y-0.5 text-emerald-800">
               <li>เปิด LINE ของหอพัก และเข้าเมนู "ผูกบัญชีลูกบ้าน"</li>
               <li>กรอกรหัส 6 หลัก และเบอร์โทร 4 ตัวท้าย</li>
@@ -735,6 +735,23 @@
 </template>
 
 <script setup>
+import {
+  User,
+  RefreshCw,
+  AlertCircle,
+  MessageSquare,
+  Globe,
+  Phone,
+  CreditCard,
+  FileText,
+  Receipt,
+  Wrench,
+  ShieldCheck,
+  Home,
+  Lock,
+  X,
+  CheckCircle2
+} from 'lucide-vue-next';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import QRCode from 'qrcode';

@@ -8,7 +8,10 @@
             Smart Parcel Management
           </span>
         </div>
-        <h1 class="text-2xl font-black tracking-tight text-white mt-1">📦 จัดการพัสดุอัจฉริยะ (Parcel Management)</h1>
+        <div class="flex items-center gap-2 mt-1">
+          <Package class="w-6 h-6 text-amber-200" />
+          <h1 class="text-2xl font-black tracking-tight text-white">จัดการพัสดุ (Parcel Management)</h1>
+        </div>
         <p class="text-xs text-amber-100/80 mt-1 max-w-xl">
           บันทึกรับพัสดุ ถ่ายรูปหน้ากล่อง แจ้งเตือนลูกบ้านทาง LINE อัตโนมัติ พร้อมอัปเดตสถานะการรับของ
         </p>
@@ -18,15 +21,16 @@
         @click="openCreateModal"
         class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-amber-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
       >
-        <span>➕ บันทึกพัสดุเข้าใหม่ (Receive Parcel)</span>
+        <Plus class="w-4 h-4" />
+        <span>บันทึกพัสดุเข้าใหม่ (Receive Parcel)</span>
       </button>
     </div>
 
     <!-- KPI Stats Bar -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold text-lg">
-          📦
+        <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
+          <Package class="w-5 h-5" />
         </div>
         <div>
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">พัสดุทั้งหมดในระบบ</div>
@@ -35,8 +39,8 @@
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
-          ⏳
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+          <Clock class="w-5 h-5" />
         </div>
         <div>
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รอรับที่นิติฯ (Pending)</div>
@@ -45,8 +49,8 @@
       </div>
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
-          ✅
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+          <CheckCircle2 class="w-5 h-5" />
         </div>
         <div>
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รับไปแล้ว (Picked Up)</div>
@@ -69,22 +73,25 @@
           </button>
           <button
             @click="filterStatus = 'PENDING'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
             :class="filterStatus === 'PENDING' ? 'bg-amber-500 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
-            ⏳ รอรับ ({{ pendingCount }})
+            <Clock class="w-3.5 h-3.5" />
+            <span>รอรับ ({{ pendingCount }})</span>
           </button>
           <button
             @click="filterStatus = 'PICKED_UP'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
             :class="filterStatus === 'PICKED_UP' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
-            ✅ รับแล้ว ({{ pickedUpCount }})
+            <CheckCircle2 class="w-3.5 h-3.5" />
+            <span>รับแล้ว ({{ pickedUpCount }})</span>
           </button>
         </div>
 
         <button @click="fetchParcels" class="text-xs text-orange-600 hover:underline font-semibold cursor-pointer flex items-center gap-1">
-          <span>🔄 รีเฟรชรายการ</span>
+          <RotateCw class="w-3.5 h-3.5" />
+          <span>รีเฟรชรายการ</span>
         </button>
       </div>
 
@@ -119,7 +126,10 @@
               <td class="p-3.5 text-xs text-slate-600 font-medium">
                 {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : (item.room?.tenant ? `${item.room.tenant.firstName} ${item.room.tenant.lastName}` : 'N/A') }}
               </td>
-              <td class="p-3.5 font-bold text-orange-700 text-xs">🚚 {{ item.courier }}</td>
+              <td class="p-3.5 font-bold text-orange-700 text-xs flex items-center gap-1">
+                <Truck class="w-3.5 h-3.5 text-orange-600" />
+                <span>{{ item.courier }}</span>
+              </td>
               <td class="p-3.5 font-mono text-xs text-teal-700 font-semibold">{{ item.trackingNumber || '-' }}</td>
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(item.receivedAt) }}</td>
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ item.pickedUpAt ? formatDate(item.pickedUpAt) : '-' }}</td>
@@ -131,7 +141,7 @@
                     'bg-emerald-100 border-emerald-300 text-emerald-800': item.status === 'PICKED_UP'
                   }"
                 >
-                  <span>{{ item.status === 'PENDING' ? '⏳' : '✅' }}</span>
+                  <component :is="item.status === 'PENDING' ? Clock : CheckCircle2" class="w-3 h-3" />
                   <span>{{ item.status === 'PENDING' ? 'รอรับที่นิติฯ' : 'รับแล้ว' }}</span>
                 </span>
               </td>
@@ -140,17 +150,19 @@
                 <button
                   v-if="item.status === 'PENDING'"
                   @click="handleMarkPickedUp(item.id, item.room?.roomNumber)"
-                  class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer inline-flex items-center gap-1"
                 >
-                  ✅ จ่ายพัสดุแล้ว
+                  <CheckCircle2 class="w-3.5 h-3.5" />
+                  <span>จ่ายพัสดุแล้ว</span>
                 </button>
 
                 <!-- Delete Button -->
                 <button
                   @click="handleDeleteParcel(item.id)"
-                  class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer"
+                  class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1"
                 >
-                  🗑️ ลบ
+                  <Trash2 class="w-3.5 h-3.5" />
+                  <span>ลบ</span>
                 </button>
               </td>
             </tr>
@@ -170,10 +182,12 @@
       <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xl">📦</span>
+            <Package class="w-5 h-5 text-amber-200" />
             <h3 class="font-bold text-base text-white">บันทึกรับพัสดุเข้าใหม่ (Receive Parcel)</h3>
           </div>
-          <button @click="showModal = false" class="text-orange-100 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+          <button @click="showModal = false" class="text-orange-100 hover:text-white p-1 rounded-lg cursor-pointer">
+            <X class="w-5 h-5" />
+          </button>
         </div>
 
         <form @submit.prevent="handleCreateParcel" class="p-6 space-y-4">
@@ -183,11 +197,11 @@
             <select
               v-model="form.roomId"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
             >
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in roomStore.rooms" :key="r.id" :value="r.id">
-                🚪 ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
+                ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
               </option>
             </select>
           </div>
@@ -198,15 +212,15 @@
             <select
               v-model="form.courier"
               required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
             >
-              <option value="Shopee Express">🚚 Shopee Express</option>
-              <option value="Lazada Logistics">📦 Lazada Logistics</option>
-              <option value="Kerry Express">🚚 Kerry Express</option>
-              <option value="Flash Express">⚡ Flash Express</option>
-              <option value="J&T Express">🚚 J&T Express</option>
-              <option value="ไปรษณีย์ไทย (Thailand Post)">📮 ไปรษณีย์ไทย (EMS/ลงทะเบียน)</option>
-              <option value="อื่นๆ (Other)">🚚 อื่นๆ</option>
+              <option value="Shopee Express">Shopee Express</option>
+              <option value="Lazada Logistics">Lazada Logistics</option>
+              <option value="Kerry Express">Kerry Express</option>
+              <option value="Flash Express">Flash Express</option>
+              <option value="J&T Express">J&T Express</option>
+              <option value="ไปรษณีย์ไทย (Thailand Post)">ไปรษณีย์ไทย (EMS/ลงทะเบียน)</option>
+              <option value="อื่นๆ (Other)">อื่นๆ</option>
             </select>
           </div>
 
@@ -217,7 +231,7 @@
               v-model="form.trackingNumber"
               type="text"
               placeholder="เช่น TH0192837465 หรือ SHP99887766"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
             />
           </div>
 
@@ -237,9 +251,9 @@
               <button
                 type="button"
                 @click="form.photoUrl = ''"
-                class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold"
+                class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold cursor-pointer"
               >
-                ✕
+                <X class="w-3 h-3" />
               </button>
             </div>
           </div>
@@ -255,9 +269,10 @@
             <button
               type="submit"
               :disabled="submitting || uploading"
-              class="w-1/2 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-600/20 disabled:opacity-50 cursor-pointer"
+              class="w-1/2 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-600/20 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
             >
-              {{ submitting ? 'กำลังบันทึก...' : '✅ บันทึกพัสดุ' }}
+              <CheckCircle2 class="w-4 h-4" />
+              <span>{{ submitting ? 'กำลังบันทึก...' : 'บันทึกพัสดุ' }}</span>
             </button>
           </div>
         </form>
@@ -273,6 +288,16 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
+import {
+  Package,
+  Plus,
+  Clock,
+  CheckCircle2,
+  RotateCw,
+  Truck,
+  Trash2,
+  X
+} from 'lucide-vue-next';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -298,37 +323,30 @@ const filteredParcels = computed(() => {
   return parcels.value.filter((p) => p.status === filterStatus.value);
 });
 
-const loadData = (buildingId) => {
-  const targetBuildingId = buildingId || buildingStore.activeBuildingId;
-  roomStore.fetchRooms(targetBuildingId);
+const loadData = () => {
+  const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
+  if (!bId) return;
   fetchParcels();
+  roomStore.fetchRooms({ buildingId: bId });
 };
 
-onMounted(() => {
-  loadData();
-});
-
-watch(
-  () => buildingStore.activeBuildingId,
-  (newBuildingId) => {
-    loadData(newBuildingId);
-  }
-);
+onMounted(loadData);
+watch(() => buildingStore.activeBuildingId, loadData);
 
 const fetchParcels = async () => {
   try {
-    const bId = buildingStore.activeBuildingId || (buildingStore.buildings[0]?.id || '');
-    if (!bId) return;
-
-    const res = await api.get(`/api/admin/buildings/${bId}/parcels`);
+    const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
+    const res = await api.get('/api/v1/parcels', {
+      params: { buildingId: bId }
+    });
     parcels.value = res.data.data;
-  } catch (error) {
-    console.error('Failed to fetch parcels:', error);
+  } catch (err) {
+    console.error('Fetch parcels failed', err);
   }
 };
 
 const openCreateModal = () => {
-  form.roomId = roomStore.rooms[0]?.id || '';
+  form.roomId = '';
   form.courier = 'Shopee Express';
   form.trackingNumber = '';
   form.photoUrl = '';
@@ -341,65 +359,80 @@ const handlePhotoUpload = async (event) => {
 
   uploading.value = true;
   try {
-    const res = await uploadService.uploadFile(file);
-    form.photoUrl = res.data.url;
-    await showSuccess('สำเร็จ!', 'อัปโหลดรูปถ่ายพัสดุเรียบร้อยแล้ว');
+    const res = await uploadService.uploadFile(file, 'parcels');
+    form.photoUrl = res.url;
   } catch (err) {
-    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถอัปโหลดรูปภาพได้');
+    showError('อัปโหลดล้มเหลว', 'ไม่สามารถอัปโหลดรูปภาพพัสดุได้');
   } finally {
     uploading.value = false;
   }
 };
 
 const handleCreateParcel = async () => {
+  if (!form.roomId) {
+    showError('ข้อผิดพลาด', 'กรุณาเลือกห้องพัก');
+    return;
+  }
   submitting.value = true;
   try {
     const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
-    const res = await api.post(`/api/admin/buildings/${bId}/parcels`, {
-      roomId: form.roomId,
-      courier: form.courier,
-      trackingNumber: form.trackingNumber,
-      photoUrl: form.photoUrl
+    await api.post('/api/v1/parcels', {
+      ...form,
+      buildingId: bId
     });
-
-    await showSuccess('สำเร็จ!', res.data.message || 'บันทึกพัสดุเรียบร้อยแล้ว');
+    showSuccess('สำเร็จ', 'บันทึกรับพัสดุและส่งแจ้งเตือน LINE เรียบร้อยแล้ว');
     showModal.value = false;
     fetchParcels();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถบันทึกพัสดุได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถบันทึกพัสดุได้');
   } finally {
     submitting.value = false;
   }
 };
 
-const handleMarkPickedUp = async (id, roomNumber) => {
-  const confirmed = await showConfirm('ยืนยันจ่ายพัสดุ', `ยืนยันว่าลูกบ้านห้อง ${roomNumber || ''} รับพัสดุไปเรียบร้อยแล้ว?`);
-  if (!confirmed) return;
+const handleMarkPickedUp = async (parcelId, roomNum) => {
+  const isConfirm = await showConfirm(
+    'ยืนยันการจ่ายพัสดุ?',
+    `ต้องการบันทึกว่าลูกบ้านห้อง ${roomNum} มารับพัสดุชิ้นนี้แล้วใช่หรือไม่?`
+  );
+  if (!isConfirm) return;
 
   try {
-    const res = await api.patch(`/api/admin/parcels/${id}/pickup`);
-    await showSuccess('สำเร็จ!', res.data.message || 'อัปเดตสถานะรับพัสดุเรียบร้อยแล้ว');
+    await api.patch(`/api/v1/parcels/${parcelId}/status`, {
+      status: 'PICKED_UP'
+    });
+    showSuccess('สำเร็จ', 'อัปเดตสถานะเป็นรับพัสดุแล้ว');
     fetchParcels();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถอัปเดตสถานะพัสดุได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', 'ไม่สามารถอัปเดตสถานะได้');
   }
 };
 
-const handleDeleteParcel = async (id) => {
-  const confirmed = await showConfirm('ยืนยันลบพัสดุ', 'คุณต้องการลบรายการพัสดุนี้ใช่หรือไม่?');
-  if (!confirmed) return;
+const handleDeleteParcel = async (parcelId) => {
+  const isConfirm = await showConfirm(
+    'ยืนยันการลบพัสดุ?',
+    'ประวัติพัสดุชิ้นนี้จะถูกลบออกจากระบบอย่างถาวร'
+  );
+  if (!isConfirm) return;
 
   try {
-    await api.delete(`/api/admin/parcels/${id}`);
-    await showSuccess('สำเร็จ!', 'ลบรายการพัสดุเรียบร้อยแล้ว');
+    await api.delete(`/api/v1/parcels/${parcelId}`);
+    showSuccess('สำเร็จ', 'ลบรายการพัสดุเรียบร้อยแล้ว');
     fetchParcels();
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถลบพัสดุได้');
+  } catch (err) {
+    showError('ข้อผิดพลาด', 'ไม่สามารถลบรายการได้');
   }
 };
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleString('th-TH');
+  const d = new Date(dateStr);
+  return d.toLocaleString('th-TH', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 </script>

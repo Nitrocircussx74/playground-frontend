@@ -4,14 +4,14 @@
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="text-xl">📊</span>
+          <FileSpreadsheet class="w-5 h-5 text-teal-600" />
           <div>
             <h3 class="font-bold text-base text-white leading-tight">นำเข้าข้อมูลมิเตอร์ผ่านไฟล์ Excel/CSV (Bulk Meter Import)</h3>
             <p class="text-xs text-teal-100/80">ดาวน์โหลด Template, อัปโหลดไฟล์, และตรวจสอบข้อมูลล่วงหน้าก่อนออกบิล</p>
           </div>
         </div>
 
-        <button @click="emit('close')" class="text-teal-100 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+        <button @click="emit('close')" class="text-teal-100 hover:text-white p-1 rounded-lg cursor-pointer"><X class="w-4 h-4" /></button>
       </div>
 
       <div class="p-6 space-y-6">
@@ -33,7 +33,7 @@
               :disabled="downloading"
               class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <span>📥 {{ downloading ? 'กำลังสร้างไฟล์...' : 'ดาวน์โหลด Template Excel (.xlsx)' }}</span>
+              <span>{{ downloading ? 'กำลังสร้างไฟล์...' : 'ดาวน์โหลด Template Excel (.xlsx)' }}</span>
             </button>
           </div>
 
@@ -60,7 +60,7 @@
                 for="meter-file-input"
                 class="w-full py-2.5 border-2 border-dashed border-cyan-500 bg-white hover:bg-cyan-50/50 text-cyan-800 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
               >
-                <span>📁 {{ uploading ? 'กำลังประมวลผลไฟล์...' : 'คลิกเลือกไฟล์เพื่อนำเข้า (Import File)' }}</span>
+                <span>{{ uploading ? 'กำลังประมวลผลไฟล์...' : 'คลิกเลือกไฟล์เพื่อนำเข้า (Import File)' }}</span>
               </label>
             </div>
           </div>
@@ -77,8 +77,8 @@
             </div>
 
             <div class="flex items-center gap-3 text-xs">
-              <span class="text-emerald-700 font-bold">✅ ถูกต้อง: {{ validCount }}</span>
-              <span class="text-rose-600 font-bold" v-if="invalidCount > 0">❌ มีข้อผิดพลาด: {{ invalidCount }}</span>
+              <span class="text-emerald-700 font-bold">ถูกต้อง: {{ validCount }}</span>
+              <span class="text-rose-600 font-bold" v-if="invalidCount > 0">มีข้อผิดพลาด: {{ invalidCount }}</span>
             </div>
           </div>
 
@@ -140,10 +140,10 @@
                   <!-- Status -->
                   <td class="p-3">
                     <span v-if="item.isValid" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                      ✅ ถูกต้อง
+                      ถูกต้อง
                     </span>
                     <span v-else class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
-                      ⚠️ {{ item.errorMessage }}
+                      {{ item.errorMessage }}
                     </span>
                   </td>
                 </tr>
@@ -173,7 +173,7 @@
               :disabled="!allValid || generating || previewItems.length === 0"
               class="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-teal-600/20 disabled:opacity-50 cursor-pointer flex items-center gap-2"
             >
-              <span>⚡ {{ generating ? 'กำลังสร้างบิล...' : 'ยืนยันและสร้างบิลฉบับร่าง (Generate Draft Invoices)' }}</span>
+              <span>{{ generating ? 'กำลังสร้างบิล...' : 'ยืนยันและสร้างบิลฉบับร่าง (Generate Draft Invoices)' }}</span>
             </button>
           </div>
         </div>
@@ -183,6 +183,7 @@
 </template>
 
 <script setup>
+import { X, CheckCircle2, FileSpreadsheet, Download, AlertCircle, Zap, Upload } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';

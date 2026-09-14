@@ -15,7 +15,7 @@
         <div class="space-y-3 text-center pb-5 pt-7 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/50 to-transparent">
           <div class="relative mx-auto inline-flex">
             <div class="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg shadow-cyan-600/20 ring-4 ring-cyan-500/20 overflow-hidden">
-              <img src="/horhub-app-icon.png" alt="HorHub App Icon" class="w-full h-full object-contain rounded-xl" />
+              <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="56" height="56" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -43,7 +43,7 @@
             v-if="errorMessage"
             class="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-2xl text-xs flex items-center gap-2 animate-shake"
           >
-            <span class="text-base shrink-0">⚠️</span>
+            <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
             <span>{{ errorMessage }}</span>
           </div>
 
@@ -80,7 +80,7 @@
             <!-- 1. Phone Number Input -->
             <div class="space-y-1.5">
               <label class="text-xs font-bold text-slate-300 flex items-center justify-between">
-                <span>📱 หมายเลขโทรศัพท์ที่ลงทะเบียน</span>
+                <span>หมายเลขโทรศัพท์ที่ลงทะเบียน</span>
                 <span class="text-[10px] text-slate-400 font-normal">เช่น 0812345678</span>
               </label>
               <input
@@ -98,7 +98,7 @@
             <!-- 2. PIN Input Section (6 Digits) -->
             <div class="space-y-2">
               <label class="text-xs font-bold text-slate-300 flex items-center justify-between">
-                <span>🔐 รหัส PIN 6 หลัก</span>
+                <span>รหัส PIN 6 หลัก</span>
                 <button
                   type="button"
                   @click="showPin = !showPin"
@@ -169,7 +169,7 @@
                     class="h-10 rounded-xl text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
                     title="ลบตัวเลขล่าสุด"
                   >
-                    ⌫
+                    ลบ
                   </button>
                 </div>
               </div>
@@ -201,6 +201,7 @@
 </template>
 
 <script setup>
+import { AlertCircle, Phone, Lock } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/utils/api';

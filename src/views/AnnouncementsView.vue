@@ -8,7 +8,10 @@
             Targeted LINE Broadcast Engine
           </span>
         </div>
-        <h1 class="text-2xl font-black tracking-tight text-white mt-1">📢 ประกาศข่าวสารเฉพาะกลุ่ม (Targeted Broadcast)</h1>
+        <h1 class="text-2xl font-black tracking-tight text-white mt-1 flex items-center gap-2">
+          <Megaphone class="w-6 h-6 text-rose-300" />
+          <span>ประกาศข่าวสารเฉพาะกลุ่ม (Targeted Broadcast)</span>
+        </h1>
         <p class="text-xs text-rose-200/80 mt-1 max-w-xl">
           ส่ง LINE Flex Message แจ้งเตือนข่าวสารตรงไปยังลูกบ้านเฉพาะตึก หรือเฉพาะชั้นได้ทันที (รองรับ Multicast Array Chunking 500 UIDs/Request)
         </p>
@@ -18,7 +21,8 @@
         @click="showCreateModal = !showCreateModal"
         class="px-5 py-2.5 bg-gradient-to-r from-rose-500 to-cyan-600 hover:from-rose-600 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
       >
-        <span>{{ showCreateModal ? '✕ ปิดฟอร์ม' : '➕ บรอดแคสต์ประกาศใหม่ (New Broadcast)' }}</span>
+        <component :is="showCreateModal ? X : Plus" class="w-4 h-4" />
+        <span>{{ showCreateModal ? 'ปิดฟอร์ม' : 'บรอดแคสต์ประกาศใหม่ (New Broadcast)' }}</span>
       </button>
     </div>
 
@@ -26,7 +30,7 @@
     <div v-if="showCreateModal" class="p-6 bg-white border border-slate-200 rounded-3xl shadow-lg space-y-5 animate-in fade-in zoom-in-95 duration-150">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-          <span>📱</span>
+          <Smartphone class="w-5 h-5 text-rose-600" />
           <span>สร้างข้อความและเลือกกลุ่มเป้าหมาย (Create & Target Broadcast)</span>
         </h2>
         <span class="text-xs text-slate-400 font-medium">LINE Messaging API Multicast Engine</span>
@@ -54,9 +58,9 @@
               @change="handleTargetTypeChange"
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
             >
-              <option value="ALL">🌐 ลูกบ้านทุกตึกทั้งหมด (All Buildings)</option>
-              <option value="BUILDING">🏢 เฉพาะตึกที่ระบุ (Specific Building)</option>
-              <option value="FLOOR">🚪 เฉพาะชั้นที่ระบุ (Specific Floor)</option>
+              <option value="ALL">ลูกบ้านทุกตึกทั้งหมด (All Buildings)</option>
+              <option value="BUILDING">เฉพาะตึกที่ระบุ (Specific Building)</option>
+              <option value="FLOOR">เฉพาะชั้นที่ระบุ (Specific Floor)</option>
             </select>
           </div>
 
@@ -70,7 +74,7 @@
             >
               <option value="" disabled>-- เลือกหอพัก --</option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
-                🏢 {{ b.name }}
+                {{ b.name }}
               </option>
             </select>
           </div>
@@ -110,7 +114,7 @@
               @click="form.imageUrl = ''"
               class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center font-bold shadow-md hover:bg-rose-700"
             >
-              ✕
+              <X class="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -134,7 +138,8 @@
             :disabled="submitting || uploadingImage"
             class="px-6 py-3 bg-gradient-to-r from-rose-600 to-cyan-600 hover:from-rose-700 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
           >
-            <span>🚀 ตรวจสอบและส่ง LINE Broadcast</span>
+            <Send class="w-4 h-4" />
+            <span>ตรวจสอบและส่ง LINE Broadcast</span>
           </button>
         </div>
       </form>
@@ -147,7 +152,10 @@
           <h3 class="font-bold text-slate-900 text-sm">ประวัติการบรอดแคสต์ทั้งหมด (Broadcast History)</h3>
           <p class="text-xs text-slate-400">รายการข่าวสารที่เคยบรอดแคสต์ไปหาลูกบ้านย้อนหลัง</p>
         </div>
-        <button @click="fetchAnnouncements" class="text-xs text-rose-600 hover:underline font-semibold cursor-pointer">🔄 รีเฟรชประวัติ</button>
+        <button @click="fetchAnnouncements" class="text-xs text-rose-600 hover:underline font-semibold cursor-pointer flex items-center gap-1.5">
+          <RotateCw class="w-3.5 h-3.5" />
+          <span>รีเฟรชประวัติ</span>
+        </button>
       </div>
 
       <div class="divide-y divide-slate-100">
@@ -156,14 +164,17 @@
             <div class="flex items-center gap-2.5 flex-wrap">
               <span class="font-bold text-slate-900 text-base">{{ item.title }}</span>
               <span
-                class="text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1"
+                class="text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1.5"
                 :class="{
                   'bg-cyan-50 border-cyan-200 text-cyan-800': item.targetType === 'ALL' || item.targetType === 'all',
                   'bg-teal-50 border-teal-200 text-teal-800': item.targetType === 'BUILDING' || item.targetType === 'building',
                   'bg-amber-50 border-amber-200 text-amber-800': item.targetType === 'FLOOR' || item.targetType === 'floor'
                 }"
               >
-                <span>{{ item.targetType === 'ALL' || item.targetType === 'all' ? '🌐 ทุกตึก' : item.targetType === 'FLOOR' || item.targetType === 'floor' ? '🚪 ชั้น ' + item.targetValue : '🏢 ตึก: ' + (item.building?.name || 'ระบุตึก') }}</span>
+                <Globe v-if="item.targetType === 'ALL' || item.targetType === 'all'" class="w-3.5 h-3.5 text-cyan-700" />
+                <Layers v-else-if="item.targetType === 'FLOOR' || item.targetType === 'floor'" class="w-3.5 h-3.5 text-amber-700" />
+                <Building2 v-else class="w-3.5 h-3.5 text-teal-700" />
+                <span>{{ item.targetType === 'ALL' || item.targetType === 'all' ? 'ทุกตึก' : item.targetType === 'FLOOR' || item.targetType === 'floor' ? 'ชั้น ' + item.targetValue : 'ตึก: ' + (item.building?.name || 'ระบุตึก') }}</span>
               </span>
             </div>
 
@@ -171,9 +182,10 @@
               <span class="text-xs text-slate-400 font-mono">{{ new Date(item.createdAt).toLocaleString('th-TH') }}</span>
               <button
                 @click="handleDeleteAnnouncement(item.id, item.title)"
-                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold border border-rose-200 cursor-pointer"
+                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold border border-rose-200 cursor-pointer flex items-center gap-1"
               >
-                🗑️ ลบ
+                <Trash2 class="w-3.5 h-3.5" />
+                <span>ลบ</span>
               </button>
             </div>
           </div>
@@ -185,8 +197,9 @@
 
           <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">{{ item.content }}</p>
 
-          <div class="text-[11px] text-slate-400 font-medium flex items-center gap-2">
-            <span>👤 ผู้ส่ง: {{ item.createdBy || 'Admin' }}</span>
+          <div class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+            <User class="w-3.5 h-3.5 text-slate-400" />
+            <span>ผู้ส่ง: {{ item.createdBy || 'Admin' }}</span>
           </div>
         </div>
 
@@ -200,6 +213,19 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
+import {
+  Megaphone,
+  Plus,
+  X,
+  Smartphone,
+  Send,
+  RotateCw,
+  Trash2,
+  User,
+  Globe,
+  Building2,
+  Layers
+} from 'lucide-vue-next';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
