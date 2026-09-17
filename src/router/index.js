@@ -201,6 +201,12 @@ const routes = [
         meta: { isLiff: true, requiresLiffAuth: true, title: 'HorHub (หอฮับ)' }
       },
       {
+        path: 'owner-dashboard',
+        name: 'LiffOwnerDashboard',
+        component: () => import('@/views/LiffOwnerDashboardView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แดชบอร์ดเจ้าของตึก' }
+      },
+      {
         path: 'settings',
         name: 'LiffSettings',
         component: () => import('@/views/LiffPersonalProfileView.vue'),
@@ -448,6 +454,9 @@ async function liffNavigationGuard(to, from, next) {
   if (to.path === '/liff' || to.path === '/liff/') {
     const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
     if (hasSession) {
+      if (authStore.isOwner && authStore.currentRole === 'owner') {
+        return next({ path: '/liff/owner-dashboard', query: to.query });
+      }
       return next({ path: '/liff/profile', query: to.query });
     }
     return next();

@@ -80,6 +80,35 @@
         </button>
       </div>
 
+      <!-- 0. Tenant Preview Mode Banner for Owners -->
+      <div
+        v-if="isPreviewMode || (authStore.isOwner && !tenantProfile.lineUserId)"
+        class="p-4 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 rounded-2xl flex items-center justify-between gap-3 shadow-md border border-amber-300"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-black/15 text-slate-950 flex items-center justify-center shrink-0">
+            <Eye class="w-5 h-5" />
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-black text-slate-950 flex items-center gap-1.5">
+              <span>โหมดจำลองมุมมองลูกบ้าน</span>
+              <span class="px-1.5 py-0.2 text-[9px] rounded-md bg-black/20 text-slate-950 font-bold uppercase">Preview</span>
+            </div>
+            <div class="text-[11px] text-slate-900 truncate">
+              คุณกำลังดูหน้าจอเสมือนที่ลูกบ้านเห็น
+            </div>
+          </div>
+        </div>
+        <router-link
+          to="/liff/owner-dashboard"
+          @click="authStore.setActiveRole('owner')"
+          class="shrink-0 px-3.5 py-2 bg-slate-950 hover:bg-slate-900 active:scale-95 text-white font-bold text-xs rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+        >
+          <ArrowRightLeft class="w-3.5 h-3.5" />
+          <span>กลับแดชบอร์ด</span>
+        </router-link>
+      </div>
+
       <!-- 1. Header Section: Profile & Digital ID Card -->
       <div
         class="p-5 sm:p-6 text-white rounded-2xl shadow-xs relative overflow-hidden transition-all duration-500"
@@ -154,6 +183,35 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- 1.2 Owner Mode Quick Switch Banner (สำหรับผู้ใช้ที่มีสิทธิ์เจ้าของตึก) -->
+      <div
+        v-if="authStore.isOwner || tenantProfile.isOwner"
+        class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl flex items-center justify-between gap-3 shadow-md border border-slate-700/60"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center justify-center shrink-0">
+            <Building2 class="w-5 h-5" />
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>คุณมีสิทธิ์เจ้าของตึก</span>
+              <span class="px-1.5 py-0.2 text-[9px] rounded-md bg-teal-500 text-slate-950 font-black">Owner</span>
+            </div>
+            <div class="text-[11px] text-slate-300 truncate">
+              ดูยอดเงิน อัตราห้องพัก และเรื่องด่วน
+            </div>
+          </div>
+        </div>
+        <router-link
+          to="/liff/owner-dashboard"
+          @click="authStore.setActiveRole('owner')"
+          class="shrink-0 px-3.5 py-2 bg-teal-500 hover:bg-teal-400 active:scale-95 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+        >
+          <ArrowRightLeft class="w-3.5 h-3.5" />
+          <span>แดชบอร์ดตึก</span>
+        </router-link>
       </div>
 
       <!-- 1.5 Web Tenant LINE Binding Banner (แนะนำให้ผูก LINE OA หากยังไม่มี LINE ID) -->
@@ -973,7 +1031,10 @@ import {
   Users,
   UserPlus,
   Copy,
-  MessageSquare
+  MessageSquare,
+  Building2,
+  ArrowRightLeft,
+  Eye
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -1001,6 +1062,7 @@ const unitTypeIconMap = {
 const getRoomIcon = (unitType) => unitTypeIconMap[unitType] || DoorClosed;
 
 const loading = ref(true);
+const isPreviewMode = ref(false);
 const showQrModal = ref(false);
 const showLinkRoomModal = ref(false);
 const showRoommateModal = ref(false);
@@ -1117,7 +1179,9 @@ const tenantProfile = reactive({
   rooms: authStore.tenant?.rooms || [],
   phone: authStore.tenant?.phone || '',
   lineUserId: authStore.tenant?.lineUserId || '',
-  avatarUrl: authStore.tenant?.avatarUrl || authStore.tenant?.linePictureUrl || ''
+  avatarUrl: authStore.tenant?.avatarUrl || authStore.tenant?.linePictureUrl || '',
+  isOwner: Boolean(authStore.tenant?.isOwner || authStore.isOwner),
+  availableRoles: authStore.availableRoles || []
 });
 
 const tenantInitial = computed(() => {
@@ -1182,6 +1246,17 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.residentRole = data.residentRole || 'PRIMARY';
       tenantProfile.isPrimaryTenant = data.isPrimaryTenant ?? true;
       tenantProfile.roommates = data.roommates || [];
+      tenantProfile.isOwner = Boolean(data.isOwner);
+      tenantProfile.availableRoles = data.availableRoles || (data.isOwner ? ['tenant', 'owner'] : ['tenant']);
+
+      // อัปเดตข้อมูลสิทธิ์ลง Pinia authStore แบบเรียลไทม์
+      authStore.setTenant(data);
+      if (data.availableRoles && data.availableRoles.length > 0) {
+        authStore.setAvailableRoles(data.availableRoles);
+      } else if (data.isOwner) {
+        authStore.setAvailableRoles(['tenant', 'owner']);
+      }
+
       if (data.linePictureUrl && !tenantProfile.avatarUrl) {
         tenantProfile.avatarUrl = data.linePictureUrl;
       }
@@ -1195,9 +1270,28 @@ const fetchTenantProfile = async (lineUserId = '') => {
       } else {
         applyTheme(data);
       }
+    } else if (authStore.isOwner) {
+      // Pure Owner / Executive with no tenant record -> Activate Preview Mode gracefully
+      isPreviewMode.value = true;
+      sessionExpired.value = false;
+      tenantProfile.firstName = authStore.user?.name || authStore.currentUser?.name || 'ผู้ดูแลอาคาร';
+      tenantProfile.lastName = '(โหมดจำลอง)';
+      tenantProfile.roomNumber = 'PREVIEW';
+      tenantProfile.isOwner = true;
+      tenantProfile.isPrimaryTenant = true;
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
+    if (authStore.isOwner) {
+      isPreviewMode.value = true;
+      sessionExpired.value = false;
+      tenantProfile.firstName = authStore.user?.name || authStore.currentUser?.name || 'ผู้ดูแลอาคาร';
+      tenantProfile.lastName = '(โหมดจำลอง)';
+      tenantProfile.roomNumber = 'PREVIEW';
+      tenantProfile.isOwner = true;
+      tenantProfile.isPrimaryTenant = true;
+      return;
+    }
     if (err.response?.status === 401 || err.response?.status === 403 || !isLiffLoggedIn()) {
       sessionExpired.value = true;
       authStore.clearLiffAuth();

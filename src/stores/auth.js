@@ -15,7 +15,11 @@ export const useAuthStore = defineStore('auth', {
     isLiffReady: false,
     liffProfile: null,
     isWebTenant: false,
-    loading: false
+    loading: false,
+
+    // Role Management for Dual-Role / Owner Support
+    activeRole: null, // 'owner' | 'tenant'
+    availableRoles: [] // Array of available roles e.g. ['owner', 'tenant']
   }),
 
   getters: {
@@ -23,10 +27,47 @@ export const useAuthStore = defineStore('auth', {
     currentUser: (state) => state.user,
     currentTenant: (state) => state.tenant,
     isTenantAuthenticated: (state) => !!state.liffToken,
-    ready: (state) => state.isLiffReady
+    ready: (state) => state.isLiffReady,
+    isOwner: (state) => {
+      const userRole = (state.user?.role || state.tenant?.role || '').toLowerCase();
+      const hasOwnerRole = ['owner', 'admin', 'super_admin', 'superadmin', 'manager'].includes(userRole);
+      return (
+        hasOwnerRole ||
+        state.availableRoles.includes('owner') ||
+        state.availableRoles.includes('admin') ||
+        Boolean(state.tenant?.isOwner)
+      );
+    },
+    isDualRole: (state) => {
+      return state.availableRoles.length > 1;
+    },
+    currentRole: (state) => {
+      if (state.activeRole) return state.activeRole;
+      const userRole = (state.user?.role || state.tenant?.role || '').toLowerCase();
+      if (['owner', 'admin', 'super_admin', 'superadmin', 'manager'].includes(userRole)) {
+        return 'owner';
+      }
+      return 'tenant';
+    }
   },
 
   actions: {
+    // Role Switching
+    setActiveRole(role) {
+      this.activeRole = role;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('horhub_active_role', role);
+      }
+    },
+
+    switchRole(role) {
+      this.setActiveRole(role);
+    },
+
+    setAvailableRoles(roles) {
+      this.availableRoles = Array.isArray(roles) ? roles : [];
+    },
+
     // 🏢 CMS Admin Actions
     setAccessToken(token) {
       this.accessToken = token;
@@ -46,6 +87,14 @@ export const useAuthStore = defineStore('auth', {
       this.liffToken = token;
       if (tenantData) {
         this.tenant = tenantData;
+        if (tenantData.availableRoles) {
+          this.setAvailableRoles(tenantData.availableRoles);
+        } else if (tenantData.role === 'owner' || tenantData.isOwner) {
+          this.setAvailableRoles(['tenant', 'owner']);
+        }
+        if (this.isOwner && !this.activeRole) {
+          this.activeRole = 'owner';
+        }
       }
     },
 

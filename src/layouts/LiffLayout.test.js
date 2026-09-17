@@ -1,9 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createRouter, createMemoryHistory } from 'vue-router';
+import { createPinia, setActivePinia } from 'pinia';
 import LiffLayout from './LiffLayout.vue';
 
 describe('LiffLayout Component Unit Tests', () => {
+  let pinia;
+
+  beforeEach(() => {
+    pinia = createPinia();
+    setActivePinia(pinia);
+  });
+
   const createTestRouter = () => {
     return createRouter({
       history: createMemoryHistory(),
@@ -24,7 +32,7 @@ describe('LiffLayout Component Unit Tests', () => {
 
     const wrapper = mount(LiffLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: {
           'router-view': true,
           'router-link': true
@@ -42,7 +50,7 @@ describe('LiffLayout Component Unit Tests', () => {
 
     const wrapper = mount(LiffLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: {
           'router-view': true,
           'router-link': true
@@ -60,7 +68,7 @@ describe('LiffLayout Component Unit Tests', () => {
 
     const wrapper = mount(LiffLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: {
           'router-view': true,
           'router-link': true
@@ -78,7 +86,7 @@ describe('LiffLayout Component Unit Tests', () => {
 
     const wrapper = mount(LiffLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: {
           'router-view': true,
           'router-link': true

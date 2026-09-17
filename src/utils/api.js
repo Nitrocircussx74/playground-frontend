@@ -62,16 +62,16 @@ api.interceptors.request.use(
     const isLiff = url.includes('/api/v1/liff') || url.includes('/api/liff') || url.includes('/liff');
 
     if (isLiff) {
-      // 1. LIFF Tenant Token (Isolated from CMS Admin, Memory-only ผ่าน Pinia - ไม่มี LocalStorage แล้ว)
+      // 1. LIFF Tenant Token (Isolated from CMS Admin, Memory-only ผ่าน Pinia)
       const liffToken = authStore.liffToken;
       if (liffToken) {
         config.headers.Authorization = `Bearer ${liffToken}`;
       }
     } else {
-      // 2. CMS Admin Token (Memory-only from Pinia)
-      const adminToken = authStore.accessToken;
-      if (adminToken) {
-        config.headers.Authorization = `Bearer ${adminToken}`;
+      // 2. CMS Admin Token (Memory-only from Pinia), หรือ Fallback เป็น LIFF Token ถ้าเรียกจากฝั่ง Owner Mobile
+      const token = authStore.accessToken || authStore.liffToken;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;

@@ -174,7 +174,10 @@
                       <span>{{ user.name }}</span>
                       <span v-if="user.id === authStore.currentUser?.id" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-extrabold">คุณ</span>
                     </div>
-                    <div class="text-slate-500 text-[11px] font-mono">{{ user.email }}</div>
+                    <div class="text-slate-500 text-[11px] font-mono flex items-center gap-1.5 flex-wrap">
+                      <span>{{ user.email }}</span>
+                      <span v-if="user.phone" class="text-slate-400 font-semibold">• {{ user.phone }}</span>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -296,19 +299,34 @@
             </div>
           </div>
 
-          <!-- Password (Required on Create, Optional on Edit) -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">
-              {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
-            </label>
-            <input
-              v-model="form.password"
-              type="password"
-              :required="!isEditing"
-              minlength="6"
-              placeholder="••••••••"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
-            />
+          <!-- Phone & Password -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                เบอร์โทรศัพท์ (สำหรับผูก LINE / SMS)
+              </label>
+              <input
+                v-model="form.phone"
+                type="tel"
+                placeholder="0812345678"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+              />
+              <span class="text-[10px] text-slate-400 mt-0.5 block">ระบุเบอร์เดียวกับที่ผูก LINE เพื่อรับสิทธิ์อัตโนมัติ</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
+              </label>
+              <input
+                v-model="form.password"
+                type="password"
+                :required="!isEditing"
+                minlength="6"
+                placeholder="••••••••"
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+              />
+            </div>
           </div>
 
           <!-- Role Select -->
@@ -319,9 +337,10 @@
               required
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-extrabold focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
             >
-              <option value="MANAGER">MANAGER (ผู้จัดการหอพักประจำตึก)</option>
+              <option value="SUPER_ADMIN">SUPER_ADMIN (ผู้ดูแลระบบสูงสุด - Full System Access)</option>
+              <option value="OWNER">OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์ระดับเจ้าของดูได้ทุกตึก)</option>
               <option value="ROOM_OWNER">ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
-              <option value="OWNER">OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์สูงสุดดูได้ทุกตึก)</option>
+              <option value="MANAGER">MANAGER (ผู้จัดการหอพักประจำตึก)</option>
             </select>
           </div>
 
@@ -356,14 +375,19 @@
             </div>
           </div>
 
+          <div v-else-if="isSuperAdminRole(form.role)" class="p-3 bg-purple-50 border border-purple-200 rounded-2xl text-xs text-purple-950 font-semibold flex items-center gap-2">
+            <ShieldCheck class="w-4 h-4 text-purple-600 shrink-0" />
+            <span>ระดับสิทธิ์ <span class="font-black text-purple-700">SUPER_ADMIN</span> คือผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งานและเข้าถึงทุกส่วนของระบบ</span>
+          </div>
+
+          <div v-else-if="form.role === 'OWNER'" class="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-950 font-semibold flex items-center gap-2">
+            <Crown class="w-4 h-4 text-rose-600 shrink-0" />
+            <span>ระดับสิทธิ์ <span class="font-black text-rose-700">OWNER</span> สามารถเข้าถึงแดชบอร์ดเจ้าของตึก รายได้ และข้อมูลทุกตึกในระบบ</span>
+          </div>
+
           <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 font-semibold flex items-center gap-2">
             <Key class="w-4 h-4 text-amber-600 shrink-0" />
             <span>ระดับสิทธิ์ <span class="font-black text-amber-700">ROOM_OWNER</span> สามารถเข้าดูและจัดการเฉพาะห้องพักที่ตนเองมีกรรมสิทธิ์ในระบบเท่านั้น</span>
-          </div>
-
-          <div v-else-if="isOwnerRole(form.role)" class="p-3 bg-cyan-50 border border-cyan-200 rounded-2xl text-xs text-cyan-950 font-semibold flex items-center gap-2">
-            <Globe class="w-4 h-4 text-cyan-600 shrink-0" />
-            <span>ระดับสิทธิ์ <span class="font-black text-cyan-700">{{ form.role }}</span> สามารถเข้าถึงและจัดการข้อมูลทุกตึกในระบบได้โดยอัตโนมัติ</span>
           </div>
 
           <!-- Modal Footer -->
@@ -434,6 +458,7 @@ const selectedRoleFilter = ref('ALL');
 
 const roleFilterOptions = [
   { label: 'ทั้งหมด', value: 'ALL' },
+  { label: 'ผู้ดูแลสูงสุด (Super Admin)', value: 'SUPER_ADMIN' },
   { label: 'เจ้าของตึก (Owners)', value: 'OWNER' },
   { label: 'เจ้าของห้อง (Room Owners)', value: 'ROOM_OWNER' },
   { label: 'ผู้จัดการตึก (Managers)', value: 'MANAGER' }
@@ -442,6 +467,7 @@ const roleFilterOptions = [
 const form = reactive({
   name: '',
   email: '',
+  phone: '',
   password: '',
   role: 'MANAGER',
   buildingIds: []
@@ -474,12 +500,20 @@ const fetchBuildingsList = async () => {
   }
 };
 
+const isSuperAdminRole = (role) => {
+  return ['SUPERADMIN', 'SUPER_ADMIN', 'super_admin', 'superadmin'].includes((role || '').toUpperCase());
+};
+
+const isOwnerOnlyRole = (role) => {
+  return ['OWNER', 'owner'].includes((role || '').toUpperCase());
+};
+
 const isOwnerRole = (role) => {
   return ['OWNER', 'SUPERADMIN', 'SUPER_ADMIN', 'owner', 'super_admin', 'superadmin'].includes((role || '').toUpperCase());
 };
 
 const isRoomOwnerRole = (role) => {
-  return ['ROOM_OWNER', 'INVESTOR', 'room_owner', 'investor'].includes((role || '').toUpperCase());
+  return ['ROOM_OWNER', 'room_owner', 'INVESTOR', 'investor'].includes((role || '').toUpperCase());
 };
 
 const ownerCount = computed(() => {
@@ -497,7 +531,8 @@ const roomOwnerCount = computed(() => {
 const filteredUsers = computed(() => {
   return users.value.filter((u) => {
     // 1. Role Filter
-    if (selectedRoleFilter.value === 'OWNER' && !isOwnerRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'SUPER_ADMIN' && !isSuperAdminRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'OWNER' && !isOwnerOnlyRole(u.role)) return false;
     if (selectedRoleFilter.value === 'ROOM_OWNER' && !isRoomOwnerRole(u.role)) return false;
     if (selectedRoleFilter.value === 'MANAGER' && (isOwnerRole(u.role) || isRoomOwnerRole(u.role))) return false;
 
@@ -506,7 +541,8 @@ const filteredUsers = computed(() => {
       const q = searchQuery.value.trim().toLowerCase();
       const matchName = u.name?.toLowerCase().includes(q);
       const matchEmail = u.email?.toLowerCase().includes(q);
-      return matchName || matchEmail;
+      const matchPhone = u.phone?.toLowerCase().includes(q);
+      return matchName || matchEmail || matchPhone;
     }
 
     return true;
@@ -514,7 +550,13 @@ const filteredUsers = computed(() => {
 });
 
 const getUserRoleBadgeClass = (role) => {
-  if (isOwnerRole(role)) {
+  if (isSuperAdminRole(role)) {
+    return {
+      badge: 'bg-purple-100 text-purple-800 border-purple-200',
+      bgGradient: 'bg-gradient-to-tr from-purple-600 to-indigo-600'
+    };
+  }
+  if (isOwnerOnlyRole(role)) {
     return {
       badge: 'bg-rose-100 text-rose-800 border-rose-200',
       bgGradient: 'bg-gradient-to-tr from-rose-600 to-amber-600'
@@ -537,6 +579,7 @@ const openCreateModal = () => {
   editingUserId.value = null;
   form.name = '';
   form.email = '';
+  form.phone = '';
   form.password = '';
   form.role = 'MANAGER';
   form.buildingIds = [];
@@ -548,8 +591,11 @@ const openEditModal = (user) => {
   editingUserId.value = user.id;
   form.name = user.name;
   form.email = user.email;
+  form.phone = user.phone || '';
   form.password = '';
-  if (isOwnerRole(user.role)) {
+  if (isSuperAdminRole(user.role)) {
+    form.role = 'SUPER_ADMIN';
+  } else if (isOwnerOnlyRole(user.role)) {
     form.role = 'OWNER';
   } else if (isRoomOwnerRole(user.role)) {
     form.role = 'ROOM_OWNER';
@@ -566,6 +612,7 @@ const handleSubmit = async () => {
     if (isEditing.value) {
       const res = await adminService.updateUserPermissions(editingUserId.value, {
         name: form.name,
+        phone: form.phone,
         role: form.role,
         buildingIds: form.role === 'MANAGER' ? form.buildingIds : []
       });
@@ -574,6 +621,7 @@ const handleSubmit = async () => {
       const res = await adminService.createAdminUser({
         name: form.name,
         email: form.email,
+        phone: form.phone,
         password: form.password,
         role: form.role,
         buildingIds: form.role === 'MANAGER' ? form.buildingIds : []
