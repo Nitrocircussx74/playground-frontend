@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173",
-    "tunnel": "node scripts/tunnel.js 5173",
-    "dev:tunnel": "concurrently -n \"FE,TUNNEL\" -c \"green,cyan\" \"vite --port 5173\" \"node scripts/tunnel.js 5173\"",
+    "dev": "vite",
+    "tunnel": "node scripts/tunnel.js",
+    "dev:tunnel": "node scripts/dev-tunnel.js",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",

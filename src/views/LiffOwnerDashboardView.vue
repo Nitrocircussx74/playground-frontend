@@ -407,7 +407,7 @@
               รายการสลิปรอตรวจสอบ ({{ pendingSlipsList.length }})
             </h3>
           </div>
-          <button @click="showSlipModal = false" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
+          <button @click="closeSlipModal" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -498,7 +498,7 @@
               งานแจ้งซ่อมรอดำเนินการ ({{ pendingMaintenanceList.length }})
             </h3>
           </div>
-          <button @click="showMaintenanceModal = false" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
+          <button @click="closeMaintenanceModal" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -584,7 +584,7 @@
               สัญญาเช่าใกล้หมดอายุใน 30 วัน ({{ expiringLeasesList.length }})
             </h3>
           </div>
-          <button @click="showLeasesModal = false" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
+          <button @click="closeLeasesModal" class="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 cursor-pointer">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -669,8 +669,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useDashboardStore } from '@/stores/useDashboardStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
@@ -701,6 +701,7 @@ import {
   ExternalLink
 } from 'lucide-vue-next';
 
+const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const dashboardStore = useDashboardStore();
@@ -806,13 +807,56 @@ const openSlipModal = () => {
   showSlipModal.value = true;
 };
 
+const closeSlipModal = () => {
+  showSlipModal.value = false;
+  if (route?.query?.tab === 'slips') {
+    router?.replace?.({ path: '/liff/owner-dashboard' });
+  }
+};
+
 const openMaintenanceModal = () => {
   showMaintenanceModal.value = true;
+};
+
+const closeMaintenanceModal = () => {
+  showMaintenanceModal.value = false;
+  if (route?.query?.tab === 'maintenance') {
+    router?.replace?.({ path: '/liff/owner-dashboard' });
+  }
 };
 
 const openLeasesModal = () => {
   showLeasesModal.value = true;
 };
+
+const closeLeasesModal = () => {
+  showLeasesModal.value = false;
+  if (route?.query?.tab === 'leases') {
+    router?.replace?.({ path: '/liff/owner-dashboard' });
+  }
+};
+
+if (route) {
+  watch(
+    () => route.query?.tab,
+    (tab) => {
+      if (tab === 'slips') {
+        showSlipModal.value = true;
+        showMaintenanceModal.value = false;
+        showLeasesModal.value = false;
+      } else if (tab === 'maintenance') {
+        showMaintenanceModal.value = true;
+        showSlipModal.value = false;
+        showLeasesModal.value = false;
+      } else if (tab === 'leases') {
+        showLeasesModal.value = true;
+        showSlipModal.value = false;
+        showMaintenanceModal.value = false;
+      }
+    },
+    { immediate: true }
+  );
+}
 
 const previewImage = (url) => {
   if (url) {
@@ -886,9 +930,9 @@ const selectBuilding = async (buildingId) => {
   selectedBuildingId.value = buildingId;
   if (typeof window !== 'undefined') {
     if (buildingId) {
-      localStorage.setItem('horhub_selected_building_id', buildingId);
+      localStorage.setItem('horspace_selected_building_id', buildingId);
     } else {
-      localStorage.removeItem('horhub_selected_building_id');
+      localStorage.removeItem('horspace_selected_building_id');
     }
   }
   const found = buildingsList.value.find((b) => b.id === buildingId);
@@ -912,7 +956,7 @@ const switchToTenantView = () => {
 
 onMounted(async () => {
   if (typeof window !== 'undefined') {
-    const savedBuildingId = localStorage.getItem('horhub_selected_building_id');
+    const savedBuildingId = localStorage.getItem('horspace_selected_building_id');
     if (savedBuildingId) {
       selectedBuildingId.value = savedBuildingId;
     }

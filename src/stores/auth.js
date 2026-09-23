@@ -55,8 +55,8 @@ export const useAuthStore = defineStore('auth', {
     // Role Switching
     setActiveRole(role) {
       this.activeRole = role;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('horhub_active_role', role);
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem('horspace_active_role', role);
       }
     },
 
@@ -105,9 +105,9 @@ export const useAuthStore = defineStore('auth', {
         this.tenant = tenantData;
       }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('horhub_tenant_token', token);
+        localStorage.setItem('horspace_tenant_token', token);
         if (tenantData) {
-          localStorage.setItem('horhub_tenant_data', JSON.stringify(tenantData));
+          localStorage.setItem('horspace_tenant_data', JSON.stringify(tenantData));
         }
       }
     },
@@ -122,8 +122,8 @@ export const useAuthStore = defineStore('auth', {
       this.isWebTenant = false;
       if (typeof window !== 'undefined') {
         localStorage.removeItem('liff_token');
-        localStorage.removeItem('horhub_tenant_token');
-        localStorage.removeItem('horhub_tenant_data');
+        localStorage.removeItem('horspace_tenant_token');
+        localStorage.removeItem('horspace_tenant_data');
       }
     },
 
@@ -136,8 +136,8 @@ export const useAuthStore = defineStore('auth', {
 
       // 1. ตรวจสอบ Web Tenant Session ใน LocalStorage ก่อน
       if (typeof window !== 'undefined') {
-        const storedTenantToken = localStorage.getItem('horhub_tenant_token');
-        const storedTenantData = localStorage.getItem('horhub_tenant_data');
+        const storedTenantToken = localStorage.getItem('horspace_tenant_token');
+        const storedTenantData = localStorage.getItem('horspace_tenant_data');
         if (storedTenantToken) {
           this.liffToken = storedTenantToken;
           this.isWebTenant = true;

@@ -34,11 +34,11 @@
       <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/90 shrink-0 bg-slate-950/40">
         <router-link to="/dashboard" class="flex items-center gap-3 group text-decoration-none">
           <div class="w-10 h-10 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-lg shadow-cyan-600/30 ring-2 ring-cyan-500/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden shrink-0">
-            <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="40" height="40" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
+            <img src="/horspace-app-icon.webp" alt="Horspace Logo" width="40" height="40" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
           </div>
           <div>
             <div class="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-              <span>HorHub (หอฮับ)</span>
+              <span>Horspace (ฮอร์สเปซ)</span>
               <span class="text-[10px] px-1.5 py-0.2 bg-cyan-500/20 text-cyan-300 font-mono rounded border border-cyan-500/30">PRO</span>
             </div>
             <div class="text-[11px] text-slate-400 font-medium">ระบบบริหารจัดการหอพัก</div>
@@ -231,6 +231,28 @@
               <Vote class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/polls' ? 'text-white' : 'text-violet-400'" />
               <span>โหวต & แบบสำรวจ</span>
             </router-link>
+
+            <router-link
+              v-if="!isRoomOwnerRole"
+              to="/vendors"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/vendors' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <Briefcase class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/vendors' ? 'text-white' : 'text-emerald-400'" />
+              <span>รายชื่อช่าง/ผู้รับเหมา</span>
+            </router-link>
+
+            <router-link
+              v-if="!isRoomOwnerRole"
+              to="/inspections"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 group"
+              :class="route.path === '/inspections' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold shadow-md shadow-cyan-600/25' : 'text-slate-300 hover:text-white hover:bg-slate-800/70'"
+            >
+              <ClipboardCheck class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" :class="route.path === '/inspections' ? 'text-white' : 'text-teal-400'" />
+              <span>ตรวจสภาพห้องพัก</span>
+            </router-link>
           </div>
         </div>
 
@@ -343,7 +365,7 @@
 
           <div class="min-w-0">
             <h2 class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight truncate flex items-center gap-2">
-              <span>HorHub (หอฮับ)</span>
+              <span>Horspace (ฮอร์สเปซ)</span>
               <span class="hidden lg:inline text-xs font-normal text-slate-400">|</span>
               <span class="hidden lg:inline text-xs font-medium text-slate-500 truncate">ระบบจัดการหอพักและอพาร์ตเมนต์</span>
             </h2>
@@ -460,7 +482,9 @@ import {
   Car,
   Vote,
   MessageSquareMore,
-  MessageSquarePlus
+  MessageSquarePlus,
+  Briefcase,
+  ClipboardCheck
 } from 'lucide-vue-next';
 import { startTour } from '@/utils/tours';
 import DeveloperFeedbackModal from '@/components/DeveloperFeedbackModal.vue';

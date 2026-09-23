@@ -5,4 +5,4 @@ Allow: /web/login
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://horhub.com/sitemap.xml
+Sitemap: https://horspace.com/sitemap.xml

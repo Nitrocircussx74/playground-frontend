@@ -17,11 +17,12 @@
           
           <div v-else class="flex items-center gap-2">
             <img
-              :src="logoUrl || '/horhub-app-icon.webp'"
-              alt="HorHub Logo"
+              :src="logoUrl || '/horspace-app-icon.webp'"
+              alt="Horspace Logo"
               width="32"
               height="32"
               class="w-8 h-8 rounded-xl object-contain border border-slate-200/80 bg-white p-0.5 shadow-2xs"
+              @error="(e) => e.target.src = '/horspace-app-icon.webp'"
               loading="eager"
               decoding="async"
             />
@@ -180,7 +181,9 @@ import {
   Megaphone,
   UserPlus,
   RotateCw,
-  Sparkles
+  Sparkles,
+  LayoutDashboard,
+  FileText
 } from 'lucide-vue-next';
 
 const route = useRoute();
@@ -194,18 +197,38 @@ const needsAddFriend = ref(false);
 const checkingFriendship = ref(false);
 
 /**
+ * ตรวจสอบว่าผู้ใช้กำลังอยู่ในโหมดเจ้าของหอพัก (Owner Mode) หรือไม่
+ */
+const isOwnerMode = computed(() => {
+  const currentPath = route.path.replace(/\/$/, '') || '/';
+  return (
+    (authStore.isOwner && authStore.currentRole === 'owner') ||
+    currentPath.startsWith('/liff/owner-dashboard')
+  );
+});
+
+/**
  * 1. Dynamic Page Title
  */
 const pageTitle = computed(() => {
-  return route.meta?.title || 'HorHub (หอฮับ)';
+  return route.meta?.title || 'Horspace (ฮอร์สเปซ)';
 });
 
 /**
  * 2. Logic แสดงปุ่ม Back
  */
 const showBackButton = computed(() => {
-  const mainTabPaths = ['/liff', '/liff/profile', '/liff/receipts', '/liff/issues', '/liff/announcements', '/liff/settings'];
-  return !mainTabPaths.includes(route.path);
+  const currentPath = route.path.replace(/\/$/, '') || '/';
+  const mainTabPaths = [
+    '/liff',
+    '/liff/profile',
+    '/liff/owner-dashboard',
+    '/liff/receipts',
+    '/liff/issues',
+    '/liff/announcements',
+    '/liff/settings'
+  ];
+  return !mainTabPaths.includes(currentPath);
 });
 
 /**
@@ -231,15 +254,15 @@ const handleBack = () => {
   if (window.history.length > 1) {
     router.back();
   } else {
-    router.push('/liff/profile');
+    router.push(isOwnerMode.value ? '/liff/owner-dashboard' : '/liff/profile');
   }
 };
 
 /**
- * 4. เมนูของ Bottom Navigation Bar (5 แท็บหลักครบครัน)
- * แท็บที่มี featureKey จะถูกซ่อนถ้า Admin ปิดใช้งานฟีเจอร์นั้นไว้ (หน้าแรก/โปรไฟล์เป็นแกนหลัก ไม่มี Flag)
+ * 4. เมนูของ Bottom Navigation Bar แยกตาม Role (Tenant vs Owner)
  */
-const allNavTabs = [
+// 4.1 แท็บสำหรับลูกบ้าน (Tenant)
+const tenantNavTabs = [
   { name: 'หน้าแรก', path: '/liff/profile', icon: Home },
   { name: 'ใบเสร็จ', path: '/liff/receipts', icon: Receipt, featureKey: 'ENABLE_RECEIPT_HISTORY' },
   { name: 'แจ้งซ่อม', path: '/liff/issues', icon: Wrench, featureKey: 'ENABLE_MAINTENANCE_REQUEST' },
@@ -247,15 +270,33 @@ const allNavTabs = [
   { name: 'โปรไฟล์', path: '/liff/settings', icon: User }
 ];
 
-const navTabs = computed(() =>
-  allNavTabs.filter((tab) => !tab.featureKey || featureStore.isEnabled(tab.featureKey))
-);
+// 4.2 แท็บสำหรับเจ้าของหอพัก (Owner / Manager)
+const ownerNavTabs = [
+  { name: 'ภาพรวม', path: '/liff/owner-dashboard', icon: LayoutDashboard },
+  { name: 'ตรวจสลิป', path: '/liff/owner-dashboard?tab=slips', icon: Receipt },
+  { name: 'แจ้งซ่อม', path: '/liff/owner-dashboard?tab=maintenance', icon: Wrench },
+  { name: 'สัญญาเช่า', path: '/liff/owner-dashboard?tab=leases', icon: FileText },
+  { name: 'โปรไฟล์', path: '/liff/settings', icon: User }
+];
+
+const navTabs = computed(() => {
+  if (isOwnerMode.value) {
+    return ownerNavTabs;
+  }
+  return tenantNavTabs.filter((tab) => !tab.featureKey || featureStore.isEnabled(tab.featureKey));
+});
 
 /**
  * ตรวจสอบว่าแอนิเมชัน/ไฮไลต์แท็บปัจจุบันถูกเปิดอยู่หรือไม่
  */
-const isTabActive = (path) => {
-  return route.path === path || route.path.startsWith(path + '/');
+const isTabActive = (tabPath) => {
+  if (tabPath.includes('?')) {
+    return route.fullPath === tabPath;
+  }
+  if (route.query.tab && tabPath === '/liff/owner-dashboard') {
+    return false;
+  }
+  return route.path === tabPath || route.path.startsWith(tabPath + '/');
 };
 
 /**
@@ -336,9 +377,10 @@ watch(
   }
 );
 
-onMounted(() => {
-  fetchAndApplyTheme();
-  featureStore.fetchFeatures();
+onMounted(async () => {
+  const themeData = await fetchAndApplyTheme();
+  const bId = themeData?.buildingId || null;
+  await featureStore.fetchFeatures(bId);
   checkUserFriendship();
   checkUnread();
 });

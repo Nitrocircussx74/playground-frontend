@@ -17,7 +17,7 @@
           @click="fetchLeases"
           class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer"
         >
-          <RefreshCw :class="['w-3.5 h-3.5', leaseStore.isLoading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
+          <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
         </button>
       </div>
     </div>
@@ -142,18 +142,26 @@
         </div>
 
         <!-- Card Action Buttons -->
-        <div class="pt-2 border-t border-slate-100 flex gap-2">
+        <div class="pt-2 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button
+            @click="openContractPreview(item)"
+            class="py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+            title="ดูและพิมพ์สัญญาเช่าห้องพักฉบับเต็ม"
+          >
+            <FileText class="w-3.5 h-3.5" /><span>สัญญาเช่า</span>
+          </button>
+
           <router-link
             v-if="item.tenantId || item.tenant?.id"
             :to="`/tenants/${item.tenantId || item.tenant?.id}`"
-            class="w-full py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+            class="py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
-            <User class="w-3.5 h-3.5" /><span>โปรไฟล์ 360°</span>
+            <User class="w-3.5 h-3.5" /><span>โปรไฟล์</span>
           </router-link>
 
           <button
             @click="openRoomHistory(item.room)"
-            class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+            class="py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
             <History class="w-3.5 h-3.5" /><span>ประวัติห้อง</span>
           </button>
@@ -162,7 +170,7 @@
             id="tour-btn-move-out"
             v-if="item.status === 'ACTIVE'"
             @click="openMoveOutWizard(item)"
-            class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer"
+            class="py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer"
           >
             <LogOut class="w-3.5 h-3.5" /><span>แจ้งย้ายออก</span>
           </button>
@@ -193,6 +201,13 @@
       @close="showMoveOutModal = false"
       @completed="fetchLeases"
     />
+
+    <!-- E-Contract Print Modal -->
+    <ContractPrintModal
+      :show="showContractModal"
+      :lease="selectedContractLease"
+      @close="showContractModal = false"
+    />
   </div>
 </template>
 
@@ -201,8 +216,11 @@ import { FileText, RefreshCw, Search, User, History, LogOut } from 'lucide-vue-n
 import { ref, computed, onMounted, watch } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
+import { startTour } from '@/utils/tours';
+import { formatDate } from '@/utils/formatters';
 import RoomTenancyHistoryModal from '@/components/RoomTenancyHistoryModal.vue';
 import MoveOutWizardModal from '@/components/MoveOutWizardModal.vue';
+import ContractPrintModal from '@/components/contract/ContractPrintModal.vue';
 
 const buildingStore = useBuildingStore();
 const leases = ref([]);
@@ -212,8 +230,10 @@ const selectedStatus = ref('ALL');
 
 const showHistoryModal = ref(false);
 const showMoveOutModal = ref(false);
+const showContractModal = ref(false);
 const selectedRoom = ref(null);
 const selectedLease = ref(null);
+const selectedContractLease = ref(null);
 
 const activeLeasesCount = computed(() => leases.value.filter((l) => l.status === 'ACTIVE').length);
 const endedLeasesCount = computed(() => leases.value.filter((l) => l.status === 'ENDED').length);
@@ -222,26 +242,17 @@ const fetchLeases = async () => {
   loading.value = true;
   try {
     const bId = buildingStore.activeBuildingId;
-    // Fetch all leases across building/rooms
-    const res = await api.get('/api/admin/rooms/all/leases', {
+    const res = await api.get('/api/admin/leases', {
       params: { ...(bId && { buildingId: bId }) }
     });
-    leases.value = res.data.data;
+    leases.value = Array.isArray(res.data?.data) ? res.data.data : [];
   } catch (err) {
-    // Fallback query if specific route not available
-    try {
-      const res = await api.get('/api/admin/buildings/' + (buildingStore.activeBuildingId || 'all') + '/leases');
-      leases.value = res.data.data;
-    } catch {
-      leases.value = [];
-    }
+    console.error('Failed to fetch leases:', err);
+    leases.value = [];
   } finally {
     loading.value = false;
   }
 };
-
-import { startTour } from '@/utils/tours';
-import { formatDate } from '@/utils/formatters';
 
 onMounted(() => {
   buildingStore.fetchBuildings();
@@ -279,5 +290,16 @@ const openMoveOutWizard = (lease) => {
   showMoveOutModal.value = true;
 };
 
-
+const openContractPreview = async (lease) => {
+  try {
+    const res = await api.get(`/api/admin/leases/${lease.id}/contract`);
+    if (res.data?.success) {
+      selectedContractLease.value = res.data.data;
+      showContractModal.value = true;
+    }
+  } catch (err) {
+    selectedContractLease.value = lease;
+    showContractModal.value = true;
+  }
+};
 </script>

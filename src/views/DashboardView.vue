@@ -4,11 +4,11 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-white p-1 border border-slate-200/80 shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
-          <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="48" height="48" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
+          <img src="/horspace-app-icon.webp" alt="Horspace Logo" width="48" height="48" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <span>แดชบอร์ดภาพรวม HorHub</span>
+            <span>แดชบอร์ดภาพรวม Horspace</span>
             <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-soft-pulse"></span>
               <span>Realtime</span>

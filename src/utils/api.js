@@ -82,7 +82,7 @@ api.interceptors.request.use(
 // 3.2 Attach LINE ID Token for LIFF Endpoints
 api.interceptors.request.use(
   async (config) => {
-    const isLiff = config.url && (config.url.includes('/api/v1/liff') || config.url.includes('/api/liff'));
+    const isLiff = config.url && (config.url.includes('/api/v1/liff') || config.url.includes('/api/liff') || config.url.includes('/features'));
     if (isLiff) {
       try {
         const idToken = getLiffIdToken();

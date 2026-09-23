@@ -4,7 +4,7 @@
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
         <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
-          <img src="/horhub-app-icon.webp" alt="HorHub Logo" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
+          <img src="/horspace-app-icon.webp" alt="Horspace Logo" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
 
         <div class="space-y-1">
@@ -13,7 +13,7 @@
             <span>{{ buildingName }}</span>
           </div>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
-            HorHub <span class="text-emerald-600 font-semibold">(หอฮับ)</span>
+            Horspace <span class="text-emerald-600 font-semibold">(ฮอร์สเปซ)</span>
           </h1>
           <p class="text-xs text-slate-500">ยืนยันเบอร์โทรศัพท์หรือรหัสเชิญเพื่อเชื่อมต่อบัญชี LINE</p>
         </div>
@@ -45,11 +45,11 @@
       <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-4">
         <!-- MODE 1: Phone Verification -->
         <div v-if="activeMode === 'phone'">
-          <!-- Case A: Existing User detected in HorHub -> Prompt PIN -->
+          <!-- Case A: Existing User detected in Horspace -> Prompt PIN -->
           <div v-if="isExistingUserPrompt" class="space-y-3.5 text-xs">
             <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
               <div>
-                <div class="font-bold text-slate-800">{{ existingUserName || 'ลูกบ้าน HorHub' }}</div>
+                <div class="font-bold text-slate-800">{{ existingUserName || 'ลูกบ้าน Horspace' }}</div>
                 <div class="text-[11px] text-slate-500 font-mono">{{ phoneInput }}</div>
               </div>
               <button
@@ -284,12 +284,12 @@ const handleVerifyByPhone = async () => {
   const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
 
   try {
-    // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน
+    // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ Horspace ก่อน
     const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone, building: targetBuilding || undefined });
 
     if (phoneStatus?.isExistingUser) {
-      // พบบัญชีเดิมในระบบ HorHub -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) แล้วผูกกับตึกนี้
-      existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน HorHub';
+      // พบบัญชีเดิมในระบบ Horspace -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) แล้วผูกกับตึกนี้
+      existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน Horspace';
       existingUserHasPin.value = Boolean(phoneStatus.hasPin);
       isExistingUserPrompt.value = true;
       submitting.value = false;

@@ -768,6 +768,108 @@
         </div>
       </div>
 
+      <!-- 3.9 Meter Usage History & Trends (สถิติการใช้น้ำ-ไฟ ย้อนหลัง 6 เดือน) -->
+      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+              :class="meterTypeFilter === 'electric' ? 'bg-amber-50 text-amber-600' : 'bg-cyan-50 text-cyan-600'"
+            >
+              <Zap v-if="meterTypeFilter === 'electric'" class="w-4 h-4" />
+              <Droplets v-else class="w-4 h-4" />
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-800">
+                สถิติการใช้น้ำ-ไฟ ย้อนหลัง
+              </h2>
+              <p class="text-[10px] text-slate-400 mt-0.5">
+                ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber }} (6 เดือนล่าสุด)
+              </p>
+            </div>
+          </div>
+
+          <!-- Type Switcher Pill -->
+          <div class="flex items-center p-0.5 bg-slate-100 rounded-xl text-[11px] font-semibold">
+            <button
+              @click="meterTypeFilter = 'electric'"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+              :class="meterTypeFilter === 'electric' ? 'bg-white text-slate-800 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'"
+            >
+              <Zap class="w-3 h-3 text-amber-500" />
+              <span>ค่าไฟ</span>
+            </button>
+            <button
+              @click="meterTypeFilter = 'water'"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+              :class="meterTypeFilter === 'water' ? 'bg-white text-slate-800 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'"
+            >
+              <Droplets class="w-3 h-3 text-cyan-500" />
+              <span>ค่าน้ำ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Latest Summary Stats -->
+        <div v-if="latestMeterUsage" class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+          <div>
+            <div class="text-[10px] text-slate-400 font-medium">รอบบิลล่าสุด ({{ latestMeterUsage.billingCycle }})</div>
+            <div class="text-base font-bold text-slate-800 mt-0.5 flex items-baseline gap-1">
+              <span>{{ Number(latestMeterUsage.unitsUsed || 0).toLocaleString() }}</span>
+              <span class="text-xs font-normal text-slate-500">{{ meterTypeFilter === 'electric' ? 'kWh' : 'หน่วย' }}</span>
+            </div>
+          </div>
+          <div v-if="meterTrendPercent !== null" class="text-right">
+            <div class="text-[10px] text-slate-400 font-medium">เทียบเดือนก่อนหน้า</div>
+            <div
+              class="text-xs font-bold mt-0.5 flex items-center justify-end gap-1"
+              :class="meterTrendPercent > 0 ? 'text-rose-600' : 'text-emerald-600'"
+            >
+              <TrendingUp v-if="meterTrendPercent > 0" class="w-3.5 h-3.5" />
+              <TrendingDown v-else class="w-3.5 h-3.5" />
+              <span>{{ meterTrendPercent > 0 ? `+${meterTrendPercent}%` : `${meterTrendPercent}%` }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline SVG Bar Chart -->
+        <div v-if="filteredMeterRecords.length > 0" class="pt-2">
+          <div class="h-32 w-full flex items-end justify-between gap-2 px-1">
+            <div
+              v-for="(rec, idx) in filteredMeterRecords"
+              :key="rec.id || idx"
+              class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group"
+            >
+              <!-- Value Label -->
+              <span class="text-[10px] font-bold text-slate-600 transition-transform group-hover:scale-110">
+                {{ Number(rec.unitsUsed || 0) }}
+              </span>
+
+              <!-- Bar -->
+              <div class="w-full max-w-[36px] bg-slate-100 rounded-t-lg relative flex items-end overflow-hidden" style="height: 72px;">
+                <div
+                  class="w-full rounded-t-lg transition-all duration-500"
+                  :class="meterTypeFilter === 'electric' ? 'bg-gradient-to-t from-amber-500 to-amber-400 group-hover:from-amber-600 group-hover:to-amber-500' : 'bg-gradient-to-t from-cyan-500 to-cyan-400 group-hover:from-cyan-600 group-hover:to-cyan-500'"
+                  :style="{ height: `${Math.max(8, Math.min(100, (Number(rec.unitsUsed || 0) / maxMeterUnits) * 100))}%` }"
+                ></div>
+              </div>
+
+              <!-- Cycle Label -->
+              <span class="text-[10px] text-slate-400 font-mono truncate max-w-full">
+                {{ rec.billingCycle }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else class="p-6 text-center rounded-xl bg-slate-50/50 border border-dashed border-slate-200/80 space-y-1">
+          <BarChart3 class="w-6 h-6 text-slate-300 mx-auto" />
+          <div class="text-xs font-semibold text-slate-600">ยังไม่มีประวัติการจดมิเตอร์</div>
+          <p class="text-[10px] text-slate-400">ระบบจะแสดงกราฟเมื่อมีการบันทึกมิเตอร์รอบบิลแรก</p>
+        </div>
+      </div>
+
       <!-- 4. Personal Profile & Settings Link Card -->
       <router-link
         to="/liff/settings"
@@ -1034,7 +1136,13 @@ import {
   MessageSquare,
   Building2,
   ArrowRightLeft,
-  Eye
+  Eye,
+  Droplets,
+  Zap,
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  FileText
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -1161,6 +1269,58 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
   }
 };
 
+// Meter Usage History & Trends (สถิติการใช้น้ำ-ไฟ)
+const meterHistory = ref([]);
+const meterTypeFilter = ref('electric'); // 'electric' | 'water'
+const loadingMeters = ref(false);
+
+const fetchMeterHistory = async () => {
+  try {
+    loadingMeters.value = true;
+    const params = {};
+    if (selectedRoomId.value) params.roomId = selectedRoomId.value;
+    const res = await api.get('/api/v1/liff/meter-history', { params });
+    if (res.data?.success) {
+      meterHistory.value = res.data.data || [];
+    }
+  } catch (err) {
+    console.warn('Failed to fetch meter history:', err.message);
+  } finally {
+    loadingMeters.value = false;
+  }
+};
+
+const filteredMeterRecords = computed(() => {
+  return (meterHistory.value || []).filter((r) => r.meterType === meterTypeFilter.value);
+});
+
+const latestMeterUsage = computed(() => {
+  const records = filteredMeterRecords.value;
+  if (!records.length) return null;
+  return records[records.length - 1];
+});
+
+const previousMeterUsage = computed(() => {
+  const records = filteredMeterRecords.value;
+  if (records.length < 2) return null;
+  return records[records.length - 2];
+});
+
+const meterTrendPercent = computed(() => {
+  if (!latestMeterUsage.value || !previousMeterUsage.value) return null;
+  const curr = Number(latestMeterUsage.value.unitsUsed || 0);
+  const prev = Number(previousMeterUsage.value.unitsUsed || 0);
+  if (prev === 0) return null;
+  return Math.round(((curr - prev) / prev) * 100);
+});
+
+const maxMeterUnits = computed(() => {
+  const units = filteredMeterRecords.value.map((r) => Number(r.unitsUsed || 0));
+  if (!units.length) return 100;
+  const max = Math.max(...units);
+  return max > 0 ? max : 100;
+});
+
 const openAnnouncementModal = (item) => {
   selectedAnnouncement.value = item;
   if (item?.id) {
@@ -1216,6 +1376,7 @@ const selectRoom = (room) => {
   localStorage.setItem('active_tenant_room_id', room.id);
   tenantProfile.roomNumber = room.roomNumber;
   applyTheme(room);
+  fetchMeterHistory();
 };
 
 const formattedRooms = computed(() => {
@@ -1267,8 +1428,14 @@ const fetchTenantProfile = async (lineUserId = '') => {
         selectedRoomId.value = matched.id;
         tenantProfile.roomNumber = matched.roomNumber;
         applyTheme(matched);
+        if (matched.buildingId) {
+          featureStore.fetchFeatures(matched.buildingId);
+        }
       } else {
         applyTheme(data);
+        if (data.buildingId) {
+          featureStore.fetchFeatures(data.buildingId);
+        }
       }
     } else if (authStore.isOwner) {
       // Pure Owner / Executive with no tenant record -> Activate Preview Mode gracefully
@@ -1438,6 +1605,15 @@ const quickActionsConfig = [
     iconClass: 'text-purple-600',
     route: '/liff/polls',
     featureKey: 'ENABLE_VOTING'
+  },
+  {
+    id: 'contract',
+    title: 'สัญญาเช่าห้องพัก',
+    subtitle: 'ดูสัญญา & บันทึก PDF',
+    icon: FileText,
+    bgClass: 'bg-emerald-50',
+    iconClass: 'text-emerald-600',
+    route: '/liff/contract'
   }
 ];
 
@@ -1484,7 +1660,8 @@ onMounted(async () => {
     await fetchTenantProfile(currentLineUserId.value);
     await Promise.allSettled([
       checkUnread(currentLineUserId.value),
-      fetchLiveActionMetrics(currentLineUserId.value)
+      fetchLiveActionMetrics(currentLineUserId.value),
+      fetchMeterHistory()
     ]);
 
     if (currentLineUserId.value || tenantProfile.phone) {

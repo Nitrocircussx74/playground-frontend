@@ -33,6 +33,7 @@
               :src="b.logoUrl"
               alt="Logo"
               class="w-10 h-10 rounded-xl object-contain border border-slate-200 bg-white p-0.5 shadow-2xs shrink-0"
+              @error="b.logoUrl = ''"
             />
             <div
               v-else

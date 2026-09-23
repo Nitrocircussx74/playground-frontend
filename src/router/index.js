@@ -133,6 +133,18 @@ const routes = [
     meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'แบบสำรวจและโหวต' }
   },
   {
+    path: '/vendors',
+    name: 'AdminVendors',
+    component: () => import('@/views/AdminVendorView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายชื่อช่างและผู้รับเหมา' }
+  },
+  {
+    path: '/inspections',
+    name: 'AdminInspections',
+    component: () => import('@/views/AdminInspectionView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตรวจสภาพห้องพัก' }
+  },
+  {
     path: '/features',
     name: 'FeatureSettings',
     component: () => import('@/views/FeatureSettingsView.vue'),
@@ -174,7 +186,7 @@ const routes = [
         path: '',
         name: 'LiffEntry',
         component: () => import('@/views/LiffEntryView.vue'),
-        meta: { isLiff: true, title: 'HorHub (หอฮับ)' }
+        meta: { isLiff: true, title: 'Horspace (ฮอร์สเปซ)' }
       },
       {
         path: 'pin-login',
@@ -198,7 +210,7 @@ const routes = [
         path: 'profile',
         name: 'LiffProfile',
         component: () => import('@/views/LiffProfileView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'HorHub (หอฮับ)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'Horspace (ฮอร์สเปซ)' }
       },
       {
         path: 'owner-dashboard',
@@ -317,6 +329,12 @@ const routes = [
         name: 'LiffReceiptHistory',
         component: () => import('@/views/LiffReceiptHistoryView.vue'),
         meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
+      },
+      {
+        path: 'contract',
+        name: 'LiffContract',
+        component: () => import('@/views/LiffContractView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'สัญญาเช่าห้องพัก (E-Contract)' }
       }
     ]
   },
@@ -487,11 +505,11 @@ router.afterEach((to) => {
   if (typeof document !== 'undefined') {
     const pageTitle = to.meta?.title;
     if (pageTitle) {
-      document.title = `${pageTitle} | HorHub`;
+      document.title = `${pageTitle} | Horspace`;
     } else if (to.meta?.isCms) {
-      document.title = 'HorHub CMS - ระบบจัดการหอพักและอพาร์ตเมนต์';
+      document.title = 'Horspace CMS - ระบบจัดการหอพักและอพาร์ตเมนต์';
     } else {
-      document.title = 'HorHub - ระบบจัดการหอพักและอพาร์ตเมนต์อัจฉริยะ';
+      document.title = 'Horspace - ระบบจัดการหอพักและอพาร์ตเมนต์อัจฉริยะ';
     }
   }
 });

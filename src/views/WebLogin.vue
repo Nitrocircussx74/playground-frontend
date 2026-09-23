@@ -15,7 +15,7 @@
         <div class="space-y-3 text-center pb-5 pt-7 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/50 to-transparent">
           <div class="relative mx-auto inline-flex">
             <div class="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg shadow-cyan-600/20 ring-4 ring-cyan-500/20 overflow-hidden">
-              <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="56" height="56" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
+              <img src="/horspace-app-icon.webp" alt="Horspace App Icon" width="56" height="56" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -28,7 +28,7 @@
               เข้าสู่ระบบลูกบ้าน <span class="text-cyan-400">(Web Portal)</span>
             </h1>
             <p class="text-[11px] font-semibold text-emerald-400 tracking-wide mt-1">
-              HorHub Dual-Mode Living Platform
+              Horspace Dual-Mode Living Platform
             </p>
           </div>
           <p class="text-slate-400 text-xs">

@@ -13,70 +13,42 @@
         <CardHeader class="space-y-3 text-center pb-6 pt-8 px-6 sm:px-8 border-b border-slate-800/60 bg-gradient-to-b from-slate-800/40 to-transparent">
           <div class="relative mx-auto inline-flex">
             <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 flex items-center justify-center shadow-xl shadow-cyan-600/30 ring-4 ring-cyan-500/20 overflow-hidden">
-              <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
+              <img src="/horspace-app-icon.webp" alt="Horspace App Icon" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
             </div>
             <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-slate-900"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-cyan-500 border-2 border-slate-900"></span>
             </span>
           </div>
 
           <div>
             <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
-              HorHub <span class="text-cyan-400 font-bold">(หอฮับ)</span>
+              Horspace <span class="text-cyan-400 font-bold">CMS</span>
             </CardTitle>
-            <p class="text-[11px] font-semibold text-emerald-400 tracking-wide mt-1">
-              A Central Platform for Living and Management
+            <p class="text-[11px] font-semibold text-cyan-400 tracking-wide mt-1">
+              Central Management System for Properties
             </p>
           </div>
           <CardDescription class="text-slate-400 text-xs">
-            เข้าสู่ระบบสำหรับลูกบ้าน ผู้ดูแลระบบ และเจ้าของหอพัก
+            เข้าสู่ระบบสำหรับผู้ดูแลระบบและเจ้าของหอพัก
           </CardDescription>
         </CardHeader>
 
         <CardContent class="px-6 sm:px-8 pt-6 space-y-5">
-          <!-- SECTION 1: LINE SSO Login (Top Primary Button) -->
-          <div class="space-y-2">
-            <button
-              type="button"
-              @click="handleLineSSO"
-              :disabled="authStore.loading || isLineLoggingIn"
-              class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05B34C] active:bg-[#049B42] text-white rounded-2xl text-xs font-extrabold transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-            >
-              <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-sm font-black text-[#06C755] shadow-xs">
-                  
-                </div>
-                <div class="text-left">
-                  <div class="font-extrabold">{{ isLineLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'ล็อกอินด้วย LINE (LINE SSO)' }}</div>
-                  <div class="text-[10px] text-white/80 font-normal">สำหรับลูกบ้านที่ผูกบัญชี LINE ไว้แล้ว</div>
-                </div>
-              </div>
-              <ArrowRight class="w-4 h-4" />
-            </button>
-          </div>
-
-          <!-- Divider -->
-          <div class="relative flex py-1 items-center">
-            <div class="flex-grow border-t border-slate-800"></div>
-            <span class="flex-shrink mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">หรือ เข้าสู่ระบบด้วยรหัสผ่าน</span>
-            <div class="flex-grow border-t border-slate-800"></div>
-          </div>
-
-          <!-- SECTION 2: Local Password Login (Phone Number / Email + Password) -->
+          <!-- Local Password Login Form -->
           <form @submit.prevent="handleLocalLogin" class="space-y-4">
             <div class="space-y-1.5">
               <label for="identifier" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
                   <User class="w-3.5 h-3.5 text-cyan-400" />
-                  <span>เบอร์โทรศัพท์ หรือ อีเมล</span>
+                  <span>อีเมล หรือ เบอร์โทรศัพท์</span>
                 </div>
               </label>
               <Input
                 id="identifier"
                 v-model="identifier"
                 type="text"
-                placeholder="เช่น 0898765432 หรือ email@example.com"
+                placeholder="เช่น owner@dorm.com หรือ 0812345678"
                 required
                 data-testid="identifier-input"
                 :disabled="authStore.loading"
@@ -109,13 +81,23 @@
             <!-- Quick Demo Credential Autofill Helper -->
             <div class="pt-1 flex items-center justify-between gap-2">
               <span class="text-[11px] text-slate-400">กรอกข้อมูลทดสอบ:</span>
-              <button
-                type="button"
-                @click="fillDemoAccount"
-                class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
-              >
-                แอดมิน Demo
-              </button>
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  @click="fillDemoAccount('owner')"
+                  class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  เจ้าของหอพัก (Owner)
+                </button>
+                <span class="text-slate-600 text-xs">|</span>
+                <button
+                  type="button"
+                  @click="fillDemoAccount('superadmin')"
+                  class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Super Admin
+                </button>
+              </div>
             </div>
 
             <Button
@@ -137,13 +119,13 @@
         </CardContent>
 
         <CardFooter class="px-6 sm:px-8 pb-8 pt-2">
-          <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-2">
+          <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-1.5">
             <div class="flex items-center gap-1.5 text-cyan-300 font-bold">
               <ShieldCheck class="w-4 h-4 text-cyan-400 shrink-0" />
-              <span>Hybrid Authentication Security</span>
+              <span>Enterprise Security Authentication</span>
             </div>
             <div class="text-slate-400 leading-relaxed">
-              รองรับทั้ง LINE Single Sign-On (SSO) สำหรับลูกบ้าน และรหัสผ่านที่เข้ารหัสด้วย Bcrypt สำหรับการเข้าใช้งานผ่านเบราว์เซอร์
+              ระบบรักษาความปลอดภัยมาตรฐาน พร้อมการควบคุมสิทธิ์ตามบทบาท (Role-Based Access Control)
             </div>
           </div>
         </CardFooter>
@@ -153,10 +135,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
-import { initLiff, isLiffLoggedIn, loginLiff, getLiffIdToken } from '@/utils/liff';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -167,58 +148,23 @@ import {
   CardContent,
   CardFooter
 } from '@/components/ui/card';
-import { Lock, Zap, Loader2, ArrowRight, Building2, ShieldCheck, AlertCircle, User, LogIn } from 'lucide-vue-next';
+import { Lock, Loader2, ShieldCheck, AlertCircle, User, LogIn } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const identifier = ref('developer@example.com');
+const identifier = ref('owner@dorm.com');
 const password = ref('password123');
 const errorMessage = ref('');
-const isLineLoggingIn = ref(false);
 
-onMounted(async () => {
-  try {
-    await initLiff();
-  } catch (err) {
-    console.warn('LIFF init on login view:', err);
+const fillDemoAccount = (role = 'owner') => {
+  if (role === 'superadmin') {
+    identifier.value = 'superadmin@dorm.com';
+  } else {
+    identifier.value = 'owner@dorm.com';
   }
-});
-
-const fillDemoAccount = () => {
-  identifier.value = 'developer@example.com';
   password.value = 'password123';
-};
-
-const handleLineSSO = async () => {
-  errorMessage.value = '';
-  isLineLoggingIn.value = true;
-  try {
-    await initLiff();
-
-    if (isLiffLoggedIn()) {
-      const idToken = getLiffIdToken();
-      if (idToken) {
-        const res = await authStore.loginLine(idToken);
-        if (res.user?.role === 'tenant') {
-          router.push('/liff/profile');
-        } else {
-          router.push('/dashboard');
-        }
-        return;
-      }
-    }
-
-    // หากยังไม่ได้ล็อกอิน LINE ให้เรียก loginLiff()
-    const redirectUri = window.location.origin + (route.query.redirect || '/liff/profile');
-    await loginLiff(redirectUri);
-  } catch (error) {
-    console.error('LINE SSO Error:', error);
-    errorMessage.value = error.response?.data?.message || 'ไม่สามารถเข้าสู่ระบบด้วย LINE ได้';
-  } finally {
-    isLineLoggingIn.value = false;
-  }
 };
 
 const handleLocalLogin = async () => {

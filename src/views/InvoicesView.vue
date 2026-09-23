@@ -37,6 +37,18 @@
 
         <button
           v-if="activeTab === 'all-invoices'"
+          @click="handleExportCsv"
+          :disabled="exportingCsv"
+          class="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          title="Export รายงานบิลรายเดือนเป็น CSV (รองรับ Excel)"
+        >
+          <Download v-if="!exportingCsv" class="w-3.5 h-3.5" />
+          <span v-if="exportingCsv" class="animate-spin w-3.5 h-3.5 border-2 border-slate-500 border-t-transparent rounded-full"></span>
+          <span>Export CSV</span>
+        </button>
+
+        <button
+          v-if="activeTab === 'all-invoices'"
           @click="handleRemindBulk"
           :disabled="unpaidCount === 0 || sendingBulkReminder"
           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
@@ -449,7 +461,21 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
-import { CheckCircle2, Clock } from 'lucide-vue-next';
+import {
+  CheckCircle2,
+  Clock,
+  Receipt,
+  FileEdit,
+  Zap,
+  Download,
+  Send,
+  Plus,
+  RotateCw,
+  Banknote,
+  Printer,
+  Edit3,
+  FileText
+} from 'lucide-vue-next';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
@@ -462,6 +488,7 @@ import { formatDate } from '@/utils/formatters';
 
 const activeTab = ref('all-invoices');
 const runningLateFees = ref(false);
+const exportingCsv = ref(false);
 
 const handleRunLateFees = async () => {
   const confirmed = await showConfirm(
@@ -483,6 +510,34 @@ const handleRunLateFees = async () => {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถประมวลผลค่าปรับได้');
   } finally {
     runningLateFees.value = false;
+  }
+};
+
+const handleExportCsv = async () => {
+  const buildingId = buildingStore.activeBuildingId;
+  if (!buildingId) return showError('ข้อผิดพลาด', 'กรุณาเลือกตึกก่อน');
+
+  const now = new Date();
+  const defaultCycle = `${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+  const cycle = window.prompt('ระบุรอบบิล (เช่น 09-2026):', defaultCycle);
+  if (!cycle) return;
+
+  exportingCsv.value = true;
+  try {
+    const res = await api.get(`/api/v1/buildings/${buildingId}/reports/monthly-csv`, {
+      params: { cycle },
+      responseType: 'blob'
+    });
+    const url = URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report-${cycle}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถ export CSV ได้');
+  } finally {
+    exportingCsv.value = false;
   }
 };
 const roomStore = useRoomStore();

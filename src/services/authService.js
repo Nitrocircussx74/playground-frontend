@@ -81,7 +81,7 @@ export const authService = {
   },
 
   /**
-   * ตรวจสอบสถานะเบอร์โทรศัพท์ (มีในระบบ HorHub แล้วหรือไม่สำหรับ Centralized Identity)
+   * ตรวจสอบสถานะเบอร์โทรศัพท์ (มีในระบบ Horspace แล้วหรือไม่สำหรับ Centralized Identity)
    * @param {string|Object} payload - { phone: string } or phone string
    */
   async verifyPhoneStatus(payload) {

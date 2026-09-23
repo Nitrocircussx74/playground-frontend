@@ -126,11 +126,11 @@
           <span class="absolute inset-0 rounded-[1.75rem] border-3 border-emerald-500/15"></span>
           <div class="absolute inset-0 rounded-[1.75rem] border-3 border-transparent border-t-emerald-500 border-r-emerald-500 animate-spin"></div>
           <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg shadow-emerald-900/10 ring-1 ring-slate-100 flex items-center justify-center overflow-hidden">
-            <img src="/horhub-app-icon.webp" alt="HorHub App Icon" width="64" height="64" class="w-full h-full object-contain" loading="eager" decoding="async" />
+            <img src="/horspace-app-icon.webp" alt="Horspace App Icon" width="64" height="64" class="w-full h-full object-contain" loading="eager" decoding="async" />
           </div>
         </div>
         <div class="space-y-1">
-          <h2 class="text-sm font-bold text-slate-800">HorHub (หอฮับ)</h2>
+          <h2 class="text-sm font-bold text-slate-800">Horspace (ฮอร์สเปซ)</h2>
           <p class="text-xs font-medium text-slate-500">{{ statusText }}</p>
         </div>
       </div>
@@ -144,7 +144,7 @@
         <div v-if="isExistingUserPrompt" class="space-y-4">
           <div class="flex items-center justify-between">
             <span class="px-3 py-1 text-[11px] font-bold bg-teal-50 text-teal-700 rounded-full border border-teal-200/80">
-              พบข้อมูลใน HorHub
+              พบข้อมูลใน Horspace
             </span>
             <button
               type="button"
@@ -160,7 +160,7 @@
               {{ existingUserName ? existingUserName.charAt(0).toUpperCase() : 'U' }}
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-bold text-slate-800 truncate">{{ existingUserName || 'ลูกบ้าน HorHub' }}</div>
+              <div class="text-xs font-bold text-slate-800 truncate">{{ existingUserName || 'ลูกบ้าน Horspace' }}</div>
               <div class="text-[11px] text-slate-500 font-mono">{{ verifyPhoneInput }}</div>
             </div>
           </div>
@@ -518,12 +518,12 @@ const handleVerifyByPhone = async () => {
   const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
 
   try {
-    // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ HorHub ก่อน (Centralized Identity Check)
+    // 1. ตรวจสอบสถานะเบอร์โทรศัพท์ในระบบ Horspace ก่อน (Centralized Identity Check)
     const phoneStatus = await authService.verifyPhoneStatus({ phone: cleanPhone, building: targetBuilding || undefined });
 
     if (phoneStatus?.isExistingUser) {
       // ผู้ใช้เดิมที่มีบัญชีอยู่แล้วในระบบ -> ให้กรอก PIN เดิม (ถ้ามี) หรือตั้ง PIN ใหม่ (ถ้ายังไม่เคยตั้ง) เพื่อผูกบัญชีทันที
-      existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน HorHub';
+      existingUserName.value = phoneStatus.userName || phoneStatus.tenantName || 'ลูกบ้าน Horspace';
       existingUserHasPin.value = Boolean(phoneStatus.hasPin);
       isExistingUserPrompt.value = true;
       verifyingPhone.value = false;

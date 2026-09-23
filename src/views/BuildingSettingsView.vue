@@ -197,6 +197,7 @@
                             :src="form.logoUrl"
                             alt="Building Logo"
                             class="w-full h-full object-contain p-1"
+                            @error="form.logoUrl = ''"
                           />
                           <Building2 v-else class="w-8 h-8 text-slate-400" />
                         </div>
@@ -265,6 +266,7 @@
                           :src="form.logoUrl"
                           alt="Logo Preview"
                           class="w-10 h-10 rounded-xl object-contain bg-white p-0.5 border border-white/40 shadow-xs"
+                          @error="form.logoUrl = ''"
                         />
                         <div v-else class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg">
                           <Building2 class="w-4 h-4" />
@@ -830,12 +832,12 @@
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>LINE OA Basic ID / Account Name</span>
-                    <span class="text-[10px] font-normal text-slate-400">เช่น @horhub_a</span>
+                    <span class="text-[10px] font-normal text-slate-400">เช่น @horspace_a</span>
                   </label>
                   <Input
                     v-model="form.lineOaId"
                     :disabled="isReadOnly"
-                    placeholder="เช่น @horhub_building_a"
+                    placeholder="เช่น @horspace_building_a"
                     class="bg-white font-mono text-xs"
                   />
                   <div v-if="lineSettingsValidation.oaError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
@@ -853,7 +855,7 @@
                   <Input
                     v-model="form.lineAddFriendUrl"
                     :disabled="isReadOnly"
-                    placeholder="เช่น https://line.me/R/ti/p/@horhub_a หรือ https://lin.ee/xxxxx"
+                    placeholder="เช่น https://line.me/R/ti/p/@horspace_a หรือ https://lin.ee/xxxxx"
                     class="bg-white text-xs"
                   />
                   <p class="text-[11px] text-slate-400">สำหรับสร้างปุ่มกดเพิ่มเพื่อนในหน้าต้อนรับลูกบ้านใหม่</p>
@@ -1004,7 +1006,7 @@ const customBankName = ref('');
 
 // Preset Palette for LIFF Dynamic Theming
 const presetColors = [
-  { name: 'HorHub Teal', hex: '#0E7490' },
+  { name: 'Horspace Teal', hex: '#0E7490' },
   { name: 'น้ำเงิน (Blue)', hex: '#3B82F6' },
   { name: 'แดง (Ruby)', hex: '#EF4444' },
   { name: 'เขียว (Emerald)', hex: '#10B981' },
@@ -1139,7 +1141,7 @@ const lineSettingsValidation = computed(() => {
   const liffId = (form.value.lineLiffId || '').trim();
   const secret = (form.value.lineChannelSecret || '').trim();
 
-  const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horhub)' : null;
+  const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horspace)' : null;
   const liffError = liffId && !/^\d{10}-[A-Za-z0-9_-]{6,}$/.test(liffId) ? 'รูปแบบ LIFF ID ควรเป็นตัวเลข 10 หลักตามด้วยขีด (เช่น 2011289517-SB8YziXL)' : null;
   const secretError = secret && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
 
