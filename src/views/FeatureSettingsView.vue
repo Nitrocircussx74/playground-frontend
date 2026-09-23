@@ -37,7 +37,7 @@
           v-model="buildingStore.activeBuildingId"
           class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 font-medium focus:outline-hidden focus:border-teal-400 cursor-pointer w-full sm:w-auto min-w-[240px]"
         >
-          <option :value="null">ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
+          <option value="">ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
           <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
             {{ b.name }}
           </option>
@@ -175,7 +175,8 @@ import {
   ReceiptText,
   HelpCircle,
   CalendarCheck,
-  Vote
+  Vote,
+  FileText
 } from 'lucide-vue-next';
 
 const featureStore = useFeatureStore();
@@ -183,7 +184,7 @@ const buildingStore = useBuildingStore();
 const searchQuery = ref('');
 
 const loadData = () => {
-  featureStore.fetchFeatures(buildingStore.activeBuildingId);
+  featureStore.fetchFeatures(buildingStore.activeBuildingId || null);
 };
 
 onMounted(async () => {
@@ -207,7 +208,8 @@ const featureTitles = {
   ENABLE_RECEIPT_HISTORY: 'ประวัติใบเสร็จรับเงิน E-Receipt',
   ENABLE_VEHICLE_MANAGEMENT: 'จัดการยานพาหนะและทะเบียนรถ',
   ENABLE_FACILITY_BOOKING: 'จองพื้นที่ส่วนกลาง',
-  ENABLE_VOTING: 'โหวต & แบบสำรวจความเห็น'
+  ENABLE_VOTING: 'โหวต & แบบสำรวจความเห็น',
+  ENABLE_E_CONTRACT: 'สัญญาเช่าห้องพัก (E-Contract)'
 };
 
 const getFeatureTitle = (key) => {
@@ -234,6 +236,8 @@ const getFeatureIcon = (key) => {
       return CalendarCheck;
     case 'ENABLE_VOTING':
       return Vote;
+    case 'ENABLE_E_CONTRACT':
+      return FileText;
     default:
       return HelpCircle;
   }
@@ -259,6 +263,8 @@ const getFeatureIconBg = (key) => {
       return 'bg-indigo-50 text-indigo-600';
     case 'ENABLE_VOTING':
       return 'bg-violet-50 text-violet-600';
+    case 'ENABLE_E_CONTRACT':
+      return 'bg-emerald-50 text-emerald-600';
     default:
       return 'bg-slate-50 text-slate-600';
   }

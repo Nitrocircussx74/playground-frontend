@@ -1422,21 +1422,18 @@ const fetchTenantProfile = async (lineUserId = '') => {
         tenantProfile.avatarUrl = data.linePictureUrl;
       }
 
+      let targetBuildingId = data.buildingId || null;
       if (tenantProfile.rooms.length > 0) {
         const storedRoomId = localStorage.getItem('active_tenant_room_id');
         const matched = tenantProfile.rooms.find((r) => r.id === storedRoomId) || tenantProfile.rooms[0];
         selectedRoomId.value = matched.id;
         tenantProfile.roomNumber = matched.roomNumber;
+        targetBuildingId = matched.buildingId || targetBuildingId;
         applyTheme(matched);
-        if (matched.buildingId) {
-          featureStore.fetchFeatures(matched.buildingId);
-        }
       } else {
         applyTheme(data);
-        if (data.buildingId) {
-          featureStore.fetchFeatures(data.buildingId);
-        }
       }
+      await featureStore.fetchFeatures(targetBuildingId);
     } else if (authStore.isOwner) {
       // Pure Owner / Executive with no tenant record -> Activate Preview Mode gracefully
       isPreviewMode.value = true;
@@ -1446,6 +1443,7 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = 'PREVIEW';
       tenantProfile.isOwner = true;
       tenantProfile.isPrimaryTenant = true;
+      await featureStore.fetchFeatures(null);
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
@@ -1613,7 +1611,8 @@ const quickActionsConfig = [
     icon: FileText,
     bgClass: 'bg-emerald-50',
     iconClass: 'text-emerald-600',
-    route: '/liff/contract'
+    route: '/liff/contract',
+    featureKey: 'ENABLE_E_CONTRACT'
   }
 ];
 
@@ -1634,8 +1633,6 @@ const handleMenuClick = (menu) => {
 };
 
 onMounted(async () => {
-  featureStore.fetchFeatures();
-
   try {
     try {
       await initLiff();
