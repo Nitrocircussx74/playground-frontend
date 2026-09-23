@@ -264,7 +264,7 @@ const getFeatureIconBg = (key) => {
     case 'ENABLE_VOTING':
       return 'bg-violet-50 text-violet-600';
     case 'ENABLE_E_CONTRACT':
-      return 'bg-emerald-50 text-emerald-600';
+      return 'bg-rose-50 text-rose-600';
     default:
       return 'bg-slate-50 text-slate-600';
   }

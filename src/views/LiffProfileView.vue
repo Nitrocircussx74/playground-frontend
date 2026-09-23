@@ -1386,6 +1386,17 @@ const formattedRooms = computed(() => {
   return `ห้อง ${tenantProfile.roomNumber || '-'}`;
 });
 
+/**
+ * หาตึกที่ควรใช้เช็ค Feature Toggle ตอนเจ้าของ/แอดมินเปิด LIFF แบบ "โหมดจำลอง" (ไม่มีข้อมูลผู้เช่าจริงผูกอยู่)
+ * เรียงลำดับความน่าเชื่อถือ: ตึกที่เพิ่งเลือกใน Owner Dashboard (horspace_selected_building_id) ก่อน แล้วค่อย
+ * Fallback ไปตึกที่กำลังเปิดอยู่ฝั่ง CMS Admin (activeBuildingId, เผื่อทดสอบผ่าน Browser เดียวกัน) —
+ * ไม่งั้นจะ Fetch แบบ Global ที่ไม่เคยถูกปิด ทำให้พรีวิวเห็นฟีเจอร์เปิดหมดทั้งที่ปิดไว้เฉพาะตึกแล้วจริงๆ
+ */
+const resolvePreviewBuildingId = () => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('horspace_selected_building_id') || localStorage.getItem('activeBuildingId') || null;
+};
+
 const fetchTenantProfile = async (lineUserId = '') => {
   try {
     const params = {};
@@ -1436,6 +1447,9 @@ const fetchTenantProfile = async (lineUserId = '') => {
       await featureStore.fetchFeatures(targetBuildingId);
     } else if (authStore.isOwner) {
       // Pure Owner / Executive with no tenant record -> Activate Preview Mode gracefully
+      // ใช้ตึกที่เจ้าของเลือกไว้ล่าสุดจาก Owner Dashboard (horspace_selected_building_id) แทนการดึงแบบ
+      // Global เสมอ — เดิม fetchFeatures(null) ทำให้พรีวิวเห็นฟีเจอร์ที่ปิดไว้เฉพาะตึกยังเปิดอยู่ (Global
+      // Default ไม่เคยถูกแตะ มีแต่ Override รายตึกเท่านั้น)
       isPreviewMode.value = true;
       sessionExpired.value = false;
       tenantProfile.firstName = authStore.user?.name || authStore.currentUser?.name || 'ผู้ดูแลอาคาร';
@@ -1443,7 +1457,7 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = 'PREVIEW';
       tenantProfile.isOwner = true;
       tenantProfile.isPrimaryTenant = true;
-      await featureStore.fetchFeatures(null);
+      await featureStore.fetchFeatures(resolvePreviewBuildingId());
     }
   } catch (err) {
     console.warn('Failed to fetch tenant profile from API:', err.message);
@@ -1455,6 +1469,9 @@ const fetchTenantProfile = async (lineUserId = '') => {
       tenantProfile.roomNumber = 'PREVIEW';
       tenantProfile.isOwner = true;
       tenantProfile.isPrimaryTenant = true;
+      // เดิมไม่เคยเรียก fetchFeatures() เลยในสาขานี้ (Error ตอนโหลดโปรไฟล์) ทำให้ featureMap ค้างว่าง
+      // isEnabled() จะ Default คืน true ทุก Key เหมือนไม่ได้ปิดอะไรไว้เลย
+      await featureStore.fetchFeatures(resolvePreviewBuildingId());
       return;
     }
     if (err.response?.status === 401 || err.response?.status === 403 || !isLiffLoggedIn()) {

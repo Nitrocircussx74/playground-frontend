@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
 import api from '@/utils/api';
+import { useAuthStore } from '@/stores/auth';
+
+// นับลำดับ Request ของ fetchFeatures() กันปัญหา Response เก่ามาถึงทีหลัง Response ใหม่ (Race Condition)
+// เช่น สลับตึกเร็วๆ ใน FeatureSettingsView.vue หรือหลายหน้า LIFF เรียกซ้อนกันตอน Mount
+let fetchRequestSeq = 0;
 
 export const useFeatureStore = defineStore('feature', {
   state: () => ({
@@ -26,19 +31,35 @@ export const useFeatureStore = defineStore('feature', {
      * ดึงรายการสถานะ Feature Toggles ทั้งหมดจาก Backend (รองรับแยกรายตึก)
      */
     async fetchFeatures(buildingId = null) {
+      const requestSeq = ++fetchRequestSeq;
       this.isLoading = true;
       this.errorMessage = '';
       try {
+        // ถ้าไม่ระบุ buildingId มา (หลายหน้า LIFF เรียกแบบนี้) ลอง Derive จาก Tenant ที่ Login อยู่ในเมมโมรี
+        // ก่อนเสมอ กันปัญหา Backend ต้องเดา buildingId เองจาก Authorization Header ที่ Interceptor แนบมา
+        // (Dual-Role User ที่ Login ทั้ง CMS Admin และ LIFF Tenant พร้อมกัน อาจได้ Header เป็น Admin Token
+        // แทน Tenant Token แล้วได้ Feature Map ผิดตึก)
+        let resolvedBuildingId = buildingId;
+        if (!resolvedBuildingId) {
+          const authStore = useAuthStore();
+          resolvedBuildingId = authStore.tenant?.rooms?.[0]?.buildingId || authStore.tenant?.buildingId || null;
+        }
+
         const response = await api.get('/api/v1/features', {
-          params: { ...(buildingId && { buildingId }) }
+          params: { ...(resolvedBuildingId && { buildingId: resolvedBuildingId }) }
         });
+
+        if (requestSeq !== fetchRequestSeq) return; // มี Request ใหม่กว่ายิงตามมาแล้ว ทิ้ง Response เก่านี้
         this.features = response.data.data.features;
         this.featureMap = response.data.data.featureMap;
       } catch (error) {
+        if (requestSeq !== fetchRequestSeq) return;
         console.error('Failed to fetch feature flags:', error);
         this.errorMessage = error.response?.data?.message || 'Failed to fetch features';
       } finally {
-        this.isLoading = false;
+        if (requestSeq === fetchRequestSeq) {
+          this.isLoading = false;
+        }
       }
     },
 

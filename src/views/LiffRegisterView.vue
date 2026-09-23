@@ -148,7 +148,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   Building2,
   CheckCircle2,
@@ -161,6 +161,7 @@ import api from '@/utils/api';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 
 const route = useRoute();
+const router = useRouter();
 const { fetchAndApplyBuildingTheme, buildingName } = useDynamicTheme();
 const loading = ref(false);
 const verifying = ref(false);
@@ -211,6 +212,12 @@ const verifyCode = async () => {
     verifiedRoom.value = res.data.data;
   } catch (error) {
     verifiedRoom.value = null;
+    // รหัสนี้เป็นของระบบผูกบัญชีลูกบ้านเดิม (Tenant.inviteCode) ไม่ใช่รหัสลงทะเบียนใหม่ (RoomInvite.code)
+    // พาไปหน้าที่ถูกต้องอัตโนมัติแทนที่จะโชว์ "ไม่พบรหัสเชิญ" ให้ผู้ใช้งง
+    if (error.response?.data?.code === 'TENANT_LINK_CODE') {
+      router.replace({ path: '/liff/onboarding', query: { ...route.query, code: form.inviteCode } });
+      return;
+    }
     errorMessage.value = error.response?.data?.message || 'รหัสเชิญไม่ถูกต้องหรือหมดอายุแล้ว';
   } finally {
     verifying.value = false;

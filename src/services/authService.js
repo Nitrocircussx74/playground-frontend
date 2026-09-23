@@ -126,9 +126,13 @@ export const authService = {
    * @param {string} lineIdToken
    */
   async silentLoginLiff(lineIdToken) {
+    // แนบ buildingId ของตึกที่กำลังใช้งานอยู่ (จำไว้ใน localStorage ตอนเข้า LIFF ครั้งแรกผ่าน Query/Deep Link
+    // เดียวกับที่ LiffEntryView/LiffOnboardingView ใช้) กัน Silent Re-Auth หลัง Token หมดอายุคืนข้อมูล
+    // ผู้เช่าจากตึกอื่นของ LINE Account เดียวกัน (Multi-Building Centralized Identity)
+    const buildingId = typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null;
     const response = await axios.post(
       `${BASE_URL}/api/v1/liff/auth/silent-login`,
-      { lineIdToken },
+      { lineIdToken, ...(buildingId && { buildingId }) },
       {
         headers: { 'X-Line-Id-Token': lineIdToken },
         withCredentials: true

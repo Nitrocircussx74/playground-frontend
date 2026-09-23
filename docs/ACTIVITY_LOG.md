@@ -212,5 +212,33 @@
 ### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17)
 
 ### ⏭️ งานที่เหลือ (Follow-up Items):
-- แก้ `LiffLayout.test.js` ให้ใส่ `createTestingPinia()` เข้า `global.plugins` (Pre-existing Bug ไม่เกี่ยวกับ Phase นี้)
-- ประกาศข่าวสาร (Announcement Broadcast) ยังไม่ขึ้นกระดิ่ง Tenant — รอ Backend แก้ `sendAnnouncementBroadcast` ให้ Log ก่อน (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17)
+- แก้ `LiffLayout.test.js` ให้ใส่ `createTestingPinia()` เข้า `global.plugins` (Pre-existing Bug ไม่เกี่ยวกับ Phase นี้) — **แก้แล้วใน Phase ถัดไป (ยืนยันผ่าน `yarn vitest run` 7/7 ณ วันที่ทำ Phase 20 ด้านล่าง)**
+- ประกาศข่าวสาร (Announcement Broadcast) ยังไม่ขึ้นกระดิ่ง Tenant — รอ Backend แก้ `sendAnnouncementBroadcast` ให้ Log ก่อน (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17) — **แก้แล้วฝั่ง Backend ใน Phase 19 (ดู `playground-api/docs/ACTIVITY_LOG.md`)**
+
+---
+
+> **หมายเหตุ**: Log ฉบับนี้ขาดบันทึกของ Phase 18 (LIFF Building Owner Dashboard) และ Phase 19 (Rebranding/Announcement Gap) ที่ทำไปแล้วจริงในโค้ด (ดู Commit `3bae5b6`, `a936737` และ `playground-api/docs/ACTIVITY_LOG.md` Phase 18-19 ที่มีรายละเอียดฝั่ง Frontend ระบุไว้คู่กัน) — ไม่ได้ Backfill ในรอบนี้ เพราะนอกขอบเขตงานที่ขอ (Audit + Fix บั๊ก) บันทึกไว้เผื่อ Sync ภายหลัง
+
+---
+
+### Phase 20 (2026-09-23): Full Flow & Bug Audit (API + CMS) — แก้ทุกจุดที่ยืนยันเป็นบั๊กจริง
+
+- **บริบท**: ผู้ใช้ขอให้ไล่ตรวจ Flow และบั๊กทั้งหมดของทั้ง `playground-api` และ `playground-frontend` แล้ววางแผน — ส่ง Sub-Agent 2 ตัวไล่อ่านโค้ดจริงคู่ขนานกัน แล้วแก้ทุกข้อที่ยืนยันว่าเป็นบั๊กจริงตามคำขอ (รายละเอียดฝั่ง Backend ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 20)
+- **🐛 Dual-Role Token ทำให้ Feature Toggle ผิดตึก**: หลายหน้า LIFF (`LiffReceiptHistoryView`, `LiffUpdateProfileView`, `LiffFacilityBookingView`, `LiffAnnouncementsView`, `IssueHistory`, `LiffParcelsView`, `ReportIssue`, `LiffVehicleView`, `LiffPollView` — รวม 9 หน้า) เรียก `featureStore.fetchFeatures()` โดยไม่ส่ง `buildingId` เลย ไปแข่ง Race กับ `LiffLayout.vue` ที่ Fetch ถูกตึกอยู่แล้วตอน Mount — สำหรับผู้ใช้ Dual-Role (Owner+Tenant, Login ทั้ง CMS Admin Token และ LIFF Tenant Token พร้อมกัน) Backend อาจถอด Feature Map จาก Admin Token แทน Tenant Token แล้วได้ตึกผิด — แก้ที่จุดเดียวใน `stores/useFeatureStore.js`: `fetchFeatures()` ถ้าไม่ระบุ `buildingId` มา จะ Derive จาก `authStore.tenant` เองก่อนยิง API เสมอ (ไม่ต้องแก้ทีละ 9 หน้า)
+- **🐛 Race Condition สลับตึกเร็วๆ ใน `FeatureSettingsView.vue`**: ไม่มีการ Cancel/Sequence Request เดิม คลิกสลับตึกเร็วๆ อาจโชว์ Feature Map ผิดตึกถ้า Response เก่ามาถึงทีหลัง Response ใหม่ — เพิ่ม Request-Sequence Guard ใน `fetchFeatures()` ตัวเดียวกับข้อบน (จุดเดียวคุมทุกหน้าที่เรียก Store นี้)
+- **🐛 Invite Code 2 ระบบซ้อนกัน (ค้างมาตั้งแต่ 2026-09-10)**: `LiffRegisterView.vue` เดิมพิมพ์รหัสของระบบ `Tenant.inviteCode` (สำหรับผู้เช่าเดิม) แล้วเจอแค่ "รหัสเชิญไม่ถูกต้อง" เฉยๆ — Backend เพิ่ม Error Code `TENANT_LINK_CODE` ตอนเจอ Code ประเภทนี้ (ดู `playground-api` Phase 20), ฝั่งนี้เจอ Code ดังกล่าวแล้ว Auto-Redirect ไป `/liff/onboarding?code=...` ให้เอง (พรีฟิลรหัสไว้ให้ เหลือแค่กรอกเบอร์โทร 4 ตัวท้าย)
+- **สี Icon ชนกัน**: `ENABLE_E_CONTRACT` ใน `FeatureSettingsView.vue` ชนกับ `ENABLE_DIGITAL_ID` (Emerald ซ้ำกัน ตกหล่นตอนเพิ่ม E-Contract) — เปลี่ยนเป็น Rose
+- **✅ ตรวจแล้วพบว่า "ไม่ใช่บั๊กจริง"**: Feature Toggle ไม่ครอบ Endpoint เขียนฝั่ง LIFF ที่ Audit รอบแรกสงสัย — Backend เช็คแบบ Inline อยู่แล้วทุกจุด (ดู `playground-api` Phase 20)
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **22/22** (5 Test Files) — ระหว่างทางพบว่า Follow-up เดิม "`LiffLayout.test.js` ขาด Pinia Plugin" ถูกแก้ไปแล้วในบาง Phase ก่อนหน้าที่ไม่ได้ลง Log (7/7 ผ่านแล้วตอนนี้)
+
+#### Follow-up จากการทดสอบจริงของผู้ใช้หลัง Phase 20 (วันเดียวกัน): 2 บั๊กเพิ่มเติมที่เจอตอน Live Test
+
+- **🐛 Feature Card ผีในหน้า Feature Settings**: ผู้ใช้ส่ง Screenshot เจอการ์ด `ENABLE_TENANT_POLLS`/`ENABLE_VISITOR_PASS` ไม่มี Title/คำอธิบายจริง (โชว์ Raw Key) — ต้นเหตุเป็น Row เก่าค้างในตาราง `FeatureToggle` ของ Backend จากการ Rename Key (`ENABLE_VOTING`/`ENABLE_VEHICLE_MANAGEMENT` เป็น Key ปัจจุบันแล้ว) แก้ที่ `featureController.getFeatures()` ให้กรอง Key ที่ไม่รู้จักทิ้งก่อน Merge (ดูรายละเอียดฝั่ง Backend `playground-api/docs/ACTIVITY_LOG.md` Phase 20) — ฝั่งนี้ไม่ต้องแก้อะไร แค่รีเฟรชก็หายไป
+- **🐛 Owner Preview Mode ไม่ผูกตึก ทำให้เห็นฟีเจอร์เปิดหมดทั้งที่ปิดไว้เฉพาะตึกแล้ว**: ผู้ใช้ Report "ปิดฟีเจอร์ใน CMS ครบทุกตัวสำหรับอาคาร B แล้วแต่หน้า 'เมนูด่วน' ใน LIFF ไม่ซ่อนตามสักอัน" — ไล่ตรวจ Backend ด้วยการจำลอง Fetch จากฐานข้อมูลจริงตรงๆ (ใช้ Tenant จริงในอาคาร B) ได้ผลถูกต้อง 100% (Toggle ที่ปิดไว้คืน `false` ครบ) สรุปว่าเป็นบั๊กฝั่งนี้ — ถามผู้ใช้ยืนยันว่า Login เข้า LIFF ด้วยบัญชีแอดมิน/เจ้าของอาคาร (ไม่มี Tenant Record ผูกอยู่) ทำให้เข้า **"โหมดจำลอง (Preview Mode)"** ใน `LiffProfileView.vue` ซึ่งเดิมเรียก `featureStore.fetchFeatures(null)` เสมอ (Global Default ที่ไม่เคยถูกปิด เพราะการปิดทุกครั้งเป็น Override เฉพาะอาคาร B เท่านั้น) — แก้เพิ่มฟังก์ชัน `resolvePreviewBuildingId()`: ใช้ตึกที่เจ้าของเลือกล่าสุดใน Owner Dashboard (`localStorage.horspace_selected_building_id`) ก่อน แล้ว Fallback ไปตึกที่กำลังเปิดอยู่ฝั่ง CMS Admin ในเบราว์เซอร์เดียวกัน (`localStorage.activeBuildingId`) แทน Global เสมอ — พ่วงแก้อีกจุด: เดิมถ้าโหลดโปรไฟล์ Error (Catch Branch) จะไม่เรียก `fetchFeatures()` เลยแม้แต่ครั้งเดียว ทำให้ `isEnabled()` Default คืน `true` ทุก Key เหมือนไม่ได้ปิดอะไร — เพิ่มให้เรียกด้วย Building เดียวกัน
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **22/22** ไม่มี Regression
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 20)
+
+### ⏭️ งานที่เหลือ (Deferred ตาม YAGNI ไม่ใช่บั๊ก):
+- Facility Booking ยังไม่มี Workflow อนุมัติ, Poll ยังไม่รองรับ AGM/Quorum ถ่วงน้ำหนักตามกรรมสิทธิ์ (ดูรายละเอียดฝั่ง Backend)
+- ฟีเจอร์เก่าอื่นๆ (แจ้งซ่อม/บิล/พัสดุ/ข่าวสาร/ใบเสร็จ/Digital ID) Toggle ยังบังคับแค่ฝั่ง Frontend (ซ่อน UI) ไม่มีการเช็คฝั่ง Backend เหมือน `ENABLE_E_CONTRACT`/Facility/Vehicle/Poll — Known Limitation ตั้งใจ ไม่ใช่บั๊ก
