@@ -265,10 +265,12 @@
             v-for="room in tenantProfile.rooms"
             :key="room.id"
             @click="selectRoom(room)"
+            :aria-pressed="selectedRoomId === room.id"
             class="p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative overflow-hidden active:scale-[0.99]"
             :class="selectedRoomId === room.id 
               ? 'bg-teal-50/60 border-teal-200 shadow-2xs' 
               : 'bg-slate-50/60 hover:bg-slate-100/70 border-slate-100/90 text-slate-600'"
+            :style="selectedRoomId === room.id ? { backgroundColor: `${themeColor}0D`, borderColor: `${themeColor}55` } : {}"
           >
             <!-- Left: Room Icon & Room Details -->
             <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -277,9 +279,15 @@
                 :class="selectedRoomId === room.id
                   ? 'bg-teal-600 text-white shadow-xs'
                   : 'bg-white text-slate-500 border border-slate-200/60'"
-                :style="selectedRoomId === room.id && !room.logoUrl ? { backgroundColor: themeColor } : {}"
+                :style="selectedRoomId === room.id && (!room.logoUrl || failedRoomLogoIds.has(room.id)) ? { backgroundColor: themeColor } : {}"
               >
-                <img v-if="room.logoUrl" :src="room.logoUrl" alt="" class="w-full h-full object-contain p-1" />
+                <img
+                  v-if="room.logoUrl && !failedRoomLogoIds.has(room.id)"
+                  :src="room.logoUrl"
+                  alt=""
+                  class="w-full h-full object-contain p-1"
+                  @error="handleRoomLogoError(room.id)"
+                />
                 <component v-else :is="getRoomIcon(room.unitType)" class="w-4.5 h-4.5" />
               </div>
               
@@ -322,6 +330,24 @@
         </div>
       </div>
 
+      <!-- กำลังสลับห้อง: Skeleton แทนทุกส่วนที่ผูกกับห้อง/ตึก จนกว่าข้อมูลห้องใหม่ + ฟีเจอร์ตึกใหม่จะมาครบ
+           (Header และรายการห้องยังอยู่ ผู้ใช้เห็นว่ากำลังโหลดห้องไหน และกดสลับต่อได้) -->
+      <div v-if="switchingRoom" class="space-y-4 animate-pulse" role="status" aria-live="polite">
+        <span class="sr-only">กำลังโหลดข้อมูลห้อง {{ selectedRoom?.roomNumber }}</span>
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+          <div class="h-4 w-32 bg-slate-200 rounded-md"></div>
+          <div class="h-16 w-full bg-slate-100 rounded-2xl"></div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="h-4 w-20 bg-slate-200 rounded-md"></div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div v-for="i in 4" :key="i" class="h-28 bg-white rounded-2xl border border-slate-100 shadow-xs"></div>
+          </div>
+        </div>
+        <div class="h-40 bg-white rounded-2xl border border-slate-100 shadow-xs"></div>
+      </div>
+
+      <template v-else>
       <!-- 2.5 Live Action Hub & Smart Notifications (ศูนย์รวมการแจ้งเตือนและสถานะที่ต้องดำเนินการ) -->
       <div class="space-y-2.5 animate-in fade-in duration-300">
         <!-- Section Header -->
@@ -869,6 +895,7 @@
           <p class="text-[10px] text-slate-400">ระบบจะแสดงกราฟเมื่อมีการบันทึกมิเตอร์รอบบิลแรก</p>
         </div>
       </div>
+      </template>
 
       <!-- 4. Personal Profile & Settings Link Card -->
       <router-link
@@ -1224,6 +1251,7 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
   try {
     const params = {};
     if (lineUserId) params.lineUserId = lineUserId;
+    const requestedRoomId = selectedRoomId.value;
 
     const [invoicesRes, parcelsRes, maintenanceRes, issuesRes] = await Promise.allSettled([
       api.get('/api/v1/liff/invoices/history', { params }),
@@ -1231,6 +1259,8 @@ const fetchLiveActionMetrics = async (lineUserId = '') => {
       api.get('/api/v1/liff/maintenance', { params }),
       api.get('/api/v1/liff/issues', { params })
     ]);
+    // ผู้ใช้สลับห้องไปแล้วระหว่างรอ: ทิ้งผลของห้องเก่า กันเขียนทับข้อมูลห้องใหม่ (Race Condition)
+    if (requestedRoomId !== selectedRoomId.value) return;
 
     // 1. Unpaid Invoices
     if (invoicesRes.status === 'fulfilled') {
@@ -1278,8 +1308,10 @@ const fetchMeterHistory = async () => {
   try {
     loadingMeters.value = true;
     const params = {};
-    if (selectedRoomId.value) params.roomId = selectedRoomId.value;
+    const requestedRoomId = selectedRoomId.value;
+    if (requestedRoomId) params.roomId = requestedRoomId;
     const res = await api.get('/api/v1/liff/meter-history', { params });
+    if (requestedRoomId !== selectedRoomId.value) return;
     if (res.data?.success) {
       meterHistory.value = res.data.data || [];
     }
@@ -1363,6 +1395,12 @@ const handleAnnouncementImageError = (id) => {
   failedAnnouncementImageIds.value = new Set(failedAnnouncementImageIds.value);
 };
 
+const failedRoomLogoIds = ref(new Set());
+const handleRoomLogoError = (id) => {
+  failedRoomLogoIds.value.add(id);
+  failedRoomLogoIds.value = new Set(failedRoomLogoIds.value);
+};
+
 const selectedRoomId = ref('');
 
 const selectedRoom = computed(() => {
@@ -1370,13 +1408,37 @@ const selectedRoom = computed(() => {
   return tenantProfile.rooms.find((r) => r.id === selectedRoomId.value) || tenantProfile.rooms[0];
 });
 
-const selectRoom = (room) => {
-  if (!room) return;
+// true ระหว่างโหลดข้อมูลห้องใหม่: ส่วนที่ผูกกับห้อง (แจ้งเตือน/เมนู/ข่าว/รูมเมท/มิเตอร์) แสดง Skeleton แทน
+// ไม่ให้เห็นข้อมูลห้องเก่าค้างแวบหนึ่ง หรือเมนูของตึกเก่าที่กดได้ก่อนฟีเจอร์ตึกใหม่โหลดเสร็จ
+const switchingRoom = ref(false);
+
+const clearRoomScopedData = () => {
+  unpaidInvoices.value = [];
+  pendingParcels.value = [];
+  activeMaintenance.value = [];
+  meterHistory.value = [];
+};
+
+const selectRoom = async (room) => {
+  if (!room || room.id === selectedRoomId.value) return;
+  switchingRoom.value = true;
+  clearRoomScopedData();
   selectedRoomId.value = room.id;
-  localStorage.setItem('active_tenant_room_id', room.id);
+  authStore.setActiveRoom(room);
   tenantProfile.roomNumber = room.roomNumber;
   applyTheme(room);
-  fetchMeterHistory();
+  const lineUserId = currentLineUserId.value || tenantProfile.lineUserId;
+  try {
+    await Promise.allSettled([
+      featureStore.fetchFeatures(authStore.activeBuildingId),
+      fetchMeterHistory(),
+      fetchLiveActionMetrics(lineUserId),
+      checkUnread(lineUserId)
+    ]);
+  } finally {
+    // กดสลับรัวๆ: ให้ห้องล่าสุดเป็นคนปิด Skeleton เท่านั้น
+    if (selectedRoomId.value === room.id) switchingRoom.value = false;
+  }
 };
 
 const formattedRooms = computed(() => {
@@ -1440,8 +1502,10 @@ const fetchTenantProfile = async (lineUserId = '') => {
         selectedRoomId.value = matched.id;
         tenantProfile.roomNumber = matched.roomNumber;
         targetBuildingId = matched.buildingId || targetBuildingId;
+        authStore.setActiveRoom({ ...matched, buildingId: targetBuildingId });
         applyTheme(matched);
       } else {
+        authStore.setActiveRoom({ id: null, buildingId: targetBuildingId });
         applyTheme(data);
       }
       await featureStore.fetchFeatures(targetBuildingId);

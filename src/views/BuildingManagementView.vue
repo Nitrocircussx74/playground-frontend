@@ -108,6 +108,15 @@
           >
             แก้ไขธีม & QR
           </button>
+
+          <button
+            @click="handleDeleteBuilding(b)"
+            class="px-2.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
+            title="ลบอาคาร"
+          >
+            <Trash2 class="w-3.5 h-3.5" />
+            <span>ลบตึก</span>
+          </button>
         </div>
       </div>
     </div>
@@ -300,21 +309,32 @@
             </button>
           </div>
 
-          <div class="flex items-center justify-end gap-2 pt-2">
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100">
             <button
               type="button"
-              @click="showEditModal = false"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-all cursor-pointer"
+              @click="handleDeleteBuilding(selectedBuilding); showEditModal = false"
+              class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-semibold transition-all flex items-center gap-1.5 cursor-pointer text-xs"
             >
-              ยกเลิก
+              <Trash2 class="w-3.5 h-3.5" />
+              <span>ลบตึกนี้</span>
             </button>
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="px-5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
-            >
-              {{ submitting ? 'กำลังบันทึก...' : 'บันทึกการตั้งค่า' }}
-            </button>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="showEditModal = false"
+                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-all cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="submit"
+                :disabled="submitting"
+                class="px-5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {{ submitting ? 'กำลังบันทึก...' : 'บันทึกการตั้งค่า' }}
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -323,11 +343,11 @@
 </template>
 
 <script setup>
-import { Building2, Settings, X, Plus, Edit } from 'lucide-vue-next';
+import { Building2, Settings, X, Plus, Edit, Trash2 } from 'lucide-vue-next';
 import { ref, reactive, onMounted } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
-import { showSuccess, showError, showToast } from '@/utils/swal';
+import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
 
 const buildingStore = useBuildingStore();
 
@@ -452,6 +472,50 @@ const handleUpdateSetting = async () => {
     await buildingStore.fetchBuildings();
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกการตั้งค่า');
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const handleDeleteBuilding = async (b) => {
+  if (!b) return;
+
+  // ป้องกันการลบหากยังมีห้องพัก (แสดงเตือนล่วงหน้าได้ทันที)
+  if (b._count?.rooms > 0) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      `อาคาร "${b.name}" ยังมีห้องพักผูกอยู่ ${b._count.rooms} ห้อง กรุณาย้ายหรือลบห้องพักทั้งหมดออกก่อนทำการลบอาคาร`
+    );
+    return;
+  }
+
+  // ป้องกันการลบหากเหลือตึกเดียว
+  if (buildingStore.buildings.length <= 1) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      'ระบบต้องมีอาคารอย่างน้อย 1 อาคาร ไม่สามารถลบอาคารสุดท้ายได้'
+    );
+    return;
+  }
+
+  const confirmed = await showConfirm(
+    `ยืนยันการลบ ${b.name}?`,
+    'การดำเนินการนี้จะลบข้อมูลอาคารและการตั้งค่าที่เกี่ยวข้องทั้งหมดออกจากระบบ และไม่สามารถย้อนกลับได้',
+    'ลบอาคาร',
+    'ยกเลิก'
+  );
+
+  if (!confirmed) return;
+
+  submitting.value = true;
+  try {
+    const res = await buildingStore.deleteBuilding(b.id);
+    await showSuccess('สำเร็จ!', res?.message || `ลบอาคาร ${b.name} เรียบร้อยแล้ว`);
+  } catch (error) {
+    showError(
+      'เกิดข้อผิดพลาดในการลบอาคาร',
+      error.response?.data?.message || 'ไม่สามารถลบอาคารได้ กรุณาลองใหม่อีกครั้ง'
+    );
   } finally {
     submitting.value = false;
   }

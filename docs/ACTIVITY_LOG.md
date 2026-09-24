@@ -242,3 +242,63 @@
 ### ⏭️ งานที่เหลือ (Deferred ตาม YAGNI ไม่ใช่บั๊ก):
 - Facility Booking ยังไม่มี Workflow อนุมัติ, Poll ยังไม่รองรับ AGM/Quorum ถ่วงน้ำหนักตามกรรมสิทธิ์ (ดูรายละเอียดฝั่ง Backend)
 - ฟีเจอร์เก่าอื่นๆ (แจ้งซ่อม/บิล/พัสดุ/ข่าวสาร/ใบเสร็จ/Digital ID) Toggle ยังบังคับแค่ฝั่ง Frontend (ซ่อน UI) ไม่มีการเช็คฝั่ง Backend เหมือน `ENABLE_E_CONTRACT`/Facility/Vehicle/Poll — Known Limitation ตั้งใจ ไม่ใช่บั๊ก
+
+---
+
+### Phase 21 (2026-09-23): Delete Building UI & Store Action
+
+- **บริบท**: เพิ่มความสามารถในการลบอาคาร/ตึกที่ไม่ใช้งานออกจากระบบ พร้อมระบบยืนยัน (Confirmation) และตรวจสอบความปลอดภัย
+- **Store Action (`useBuildingStore.deleteBuilding`)**: ยิง `DELETE /api/v1/buildings/${id}` และหากตึกที่ถูกลบตรงกับ `activeBuildingId` จะทำการ Reset เป็นค่าว่างทันที พร้อมดึงรายการตึกใหม่
+- **Building Management View (`BuildingManagementView.vue`)**:
+  - เพิ่มปุ่มลบ (Trash Icon) บนการ์ดของแต่ละตึก
+  - เชื่อมต่อ `showConfirm` จาก SweetAlert2 เพื่อยืนยันการลบก่อนส่งคำขอ
+  - มี Guard ฝั่ง Client ป้องกันการกดลบหากยังมีห้องพักผูกอยู่ (`b._count.rooms > 0`) หรือเหลือตึกเดียวในระบบ
+  - จัดการ Error Alert อย่างชัดเจนหาก Backend ปฏิเสธ
+- **Build & Test Verification**: `yarn build` ผ่าน 100%, `yarn vitest run` ผ่าน **24/24** (6 Test Files เพิ่ม `useBuildingStore.test.js` 2 เทส)
+
+---
+
+### Phase 22 (2026-09-24): Room Invite Modal Availability Guard & Endpoint Alignment
+
+- **บริบท**: ตรวจสอบและแก้ไขข้อผิดพลาด `ไม่พบ Endpoint นี้ - /api/v1/invites` (404) เมื่อเปิดหน้าต่างจัดการรหัสเชิญห้องพัก
+- **UI Enhancement (`RoomInviteModal.vue`)**:
+  - เพิ่มการตรวจสอบสถานะห้องพัก: หากห้องไม่อยู่ในสถานะ `available` (เช่น `occupied` หรือมีผู้เช่าอยู่แล้ว) จะแสดงข้อความแจ้งเตือนสีเหลืองอำพัน และซ่อน/ปิดการสร้างรหัสเชิญใหม่ ป้องกันการสร้างรหัสซ้ำซ้อน
+  - แสดงเฉพาะประวัติรหัสเชิญเดิมด้านล่างกรณีห้องมีผู้เช่าแล้ว
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **24/24**
+
+---
+
+### Phase 23 (2026-09-24): Multi-Room Switching — เชื่อมโยงฟีเจอร์/ข้อมูลตามห้องที่เลือกทั้งหมด + Security Hardening
+
+- **บริบท**: ผู้ใช้ Report ว่าสลับห้องข้ามตึกใน `/liff/profile` แล้ว "เมนูด่วน"/Feature Toggle ไม่เปลี่ยนตามตึก ขอให้ไล่ตรวจและทำให้ทุกอย่างที่เกี่ยวข้องกับห้อง (ฟีเจอร์, ข้อมูล, ความปลอดภัย, UX ระหว่างโหลด) เชื่อมโยงกันทั้งหมด — ระหว่างทางเจอว่า Backend ที่รันอยู่จริงเป็น Nodemon ตัวเก่าที่ไม่ยอมรีโหลดโค้ดใหม่ (Restart แล้วแก้หาย) และ CORS ไม่ได้อนุญาต Header `X-Building-Id`/`X-Room-Id` ที่ Frontend แนบไปอยู่แล้ว
+- **รวมจุดเขียน Active Room เป็นที่เดียว (`stores/auth.js`)**: เพิ่ม `setActiveRoom(room)` เขียน `active_tenant_room_id`/`active_tenant_building_id`/`liff_target_building` ที่เดียว (เดิมกระจายเขียนซ้ำ 3 จุดใน `LiffProfileView.vue`) เรียกจาก `selectRoom()` และตอนโหลดโปรไฟล์ครั้งแรก, ล้างค่าตอน `clearLiffAuth()` (Logout)
+- **`selectRoom()` เคลียร์ State ห้องเก่าก่อนเสมอ (`LiffProfileView.vue`)**: ล้าง `unpaidInvoices`/`pendingParcels`/`activeMaintenance`/`meterHistory` ก่อนสลับ กันเห็นข้อมูลห้องเก่าค้างแวบหนึ่งระหว่างรอ Fetch ห้องใหม่ — เพิ่ม `switchingRoom` Skeleton ครอบเฉพาะส่วนที่ผูกกับห้อง (แจ้งเตือน/เมนู/ข่าว/รูมเมท/มิเตอร์) ไม่ใช้ Overlay เต็มจอ (Header + รายการห้องยังกดสลับต่อได้ระหว่างโหลด)
+- **Race-Guard กันข้อมูลห้องเก่าทับห้องใหม่**: `fetchLiveActionMetrics()`, `fetchMeterHistory()` เทียบ `selectedRoomId` ก่อน Apply Response, `useAnnouncements.js` เพิ่ม Request-Sequence Guard แบบเดียวกับ `useFeatureStore.js` เดิม (กดสลับห้องรัวๆ Response เก่ามาถึงทีหลัง Response ใหม่จะถูกทิ้ง)
+- **`LiffLayout.vue` Refetch Feature Toggle อัตโนมัติ**: เดิม Fetch ครั้งเดียวตอน Mount เท่านั้น เพิ่ม Refetch ทุกครั้งที่เปลี่ยนหน้า (`watch route.path`) และตอนกลับเข้าแอป (`document.visibilitychange`) ให้แอดมินปิดฟีเจอร์ใน CMS แล้วมีผลกับ LIFF ที่เปิดค้างไว้โดยไม่ต้องปิดแอป (ponytail: Poll ตอนเปลี่ยนหน้า ไม่ใช่ Realtime, ถ้าต้องการทันทีค่อยต่อ SSE/WebSocket)
+- **`route.meta.feature` Guard กัน Deep Link เข้าหน้าที่ปิดฟีเจอร์**: เพิ่ม `meta.feature` ให้ 12 Route ใน `router/index.js` ที่ผูกกับ Feature Toggle (บิล, ประกาศ, พัสดุ, จองพื้นที่, ยานพาหนะ, โหวต, แจ้งซ่อม, ใบเสร็จ, สัญญาเช่า) — `LiffLayout.vue` เช็คก่อน Render `<router-view>` ถ้าปิดอยู่ขึ้นข้อความ "ฟีเจอร์นี้ถูกปิดใช้งานสำหรับอาคารนี้" แทนหน้านั้นเลย (เดิมเข้าผ่านลิงก์ตรง/หน้าที่เปิดค้างไว้ยังใช้งานได้แม้ปิดฟีเจอร์แล้ว)
+- **Backend Companion (`playground-api`, สรุปย่อ — ไม่ได้ลง Log ฝั่งนั้นในรอบนี้)**: ระหว่างไล่ตรวจพบช่องโหว่ IDOR/Account-Takeover หลายจุดที่ไม่เกี่ยวกับ Ticket เดิมแต่แก้ไปพร้อมกัน — เพิ่ม `scopeTenantRooms` Middleware ตรวจว่า `X-Room-Id`/`X-Building-Id` ที่ Client ส่งมาเป็นห้องที่ผู้เช่าคนนั้นมีสิทธิ์จริง (ถือครอง/ผู้อยู่ร่วม ACTIVE/สัญญา ACTIVE) ก่อนใช้ ไม่งั้น Fallback เป็นห้องแรกของตัวเอง, เพิ่ม `requireOwnInvoice` Guard ปิดช่องเปิดบิล/QR/แนบสลิป/PDF ของคนอื่นได้ (เดิม QR ไม่เช็คเลย), ปิดช่องยึดบัญชีคนอื่นผ่าน `sync-profile`/`check-status` ที่ไม่ผ่านการยืนยัน PIN/Invite, เพิ่ม `isFeatureEnabled()` กลางให้ Endpoint ที่เขียนข้อมูล (แจ้งซ่อม/สลิป/โหวต) เช็ค Feature Toggle ระดับ Global ด้วยไม่ใช่แค่ระดับตึก
+- **Dev Environment**: พบว่า `nodemon` ที่รันค้างไม่ยอมรีโหลดโค้ดใหม่ ต้อง Restart `yarn dev:tunnel` ตรงๆ ถึงจะเห็นผล, เพิ่ม `X-Building-Id`/`X-Room-Id`/`X-Line-User-Id` ใน `allowedHeaders` ของ CORS (`playground-api/src/app.js`) ที่ขาดไปตั้งแต่แรกทำให้ Browser Block Request เงียบๆ (ไม่ขึ้น Error ชัดเจนใน UI)
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **24/24** (ไม่มี Regression, Logic หลักที่เพิ่ม Test ใหม่อยู่ฝั่ง Backend), ทดสอบจริงผ่าน Playwright (`headless chrome`) จำลองสลับห้องข้ามตึก ยืนยัน Skeleton ขึ้น/หาย, ข้อมูลห้องเก่าไม่ค้าง, และปิดฟีเจอร์ระดับตึกมีผลกับเมนูจริง
+
+### STATUS: 🟢 COMPLETE & VERIFIED
+
+### ⏭️ งานที่เหลือ (Deferred ตาม YAGNI ไม่ใช่บั๊ก):
+- Fetch ห้องใหม่ล้มเหลว (Network Error) ยังไม่มีปุ่ม Retry แค่ Fail เงียบๆ เหมือน Pattern เดิมของหน้านี้ก่อน Phase นี้
+- Feature Toggle Refetch เป็น Poll ตอนเปลี่ยนหน้า/กลับเข้าแอป ไม่ใช่ Realtime (ตั้งใจ ดู `ponytail:` Comment ใน `LiffLayout.vue`)
+
+---
+
+### Phase 24 (2026-09-24): แก้ Pinia "no active Pinia" / "Failed to fetch dynamically imported module" ผ่าน Cloudflare Tunnel
+
+- **อาการ**: กดสลับเมนูใน LIFF แล้ว `getActivePinia()` was called but there was no active Pinia (`LiffOwnerDashboardView.vue:707`, `LiffLayout.vue:214`) และ `Failed to fetch dynamically imported module .../LiffProfileView.vue` — Store ตัวแรกใน `setup` ผ่าน ตัวที่สองพังเสมอ
+- **Root Cause**: Cloudflare Tunnel ทับ `Cache-Control` ของไฟล์ `.js` ใต้ `/src` (เดิม Vite ส่ง `no-cache`) เป็น `max-age=14400` (4 ชม.) ส่วนไฟล์ `.vue` ไม่โดน — Browser จึงค้าง `main.js`/`auth.js` เก่าที่ Import `pinia.js?v=<hash เก่า>` ปนกับโมดูลที่โหลดใหม่ (`useFeatureStore.js`, `useDashboardStore.js`) ที่ได้ `pinia.js?v=<hash ใหม่>` — Browser มองเป็นคนละโมดูล ได้ Pinia 2 สำเนา, Server ตอบ 200 กับทุกค่า `?v=` จึงไม่เห็นความผิดปกติฝั่ง Server
+- **สมมติฐานที่ตัดทิ้ง**: Vite Optimize Deps re-optimize กลางทาง (แค่ทำให้ Hash เปลี่ยนบ่อยขึ้น ไม่ใช่ต้นเหตุ), Duplicate Package ใน `node_modules` (มีสำเนาเดียว), `main.js` เรียก `app.use(pinia)` ผิด (ถูกต้อง)
+- **แก้ไข (`vite.config.js`)**: เพิ่ม Plugin `dev-src-no-store` (`apply: 'serve'`) บังคับ `Cache-Control: no-store` ให้ทุก Response ใต้ `/src/` — ทดสอบผ่านโดเมนจริงแล้ว `cf-cache-status: BYPASS`; เพิ่ม `optimizeDeps.include` ครบทุก Dependency กัน re-optimize; เพิ่ม `Clear-Site-Data: "cache"` ชั่วคราวบน Response HTML ให้ Browser ทิ้ง `.js` เก่าที่ค้าง (`ponytail:` ลบได้เมื่อทุกเครื่องโหลดใหม่แล้ว, Safari/iOS ไม่รองรับ)
+- **บทเรียน**: ห้ามลบ `node_modules/.vite/deps` ตอน Dev Server ยังรันอยู่ (ทำให้ `deps_temp` ค้างและ `504 Outdated Optimize Dep`), และเจออาการ Module ซ้ำผ่าน Tunnel ให้เทียบ Response Header ระหว่าง `localhost` กับโดเมนจริงก่อน
+- **Build & Test Verification**: `yarn build` ผ่าน (Plugin ใช้เฉพาะ `serve` ไม่กระทบ Production); ยังไม่ได้รัน `yarn vitest run` รอบนี้; **ยังไม่ได้ยืนยันใน Browser/LINE จริงว่า Error หาย** (ทดสอบได้เฉพาะ Header ผ่านโดเมนด้วย curl)
+
+### STATUS: 🟡 FIX APPLIED — รอผู้ใช้ยืนยันใน Browser จริง
+
+### ⏭️ งานที่เหลือ:
+- ผู้ใช้ล้าง Site Data / รีเฟรชหน้า LIFF แล้วยืนยันว่า `pinia.js?v=` เหลือค่าเดียวและ Error หาย
+- ลบบล็อก `Clear-Site-Data` ใน `vite.config.js` หลังทุกเครื่องโหลดใหม่ครบ (เก็บ Plugin `no-store` ไว้)

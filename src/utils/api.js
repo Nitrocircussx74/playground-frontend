@@ -90,6 +90,18 @@ api.interceptors.request.use(
           config.headers['X-Line-Id-Token'] = idToken;
         }
 
+        // แนบ buildingId และ roomId ที่ผู้เช่ากำลังเลือกอยู่ เพื่อให้ Endpoint ฝั่ง LIFF ดึงข้อมูลเฉพาะตึก/ห้องนั้น
+        if (typeof window !== 'undefined') {
+          const activeBuildingId = localStorage.getItem('active_tenant_building_id') || localStorage.getItem('liff_target_building');
+          if (activeBuildingId && !config.headers['X-Building-Id']) {
+            config.headers['X-Building-Id'] = activeBuildingId;
+          }
+          const activeRoomId = localStorage.getItem('active_tenant_room_id');
+          if (activeRoomId && !config.headers['X-Room-Id']) {
+            config.headers['X-Room-Id'] = activeRoomId;
+          }
+        }
+
         // Attach lineUserId fallback สำหรับ Standalone Dev Mode เท่านั้น
         // ห้ามทำงานใน Production เด็ดขาด ป้องกันการปลอม X-Line-User-Id เพื่อสวมรอยผู้ใช้อื่น
         if (import.meta.env.DEV) {

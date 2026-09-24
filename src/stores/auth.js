@@ -17,6 +17,11 @@ export const useAuthStore = defineStore('auth', {
     isWebTenant: false,
     loading: false,
 
+    // ห้อง/ตึกที่ลูกบ้านเลือกอยู่ใน LIFF (Mirror ลง localStorage ให้ api.js แนบเป็น X-Room-Id / X-Building-Id)
+    // Backend ตรวจสิทธิ์ซ้ำเสมอ (scopeTenantRooms) ค่านี้เป็นแค่ "ห้องที่อยากดู" ไม่ใช่สิทธิ์
+    activeRoomId: null,
+    activeBuildingId: null,
+
     // Role Management for Dual-Role / Owner Support
     activeRole: null, // 'owner' | 'tenant'
     availableRoles: [] // Array of available roles e.g. ['owner', 'tenant']
@@ -120,11 +125,28 @@ export const useAuthStore = defineStore('auth', {
       this.tenant = null;
       this.liffToken = null;
       this.isWebTenant = false;
+      this.setActiveRoom(null);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('liff_token');
         localStorage.removeItem('horspace_tenant_token');
         localStorage.removeItem('horspace_tenant_data');
       }
+    },
+
+    /**
+     * ตั้งห้องที่กำลังดูอยู่ (จุดเดียวที่เขียน active_tenant_room_id / active_tenant_building_id)
+     * @param {{ id?: string, buildingId?: string } | null} room ห้องจาก /liff/profile, null = ล้าง (Logout)
+     */
+    setActiveRoom(room) {
+      const buildingId = room?.buildingId || room?.building_id || room?.building?.id || null;
+      this.activeRoomId = room?.id || null;
+      this.activeBuildingId = buildingId;
+      if (typeof window === 'undefined') return;
+      const write = (key, value) => (value ? localStorage.setItem(key, value) : localStorage.removeItem(key));
+      write('active_tenant_room_id', this.activeRoomId);
+      write('active_tenant_building_id', buildingId);
+      // liff_target_building ใช้ตอน Onboarding ด้วย (ลิงก์ ?building=) จึงเขียนทับเฉพาะตอนมีตึกจริง ไม่ลบทิ้ง
+      if (buildingId) localStorage.setItem('liff_target_building', buildingId);
     },
 
     /**

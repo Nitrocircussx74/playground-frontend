@@ -38,3 +38,9 @@
 2. **การรักษามาตรฐานโค้ด**:
    - ตรวจสอบว่า Access Token ไม่หลุดไปเก็บใน LocalStorage
    - รัน `yarn build` เพื่อทดสอบระบบเสมอ
+
+---
+
+## ⚠️ ข้อควรระวัง Dev Tunnel
+
+- Cloudflare Tunnel แคชไฟล์ `.js` ใต้ `/src` ฝั่ง Browser 4 ชม. จนเกิด Pinia 2 สำเนา (`getActivePinia()` ไม่มี) — แก้แล้วด้วย Plugin `dev-src-no-store` ใน `vite.config.js` รายละเอียดใน [AGENTS.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/AGENTS.md) และ Phase 24 ของ [docs/ACTIVITY_LOG.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/docs/ACTIVITY_LOG.md)

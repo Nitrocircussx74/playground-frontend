@@ -358,6 +358,35 @@
               </div>
             </CardContent>
           </Card>
+
+          <!-- Danger Zone Card -->
+          <Card v-if="!isReadOnly && buildingStore.activeBuilding" class="border-rose-200 bg-rose-50/20 shadow-xs rounded-2xl">
+            <CardHeader>
+              <CardTitle class="text-base text-rose-700 flex items-center gap-2">
+                <Trash2 class="w-4 h-4 text-rose-600" />
+                <span>โซนอันตราย (Danger Zone)</span>
+              </CardTitle>
+              <CardDescription class="text-xs text-slate-500">
+                ลบอาคาร/ตึกนี้ออกจากระบบอย่างถาวร (เฉพาะกรณีที่ไม่มีห้องพักคงค้างอยู่)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-bold text-slate-800">ลบอาคาร {{ buildingStore.activeBuilding?.name }}</div>
+                  <div class="text-[11px] text-slate-500">การลบจะนำข้อมูลการตั้งค่าและรายการที่เกี่ยวข้องของอาคารนี้ออก และไม่สามารถกู้คืนได้</div>
+                </div>
+                <button
+                  type="button"
+                  @click="handleDeleteCurrentBuilding"
+                  class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-rose-600/20 flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <Trash2 class="w-3.5 h-3.5" />
+                  <span>ลบอาคารนี้</span>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <!-- Tab 2: การชำระเงิน (Payment Options & Real QR Code) -->
@@ -986,6 +1015,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import LineQuotaCard from '@/components/LineQuotaCard.vue';
 import DeliveryLogsTab from '@/components/DeliveryLogsTab.vue';
 import { THAI_BANKS, findBank } from '@/constants/thaiBanks';
+import { Trash2 } from 'lucide-vue-next';
+import { showSuccess, showError, showConfirm } from '@/utils/swal';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
@@ -1143,7 +1174,7 @@ const lineSettingsValidation = computed(() => {
 
   const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horspace)' : null;
   const liffError = liffId && !/^\d{10}-[A-Za-z0-9_-]{6,}$/.test(liffId) ? 'รูปแบบ LIFF ID ควรเป็นตัวเลข 10 หลักตามด้วยขีด (เช่น 2011289517-SB8YziXL)' : null;
-  const secretError = secret && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
+  const secretError = secret && secret !== '********' && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
 
   return { oaError, liffError, secretError };
 });
@@ -1376,6 +1407,49 @@ const saveSettings = async () => {
     errorMessage.value = err.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
   } finally {
     isSaving.value = false;
+  }
+};
+
+const handleDeleteCurrentBuilding = async () => {
+  const currentBuilding = buildingStore.activeBuilding;
+  if (!currentBuilding) return;
+
+  if (currentBuilding._count?.rooms > 0) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      `อาคาร "${currentBuilding.name}" ยังมีห้องพักผูกอยู่ ${currentBuilding._count.rooms} ห้อง กรุณาย้ายหรือลบห้องพักทั้งหมดออกก่อนทำการลบอาคาร`
+    );
+    return;
+  }
+
+  if (buildingStore.buildings.length <= 1) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      'ระบบต้องมีอาคารอย่างน้อย 1 อาคาร ไม่สามารถลบอาคารสุดท้ายได้'
+    );
+    return;
+  }
+
+  const confirmed = await showConfirm(
+    `ยืนยันการลบ ${currentBuilding.name}?`,
+    'การดำเนินการนี้จะลบข้อมูลอาคารและการตั้งค่าที่เกี่ยวข้องทั้งหมดออกจากระบบ และไม่สามารถย้อนกลับได้',
+    'ลบอาคาร',
+    'ยกเลิก'
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const res = await buildingStore.deleteBuilding(currentBuilding.id);
+    await showSuccess('สำเร็จ!', res?.message || `ลบอาคาร ${currentBuilding.name} เรียบร้อยแล้ว`);
+    if (buildingStore.buildings.length > 0) {
+      buildingStore.setActiveBuildingId(buildingStore.buildings[0].id);
+    }
+  } catch (error) {
+    showError(
+      'เกิดข้อผิดพลาดในการลบอาคาร',
+      error.response?.data?.message || 'ไม่สามารถลบอาคารได้ กรุณาลองใหม่อีกครั้ง'
+    );
   }
 };
 
