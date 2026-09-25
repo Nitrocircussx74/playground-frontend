@@ -155,7 +155,7 @@ watch(() => buildingStore.activeBuildingId, loadData);
 
 const fetchPolls = async (buildingId) => {
   try {
-    const res = await api.get('/api/v1/polls', { params: { buildingId } });
+    const res = await api.get(`/api/v1/buildings/${buildingId}/polls`);
     polls.value = res.data.data;
   } catch (err) {
     console.error(err);
@@ -190,8 +190,7 @@ const handleCreatePoll = async () => {
   }
   submitting.value = true;
   try {
-    await api.post('/api/v1/polls', {
-      buildingId: bId,
+    await api.post(`/api/v1/buildings/${bId}/polls`, {
       question: form.question,
       options: validOpts
     });
@@ -209,7 +208,7 @@ const handleClosePoll = async (pollId) => {
   const isConfirm = await showConfirm('ยืนยันปิดรับโหวต?', 'ลูกบ้านจะไม่สามารถโหวตโพลนี้ได้อีก');
   if (!isConfirm) return;
   try {
-    await api.patch(`/api/v1/polls/${pollId}/close`);
+    await api.patch(`/api/v1/polls/${pollId}`, { isActive: false });
     showSuccess('สำเร็จ', 'ปิดรับโหวตแล้ว');
     loadData();
   } catch (err) {
