@@ -45,21 +45,6 @@ export const useInvoiceStore = defineStore('invoice', {
       }
     },
 
-    async uploadSlip(invoiceId, slipUrl) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      try {
-        const response = await invoiceService.uploadPaymentSlip(invoiceId, { slipUrl });
-        await this.fetchInvoices();
-        return response;
-      } catch (error) {
-        this.errorMessage = error.response?.data?.message || 'Failed to upload slip';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
     async updateStatus(invoiceId, status) {
       this.isLoading = true;
       this.errorMessage = '';
