@@ -153,7 +153,7 @@ const fetchVisitors = async (bId) => {
 
 const handleApprove = async (id) => {
   try {
-    await api.patch(`/api/admin/vehicles/${id}/status`, { status: 'APPROVED' });
+    await api.patch(`/api/admin/vehicles/${id}/approve`);
     showSuccess('สำเร็จ', 'อนุมัติทะเบียนรถเรียบร้อย');
     loadData();
   } catch (error) {
@@ -165,7 +165,7 @@ const handleReject = async (id) => {
   const confirmed = await showConfirm('ยืนยันปฏิเสธ', 'ต้องการปฏิเสธทะเบียนรถนี้ใช่หรือไม่?');
   if (!confirmed) return;
   try {
-    await api.patch(`/api/admin/vehicles/${id}/status`, { status: 'REJECTED' });
+    await api.patch(`/api/admin/vehicles/${id}/reject`);
     showSuccess('สำเร็จ', 'ปฏิเสธทะเบียนรถเรียบร้อย');
     loadData();
   } catch (error) {
