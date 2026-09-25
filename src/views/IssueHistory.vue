@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4 pb-8 font-sans text-slate-800 max-w-lg mx-auto">
+  <div class="space-y-4 pb-8 font-sans text-slate-800">
     <!-- Header -->
     <div class="flex items-center justify-between gap-3 pt-1">
       <div class="min-w-0 flex-1">

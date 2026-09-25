@@ -145,6 +145,32 @@
               />
             </div>
 
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์น้ำวันเข้าพัก</label>
+                <input
+                  v-model="form.initialWaterReading"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="ไม่บังคับ"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์ไฟวันเข้าพัก</label>
+                <input
+                  v-model="form.initialElectricReading"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="ไม่บังคับ"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+                />
+              </div>
+              <p class="col-span-2 text-[11px] text-slate-500">บิลรอบแรกจะคิดหน่วยจากเลขนี้ (มิเตอร์จริงไม่รีเซ็ตเมื่อเปลี่ยนผู้เช่า) ถ้าไม่กรอกจะใช้เลขล่าสุดที่บันทึกไว้</p>
+            </div>
+
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">บันทึกภายใน / หมายเหตุ (Admin Note)</label>
               <input
@@ -216,6 +242,8 @@ const form = reactive({
   startDate: new Date().toISOString().split('T')[0],
   expectedEndDate: '',
   depositAmount: 0,
+  initialWaterReading: '',
+  initialElectricReading: '',
   adminNote: ''
 });
 
@@ -279,6 +307,8 @@ const handleSubmit = async () => {
     form.idCard = '';
     form.roomId = '';
     form.depositAmount = 0;
+    form.initialWaterReading = '';
+    form.initialElectricReading = '';
     form.adminNote = '';
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to onboard tenant');

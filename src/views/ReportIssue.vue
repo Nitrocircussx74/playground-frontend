@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4 pb-8 font-sans text-slate-800 max-w-lg mx-auto">
+  <div class="space-y-4 pb-8 font-sans text-slate-800">
     <!-- Header with Back Button -->
     <div class="flex items-center justify-between pt-1">
       <div class="flex items-center gap-2.5">
