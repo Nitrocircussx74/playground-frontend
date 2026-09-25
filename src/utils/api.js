@@ -90,6 +90,18 @@ api.interceptors.request.use(
           config.headers['X-Line-Id-Token'] = idToken;
         }
 
+        // แนบ buildingId และ roomId ที่ผู้เช่ากำลังเลือกอยู่ เพื่อให้ Endpoint ฝั่ง LIFF ดึงข้อมูลเฉพาะตึก/ห้องนั้น
+        if (typeof window !== 'undefined') {
+          const activeBuildingId = localStorage.getItem('active_tenant_building_id') || localStorage.getItem('liff_target_building');
+          if (activeBuildingId && !config.headers['X-Building-Id']) {
+            config.headers['X-Building-Id'] = activeBuildingId;
+          }
+          const activeRoomId = localStorage.getItem('active_tenant_room_id');
+          if (activeRoomId && !config.headers['X-Room-Id']) {
+            config.headers['X-Room-Id'] = activeRoomId;
+          }
+        }
+
         // Attach lineUserId fallback สำหรับ Standalone Dev Mode เท่านั้น
         // ห้ามทำงานใน Production เด็ดขาด ป้องกันการปลอม X-Line-User-Id เพื่อสวมรอยผู้ใช้อื่น
         if (import.meta.env.DEV) {
@@ -173,7 +185,23 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isLiffRefreshing = true;
 
+      // ผู้เช่าเว็บ (เข้าด้วยเบอร์+PIN ไม่ผ่าน LINE) ไม่มี LINE ID Token ให้ Silent Login — ต่ออายุด้วย Refresh Token Cookie แทน
+      const wasWebTenant = useAuthStore().isWebTenant;
+
       try {
+        if (wasWebTenant) {
+          const refreshRes = await axios.post(`${cleanBaseUrl}/auth/refresh`, {}, { withCredentials: true });
+          const refreshedToken = refreshRes.data?.accessToken;
+          if (!refreshedToken) {
+            throw new Error('ไม่ได้รับ Access Token ใหม่จากการต่ออายุเซสชัน');
+          }
+
+          useAuthStore().setTenantWebAuth(refreshedToken);
+          originalRequest.headers.Authorization = `Bearer ${refreshedToken}`;
+          processLiffQueue(null, refreshedToken);
+          return api(originalRequest);
+        }
+
         await initLiff();
         const idToken = getLiffIdToken();
 
@@ -220,6 +248,11 @@ api.interceptors.response.use(
         const authStore = useAuthStore();
         authStore.clearLiffAuth();
         localStorage.removeItem('dev_line_user_id');
+
+        // ผู้เช่าเว็บที่ต่ออายุไม่ได้ (Refresh Token หมดอายุ/ถูกเพิกถอน) ให้กลับไปหน้าเข้าสู่ระบบ
+        if (wasWebTenant && typeof window !== 'undefined' && window.location.pathname !== '/web/login') {
+          router.push({ path: '/web/login', query: { redirect: window.location.pathname + window.location.search } });
+        }
 
         return Promise.reject(refreshError);
       } finally {

@@ -16,7 +16,7 @@
       </div>
 
       <!-- Action Button: Generate New Invite Code -->
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+      <div v-if="room?.status === 'available'" class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between">
         <div>
           <div class="text-xs font-semibold text-slate-700">สร้าง Invite Code ใหม่ (อายุ 48 ชม.)</div>
           <div class="text-[11px] text-slate-400">สำหรับส่งให้ผู้เช่าสแกนลงทะเบียนผ่าน LINE</div>
@@ -30,6 +30,10 @@
           <Sparkles class="w-3.5 h-3.5" />
           <span>{{ generating ? 'กำลังสร้าง...' : 'สร้างรหัสเชิญ' }}</span>
         </button>
+      </div>
+
+      <div v-else class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800">
+        ห้องนี้มีสถานะ "{{ room?.status === 'occupied' ? 'มีผู้เช่า' : room?.status }}" ไม่สามารถสร้างรหัสเชิญใหม่ได้ (แสดงเฉพาะประวัติรหัสด้านล่าง)
       </div>
 
       <!-- Newly Generated Code Alert Box -->

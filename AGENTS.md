@@ -35,6 +35,7 @@
 - **In-App Notification Bell (Phase 17)**: `NotificationBell.vue` Component เดียวใช้ 2 โหมด (`mode="admin"` ติดใน `App.vue` header ต่อเมื่อเลือกตึกแล้ว, `mode="tenant"` ติดใน `LiffLayout.vue` header หลังป้าย LIFF/Web Portal เฉพาะตอน `showBottomNav` = true) เรียก `src/services/notificationService.js` Poll ทุก 45s ไม่ใช้ WebSocket/SSE — Backend คู่กันดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17
 - **[LiffLayout.test.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/layouts/LiffLayout.test.js)**: เดิมมี 4 เทส Fail เพราะ `mount()` ขาด Pinia Plugin (พบระหว่าง Phase 17) — **แก้แล้ว** (`createTestingPinia()` อยู่ใน `global.plugins` แล้ว ยืนยันผ่าน `yarn vitest run` 7/7 ล่าสุด)
 - **Feature Toggle Fetch ต้องมี `buildingId` เสมอ**: `stores/useFeatureStore.js` `fetchFeatures()` ถ้าไม่ส่ง `buildingId` มา จะ Derive จาก `authStore.tenant` เองอัตโนมัติ (กัน Dual-Role User ที่ Login ทั้ง CMS Admin + LIFF Tenant พร้อมกันได้ Feature Map ผิดตึก) พร้อม Request-Sequence Guard กัน Response เก่ามาทับ Response ใหม่ตอนสลับตึกเร็วๆ — หน้าใหม่ที่ต้องใช้ Feature Toggle ควรพยายามส่ง `buildingId` ที่รู้แน่ชัดมาเองเสมอถ้าทำได้ (Derive อัตโนมัติเป็นแค่ Fallback) ดู `docs/ACTIVITY_LOG.md` Phase 20
+- **สลับห้อง/ตึกใน LIFF (`selectRoom()` ใน `LiffProfileView.vue`)**: จุดเดียวที่เขียน `active_tenant_room_id`/`active_tenant_building_id`/`liff_target_building` คือ `authStore.setActiveRoom(room)` (`stores/auth.js`) ห้ามเขียน `localStorage` เหล่านี้ตรงๆ จากที่อื่นอีก — สลับห้องจะ Clear State ที่ผูกกับห้องเก่าก่อนเสมอ (`unpaidInvoices`/`pendingParcels`/`activeMaintenance`/`meterHistory`) แล้วโชว์ Skeleton เฉพาะส่วนที่ผูกกับห้อง (`switchingRoom`) ระหว่างรอ Fetch ใหม่ — ทุก Fetch ที่ผูกกับห้อง (`fetchLiveActionMetrics`, `fetchMeterHistory`, `useAnnouncements.checkUnread`) มี Race-Guard เทียบ `selectedRoomId`/Sequence Number กัน Response ของห้องเก่ามาถึงทีหลังแล้วทับข้อมูลห้องใหม่ — `LiffLayout.vue` Refetch `featureStore` ทุกครั้งที่เปลี่ยนหน้า/กลับเข้าแอป (`visibilitychange`) และเช็ค `route.meta.feature` ก่อนแสดงเนื้อหา (ขึ้นข้อความ "ฟีเจอร์นี้ถูกปิดใช้งานสำหรับอาคารนี้" แทนหน้า) กัน Deep Link ตรงเข้าหน้าที่ปิดฟีเจอร์ไว้แล้ว — **Backend ต้องตรวจสิทธิ์ห้องซ้ำเสมอ** (`scopeTenantRooms` middleware ใน `playground-api`) ค่า `X-Room-Id`/`X-Building-Id` จาก Client เป็นแค่ "ห้องที่อยากดู" ไม่ใช่สิทธิ์จริง ดู `docs/ACTIVITY_LOG.md` Phase 23
 
 ---
 
@@ -83,6 +84,8 @@ yarn preview
    - Refresh Token บริหารจัดการผ่าน HTTP-Only Cookie จาก Node.js Backend เสมอ
    - กลไก Dev-only Bypass ใดๆ (เช่น `dev_line_user_id`, Header `X-Line-User-Id`) ต้อง Gate ด้วย `import.meta.env.DEV` เสมอ ห้ามมี Mock/Hardcoded User ID หลุดไปกับ Production Build เด็ดขาด
 4. **Language Policy**: ความคิดเห็นในโค้ด (Comments) และเอกสารคำอธิบาย ให้ใช้ **ภาษาไทย** เป็นหลัก
+
+5. **Dev Tunnel Caching (Cloudflare)**: Cloudflare Tunnel ทับ `Cache-Control` ของไฟล์ `.js` ใต้ `/src` เป็น `max-age=14400` ทำให้ Browser ค้างโมดูลเก่าปนโมดูลใหม่ที่ได้ `pinia.js?v=<hash>` ใหม่ จน Pinia แตกเป็น 2 สำเนา (`getActivePinia()` ไม่มี) — `vite.config.js` มี Plugin `dev-src-no-store` บังคับ `no-store` เฉพาะ `serve` ห้ามลบ, ถ้าเจออาการนี้ให้ตรวจ Response Header ผ่านโดเมนจริงก่อนเดา Vite Optimize Deps
 
 ---
 

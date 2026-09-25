@@ -65,7 +65,28 @@
 
     <!-- 2. Main Scrollable Content Area (เลื่อนเฉพาะเนื้อหาข้างใน ไม่กระทบ Header/Footer) -->
     <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto overscroll-y-contain -webkit-overflow-scrolling-touch">
-      <router-view v-slot="{ Component }">
+      <!-- หน้าที่ผูกกับฟีเจอร์ (route.meta.feature) แต่ตึกนี้ปิดไว้ใน CMS: กันไว้จุดเดียว รวมกรณีเปิดลิงก์ตรง/ค้างหน้าเดิม -->
+      <div
+        v-if="disabledFeatureRoute"
+        class="p-5 bg-amber-50 border border-amber-200 rounded-3xl text-amber-900 space-y-3 shadow-xs"
+        role="alert"
+      >
+        <div class="flex items-center gap-2 font-bold text-xs">
+          <AlertTriangle class="w-4 h-4 text-amber-600 shrink-0" />
+          <span>ฟีเจอร์นี้ถูกปิดใช้งานสำหรับอาคารนี้</span>
+        </div>
+        <p class="text-[11px] text-amber-700 leading-relaxed">
+          ผู้ดูแลหอพักปิดการใช้งานส่วนนี้ไว้ หากต้องการความช่วยเหลือกรุณาติดต่อเจ้าหน้าที่โดยตรง
+        </p>
+        <button
+          type="button"
+          class="text-xs font-semibold text-amber-800 underline underline-offset-2 cursor-pointer"
+          @click="router.replace('/liff/profile')"
+        >
+          กลับหน้าแรก
+        </button>
+      </div>
+      <router-view v-else v-slot="{ Component }">
         <transition name="page-fade" mode="out-in">
           <component :is="Component" />
         </transition>
@@ -163,7 +184,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useFeatureStore } from '@/stores/useFeatureStore';
@@ -183,7 +204,8 @@ import {
   RotateCw,
   Sparkles,
   LayoutDashboard,
-  FileText
+  FileText,
+  AlertTriangle
 } from 'lucide-vue-next';
 
 const route = useRoute();
@@ -370,17 +392,30 @@ const handleLogout = async () => {
 // หมายเหตุ: checkUserFriendship() ไม่ได้ผูกกับ watch(route.path) แล้ว เพราะจะยิง LINE SDK
 // getFriendship() ซ้ำทุกครั้งที่สลับแท็บโดยไม่จำเป็น (สถานะเพิ่มเพื่อนไม่ได้เปลี่ยนบ่อยขนาดนั้น)
 // เช็คครั้งเดียวตอนเข้าแอปพอ ผู้ใช้ยังกดปุ่ม "ตรวจสอบอีกครั้ง" เองได้จาก Modal อยู่แล้ว
+const disabledFeatureRoute = computed(() => Boolean(route.meta.feature) && !featureStore.isEnabled(route.meta.feature));
+
+// ดึง Feature Toggle ซ้ำทุกครั้งที่เปลี่ยนหน้า/กลับเข้าแอป ให้การเปิด-ปิดใน CMS มีผลกับ LIFF ที่เปิดค้างไว้โดยไม่ต้องปิดแอป
+// ponytail: poll ตอนเปลี่ยนหน้า ไม่ใช่ realtime, ถ้าต้องการทันทีค่อยต่อ SSE/websocket
+const refreshFeatures = () => featureStore.fetchFeatures(featureStore.buildingId);
+const onVisible = () => {
+  if (document.visibilityState === 'visible') refreshFeatures();
+};
+
 watch(
   () => route.path,
   () => {
     checkUnread();
+    refreshFeatures();
   }
 );
+
+onUnmounted(() => document.removeEventListener('visibilitychange', onVisible));
 
 onMounted(async () => {
   const themeData = await fetchAndApplyTheme();
   const bId = themeData?.buildingId || null;
   await featureStore.fetchFeatures(bId);
+  document.addEventListener('visibilitychange', onVisible);
   checkUserFriendship();
   checkUnread();
 });

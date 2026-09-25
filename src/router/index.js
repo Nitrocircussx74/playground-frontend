@@ -242,19 +242,19 @@ const routes = [
         path: 'invoices',
         name: 'LiffInvoiceList',
         component: () => import('@/views/LiffInvoiceListView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'บิลค่าเช่าทั้งหมด' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'บิลค่าเช่าทั้งหมด', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'invoices/:id',
         name: 'LiffInvoiceDetail',
         component: () => import('@/views/LiffInvoiceDetailView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'รายละเอียดบิล & ชำระเงิน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'รายละเอียดบิล & ชำระเงิน', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'pay/:invoiceId',
         name: 'LiffPayment',
         component: () => import('@/views/LiffPaymentView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ชำระเงินบิลค่าเช่า' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ชำระเงินบิลค่าเช่า', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'register',
@@ -272,7 +272,7 @@ const routes = [
         path: 'announcements',
         name: 'LiffAnnouncements',
         component: () => import('@/views/LiffAnnouncementsView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ข่าวสาร & ประกาศหอพัก' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ข่าวสาร & ประกาศหอพัก', feature: 'ENABLE_ANNOUNCEMENTS' }
       },
       {
         // เดิมเป็นระบบแจ้งซ่อมแยกต่างหาก (LiffMaintenanceView) - ถูก unify รวมกับระบบ issues แล้ว
@@ -284,37 +284,37 @@ const routes = [
         path: 'parcels',
         name: 'LiffParcels',
         component: () => import('@/views/LiffParcelsView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)', feature: 'ENABLE_PARCEL_NOTIFY' }
       },
       {
         path: 'facility-bookings',
         name: 'LiffFacilityBookings',
         component: () => import('@/views/LiffFacilityBookingView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จองพื้นที่ส่วนกลาง' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จองพื้นที่ส่วนกลาง', feature: 'ENABLE_FACILITY_BOOKING' }
       },
       {
         path: 'vehicles',
         name: 'LiffVehicles',
         component: () => import('@/views/LiffVehicleView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการยานพาหนะ/ผู้มาเยือน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการยานพาหนะ/ผู้มาเยือน', feature: 'ENABLE_VEHICLE_MANAGEMENT' }
       },
       {
         path: 'polls',
         name: 'LiffPolls',
         component: () => import('@/views/LiffPollView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'โหวต/แบบสำรวจ' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'โหวต/แบบสำรวจ', feature: 'ENABLE_VOTING' }
       },
       {
         path: 'issues',
         name: 'LiffIssueHistory',
         component: () => import('@/views/IssueHistory.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน', feature: 'ENABLE_MAINTENANCE_REQUEST' }
       },
       {
         path: 'issues/report',
         name: 'LiffReportIssue',
         component: () => import('@/views/ReportIssue.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'แจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แจ้งซ่อมและร้องเรียน', feature: 'ENABLE_MAINTENANCE_REQUEST' }
       },
       {
         path: 'report-issue',
@@ -328,13 +328,13 @@ const routes = [
         path: 'receipts',
         name: 'LiffReceiptHistory',
         component: () => import('@/views/LiffReceiptHistoryView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt', feature: 'ENABLE_RECEIPT_HISTORY' }
       },
       {
         path: 'contract',
         name: 'LiffContract',
         component: () => import('@/views/LiffContractView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'สัญญาเช่าห้องพัก (E-Contract)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'สัญญาเช่าห้องพัก (E-Contract)', feature: 'ENABLE_E_CONTRACT' }
       }
     ]
   },

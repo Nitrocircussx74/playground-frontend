@@ -71,6 +71,22 @@ export const useBuildingStore = defineStore('building', {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    async deleteBuilding(buildingId) {
+      this.isLoading = true;
+      try {
+        const res = await api.delete(`/api/v1/buildings/${buildingId}`);
+        if (this.activeBuildingId === buildingId) {
+          this.setActiveBuildingId('');
+        }
+        await this.fetchBuildings();
+        return res.data;
+      } catch (err) {
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 });

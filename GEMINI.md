@@ -40,3 +40,9 @@
 3. **การทำงานร่วมกับ Claude**:
    - บันทึกรายละเอียดการเปลี่ยนแปลงและรายการไฟล์ลงใน [docs/ACTIVITY_LOG.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/docs/ACTIVITY_LOG.md)
    - อัปเดตข้อมูลการออกแบบใน [AGENTS.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/AGENTS.md) เพื่อให้ Claude นำไปใช้ต่อได้อย่างราบรื่น
+
+---
+
+## ⚠️ ข้อควรระวัง Dev Tunnel
+
+- Cloudflare Tunnel แคชไฟล์ `.js` ใต้ `/src` ฝั่ง Browser 4 ชม. จนเกิด Pinia 2 สำเนา (`getActivePinia()` ไม่มี) — แก้แล้วด้วย Plugin `dev-src-no-store` ใน `vite.config.js` รายละเอียดใน [AGENTS.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/AGENTS.md) และ Phase 24 ของ [docs/ACTIVITY_LOG.md](file:///Users/user/Desktop/playgroud/playground/playground-frontend/docs/ACTIVITY_LOG.md)

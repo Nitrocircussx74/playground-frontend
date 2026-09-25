@@ -336,9 +336,7 @@ watch(() => buildingStore.activeBuildingId, loadData);
 const fetchParcels = async () => {
   try {
     const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
-    const res = await api.get('/api/v1/parcels', {
-      params: { buildingId: bId }
-    });
+    const res = await api.get(`/api/v1/buildings/${bId}/parcels`);
     parcels.value = res.data.data;
   } catch (err) {
     console.error('Fetch parcels failed', err);
@@ -376,10 +374,7 @@ const handleCreateParcel = async () => {
   submitting.value = true;
   try {
     const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
-    await api.post('/api/v1/parcels', {
-      ...form,
-      buildingId: bId
-    });
+    await api.post(`/api/v1/buildings/${bId}/parcels`, form);
     showSuccess('สำเร็จ', 'บันทึกรับพัสดุและส่งแจ้งเตือน LINE เรียบร้อยแล้ว');
     showModal.value = false;
     fetchParcels();
@@ -398,9 +393,7 @@ const handleMarkPickedUp = async (parcelId, roomNum) => {
   if (!isConfirm) return;
 
   try {
-    await api.patch(`/api/v1/parcels/${parcelId}/status`, {
-      status: 'PICKED_UP'
-    });
+    await api.patch(`/api/v1/parcels/${parcelId}/pickup`);
     showSuccess('สำเร็จ', 'อัปเดตสถานะเป็นรับพัสดุแล้ว');
     fetchParcels();
   } catch (err) {

@@ -6,6 +6,8 @@ const STORAGE_KEY = 'liff_read_announcement_ids';
 const unreadCount = ref(0);
 const latestUnreadAnnouncements = ref([]);
 const announcements = ref([]);
+// นับลำดับ Request กัน Response ของตึกเก่ามาถึงทีหลังแล้วทับประกาศของตึกใหม่ (สลับห้องเร็วๆ)
+let checkSeq = 0;
 
 function getReadIds() {
   try {
@@ -21,7 +23,9 @@ export function useAnnouncements() {
     try {
       const params = {};
       if (lineUserId) params.lineUserId = lineUserId;
+      const seq = ++checkSeq;
       const res = await api.get('/api/v1/liff/announcements', { params });
+      if (seq !== checkSeq) return latestUnreadAnnouncements.value;
       const list = res.data?.data || [];
       announcements.value = list;
       const localReadIds = getReadIds();
@@ -33,7 +37,9 @@ export function useAnnouncements() {
           mergedReadIds.add(item.id);
         }
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(mergedReadIds)));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(mergedReadIds)));
+      }
 
       const unreadList = list.filter((item) => !item.isRead && !mergedReadIds.has(item.id));
       latestUnreadAnnouncements.value = unreadList;
@@ -52,7 +58,9 @@ export function useAnnouncements() {
     const readIds = getReadIds();
     if (!readIds.includes(id)) {
       readIds.push(id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(readIds));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(readIds));
+      }
     }
 
     // 2. อัปเดต State ใน Memory ทันทีเพื่อให้ UI เปลี่ยนสถานะเป็น "อ่านแล้ว" ทันที
@@ -81,7 +89,9 @@ export function useAnnouncements() {
     targetIds.forEach((id) => {
       if (!readIds.includes(id)) readIds.push(id);
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(readIds));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(readIds));
+    }
 
     // อัปเดต State ใน Memory
     announcements.value.forEach((a) => {

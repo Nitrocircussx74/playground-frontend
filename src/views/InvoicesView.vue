@@ -151,12 +151,6 @@
                   <div v-if="inv.slipUrl" class="flex items-center gap-1.5">
                     <a :href="inv.slipUrl" target="_blank" class="text-xs text-teal-600 font-semibold hover:underline">View Slip</a>
                   </div>
-                  <div v-else-if="inv.status !== 'paid'" class="flex items-center">
-                    <label class="cursor-pointer text-xs text-slate-500 hover:text-teal-600 font-medium">
-                      <span>+ Upload Slip</span>
-                      <input type="file" class="hidden" accept="image/*" @change="(e) => handleUploadSlip(inv.id, e)" />
-                    </label>
-                  </div>
                   <span v-else class="text-xs text-slate-400">-</span>
                 </td>
                 <td class="p-3.5">
@@ -479,7 +473,6 @@ import {
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
-import uploadService from '@/services/uploadService';
 import api from '@/utils/api';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
@@ -622,19 +615,6 @@ const handleRecordPayment = async () => {
     showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถบันทึกรับชำระเงินได้');
   } finally {
     recordingPayment.value = false;
-  }
-};
-
-const handleUploadSlip = async (invoiceId, event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  try {
-    const uploadRes = await uploadService.uploadFile(file);
-    await invoiceStore.uploadSlip(invoiceId, uploadRes.data.url);
-    await showSuccess('สำเร็จ!', 'อัปโหลดสลิปโอนเงินเรียบร้อยแล้ว');
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to upload slip');
   }
 };
 

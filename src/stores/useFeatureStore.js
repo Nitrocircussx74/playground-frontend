@@ -10,6 +10,7 @@ export const useFeatureStore = defineStore('feature', {
   state: () => ({
     features: [],
     featureMap: {},
+    buildingId: null, // ตึกของ featureMap ปัจจุบัน ให้ LiffLayout ดึงซ้ำตึกเดิมได้ (รวมโหมดพรีวิวของเจ้าของ)
     isLoading: false,
     errorMessage: ''
   }),
@@ -40,9 +41,14 @@ export const useFeatureStore = defineStore('feature', {
         // (Dual-Role User ที่ Login ทั้ง CMS Admin และ LIFF Tenant พร้อมกัน อาจได้ Header เป็น Admin Token
         // แทน Tenant Token แล้วได้ Feature Map ผิดตึก)
         let resolvedBuildingId = buildingId;
+        if (!resolvedBuildingId && typeof window !== 'undefined') {
+          resolvedBuildingId = localStorage.getItem('active_tenant_building_id') || localStorage.getItem('liff_target_building');
+        }
         if (!resolvedBuildingId) {
           const authStore = useAuthStore();
-          resolvedBuildingId = authStore.tenant?.rooms?.[0]?.buildingId || authStore.tenant?.buildingId || null;
+          const activeRoomId = typeof window !== 'undefined' ? localStorage.getItem('active_tenant_room_id') : null;
+          const matchedRoom = activeRoomId ? authStore.tenant?.rooms?.find((r) => r.id === activeRoomId) : null;
+          resolvedBuildingId = matchedRoom?.buildingId || authStore.tenant?.rooms?.[0]?.buildingId || authStore.tenant?.buildingId || null;
         }
 
         const response = await api.get('/api/v1/features', {
@@ -52,6 +58,7 @@ export const useFeatureStore = defineStore('feature', {
         if (requestSeq !== fetchRequestSeq) return; // มี Request ใหม่กว่ายิงตามมาแล้ว ทิ้ง Response เก่านี้
         this.features = response.data.data.features;
         this.featureMap = response.data.data.featureMap;
+        this.buildingId = resolvedBuildingId || null;
       } catch (error) {
         if (requestSeq !== fetchRequestSeq) return;
         console.error('Failed to fetch feature flags:', error);
