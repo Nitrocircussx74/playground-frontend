@@ -131,6 +131,43 @@
             </div>
           </div>
 
+          <!-- เลขมิเตอร์วันเข้าพัก: สัญญาที่ไม่ได้จดตอนสร้าง (เช่น ผู้เช่าลงทะเบียนเองผ่าน Invite Code) ต้องจดทีหลัง ไม่งั้นบิลรอบแรกอาจรวมหน่วยของผู้เช่าคนก่อน -->
+          <div
+            v-if="item.status === 'ACTIVE' && readingDrafts[item.id]"
+            class="mt-2 p-2 rounded-xl border text-[11px] space-y-1.5"
+            :class="hasInitialReadings(item) ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200'"
+          >
+            <div class="font-bold" :class="hasInitialReadings(item) ? 'text-slate-700' : 'text-amber-900'">
+              เลขมิเตอร์วันเข้าพัก
+              <span v-if="!hasInitialReadings(item)" class="font-medium">(ยังไม่ได้จด: บิลรอบแรกอาจรวมหน่วยของผู้เช่าคนก่อน)</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <input
+                v-model="readingDrafts[item.id].water"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="น้ำ"
+                class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+              />
+              <input
+                v-model="readingDrafts[item.id].electric"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="ไฟ"
+                class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+              />
+              <button
+                @click="saveInitialReadings(item)"
+                :disabled="savingReadingId === item.id"
+                class="py-1 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-60 text-white rounded-lg font-bold cursor-pointer"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+
           <div v-if="item.moveOutReason || item.adminNote" class="mt-2 p-2 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
             <div v-if="item.moveOutReason" class="font-medium text-slate-700">
               <span class="font-bold text-slate-800">เหตุผลย้ายออก:</span> {{ item.moveOutReason }}
@@ -213,9 +250,10 @@
 
 <script setup>
 import { FileText, RefreshCw, Search, User, History, LogOut } from 'lucide-vue-next';
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
+import { showSuccess, showError } from '@/utils/swal';
 import { startTour } from '@/utils/tours';
 import { formatDate } from '@/utils/formatters';
 import RoomTenancyHistoryModal from '@/components/RoomTenancyHistoryModal.vue';
@@ -238,6 +276,27 @@ const selectedContractLease = ref(null);
 const activeLeasesCount = computed(() => leases.value.filter((l) => l.status === 'ACTIVE').length);
 const endedLeasesCount = computed(() => leases.value.filter((l) => l.status === 'ENDED').length);
 
+const readingDrafts = reactive({});
+const savingReadingId = ref(null);
+const hasInitialReadings = (l) => l.initialWaterReading != null || l.initialElectricReading != null;
+
+const saveInitialReadings = async (lease) => {
+  const draft = readingDrafts[lease.id];
+  savingReadingId.value = lease.id;
+  try {
+    const res = await api.patch(`/api/admin/leases/${lease.id}/initial-readings`, {
+      initialWaterReading: draft.water,
+      initialElectricReading: draft.electric
+    });
+    Object.assign(lease, res.data.data);
+    await showSuccess('สำเร็จ', 'บันทึกเลขมิเตอร์วันเข้าพักเรียบร้อยแล้ว');
+  } catch (err) {
+    showError('ข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถบันทึกเลขมิเตอร์ได้');
+  } finally {
+    savingReadingId.value = null;
+  }
+};
+
 const fetchLeases = async () => {
   loading.value = true;
   try {
@@ -246,6 +305,9 @@ const fetchLeases = async () => {
       params: { ...(bId && { buildingId: bId }) }
     });
     leases.value = Array.isArray(res.data?.data) ? res.data.data : [];
+    leases.value.forEach((l) => {
+      readingDrafts[l.id] = { water: l.initialWaterReading ?? '', electric: l.initialElectricReading ?? '' };
+    });
   } catch (err) {
     console.error('Failed to fetch leases:', err);
     leases.value = [];
