@@ -384,12 +384,27 @@ async function cmsNavigationGuard(to, from, next) {
   next();
 }
 
+/**
+ * true = Route นี้เป็นของ Web Tenant (ลูกบ้านที่ไม่ใช้ LINE เลย) ต้องข้าม Guard ที่บังคับเปิด LINE App
+ * เดิมเช็คแค่ to.path === '/web/login' — พอ Login สำเร็จแล้ว redirect ไป /liff/invoices ซึ่งไม่มี
+ * meta.isTenantWeb เลย ทำให้โดน Guard ด้านล่างเด้งไปเปิด LINE ทันทีหลัง Login (ทั้งที่ตั้งใจให้ไม่ต้องใช้ LINE)
+ * จึงต้องเช็คด้วยว่ามี Session แบบ Web Tenant อยู่แล้วหรือไม่ (In-memory หรือ localStorage ตอน Refresh หน้าตรงๆ)
+ * แยกเป็นฟังก์ชันเพื่อเทสต์ได้โดยไม่ต้อง Mock LINE SDK ทั้งก้อน
+ */
+export function isWebTenantNavigation(to, authStore) {
+  if (to.path === '/web/login' || to.meta?.isTenantWeb) return true;
+  if (authStore?.isWebTenant) return true;
+  return typeof window !== 'undefined' && Boolean(window.localStorage?.getItem('horspace_tenant_token'));
+}
+
 async function liffNavigationGuard(to, from, next) {
+  const authStore = useAuthStore();
+
   // 📱 0. หากเปิดผ่าน Browser ธรรมดา (ไม่ใช่ LINE App จริง) ให้เด้งไปเปิดผ่าน LINE แทนทันที
   // กัน User สับสน/ติดปัญหา LINE ID Token verify ไม่ได้แบบที่เจอกันมา (LIFF ต้องพึ่ง Session จริงของ LINE
   // เสมอ Browser ธรรมดาไม่มีทางได้ Token จริง) — ข้ามใน Dev Mode ไว้ให้ยังทดสอบผ่าน Browser ด้วย
-  // ?devLineUserId= ได้ตามปกติ, ข้าม /web/login เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
-  const isWebLoginRoute = to.path === '/web/login' || to.meta?.isTenantWeb;
+  // ?devLineUserId= ได้ตามปกติ, ข้าม Web Tenant ทุกหน้า (ไม่ใช่แค่ /web/login) เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
+  const isWebLoginRoute = isWebTenantNavigation(to, authStore);
   if (!import.meta.env.DEV && !isWebLoginRoute && typeof window !== 'undefined') {
     await initLiff();
     if (!isInLiffClient()) {
@@ -455,8 +470,6 @@ async function liffNavigationGuard(to, from, next) {
       console.warn('ไม่สามารถ parse liff.state ได้:', err);
     }
   }
-
-  const authStore = useAuthStore();
 
   // 🌐 หากเป็นหน้า Web Login สำหรับลูกบ้าน
   if (to.path === '/web/login' || to.meta.isTenantWeb) {
