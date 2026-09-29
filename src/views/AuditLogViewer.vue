@@ -7,17 +7,14 @@
         <p class="text-sm text-slate-500">บันทึกประวัติการเข้าใช้งาน การแก้ไข และการลบข้อมูลโดยผู้ดูแลระบบ (Owner Only)</p>
       </div>
 
-      <button
-        @click="fetchLogs"
-        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
-      >
+      <Button variant="outline" @click="fetchLogs" class="self-start sm:self-auto">
         <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
         <span>รีเฟรชประวัติ</span>
-      </button>
+      </Button>
     </div>
 
     <!-- Filters Bar -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+    <Card class="p-4 space-y-3">
       <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
         <Filter class="w-3.5 h-3.5 text-cyan-700" />
         <span>ตัวกรองค้นหา (Filter Activity Logs)</span>
@@ -26,27 +23,19 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Filter Action -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">การกระทำ (Action)</label>
-          <select
-            v-model="filters.action"
-            @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">การกระทำ (Action)</label>
+          <Select v-model="filters.action" @change="handleFilterChange">
             <option value="">ทั้งหมด (All Actions)</option>
             <option value="CREATE">CREATE (เพิ่มข้อมูล)</option>
             <option value="UPDATE">UPDATE (แก้ไขข้อมูล)</option>
             <option value="DELETE">DELETE (ลบข้อมูล)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- Filter Entity -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">โมดูล (Module / Entity)</label>
-          <select
-            v-model="filters.entity"
-            @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">โมดูล (Module / Entity)</label>
+          <Select v-model="filters.entity" @change="handleFilterChange">
             <option value="">ทั้งหมด (All Modules)</option>
             <option value="INVOICE">ใบแจ้งหนี้ (INVOICE)</option>
             <option value="ROOM">ห้องพัก (ROOM)</option>
@@ -54,35 +43,25 @@
             <option value="BUILDING_SETTING">ตั้งค่าตึก (BUILDING_SETTING)</option>
             <option value="USER">แอดมิน (USER)</option>
             <option value="ANNOUNCEMENT">ประกาศ (ANNOUNCEMENT)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- Filter Start Date -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">ตั้งแต่วันที่ (Start Date)</label>
-          <input
-            v-model="filters.startDate"
-            type="date"
-            @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20"
-          />
+          <label class="block text-xs font-semibold text-slate-500 mb-1">ตั้งแต่วันที่ (Start Date)</label>
+          <Input v-model="filters.startDate" type="date" @change="handleFilterChange" />
         </div>
 
         <!-- Filter End Date -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">ถึงวันที่ (End Date)</label>
-          <input
-            v-model="filters.endDate"
-            type="date"
-            @change="handleFilterChange"
-            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20"
-          />
+          <label class="block text-xs font-semibold text-slate-500 mb-1">ถึงวันที่ (End Date)</label>
+          <Input v-model="filters.endDate" type="date" @change="handleFilterChange" />
         </div>
       </div>
-    </div>
+    </Card>
 
     <!-- Error Alert -->
-    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs font-medium flex items-center justify-between">
+    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center justify-between">
       <div class="flex items-center gap-2">
         <AlertCircle class="w-4 h-4 text-rose-600" />
         <span>{{ error }}</span>
@@ -93,7 +72,7 @@
     </div>
 
     <!-- Data Table Panel -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
+    <Card class="overflow-hidden">
       <div v-if="loading && logs.length === 0" class="p-12 text-center text-slate-500">
         <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดบันทึกประวัติการใช้งาน...
@@ -119,9 +98,9 @@
           <tbody class="divide-y divide-slate-100">
             <tr v-for="log in logs" :key="log.id" class="hover:bg-slate-50/80 transition-colors">
               <!-- Timestamp -->
-              <td class="px-6 py-4 font-mono text-[11px] text-slate-600">
+              <td class="px-6 py-4 font-mono text-xs text-slate-600">
                 <div>{{ formatDate(log.createdAt) }}</div>
-                <div class="text-[10px] text-slate-400">{{ formatTime(log.createdAt) }}</div>
+                <div class="text-xs text-slate-400">{{ formatTime(log.createdAt) }}</div>
               </td>
 
               <!-- Admin User -->
@@ -132,39 +111,38 @@
                   </div>
                   <div>
                     <div class="font-bold text-slate-900">{{ log.admin?.name || 'Unknown Admin' }}</div>
-                    <div class="text-[10px] text-cyan-600 font-semibold">{{ log.admin?.email || 'N/A' }}</div>
+                    <div class="text-xs text-cyan-600 font-semibold">{{ log.admin?.email || 'N/A' }}</div>
                   </div>
                 </div>
               </td>
 
               <!-- Action Badge -->
               <td class="px-6 py-4">
-                <span
-                  class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border shadow-2xs inline-flex items-center gap-1.5"
-                  :class="getActionBadgeClass(log.action)"
-                >
+                <Badge :variant="getActionVariant(log.action)" class="uppercase font-extrabold">
                   <component :is="getActionIcon(log.action)" class="w-3 h-3" />
                   <span>{{ log.action }}</span>
-                </span>
+                </Badge>
               </td>
 
               <!-- Module / Entity -->
               <td class="px-6 py-4">
                 <div class="font-bold text-slate-800">{{ log.entity }}</div>
-                <div v-if="log.entityId" class="text-[10px] text-slate-400 font-mono">ID: {{ truncateUuid(log.entityId) }}</div>
+                <div v-if="log.entityId" class="text-xs text-slate-400 font-mono">ID: {{ truncateUuid(log.entityId) }}</div>
               </td>
 
               <!-- View Details / Diff Modal Trigger -->
               <td class="px-6 py-4 text-right">
-                <button
+                <Button
                   v-if="log.oldValues || log.newValues"
+                  variant="outline"
+                  size="sm"
                   @click="openDiffModal(log)"
-                  class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ml-auto cursor-pointer"
+                  class="text-cyan-700 border-cyan-200 hover:bg-cyan-50 ml-auto"
                 >
                   <Search class="w-3.5 h-3.5" />
                   <span>ดูรายละเอียด Diff</span>
-                </button>
-                <span v-else class="text-slate-400 text-[11px] italic">ไม่มีข้อมูล Snapshot</span>
+                </Button>
+                <span v-else class="text-slate-400 text-xs italic">ไม่มีข้อมูล Snapshot</span>
               </td>
             </tr>
           </tbody>
@@ -178,50 +156,49 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             @click="changePage(meta.page - 1)"
             :disabled="meta.page <= 1"
-            class="px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft class="w-3.5 h-3.5" />
             <span>หน้าก่อนหน้า</span>
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             @click="changePage(meta.page + 1)"
             :disabled="meta.page >= meta.totalPages"
-            class="px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 flex items-center gap-1 cursor-pointer"
           >
             <span>หน้าถัดไป</span>
             <ArrowRight class="w-3.5 h-3.5" />
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
 
     <!-- Before / After JSON Diff Modal -->
-    <div v-if="selectedLog" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+    <Dialog :open="!!selectedLog" @update:open="(v) => { if (!v) selectedLog = null }">
+      <DialogContent class="max-w-3xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
         <!-- Modal Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 to-teal-900 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <BarChart3 class="w-5 h-5 text-cyan-300" />
-            <div>
-              <h3 class="font-bold text-base text-white">เปรียบเทียบการเปลี่ยนแปลง (Data Diff Inspection)</h3>
-              <p class="text-xs text-cyan-200">
-                โมดูล {{ selectedLog.entity }} | โดย {{ selectedLog.admin?.name }} ({{ formatDate(selectedLog.createdAt) }})
-              </p>
-            </div>
-          </div>
-          <button @click="selectedLog = null" class="text-cyan-300 hover:text-white p-1 rounded-lg cursor-pointer">
-            <X class="w-5 h-5" />
-          </button>
+        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 to-teal-900 text-white">
+          <DialogHeader>
+            <DialogTitle class="text-white flex items-center gap-2.5">
+              <BarChart3 class="w-5 h-5 text-cyan-300" />
+              <span>เปรียบเทียบการเปลี่ยนแปลง (Data Diff Inspection)</span>
+            </DialogTitle>
+            <DialogDescription v-if="selectedLog" class="text-cyan-200">
+              โมดูล {{ selectedLog.entity }} | โดย {{ selectedLog.admin?.name }} ({{ formatDate(selectedLog.createdAt) }})
+            </DialogDescription>
+          </DialogHeader>
         </div>
 
         <!-- Modal Body: Diff View -->
-        <div class="p-6 overflow-y-auto space-y-4 flex-1">
+        <div v-if="selectedLog" class="p-6 overflow-y-auto space-y-4 flex-1">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Left: Old Values (Before) -->
-            <div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-4 space-y-3">
+            <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-4 space-y-3">
               <div class="text-xs font-bold text-rose-800 uppercase tracking-wider flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
                 <span>ค่าเดิมก่อนดำเนินการ (Before / Old Values)</span>
@@ -238,14 +215,14 @@
                   class="p-2 rounded-lg bg-white/80 border border-rose-100 flex flex-col"
                   :class="isKeyModified(key) ? 'ring-2 ring-amber-400 bg-amber-50/50' : ''"
                 >
-                  <span class="text-[10px] text-slate-500 font-bold uppercase">{{ key }}:</span>
+                  <span class="text-xs text-slate-500 font-bold uppercase">{{ key }}:</span>
                   <span class="font-semibold text-slate-800 break-all">{{ formatValue(val) }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Right: New Values (After) -->
-            <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-3">
+            <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-3">
               <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 <span>ค่าใหม่หลังดำเนินการ (After / New Values)</span>
@@ -262,7 +239,7 @@
                   class="p-2 rounded-lg bg-white/80 border border-emerald-100 flex flex-col"
                   :class="isKeyModified(key) ? 'ring-2 ring-amber-400 bg-amber-50/50' : ''"
                 >
-                  <span class="text-[10px] text-slate-500 font-bold uppercase">{{ key }}:</span>
+                  <span class="text-xs text-slate-500 font-bold uppercase">{{ key }}:</span>
                   <span class="font-semibold text-slate-800 break-all">{{ formatValue(val) }}</span>
                 </div>
               </div>
@@ -271,16 +248,11 @@
         </div>
 
         <!-- Modal Footer -->
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
-          <button
-            @click="selectedLog = null"
-            class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
-          >
-            ปิดหน้าต่าง (Close)
-          </button>
-        </div>
-      </div>
-    </div>
+        <DialogFooter class="px-6 py-4 bg-slate-50 border-t border-slate-100">
+          <Button variant="outline" @click="selectedLog = null">ปิดหน้าต่าง (Close)</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -303,6 +275,12 @@ import {
   ArrowRight,
   BarChart3
 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const logs = ref([]);
 const loading = ref(false);
@@ -389,12 +367,12 @@ const getActionIcon = (action) => {
   }
 };
 
-const getActionBadgeClass = (action) => {
+const getActionVariant = (action) => {
   switch ((action || '').toUpperCase()) {
-    case 'CREATE': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-    case 'UPDATE': return 'bg-amber-100 text-amber-800 border-amber-200';
-    case 'DELETE': return 'bg-rose-100 text-rose-800 border-rose-200';
-    default: return 'bg-slate-100 text-slate-800 border-slate-200';
+    case 'CREATE': return 'success';
+    case 'UPDATE': return 'warning';
+    case 'DELETE': return 'danger';
+    default: return 'neutral';
   }
 };
 

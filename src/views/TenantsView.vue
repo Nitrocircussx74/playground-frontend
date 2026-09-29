@@ -13,53 +13,47 @@
       </div>
 
       <div class="flex items-center gap-2.5">
-        <button
-          @click="showCheckinModal = true"
-          class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
+        <Button @click="showCheckinModal = true">
           <UserPlus class="w-4 h-4" />
-          <span>+ เพิ่มผู้เช่าใหม่ (Walk-in)</span>
-        </button>
+          <span>เพิ่มผู้เช่าใหม่ (Walk-in)</span>
+        </Button>
 
-        <button
-          @click="fetchTenants"
-          class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
-        >
-          <RefreshCw class="w-3.5 h-3.5 text-slate-500" :class="{ 'animate-spin': loading }" />
+        <Button variant="outline" @click="fetchTenants">
+          <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรชข้อมูล</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- Summary Stats Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้เช่าทั้งหมด</div>
+      <Card class="p-4 sm:p-5 space-y-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ผู้เช่าทั้งหมด</div>
         <div class="text-2xl font-extrabold text-slate-900">{{ tenants.length }} คน</div>
-        <div class="text-[10px] text-slate-400">ในฐานข้อมูล</div>
-      </div>
+        <div class="text-xs text-slate-400">ในฐานข้อมูล</div>
+      </Card>
 
-      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">กำลังเช่าอยู่</div>
+      <Card class="p-4 sm:p-5 space-y-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">กำลังเช่าอยู่</div>
         <div class="text-2xl font-extrabold text-emerald-600">{{ activeTenantsCount }} คน</div>
-        <div class="text-[10px] text-slate-400">มีสัญญา Active / อยู่ในห้อง</div>
-      </div>
+        <div class="text-xs text-slate-400">มีสัญญา Active / อยู่ในห้อง</div>
+      </Card>
 
-      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ย้ายออกแล้ว</div>
+      <Card class="p-4 sm:p-5 space-y-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ย้ายออกแล้ว</div>
         <div class="text-2xl font-extrabold text-slate-600">{{ endedTenantsCount }} คน</div>
-        <div class="text-[10px] text-slate-400">สิ้นสุดสัญญาแล้ว</div>
-      </div>
+        <div class="text-xs text-slate-400">สิ้นสุดสัญญาแล้ว</div>
+      </Card>
 
-      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Blacklist</div>
+      <Card class="p-4 sm:p-5 space-y-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Blacklist</div>
         <div class="text-2xl font-extrabold text-rose-600">{{ blacklistedTenantsCount }} คน</div>
-        <div class="text-[10px] text-slate-400">บันทึกเตือนความเสี่ยง</div>
-      </div>
+        <div class="text-xs text-slate-400">บันทึกเตือนความเสี่ยง</div>
+      </Card>
     </div>
 
     <!-- Search & Filter Controls -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+    <Card class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
       <!-- Status Filter Tabs -->
       <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold w-full md:w-auto">
         <button
@@ -94,28 +88,28 @@
 
       <!-- Search Input -->
       <div class="w-full md:w-80 relative">
-        <input
+        <Input
           v-model="searchQuery"
           type="text"
           placeholder="ค้นหาชื่อ, เบอร์โทร, เลขบัตร..."
-          class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+          class="pl-9 text-xs"
         />
-        <span class="absolute left-3 top-2.5 text-slate-400"><Search class="w-4 h-4" /></span>
+        <span class="absolute left-3 top-2.5 text-muted-foreground"><Search class="w-4 h-4" /></span>
       </div>
-    </div>
+    </Card>
 
     <!-- Loading State -->
-    <div v-if="loading" class="p-16 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-3">
+    <Card v-if="loading" class="p-16 text-center space-y-3">
       <div class="w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p class="text-xs text-slate-500 font-medium">กำลังโหลดข้อมูลทะเบียนผู้เช่า...</p>
-    </div>
+    </Card>
 
     <!-- Tenants Grid / Cards -->
     <div v-else-if="filteredTenants.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <div
+      <Card
         v-for="t in filteredTenants"
         :key="t.id"
-        class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-cyan-300 transition-all p-5 flex flex-col justify-between space-y-4 group"
+        class="hover:shadow-md hover:border-cyan-300 transition-all p-5 flex flex-col justify-between space-y-4 group"
       >
         <!-- Card Header with Avatar & Badges -->
         <div class="space-y-3">
@@ -125,11 +119,11 @@
                 v-if="t.linePictureUrl"
                 :src="t.linePictureUrl"
                 :alt="t.firstName"
-                class="w-12 h-12 rounded-2xl object-cover ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
+                class="w-12 h-12 rounded-xl object-cover ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
               />
               <div
                 v-else
-                class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-lg flex items-center justify-center ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
+                class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-lg flex items-center justify-center ring-2 ring-cyan-500/30 shadow-2xs shrink-0"
               >
                 {{ t.firstName ? t.firstName.charAt(0).toUpperCase() : 'U' }}
               </div>
@@ -147,38 +141,23 @@
 
             <!-- Status Badge -->
             <div class="shrink-0">
-              <span
-                v-if="t.isBlacklisted"
-                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200"
-              >
-                Blacklist
-              </span>
-              <span
-                v-else-if="isTenantActive(t)"
-                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200"
-              >
-                กำลังเช่า
-              </span>
-              <span
-                v-else
-                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"
-              >
-                ย้ายออก
-              </span>
+              <Badge v-if="t.isBlacklisted" variant="danger">Blacklist</Badge>
+              <Badge v-else-if="isTenantActive(t)" variant="success">กำลังเช่า</Badge>
+              <Badge v-else variant="neutral">ย้ายออก</Badge>
             </div>
           </div>
 
           <!-- Room and Additional Info -->
-          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/70 text-xs space-y-1.5">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70 text-xs space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-slate-500 text-[11px]">ห้องพักปัจจุบัน:</span>
+              <span class="text-slate-500 text-xs">ห้องพักปัจจุบัน:</span>
               <span v-if="t.rooms && t.rooms.length > 0" class="font-bold text-cyan-800">
                 ห้อง {{ t.rooms.map(r => r.roomNumber).join(', ') }}
               </span>
-              <span v-else class="text-slate-400 italic text-[11px]">ไม่มีห้องพักผูกอยู่</span>
+              <span v-else class="text-slate-400 italic text-xs">ไม่มีห้องพักผูกอยู่</span>
             </div>
 
-            <div v-if="t.lineDisplayName" class="flex items-center justify-between text-[11px]">
+            <div v-if="t.lineDisplayName" class="flex items-center justify-between text-xs">
               <span class="text-slate-500">LINE:</span>
               <span class="text-emerald-600 font-medium truncate max-w-[150px]">@{{ t.lineDisplayName }}</span>
             </div>
@@ -193,15 +172,15 @@
           <User class="w-3.5 h-3.5" /><span>ดูโปรไฟล์ & ประวัติ 360°</span>
           <span>→</span>
         </router-link>
-      </div>
+      </Card>
     </div>
 
     <!-- Empty State -->
-    <div v-else class="p-12 text-center bg-white border border-slate-200 rounded-3xl text-slate-400 space-y-2">
-      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Users class="w-6 h-6" /></div>
+    <Card v-else class="p-12 text-center text-slate-400 space-y-2">
+      <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Users class="w-6 h-6" /></div>
       <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้เช่า</div>
       <p class="text-xs">ลองค้นหาด้วยคำค้นอื่น หรือสลับตัวกรองสถานะ</p>
-    </div>
+    </Card>
     <!-- Manual Walk-in Check-in Modal -->
     <ManualTenantCheckinModal
       :show="showCheckinModal"
@@ -220,6 +199,10 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useRoomStore } from '@/stores/useRoomStore';
 import ManualTenantCheckinModal from '@/components/ManualTenantCheckinModal.vue';
 import { UserPlus, RefreshCw } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 const buildingStore = useBuildingStore();
 const roomStore = useRoomStore();

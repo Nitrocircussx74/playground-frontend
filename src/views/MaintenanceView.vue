@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-5 font-sans">
     <!-- Header & Action Controls -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+    <Card class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5 sm:p-6">
       <div class="space-y-1">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-teal-500/20">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-teal-500/20">
             <Kanban class="w-5 h-5" />
           </div>
           <div>
@@ -23,7 +23,7 @@
 
       <!-- Action Buttons & Quick Stats -->
       <div class="flex flex-wrap items-center gap-2.5">
-        <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs text-slate-600">
+        <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600">
           <span class="font-bold text-slate-900">{{ unifiedTickets.length }}</span> รายการทั้งหมด
           <span class="text-slate-300">|</span>
           <span class="font-bold text-amber-600">{{ pendingList.length }}</span> รอดำเนินการ
@@ -31,72 +31,68 @@
           <span class="font-bold text-emerald-600">{{ resolvedList.length }}</span> เสร็จสิ้น
         </div>
 
-        <button
-          @click="showNewModal = true"
-          class="px-4 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-teal-700 hover:from-cyan-700 hover:to-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
+        <Button @click="showNewModal = true">
           <Plus class="w-4 h-4" />
           <span>สร้างใบแจ้งซ่อมใหม่</span>
-        </button>
+        </Button>
 
-        <button
-          @click="handleRefresh"
-          class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200/80 flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
-          title="รีเฟรชข้อมูล"
-        >
-          <RefreshCw class="w-3.5 h-3.5 text-slate-600" :class="{ 'animate-spin': loading }" />
+        <Button variant="outline" @click="handleRefresh" title="รีเฟรชข้อมูล">
+          <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรช</span>
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
 
     <!-- Filter Pills & Search Bar -->
-    <div class="bg-white p-3.5 sm:p-4 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <Card class="p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
       <!-- Category Filter Pills -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
-        <button
+        <Button
           v-for="cat in categoryFilters"
           :key="cat.value"
+          type="button"
+          size="sm"
+          variant="outline"
           @click="selectedCategory = cat.value"
-          class="px-3.5 py-2 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 shadow-2xs"
-          :class="selectedCategory === cat.value ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-900/10' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/70'"
+          class="shrink-0 font-bold gap-1.5"
+          :class="selectedCategory === cat.value ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'"
         >
           <component :is="cat.icon" class="w-3.5 h-3.5" :class="selectedCategory === cat.value ? 'text-white' : cat.iconClass" />
           <span>{{ cat.label }}</span>
           <span
-            class="px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold"
+            class="px-1.5 py-0.5 rounded-md text-xs font-mono font-bold"
             :class="selectedCategory === cat.value ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-700'"
           >
             {{ cat.count }}
           </span>
-        </button>
+        </Button>
       </div>
 
       <!-- Search Input -->
-      <div class="relative bg-slate-50/80 hover:bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-500/20 rounded-2xl border border-slate-200/80 transition-all flex items-center px-3.5 py-2 min-w-[260px]">
-        <Search class="w-4 h-4 text-slate-400 shrink-0 mr-2" />
-        <input
+      <div class="relative min-w-[260px]">
+        <Input
           v-model="searchQuery"
           type="text"
           placeholder="ค้นหาห้อง, ผู้เช่า, รายละเอียด..."
-          class="w-full text-xs text-slate-800 placeholder:text-slate-400 bg-transparent focus:outline-hidden"
+          class="pl-9 pr-8 text-xs"
         />
+        <span class="absolute left-3 top-2.5 text-muted-foreground"><Search class="w-4 h-4" /></span>
         <button
           v-if="searchQuery"
           @click="searchQuery = ''"
-          class="text-slate-400 hover:text-slate-600 cursor-pointer p-0.5"
+          class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer p-0.5"
         >
           <X class="w-3.5 h-3.5" />
         </button>
       </div>
-    </div>
+    </Card>
 
     <!-- Unified Kanban Board Grid (3 Independent Scrollable Columns) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
       <!-- Column 1: Pending (รอดำเนินการ / รอรับเรื่อง) -->
-      <div class="bg-slate-50/70 rounded-3xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
+      <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
         <!-- Column Header -->
-        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-3xl">
+        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-xl">
           <div class="flex items-center gap-2">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -105,29 +101,24 @@
             <h3 class="font-bold text-slate-800 text-sm">รอรับเรื่อง</h3>
             <span class="text-slate-400 text-xs font-normal">(Pending)</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200/80 shadow-2xs">
-            {{ pendingList.length }}
-          </span>
+          <Badge variant="warning" class="font-mono">{{ pendingList.length }}</Badge>
         </div>
 
         <!-- Cards Container (Scrollable) -->
         <div class="p-3.5 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
-          <div
+          <Card
             v-for="item in pendingList"
             :key="item.uniqueId"
             @click="openDetailModal(item)"
-            class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-amber-400/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer space-y-3 group"
+            class="p-4 hover:shadow-md hover:border-amber-400/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer space-y-3 group"
           >
             <!-- Card Top: Category Badge + Room Pill + Time -->
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 border"
-                  :class="getCategoryBadgeClass(item.category)"
-                >
+                <Badge :variant="getCategoryBadgeVariant(item.category)" class="font-bold">
                   <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
                   <span>{{ getCategoryLabel(item.category) }}</span>
-                </span>
+                </Badge>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
                   <DoorClosed class="w-3 h-3 text-teal-600" />
@@ -135,7 +126,7 @@
                 </span>
               </div>
 
-              <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
+              <span class="text-xs text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
                 <Clock class="w-3 h-3 text-slate-300" />
                 <span>{{ formatRelativeTime(item.createdAt) }}</span>
               </span>
@@ -161,7 +152,7 @@
               />
               <span
                 v-if="item.imageUrls.length > 3"
-                class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 text-[11px] font-bold text-slate-600 flex items-center justify-center shrink-0"
+                class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center shrink-0"
               >
                 +{{ item.imageUrls.length - 3 }}
               </span>
@@ -170,37 +161,39 @@
             <!-- Card Bottom Bar -->
             <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
               <div class="flex items-center gap-1.5 truncate max-w-[140px] text-slate-600">
-                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 shrink-0">
+                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shrink-0">
                   {{ getTenantAvatarInitial(item) }}
                 </div>
                 <span class="truncate font-medium text-slate-700 text-xs">{{ getTenantDisplayName(item) }}</span>
               </div>
 
-              <button
+              <Button
+                size="sm"
+                variant="outline"
+                class="text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
                 @click.stop="handleQuickStatusChange(item, 'in_progress')"
-                class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition-all border border-blue-200 flex items-center gap-1 cursor-pointer active:scale-95"
               >
-                <Zap class="w-3 h-3 text-blue-500" />
+                <Zap class="w-3 h-3" />
                 <span>กำลังทำ</span>
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
 
           <!-- Empty State -->
-          <div v-if="pendingList.length === 0" class="p-8 text-center bg-white/70 rounded-2xl border border-dashed border-slate-200/80 space-y-1.5 my-2">
-            <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto">
+          <Card v-if="pendingList.length === 0" class="p-8 text-center border-dashed border-slate-200/80 shadow-none bg-white/70 space-y-1.5 my-2">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto">
               <Sparkles class="w-4 h-4" />
             </div>
             <p class="text-xs font-bold text-slate-700">ไม่มีรายการรอดำเนินการ</p>
-            <p class="text-[11px] text-slate-400">เมื่อมีรายการใหม่จะปรากฏที่นี่</p>
-          </div>
+            <p class="text-xs text-slate-400">เมื่อมีรายการใหม่จะปรากฏที่นี่</p>
+          </Card>
         </div>
       </div>
 
       <!-- Column 2: In Progress (กำลังดำเนินการ / ส่งช่าง) -->
-      <div class="bg-slate-50/70 rounded-3xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
+      <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
         <!-- Column Header -->
-        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-3xl">
+        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-xl">
           <div class="flex items-center gap-2">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -209,29 +202,24 @@
             <h3 class="font-bold text-slate-800 text-sm">กำลังดำเนินการ</h3>
             <span class="text-slate-400 text-xs font-normal">(In Progress)</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200/80 shadow-2xs">
-            {{ inProgressList.length }}
-          </span>
+          <Badge variant="warning" class="font-mono">{{ inProgressList.length }}</Badge>
         </div>
 
         <!-- Cards Container (Scrollable) -->
         <div class="p-3.5 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
-          <div
+          <Card
             v-for="item in inProgressList"
             :key="item.uniqueId"
             @click="openDetailModal(item)"
-            class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-400/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer space-y-3 group"
+            class="p-4 hover:shadow-md hover:border-blue-400/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer space-y-3 group"
           >
             <!-- Card Top -->
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 border"
-                  :class="getCategoryBadgeClass(item.category)"
-                >
+                <Badge :variant="getCategoryBadgeVariant(item.category)" class="font-bold">
                   <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
                   <span>{{ getCategoryLabel(item.category) }}</span>
-                </span>
+                </Badge>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
                   <DoorClosed class="w-3 h-3 text-teal-600" />
@@ -239,7 +227,7 @@
                 </span>
               </div>
 
-              <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
+              <span class="text-xs text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
                 <Clock class="w-3 h-3 text-slate-300" />
                 <span>{{ formatRelativeTime(item.createdAt) }}</span>
               </span>
@@ -260,72 +248,69 @@
               <UserCheck class="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span class="truncate"><strong>ช่าง:</strong> {{ item.technicianName }}</span>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-3 border-l-blue-500 border-y border-r border-slate-100 text-[11px] text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-3 border-l-blue-500 border-y border-r border-slate-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-blue-700">ตอบแล้ว:</strong> {{ item.adminNote }}
             </div>
 
             <!-- Card Bottom Bar -->
             <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
               <div class="flex items-center gap-1.5 truncate max-w-[140px] text-slate-600">
-                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 shrink-0">
+                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shrink-0">
                   {{ getTenantAvatarInitial(item) }}
                 </div>
                 <span class="truncate font-medium text-slate-700 text-xs">{{ getTenantDisplayName(item) }}</span>
               </div>
 
-              <button
+              <Button
+                size="sm"
+                variant="outline"
+                class="text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100"
                 @click.stop="handleQuickStatusChange(item, 'resolved')"
-                class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold transition-all border border-emerald-200 flex items-center gap-1 cursor-pointer active:scale-95"
               >
-                <CheckCircle2 class="w-3 h-3 text-emerald-600" />
+                <CheckCircle2 class="w-3 h-3" />
                 <span>เสร็จสิ้น</span>
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
 
           <!-- Empty State -->
-          <div v-if="inProgressList.length === 0" class="p-8 text-center bg-white/70 rounded-2xl border border-dashed border-slate-200/80 space-y-1.5 my-2">
-            <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mx-auto">
+          <Card v-if="inProgressList.length === 0" class="p-8 text-center border-dashed border-slate-200/80 shadow-none bg-white/70 space-y-1.5 my-2">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mx-auto">
               <Zap class="w-4 h-4" />
             </div>
             <p class="text-xs font-bold text-slate-700">ไม่มีรายการที่กำลังดำเนินการ</p>
-            <p class="text-[11px] text-slate-400">กดรับเรื่องจากคอลัมน์แรกเพื่อเริ่มงาน</p>
-          </div>
+            <p class="text-xs text-slate-400">กดรับเรื่องจากคอลัมน์แรกเพื่อเริ่มงาน</p>
+          </Card>
         </div>
       </div>
 
       <!-- Column 3: Resolved (เสร็จสิ้น / ปิดเรื่องแล้ว) -->
-      <div class="bg-slate-50/70 rounded-3xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
+      <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
         <!-- Column Header -->
-        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-3xl">
+        <div class="p-4 pb-3 flex items-center justify-between border-b border-slate-200/60 bg-white/70 backdrop-blur-xs rounded-t-xl">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             <h3 class="font-bold text-slate-800 text-sm">เสร็จสิ้นแล้ว</h3>
             <span class="text-slate-400 text-xs font-normal">(Resolved)</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-            {{ resolvedList.length }}
-          </span>
+          <Badge variant="success" class="font-mono">{{ resolvedList.length }}</Badge>
         </div>
 
         <!-- Cards Container (Scrollable) -->
         <div class="p-3.5 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
-          <div
+          <Card
             v-for="item in resolvedList"
             :key="item.uniqueId"
             @click="openDetailModal(item)"
-            class="p-4 bg-white/95 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-400/80 transition-all duration-200 cursor-pointer space-y-3 group"
+            class="p-4 bg-white/95 hover:shadow-md hover:border-emerald-400/80 transition-all duration-200 cursor-pointer space-y-3 group"
           >
             <!-- Card Top -->
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span
-                  class="px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 border"
-                  :class="getCategoryBadgeClass(item.category)"
-                >
+                <Badge :variant="getCategoryBadgeVariant(item.category)" class="font-bold">
                   <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
                   <span>{{ getCategoryLabel(item.category) }}</span>
-                </span>
+                </Badge>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
                   <DoorClosed class="w-3 h-3 text-slate-500" />
@@ -333,7 +318,7 @@
                 </span>
               </div>
 
-              <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
+              <span class="text-xs text-slate-400 font-medium whitespace-nowrap flex items-center gap-0.5">
                 <CheckCircle2 class="w-3 h-3 text-emerald-500" />
                 <span>{{ formatRelativeTime(item.resolvedAt || item.createdAt) }}</span>
               </span>
@@ -359,88 +344,73 @@
                 <span class="font-mono text-emerald-700">฿{{ Number(item.repairCost).toLocaleString() }}</span>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span
-                  class="px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
-                  :class="item.payer === 'TENANT' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-600'"
-                >
+                <Badge :variant="item.payer === 'TENANT' ? 'warning' : 'neutral'">
                   {{ item.payer === 'TENANT' ? 'ลูกบ้านจ่ายเอง' : 'นิติออกให้' }}
-                </span>
-                <span
-                  v-if="item.payer === 'TENANT'"
-                  class="px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
-                  :class="item.billedInvoiceId ? 'bg-emerald-600 text-white' : 'bg-white text-amber-700 border border-amber-200'"
-                >
+                </Badge>
+                <Badge v-if="item.payer === 'TENANT'" :variant="item.billedInvoiceId ? 'success' : 'warning'">
                   {{ item.billedInvoiceId ? 'รวมในบิลแล้ว' : 'รอรวมบิลรอบถัดไป' }}
-                </span>
+                </Badge>
               </div>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-3 border-l-emerald-500 border-y border-r border-emerald-100 text-[11px] text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-3 border-l-emerald-500 border-y border-r border-emerald-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ item.adminNote }}
             </div>
 
             <!-- Card Bottom Bar -->
             <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
               <div class="flex items-center gap-1.5 truncate max-w-[140px] text-slate-500">
-                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 shrink-0">
+                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
                   {{ getTenantAvatarInitial(item) }}
                 </div>
                 <span class="truncate font-medium text-slate-600 text-xs">{{ getTenantDisplayName(item) }}</span>
               </div>
 
-              <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-md font-bold flex items-center gap-1 text-[11px]">
-                <CheckCircle2 class="w-3 h-3 text-emerald-600" />
+              <Badge variant="success">
+                <CheckCircle2 class="w-3 h-3" />
                 <span>ปิดเรื่องแล้ว</span>
-              </span>
+              </Badge>
             </div>
-          </div>
+          </Card>
 
           <!-- Empty State -->
-          <div v-if="resolvedList.length === 0" class="p-8 text-center bg-white/70 rounded-2xl border border-dashed border-slate-200/80 space-y-1.5 my-2">
-            <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto">
+          <Card v-if="resolvedList.length === 0" class="p-8 text-center border-dashed border-slate-200/80 shadow-none bg-white/70 space-y-1.5 my-2">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto">
               <CheckCircle2 class="w-4 h-4" />
             </div>
             <p class="text-xs font-bold text-slate-700">ยังไม่มีงานที่เสร็จสิ้น</p>
-            <p class="text-[11px] text-slate-400">รายการที่ทำเสร็จแล้วจะมาแสดงที่นี่</p>
-          </div>
+            <p class="text-xs text-slate-400">รายการที่ทำเสร็จแล้วจะมาแสดงที่นี่</p>
+          </Card>
         </div>
       </div>
     </div>
 
     <!-- ==================== UNIFIED DETAIL & EDIT MODAL ==================== -->
-    <div v-if="selectedTicket" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs border" :class="getCategoryBadgeClass(selectedTicket.category)">
-              <component :is="getCategoryIcon(selectedTicket.category)" class="w-3.5 h-3.5 inline mr-1" />
+    <Dialog :open="!!selectedTicket" @update:open="(val) => { if (!val) selectedTicket = null }">
+      <DialogContent v-if="selectedTicket" class="max-w-lg">
+        <DialogHeader>
+          <DialogTitle class="flex items-center gap-2 flex-wrap">
+            <Badge :variant="getCategoryBadgeVariant(selectedTicket.category)" class="font-bold">
+              <component :is="getCategoryIcon(selectedTicket.category)" class="w-3.5 h-3.5" />
               {{ getCategoryLabel(selectedTicket.category) }}
-            </span>
+            </Badge>
             <span class="text-xs text-teal-700 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-100 font-mono font-bold flex items-center gap-1">
               <DoorClosed class="w-3.5 h-3.5 text-teal-500" />
               ห้อง {{ selectedTicket.room?.roomNumber || '-' }} {{ selectedTicket.building?.name ? `(${selectedTicket.building.name})` : '' }}
             </span>
-          </div>
-
-          <button
-            @click="selectedTicket = null"
-            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
-          >
-            <X class="w-4 h-4" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         <!-- Tenant Information Card -->
-        <div class="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 flex items-center justify-between text-xs">
+        <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-2xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs shadow-2xs">
+            <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs shadow-2xs">
               {{ getTenantAvatarInitial(selectedTicket) }}
             </div>
             <div>
               <div class="font-bold text-slate-900 text-sm">
                 {{ getTenantDisplayName(selectedTicket) }}
               </div>
-              <div v-if="selectedTicket.tenant?.phone" class="text-slate-500 font-mono text-[11px] flex items-center gap-1">
+              <div v-if="selectedTicket.tenant?.phone" class="text-slate-500 font-mono text-xs flex items-center gap-1">
                 <Phone class="w-3 h-3 text-slate-400" />
                 <span>{{ selectedTicket.tenant.phone }}</span>
               </div>
@@ -448,8 +418,8 @@
           </div>
 
           <div class="text-right">
-            <div class="text-[10px] text-slate-400">วันเวลาที่แจ้ง</div>
-            <div class="font-mono text-slate-700 font-semibold text-[11px]">
+            <div class="text-xs text-slate-400">วันเวลาที่แจ้ง</div>
+            <div class="font-mono text-slate-700 font-semibold text-xs">
               {{ formatDate(selectedTicket.createdAt) }}
             </div>
           </div>
@@ -458,7 +428,7 @@
         <!-- Description Details -->
         <div class="space-y-1.5">
           <label class="block text-xs font-bold text-slate-700">รายละเอียดปัญหา / เรื่องที่แจ้ง:</label>
-          <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs text-slate-800 leading-relaxed whitespace-pre-line">
+          <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-800 leading-relaxed whitespace-pre-line">
             {{ selectedTicket.description || 'ไม่มีรายละเอียด' }}
           </div>
         </div>
@@ -472,7 +442,7 @@
               :key="idx"
               :href="resolveImageUrl(img)"
               target="_blank"
-              class="aspect-square rounded-2xl overflow-hidden border border-slate-200 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 shadow-2xs"
+              class="aspect-square rounded-xl overflow-hidden border border-slate-200 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 shadow-2xs"
             >
               <img :src="resolveImageUrl(img)" class="w-full h-full object-cover" />
             </a>
@@ -485,35 +455,38 @@
           <div class="space-y-1.5">
             <label class="block font-bold text-slate-800">ปรับเปลี่ยนสถานะ:</label>
             <div class="grid grid-cols-3 gap-2">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 @click="editForm.status = 'pending'"
-                class="p-2.5 rounded-xl border font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1"
-                :class="editForm.status === 'pending' ? 'bg-amber-50 border-amber-300 text-amber-900 ring-2 ring-amber-400/30' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                class="h-auto py-2.5 flex-col items-center gap-1 font-bold"
+                :class="editForm.status === 'pending' ? 'bg-amber-50 border-amber-300 text-amber-900 ring-2 ring-amber-400/30' : 'bg-slate-50 text-slate-600'"
               >
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                 <span>รอรับเรื่อง</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 @click="editForm.status = 'in_progress'"
-                class="p-2.5 rounded-xl border font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1"
-                :class="editForm.status === 'in_progress' ? 'bg-blue-50 border-blue-300 text-blue-900 ring-2 ring-blue-400/30' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                class="h-auto py-2.5 flex-col items-center gap-1 font-bold"
+                :class="editForm.status === 'in_progress' ? 'bg-blue-50 border-blue-300 text-blue-900 ring-2 ring-blue-400/30' : 'bg-slate-50 text-slate-600'"
               >
                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                 <span>กำลังดำเนินการ</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 @click="editForm.status = 'resolved'"
-                class="p-2.5 rounded-xl border font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1"
-                :class="editForm.status === 'resolved' ? 'bg-emerald-50 border-emerald-300 text-emerald-900 ring-2 ring-emerald-400/30' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                class="h-auto py-2.5 flex-col items-center gap-1 font-bold"
+                :class="editForm.status === 'resolved' ? 'bg-emerald-50 border-emerald-300 text-emerald-900 ring-2 ring-emerald-400/30' : 'bg-slate-50 text-slate-600'"
               >
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <span>เสร็จสิ้นแล้ว</span>
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -521,23 +494,23 @@
           <div class="grid grid-cols-2 gap-3" v-if="selectedTicket.category === 'REPAIR'">
             <div>
               <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
-              <input
+              <Input
                 v-model="editForm.technicianName"
                 type="text"
                 placeholder="e.g. ช่างสมชาย"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden font-medium"
+                class="font-medium"
               />
             </div>
             <div>
               <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
-              <input
+              <Input
                 v-model.number="editForm.repairCost"
                 type="number"
                 min="0"
                 step="any"
                 placeholder="0.00"
                 :disabled="Boolean(selectedTicket.billedInvoiceId)"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-hidden font-mono disabled:opacity-60 disabled:cursor-not-allowed"
+                class="font-bold font-mono text-emerald-700"
               />
             </div>
 
@@ -545,29 +518,31 @@
             <div class="col-span-2 space-y-1">
               <label class="block font-bold text-slate-800 mb-1">ผู้รับผิดชอบค่าใช้จ่าย</label>
               <div class="grid grid-cols-2 gap-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   @click="editForm.payer = 'MANAGEMENT'"
                   :disabled="Boolean(selectedTicket.billedInvoiceId)"
-                  class="p-2 rounded-xl border font-bold text-center transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                  :class="editForm.payer === 'MANAGEMENT' ? 'bg-slate-800 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                  class="font-bold"
+                  :class="editForm.payer === 'MANAGEMENT' ? 'bg-slate-800 border-slate-800 text-white hover:bg-slate-800' : 'bg-slate-50 text-slate-600'"
                 >
                   นิติออกให้
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="outline"
                   @click="editForm.payer = 'TENANT'"
                   :disabled="Boolean(selectedTicket.billedInvoiceId)"
-                  class="p-2 rounded-xl border font-bold text-center transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                  :class="editForm.payer === 'TENANT' ? 'bg-amber-500 border-amber-500 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                  class="font-bold"
+                  :class="editForm.payer === 'TENANT' ? 'bg-amber-500 border-amber-500 text-white hover:bg-amber-500' : 'bg-slate-50 text-slate-600'"
                 >
                   ลูกบ้านจ่ายเอง
-                </button>
+                </Button>
               </div>
-              <p v-if="editForm.payer === 'TENANT'" class="text-[11px] text-amber-700 font-medium">
+              <p v-if="editForm.payer === 'TENANT'" class="text-xs text-amber-700 font-medium">
                 ค่าซ่อมนี้จะถูกรวมเข้าบิลค่าเช่ารอบถัดไปของห้องนี้โดยอัตโนมัติเมื่อสถานะเป็น "เสร็จสิ้นแล้ว"
               </p>
-              <p v-if="selectedTicket.billedInvoiceId" class="text-[11px] text-emerald-700 font-medium">
+              <p v-if="selectedTicket.billedInvoiceId" class="text-xs text-emerald-700 font-medium">
                 ค่าซ่อมนี้ถูกรวมเข้าบิลไปแล้ว ไม่สามารถแก้ไขค่าซ่อม/ผู้รับผิดชอบได้อีก
               </p>
             </div>
@@ -580,16 +555,18 @@
             </div>
 
             <!-- Quick Template Chips -->
-            <div class="flex items-center gap-1 overflow-x-auto pb-1 text-[11px]">
-              <button
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
+              <Button
                 v-for="(chip, idx) in quickReplyChips"
                 :key="idx"
                 type="button"
+                size="sm"
+                variant="outline"
                 @click="editForm.adminNote = chip"
-                class="px-2.5 py-1 rounded-lg bg-teal-50/70 hover:bg-teal-100 text-teal-700 border border-teal-100 shrink-0 cursor-pointer transition-colors"
+                class="shrink-0 text-teal-700 border-teal-100 bg-teal-50/70 hover:bg-teal-100"
               >
                 + {{ chip }}
-              </button>
+              </Button>
             </div>
 
             <textarea
@@ -602,79 +579,61 @@
 
           <!-- Modal Action Buttons -->
           <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-            <button
+            <Button
               v-if="selectedTicket.sourceType === 'maintenance'"
               type="button"
+              variant="outline"
+              size="sm"
+              class="text-rose-600 border-rose-200 hover:bg-rose-50"
               @click="handleDelete"
-              class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer transition-colors active:scale-95"
             >
               <Trash2 class="w-4 h-4" />
               <span>ลบรายการ</span>
-            </button>
+            </Button>
             <div v-else></div>
 
-            <div class="flex gap-2">
-              <button
-                type="button"
-                @click="selectedTicket = null"
-                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer transition-colors"
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="submit"
-                :disabled="submitting"
-                class="px-5 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl font-bold shadow-md shadow-teal-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
-              >
+            <DialogFooter class="pt-0">
+              <Button type="button" variant="outline" @click="selectedTicket = null">ยกเลิก</Button>
+              <Button type="submit" :disabled="submitting">
                 {{ submitting ? 'กำลังบันทึก...' : 'บันทึก & ตอบกลับ' }}
-              </button>
-            </div>
+              </Button>
+            </DialogFooter>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
 
     <!-- ==================== CREATE MAINTENANCE MODAL ==================== -->
-    <div v-if="showNewModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div class="flex items-center gap-2">
+    <Dialog :open="showNewModal" @update:open="showNewModal = $event">
+      <DialogContent class="max-w-lg">
+        <DialogHeader>
+          <DialogTitle class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
               <Wrench class="w-4 h-4" />
             </div>
-            <h3 class="text-base font-bold text-slate-900">สร้างใบแจ้งซ่อมใหม่ (Manual)</h3>
-          </div>
-          <button
-            @click="showNewModal = false"
-            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
-          >
-            <X class="w-4 h-4" />
-          </button>
-        </div>
+            <span>สร้างใบแจ้งซ่อมใหม่ (Manual)</span>
+          </DialogTitle>
+        </DialogHeader>
 
         <form @submit.prevent="handleCreateSubmit" class="space-y-4 text-xs text-slate-700">
           <div>
             <label class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
-            <select
-              v-model="newForm.roomId"
-              required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden"
-            >
+            <Select v-model="newForm.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
                 ห้อง {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }}
               </option>
-            </select>
+            </Select>
           </div>
 
           <div>
             <label class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
-            <input
+            <Input
               v-model="newForm.title"
               type="text"
               placeholder="e.g. เครื่องปรับอากาศมีเสียงดัง / หลอดไฟห้องน้ำเสีย"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden"
+              class="font-semibold"
             />
           </div>
 
@@ -702,25 +661,15 @@
             </div>
           </div>
 
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              @click="showNewModal = false"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer transition-colors"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              :disabled="submitting || uploading"
-              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-teal-600/20 disabled:opacity-50 cursor-pointer transition-all active:scale-95"
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="showNewModal = false">ยกเลิก</Button>
+            <Button type="submit" :disabled="submitting || uploading">
               {{ submitting ? 'กำลังบันทึก...' : 'สร้างตั๋วแจ้งซ่อม' }}
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -752,6 +701,12 @@ import maintenanceService from '@/services/maintenanceService';
 import api from '@/utils/api';
 import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
 import { formatDateTime as formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -874,7 +829,7 @@ const unifiedTickets = computed(() => {
       rawId: iss.id,
       sourceType: 'issue',
       category: (iss.category || 'OTHER').toUpperCase(),
-      title: iss.category === 'COMPLAINT' 
+      title: iss.category === 'COMPLAINT'
         ? `ข้อร้องเรียนห้อง ${iss.room?.roomNumber || '-'}`
         : (iss.category === 'REPAIR' ? `แจ้งซ่อมห้อง ${iss.room?.roomNumber || '-'}` : `เรื่องอื่นๆ ห้อง ${iss.room?.roomNumber || '-'}`),
       description: iss.description || '',
@@ -947,11 +902,12 @@ const getCategoryIcon = (category) => {
   return HelpCircle;
 };
 
-const getCategoryBadgeClass = (category) => {
+// Badge variant mapping: REPAIR/pending-ish -> warning, COMPLAINT/urgent -> danger, rest -> neutral
+const getCategoryBadgeVariant = (category) => {
   const cat = (category || '').toUpperCase();
-  if (cat === 'REPAIR') return 'bg-amber-50 text-amber-700 border-amber-200/80';
-  if (cat === 'COMPLAINT') return 'bg-rose-50 text-rose-700 border-rose-200/80';
-  return 'bg-cyan-50 text-cyan-700 border-cyan-200/80';
+  if (cat === 'REPAIR') return 'warning';
+  if (cat === 'COMPLAINT') return 'danger';
+  return 'neutral';
 };
 
 // Data Fetching

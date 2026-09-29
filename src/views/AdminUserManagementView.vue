@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <!-- Top Hero Banner & Actions -->
-    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-cyan-800/40">
+    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-xl p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-cyan-800/40">
       <div class="space-y-1">
         <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
             System Administration
           </span>
           <span class="text-xs text-cyan-300 font-medium">RBAC Security Center</span>
@@ -19,85 +19,73 @@
       </div>
 
       <div class="flex items-center gap-3 shrink-0">
-        <button
-          @click="openCreateModal"
-          class="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-cyan-950/50 hover:shadow-cyan-500/30 flex items-center gap-2 border border-cyan-400/30 active:scale-98 cursor-pointer"
-        >
+        <Button class="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 shadow-lg shadow-cyan-950/50 hover:shadow-cyan-500/30 border border-cyan-400/30" @click="openCreateModal">
           <Plus class="w-4 h-4" />
           <span>เพิ่มแอดมินใหม่ (Add User)</span>
-        </button>
+        </Button>
 
-        <button
-          @click="fetchUsers"
-          :disabled="loading"
-          class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md border border-white/15 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-        >
+        <Button variant="ghost" class="bg-white/10 hover:bg-white/20 text-white border border-white/15" :disabled="loading" @click="fetchUsers">
           <RefreshCw :class="['w-4 h-4', loading ? 'animate-spin' : '']" />
           <span class="hidden sm:inline">รีเฟรช</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- KPI Summary Stats Bar -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Stat 1: Total Admins -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">แอดมินทั้งหมด (Total Admins)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">แอดมินทั้งหมด (Total Admins)</div>
           <div class="text-2xl font-black text-slate-900 mt-1 font-mono">{{ users.length }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 text-cyan-600 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-600 flex items-center justify-center">
           <Users class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 2: Owners / Executive Admins -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้บริหาร (Owners / Super)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ผู้บริหาร (Owners / Super)</div>
           <div class="text-2xl font-black text-rose-600 mt-1 font-mono">{{ ownerCount }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center">
           <Crown class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 3: Managers -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้จัดการประจำตึก (Managers)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ผู้จัดการประจำตึก (Managers)</div>
           <div class="text-2xl font-black text-teal-600 mt-1 font-mono">{{ managerCount }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center">
           <UserCheck class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 4: Buildings Count -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">จำนวนหอพักในระบบ</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">จำนวนหอพักในระบบ</div>
           <div class="text-2xl font-black text-emerald-600 mt-1 font-mono">{{ buildings.length }} <span class="text-xs font-semibold text-slate-400">ตึก</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
           <Building2 class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
     </div>
 
     <!-- Search & Filter Toolbar -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <Card class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="relative flex-1 max-w-md">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground z-10">
           <Search class="w-4 h-4" />
         </span>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="ค้นหาตามชื่อ หรืออีเมล..."
-          class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
-        />
+        <Input v-model="searchQuery" type="text" placeholder="ค้นหาตามชื่อ หรืออีเมล..." class="pl-9 pr-8" />
         <button
           v-if="searchQuery"
           @click="searchQuery = ''"
@@ -109,20 +97,21 @@
 
       <!-- Role Filter Buttons -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-        <button
+        <Button
           v-for="filterOption in roleFilterOptions"
           :key="filterOption.value"
+          :variant="selectedRoleFilter === filterOption.value ? 'default' : 'secondary'"
+          size="sm"
+          class="shrink-0"
           @click="selectedRoleFilter = filterOption.value"
-          class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoleFilter === filterOption.value ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
         >
           {{ filterOption.label }}
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
 
     <!-- Error Alert -->
-    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs font-medium flex items-center justify-between shadow-2xs">
+    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center justify-between shadow-2xs">
       <span class="flex items-center gap-2">
         <AlertCircle class="w-4 h-4 text-rose-600" />
         <span>{{ error }}</span>
@@ -133,14 +122,14 @@
     </div>
 
     <!-- User Management Table Panel -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+    <Card class="p-0 overflow-hidden">
       <div v-if="loading && users.length === 0" class="p-12 text-center text-slate-500">
         <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดรายการผู้ใช้งานระบบหลังบ้าน...
       </div>
 
       <div v-else-if="filteredUsers.length === 0" class="p-12 text-center text-slate-400">
-        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2">
+        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2">
           <Search class="w-6 h-6" />
         </div>
         <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้ใช้งานตามเงื่อนไข</div>
@@ -164,7 +153,7 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-white shadow-sm shrink-0 ring-2 ring-white"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-sm shrink-0 ring-2 ring-white"
                     :class="getUserRoleBadgeClass(user.role).bgGradient"
                   >
                     {{ user.name?.slice(0, 2).toUpperCase() || 'AD' }}
@@ -172,9 +161,9 @@
                   <div>
                     <div class="font-bold text-slate-900 text-sm group-hover:text-cyan-700 transition-colors flex items-center gap-1.5">
                       <span>{{ user.name }}</span>
-                      <span v-if="user.id === authStore.currentUser?.id" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-extrabold">คุณ</span>
+                      <span v-if="user.id === authStore.currentUser?.id" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-md text-xs font-extrabold">คุณ</span>
                     </div>
-                    <div class="text-slate-500 text-[11px] font-mono flex items-center gap-1.5 flex-wrap">
+                    <div class="text-slate-500 text-xs font-mono flex items-center gap-1.5 flex-wrap">
                       <span>{{ user.email }}</span>
                       <span v-if="user.phone" class="text-slate-400 font-semibold">• {{ user.phone }}</span>
                     </div>
@@ -185,7 +174,7 @@
               <!-- Role Badge -->
               <td class="px-6 py-4">
                 <span
-                  class="px-3 py-1 rounded-full text-[11px] font-black uppercase border shadow-2xs inline-flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-full text-xs font-black uppercase border shadow-2xs inline-flex items-center gap-1.5"
                   :class="getUserRoleBadgeClass(user.role).badge"
                 >
                   <Crown v-if="isOwnerRole(user.role)" class="w-3.5 h-3.5" />
@@ -197,12 +186,12 @@
 
               <!-- Assigned Buildings Tags -->
               <td class="px-6 py-4">
-                <div v-if="isOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-cyan-50 to-teal-50 text-cyan-800 border border-cyan-200 rounded-xl text-[11px] font-bold shadow-2xs">
+                <div v-if="isOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-cyan-50 to-teal-50 text-cyan-800 border border-cyan-200 rounded-xl text-xs font-bold shadow-2xs">
                   <Globe class="w-3.5 h-3.5 text-cyan-600" />
                   <span>ทุกตึกในระบบ (Full System Access)</span>
                 </div>
 
-                <div v-else-if="isRoomOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-[11px] font-bold shadow-2xs">
+                <div v-else-if="isRoomOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-xs font-bold shadow-2xs">
                   <Key class="w-3.5 h-3.5 text-amber-600" />
                   <span>เฉพาะห้องที่ครอบครองกรรมสิทธิ์ (Room-Scoped Access)</span>
                 </div>
@@ -211,64 +200,60 @@
                   <span
                     v-for="p in user.buildingPermissions"
                     :key="p.id"
-                    class="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                    class="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1"
                   >
                     <Building2 class="w-3 h-3 text-slate-500" />
                     <span>{{ p.building?.name || 'Building' }}</span>
                   </span>
                 </div>
 
-                <div v-else class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-[11px] font-semibold">
+                <div v-else class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold">
                   <AlertCircle class="w-3 h-3 text-amber-600" />
                   <span>ยังไม่ได้เลือกตึก</span>
                 </div>
               </td>
 
               <!-- Created At -->
-              <td class="px-6 py-4 text-slate-500 font-mono text-[11px]">
+              <td class="px-6 py-4 text-slate-500 font-mono text-xs">
                 {{ formatDate(user.createdAt) }}
               </td>
 
               <!-- Action Buttons -->
               <td class="px-6 py-4 text-right space-x-2">
-                <button
-                  @click="openEditModal(user)"
-                  class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer inline-flex items-center gap-1"
-                >
+                <Button variant="outline" size="sm" class="text-teal-700 border-teal-200 hover:bg-teal-50" @click="openEditModal(user)">
                   <Settings class="w-3.5 h-3.5" />
                   <span>แก้ไขสิทธิ์</span>
-                </button>
+                </Button>
 
-                <button
+                <Button
                   v-if="user.id !== authStore.currentUser?.id"
+                  variant="outline"
+                  size="sm"
+                  class="text-rose-700 border-rose-200 hover:bg-rose-50"
                   @click="confirmDeleteUser(user)"
-                  class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer inline-flex items-center gap-1"
                 >
                   <Trash2 class="w-3.5 h-3.5" />
                   <span>ลบ</span>
-                </button>
+                </Button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
 
     <!-- Add / Edit User Modal Dialog -->
-    <div v-if="showModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+    <Dialog :open="showModal" @update:open="showModal = $event">
+      <DialogContent class="max-w-xl p-0 flex flex-col max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Settings v-if="isEditing" class="w-5 h-5 text-cyan-300" />
-            <UserPlus v-else class="w-5 h-5 text-cyan-300" />
-            <h3 class="font-bold text-base text-white">
-              {{ isEditing ? `แก้ไขสิทธิ์ผู้ใช้งาน: ${form.name}` : 'เพิ่มผู้ดูแลระบบใหม่ (Add Admin User)' }}
-            </h3>
-          </div>
-          <button @click="showModal = false" class="text-cyan-300 hover:text-white p-1.5 rounded-lg transition-colors cursor-pointer">
-            <X class="w-4 h-4" />
-          </button>
+        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 text-white">
+          <DialogHeader class="pr-6">
+            <DialogTitle class="text-white flex items-center gap-2">
+              <Settings v-if="isEditing" class="w-5 h-5 text-cyan-300" />
+              <UserPlus v-else class="w-5 h-5 text-cyan-300" />
+              <span>{{ isEditing ? `แก้ไขสิทธิ์ผู้ใช้งาน: ${form.name}` : 'เพิ่มผู้ดูแลระบบใหม่ (Add Admin User)' }}</span>
+            </DialogTitle>
+          </DialogHeader>
         </div>
 
         <!-- Modal Body -->
@@ -277,25 +262,12 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล (Name)</label>
-              <input
-                v-model="form.name"
-                type="text"
-                required
-                placeholder="e.g. สมชาย ใจดี"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-              />
+              <Input v-model="form.name" type="text" required placeholder="e.g. สมชาย ใจดี" />
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">อีเมลเข้าใช้งาน (Email)</label>
-              <input
-                v-model="form.email"
-                type="email"
-                required
-                :disabled="isEditing"
-                placeholder="manager@dorm.com"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 disabled:opacity-60 font-mono"
-              />
+              <Input v-model="form.email" type="email" required :disabled="isEditing" placeholder="manager@dorm.com" class="font-mono" />
             </div>
           </div>
 
@@ -305,50 +277,34 @@
               <label class="block text-xs font-bold text-slate-700 mb-1">
                 เบอร์โทรศัพท์ (สำหรับผูก LINE / SMS)
               </label>
-              <input
-                v-model="form.phone"
-                type="tel"
-                placeholder="0812345678"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
-              />
-              <span class="text-[10px] text-slate-400 mt-0.5 block">ระบุเบอร์เดียวกับที่ผูก LINE เพื่อรับสิทธิ์อัตโนมัติ</span>
+              <Input v-model="form.phone" type="tel" placeholder="0812345678" class="font-mono" />
+              <span class="text-xs text-slate-400 mt-0.5 block">ระบุเบอร์เดียวกับที่ผูก LINE เพื่อรับสิทธิ์อัตโนมัติ</span>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">
                 {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
               </label>
-              <input
-                v-model="form.password"
-                type="password"
-                :required="!isEditing"
-                minlength="6"
-                placeholder="••••••••"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
-              />
+              <Input v-model="form.password" type="password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
             </div>
           </div>
 
           <!-- Role Select -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">เลือกระดับสิทธิ์ (Role)</label>
-            <select
-              v-model="form.role"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-extrabold focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-            >
+            <Select v-model="form.role" required class="font-extrabold">
               <option value="SUPER_ADMIN">SUPER_ADMIN (ผู้ดูแลระบบสูงสุด - Full System Access)</option>
               <option value="OWNER">OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์ระดับเจ้าของดูได้ทุกตึก)</option>
               <option value="ROOM_OWNER">ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
               <option value="MANAGER">MANAGER (ผู้จัดการหอพักประจำตึก)</option>
-            </select>
+            </Select>
           </div>
 
           <!-- CONDITIONAL LOGIC: Building Access Selector for MANAGER -->
           <div v-if="form.role === 'MANAGER'" class="space-y-2 pt-2 border-t border-slate-100">
             <label class="block text-xs font-bold text-slate-900 flex items-center justify-between">
               <span>มอบหมายตึกที่ดูแล (Multi-Select Building Access)</span>
-              <span class="text-[11px] text-cyan-600 font-bold">เลือกได้หลายตึก</span>
+              <span class="text-xs text-cyan-600 font-bold">เลือกได้หลายตึก</span>
             </label>
 
             <div v-if="buildings.length === 0" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-1.5">
@@ -356,7 +312,7 @@
               <span>ไม่พบข้อมูลตึกในระบบ กรุณาเพิ่มตึกก่อนมอบหมายสิทธิ์</span>
             </div>
 
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
               <label
                 v-for="b in buildings"
                 :key="b.id"
@@ -375,44 +331,34 @@
             </div>
           </div>
 
-          <div v-else-if="isSuperAdminRole(form.role)" class="p-3 bg-purple-50 border border-purple-200 rounded-2xl text-xs text-purple-950 font-semibold flex items-center gap-2">
-            <ShieldCheck class="w-4 h-4 text-purple-600 shrink-0" />
-            <span>ระดับสิทธิ์ <span class="font-black text-purple-700">SUPER_ADMIN</span> คือผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งานและเข้าถึงทุกส่วนของระบบ</span>
+          <div v-else-if="isSuperAdminRole(form.role)" class="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 font-semibold flex items-center gap-2">
+            <ShieldCheck class="w-4 h-4 text-slate-700 shrink-0" />
+            <span>ระดับสิทธิ์ <span class="font-black text-slate-900">SUPER_ADMIN</span> คือผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งานและเข้าถึงทุกส่วนของระบบ</span>
           </div>
 
-          <div v-else-if="form.role === 'OWNER'" class="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-950 font-semibold flex items-center gap-2">
+          <div v-else-if="form.role === 'OWNER'" class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-950 font-semibold flex items-center gap-2">
             <Crown class="w-4 h-4 text-rose-600 shrink-0" />
             <span>ระดับสิทธิ์ <span class="font-black text-rose-700">OWNER</span> สามารถเข้าถึงแดชบอร์ดเจ้าของตึก รายได้ และข้อมูลทุกตึกในระบบ</span>
           </div>
 
-          <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 font-semibold flex items-center gap-2">
+          <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950 font-semibold flex items-center gap-2">
             <Key class="w-4 h-4 text-amber-600 shrink-0" />
             <span>ระดับสิทธิ์ <span class="font-black text-amber-700">ROOM_OWNER</span> สามารถเข้าดูและจัดการเฉพาะห้องพักที่ตนเองมีกรรมสิทธิ์ในระบบเท่านั้น</span>
           </div>
 
           <!-- Modal Footer -->
-          <div class="pt-4 flex justify-end gap-3 border-t border-slate-100">
-            <button
-              type="button"
-              @click="showModal = false"
-              class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
-            >
-              ยกเลิก
-            </button>
+          <DialogFooter class="pt-4 border-t border-slate-100">
+            <Button type="button" variant="outline" @click="showModal = false">ยกเลิก</Button>
 
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="px-6 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 transition-all cursor-pointer flex items-center gap-1.5"
-            >
+            <Button type="submit" :disabled="submitting">
               <Save v-if="isEditing" class="w-3.5 h-3.5" />
               <UserPlus v-else class="w-3.5 h-3.5" />
               <span>{{ submitting ? 'กำลังบันทึก...' : (isEditing ? 'บันทึกการแก้ไข' : 'สร้างผู้ใช้งานใหม่') }}</span>
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -441,6 +387,11 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import adminService from '@/services/adminService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import { formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
@@ -552,8 +503,8 @@ const filteredUsers = computed(() => {
 const getUserRoleBadgeClass = (role) => {
   if (isSuperAdminRole(role)) {
     return {
-      badge: 'bg-purple-100 text-purple-800 border-purple-200',
-      bgGradient: 'bg-gradient-to-tr from-purple-600 to-indigo-600'
+      badge: 'bg-slate-200 text-slate-900 border-slate-300',
+      bgGradient: 'bg-gradient-to-tr from-slate-800 to-slate-950'
     };
   }
   if (isOwnerOnlyRole(role)) {

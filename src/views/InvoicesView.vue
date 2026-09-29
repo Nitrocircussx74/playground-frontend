@@ -3,72 +3,73 @@
     <!-- View Navigation Tabs Header -->
     <div class="flex items-center justify-between border-b border-slate-200 pb-3 no-print">
       <div class="flex items-center gap-2">
-        <button
+        <Button
           @click="activeTab = 'all-invoices'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'all-invoices' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :variant="activeTab === 'all-invoices' ? 'default' : 'outline'"
+          class="shadow-md shadow-cyan-600/30"
         >
           <Receipt class="w-4 h-4" />
           <span>ใบแจ้งหนี้ทั้งหมด (All Invoices)</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           @click="activeTab = 'draft-review'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          :variant="activeTab === 'draft-review' ? 'default' : 'outline'"
+          class="shadow-md shadow-cyan-600/30"
         >
           <FileEdit class="w-4 h-4" />
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
-        </button>
+        </Button>
       </div>
 
       <div class="flex items-center gap-2">
-        <button
+        <Button
           v-if="activeTab === 'all-invoices'"
           @click="handleRunLateFees"
           :disabled="runningLateFees"
-          class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          variant="outline"
+          class="bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200"
           title="สั่งคำนวณและอัปเดตค่าปรับบิลค้างชำระอัตโนมัติตามนโยบายแต่ละตึก"
         >
           <span v-if="runningLateFees" class="animate-spin w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full"></span>
           <Zap v-else class="w-3.5 h-3.5" />
           <span>{{ runningLateFees ? 'กำลังคำนวณ...' : 'คำนวณค่าปรับ' }}</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="activeTab === 'all-invoices'"
           @click="handleExportCsv"
           :disabled="exportingCsv"
-          class="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          variant="outline"
           title="Export รายงานบิลรายเดือนเป็น CSV (รองรับ Excel)"
         >
           <Download v-if="!exportingCsv" class="w-3.5 h-3.5" />
           <span v-if="exportingCsv" class="animate-spin w-3.5 h-3.5 border-2 border-slate-500 border-t-transparent rounded-full"></span>
           <span>Export CSV</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="activeTab === 'all-invoices'"
           @click="handleRemindBulk"
           :disabled="unpaidCount === 0 || sendingBulkReminder"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
+          class="bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/20"
           title="ส่ง LINE Flex Message แจ้งเตือนไปยังลูกบ้านที่ค้างชำระทั้งหมด"
         >
           <Send class="w-4 h-4" />
           <span>ส่ง LINE เตือนยอดค้างทั้งหมด</span>
-          <span v-if="unpaidCount > 0" class="px-1.5 py-0.2 bg-emerald-800 text-white text-[11px] rounded-full font-bold ml-0.5">
+          <Badge v-if="unpaidCount > 0" variant="neutral" class="bg-emerald-800 text-white ml-0.5">
             {{ unpaidCount }}
-          </span>
-        </button>
+          </Badge>
+        </Button>
 
-        <button
+        <Button
           v-if="activeTab === 'all-invoices'"
           @click="openCreateModal"
-          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer"
+          class="bg-teal-600 hover:bg-teal-700 shadow-sm shadow-teal-600/20"
         >
           <Plus class="w-4 h-4" />
           <span>ออกบิลปรับแต่ง (Custom Invoice)</span>
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -79,18 +80,18 @@
 
     <!-- Tab 1: Invoices Table -->
     <div v-else class="space-y-6">
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+      <Card class="overflow-hidden">
         <div class="p-4 border-b border-slate-200 flex items-center justify-between no-print">
           <div class="flex items-center gap-3">
             <h3 class="font-bold text-slate-900 text-sm">All Invoices & Payments</h3>
-            <span v-if="unpaidCount > 0" class="px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+            <Badge v-if="unpaidCount > 0" variant="warning">
               ค้างชำระ {{ unpaidCount }} รายการ
-            </span>
+            </Badge>
           </div>
-          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-teal-600 hover:underline font-semibold cursor-pointer flex items-center gap-1">
+          <Button variant="link" size="sm" @click="invoiceStore.fetchInvoices()" class="text-teal-600">
             <RotateCw class="w-3.5 h-3.5" />
             <span>รีเฟรช</span>
-          </button>
+          </Button>
         </div>
 
         <div class="overflow-x-auto">
@@ -120,7 +121,7 @@
                 <td class="p-3.5 text-xs text-slate-600 font-medium">
                   <div class="flex items-center gap-1">
                     <span>{{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}</span>
-                    <span v-if="inv.tenant?.lineUserId" class="text-[10px] text-emerald-600 bg-emerald-50 px-1 rounded border border-emerald-200" title="ผูกบัญชี LINE แล้ว">LINE</span>
+                    <Badge v-if="inv.tenant?.lineUserId" variant="success" title="ผูกบัญชี LINE แล้ว">LINE</Badge>
                   </div>
                 </td>
                 <td class="p-3.5 font-mono text-xs text-slate-600">{{ inv.billingCycle }}</td>
@@ -128,22 +129,22 @@
                 <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.waterTotal).toLocaleString() }}</td>
                 <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.electricTotal).toLocaleString() }}</td>
                 <td class="p-3.5 font-mono text-xs">
-                  <span v-if="Number(inv.commonFee) === 0" class="text-emerald-600 font-semibold px-2 py-0.5 bg-emerald-50 rounded-md text-[11px]">
+                  <Badge v-if="Number(inv.commonFee) === 0" variant="success">
                     ฿0 (ฟรี)
-                  </span>
+                  </Badge>
                   <span v-else>฿{{ Number(inv.commonFee).toLocaleString() }}</span>
                 </td>
                 <td class="p-3.5 text-xs">
                   <div v-if="Number(inv.otherFee) > 0">
                     <span class="font-mono font-semibold text-teal-700">฿{{ Number(inv.otherFee).toLocaleString() }}</span>
-                    <div v-if="inv.otherFeeNote" class="text-[10px] text-slate-400 truncate max-w-28">{{ inv.otherFeeNote }}</div>
+                    <div v-if="inv.otherFeeNote" class="text-xs text-slate-400 truncate max-w-28">{{ inv.otherFeeNote }}</div>
                   </div>
                   <span v-else class="text-slate-300">-</span>
                 </td>
                 <td class="p-3.5 font-mono text-xs">
-                  <span v-if="Number(inv.lateFeeCharge) > 0" class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                  <Badge v-if="Number(inv.lateFeeCharge) > 0" variant="danger">
                     +฿{{ Number(inv.lateFeeCharge).toLocaleString() }}
-                  </span>
+                  </Badge>
                   <span v-else class="text-slate-300">-</span>
                 </td>
                 <td class="p-3.5 font-mono font-black text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
@@ -154,69 +155,70 @@
                   <span v-else class="text-xs text-slate-400">-</span>
                 </td>
                 <td class="p-3.5">
-                  <span
-                    class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1"
-                    :class="{
-                      'bg-emerald-100 border-emerald-300 text-emerald-800': inv.status === 'paid',
-                      'bg-amber-100 border-amber-300 text-amber-800': inv.status === 'pending',
-                      'bg-blue-100 border-blue-300 text-blue-800': inv.status === 'reviewing',
-                      'bg-rose-100 border-rose-300 text-rose-800': inv.status === 'overdue'
-                    }"
-                  >
+                  <Badge :variant="statusBadgeVariant(inv.status)" class="font-extrabold">
                     <component :is="inv.status === 'paid' ? CheckCircle2 : Clock" class="w-3 h-3" />
                     <span>{{ inv.status.toUpperCase() }}</span>
-                  </span>
+                  </Badge>
                 </td>
                 <td class="p-3.5 text-right space-x-1.5">
                   <!-- LINE Reminder Button (For Non-Paid Invoices) -->
-                  <button
+                  <Button
                     v-if="inv.status !== 'paid'"
                     @click="handleRemindSingle(inv)"
                     :disabled="sendingReminderId === inv.id"
-                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50 inline-flex items-center gap-1"
+                    variant="outline"
+                    size="sm"
+                    class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-300"
                     :title="inv.tenant?.lineUserId ? 'ส่ง LINE แจ้งเตือนบิลค้างชำระ' : 'ลูกบ้านยังไม่ผูก LINE'"
                   >
                     <Send class="w-3.5 h-3.5" />
                     <span>{{ sendingReminderId === inv.id ? 'กำลังส่ง...' : 'เตือน LINE' }}</span>
-                  </button>
+                  </Button>
 
                   <!-- Manual Record Payment Button (For Non-Paid Invoices) -->
-                  <button
+                  <Button
                     v-if="inv.status !== 'paid'"
                     @click="openPaymentModal(inv)"
-                    class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer inline-flex items-center gap-1"
+                    size="sm"
+                    class="bg-emerald-600 hover:bg-emerald-700"
                   >
                     <Banknote class="w-3.5 h-3.5" />
                     <span>รับเงินสด</span>
-                  </button>
+                  </Button>
 
                   <!-- Print Invoice / Receipt Button -->
-                  <button
+                  <Button
                     @click="openPrintModal(inv)"
-                    class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer inline-flex items-center gap-1"
+                    variant="outline"
+                    size="sm"
+                    class="bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200"
                   >
                     <Printer class="w-3.5 h-3.5" />
                     <span>พิมพ์บิล</span>
-                  </button>
+                  </Button>
 
                   <!-- Edit Invoice Button -->
-                  <button
+                  <Button
                     v-if="inv.status !== 'paid'"
                     @click="openEditModal(inv)"
-                    class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer inline-flex items-center gap-1"
+                    variant="outline"
+                    size="sm"
+                    class="bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200"
                   >
                     <Edit3 class="w-3.5 h-3.5" />
                     <span>แก้ไข</span>
-                  </button>
+                  </Button>
 
                   <!-- PDF Export Button -->
-                  <button
+                  <Button
                     @click="invoiceStore.exportPdf(inv.id, inv.invoiceNumber)"
-                    class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer inline-flex items-center gap-1"
+                    variant="outline"
+                    size="sm"
+                    class="bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
                   >
                     <FileText class="w-3.5 h-3.5" />
                     <span>PDF</span>
-                  </button>
+                  </Button>
                 </td>
               </tr>
               <tr v-if="invoiceStore.invoices.length === 0">
@@ -225,7 +227,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       <!-- Edit / Create Custom Invoice Modal -->
       <EditInvoiceModal
@@ -237,20 +239,19 @@
       />
 
       <!-- Record Manual Payment Dialog Modal -->
-      <div v-if="showPaymentModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-          <div class="px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-800 text-white flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <Banknote class="w-5 h-5" />
-              <h3 class="font-bold text-base text-white">บันทึกรับชำระเงิน (Record Payment)</h3>
-            </div>
-            <button @click="showPaymentModal = false" class="text-emerald-200 hover:text-white p-1 rounded-lg cursor-pointer">
-              <X class="w-5 h-5" />
-            </button>
+      <Dialog :open="showPaymentModal" @update:open="showPaymentModal = $event">
+        <DialogContent class="max-w-md p-0 overflow-hidden no-print">
+          <div class="px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-800 text-white">
+            <DialogHeader class="pr-6">
+              <DialogTitle class="text-white flex items-center gap-2">
+                <Banknote class="w-5 h-5" />
+                <span>บันทึกรับชำระเงิน (Record Payment)</span>
+              </DialogTitle>
+            </DialogHeader>
           </div>
 
           <form @submit.prevent="handleRecordPayment" class="p-6 space-y-4">
-            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center space-y-1">
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center space-y-1">
               <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">ยอดเงินที่ต้องรับชำระ (Total Payable)</div>
               <div class="text-3xl font-black text-emerald-700 font-mono">
                 ฿{{ Number(payingInvoice?.grandTotal || 0).toLocaleString() }}
@@ -262,52 +263,48 @@
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">ช่องทางการชำระเงิน (Payment Method)</label>
-              <select
-                v-model="paymentForm.paymentMethod"
-                required
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20"
-              >
+              <Select v-model="paymentForm.paymentMethod" required class="font-bold">
                 <option value="CASH">เงินสดผ่านเคาน์เตอร์ (Cash)</option>
                 <option value="PROMPTPAY">พร้อมเพย์ / สแกน QR (PromptPay)</option>
                 <option value="BANK_TRANSFER">โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
-              </select>
+              </Select>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุการชำระเงิน (Payment Note - Optional)</label>
-              <input
+              <Input
                 v-model="paymentForm.note"
                 type="text"
                 placeholder="เช่น รับเงินสดแบงก์ 5,000 บาท ทอน 200 บาท"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
 
-            <div class="pt-3 flex gap-3">
-              <button
+            <DialogFooter class="pt-3">
+              <Button
                 type="button"
+                variant="outline"
+                class="flex-1"
                 @click="showPaymentModal = false"
-                class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
                 ยกเลิก
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 :disabled="recordingPayment"
-                class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+                class="flex-1 bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20"
               >
                 <CheckCircle2 class="w-4 h-4" />
                 <span>{{ recordingPayment ? 'กำลังบันทึก...' : 'บันทึกรับเงิน' }}</span>
-              </button>
-            </div>
+              </Button>
+            </DialogFooter>
           </form>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       <!-- Printable Invoice/Receipt Teleport Modal -->
       <teleport to="body">
         <div v-if="showPrintModal" id="print-modal-root" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+          <Card class="w-full max-w-2xl overflow-hidden my-8 p-0 animate-in fade-in zoom-in-95 duration-150">
             <!-- Print Toolbar Bar (Hidden during window.print) -->
             <div class="px-6 py-3 bg-slate-900 text-white flex items-center justify-between no-print">
               <div class="flex items-center gap-2">
@@ -316,23 +313,20 @@
               </div>
 
               <div class="flex items-center gap-2">
-                <button
-                  @click="triggerPrint"
-                  class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-                >
+                <Button @click="triggerPrint" size="sm" class="bg-cyan-600 hover:bg-cyan-700">
                   <Printer class="w-3.5 h-3.5" />
                   <span>สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
-                </button>
-                <button @click="showPrintModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">
+                </Button>
+                <Button @click="showPrintModal = false" variant="ghost" size="icon" class="text-slate-400 hover:text-white hover:bg-transparent h-auto w-auto p-1">
                   <X class="w-5 h-5" />
-                </button>
+                </Button>
               </div>
             </div>
 
             <!-- Print Content Paper Box -->
             <div id="printable-receipt" class="p-8 bg-white text-slate-900 font-sans space-y-6 relative border-t-4 border-cyan-600">
               <!-- Watermark Stamp for PAID -->
-              <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-2xl font-black text-3xl uppercase tracking-widest text-center select-none">
+              <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-xl font-black text-3xl uppercase tracking-widest text-center select-none">
                 ชำระเงินแล้ว<br/><span class="text-lg font-bold">PAID OFFICIAL</span>
               </div>
 
@@ -349,16 +343,16 @@
                 </div>
 
                 <div class="text-right">
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">เลขที่เอกสาร / No.</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">เลขที่เอกสาร / No.</div>
                   <div class="text-base font-black font-mono text-cyan-900">{{ printingInvoice?.invoiceNumber }}</div>
                   <div class="text-xs text-slate-500 font-mono mt-1">วันที่ออกบิล: {{ formatDate(printingInvoice?.createdAt) }}</div>
                 </div>
               </div>
 
               <!-- Tenant & Room Info -->
-              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
                 <div>
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">ข้อมูลผู้เช่า / Tenant Information</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">ข้อมูลผู้เช่า / Tenant Information</div>
                   <div class="font-bold text-slate-900 text-sm mt-0.5">
                     {{ printingInvoice?.tenant ? `${printingInvoice.tenant.firstName} ${printingInvoice.tenant.lastName}` : 'ผู้เช่าห้องพัก' }}
                   </div>
@@ -366,7 +360,7 @@
                 </div>
 
                 <div class="text-right">
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">ห้องพัก & รอบบิล / Room & Cycle</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">ห้องพัก & รอบบิล / Room & Cycle</div>
                   <div class="font-extrabold text-slate-900 text-sm mt-0.5">ห้อง {{ printingInvoice?.room?.roomNumber }}</div>
                   <div class="text-cyan-700 font-bold font-mono mt-0.5">ประจำรอบบิล: {{ printingInvoice?.billingCycle }}</div>
                 </div>
@@ -422,31 +416,31 @@
               <!-- Payment Status Footer -->
               <div class="pt-4 border-t border-slate-200 flex justify-between items-end text-xs">
                 <div>
-                  <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">สถานะการชำระเงิน</div>
+                  <div class="text-xs text-slate-400 font-bold uppercase mb-1">สถานะการชำระเงิน</div>
                   <div v-if="printingInvoice?.status === 'paid'" class="text-emerald-700 font-bold flex items-center gap-1.5">
                     <CheckCircle2 class="w-4 h-4 text-emerald-600 inline-block" />
                     <span>ชำระเงินเรียบร้อยแล้ว</span>
-                    <span class="px-2 py-0.5 bg-emerald-100 rounded-md text-[10px] font-extrabold uppercase font-mono border border-emerald-200">
+                    <Badge variant="success" class="font-extrabold font-mono">
                       {{ printingInvoice.paymentMethod || 'CASH' }}
-                    </span>
-                    <span v-if="printingInvoice.paidAt" class="text-slate-500 font-mono text-[10px]">({{ formatDate(printingInvoice.paidAt) }})</span>
+                    </Badge>
+                    <span v-if="printingInvoice.paidAt" class="text-slate-500 font-mono text-xs">({{ formatDate(printingInvoice.paidAt) }})</span>
                   </div>
                   <div v-else class="text-amber-700 font-bold flex items-center gap-1.5">
                     <Clock class="w-4 h-4 text-amber-600 inline-block" />
                     <span>รอชำระเงิน (กำหนดชำระ: {{ formatDate(printingInvoice?.dueDate) }})</span>
                   </div>
-                  <div v-if="printingInvoice?.paymentNote" class="text-slate-500 italic mt-1 text-[11px]">
+                  <div v-if="printingInvoice?.paymentNote" class="text-slate-500 italic mt-1 text-xs">
                     หมายเหตุ: {{ printingInvoice.paymentNote }}
                   </div>
                 </div>
 
                 <div class="text-center w-44 pt-4">
                   <div class="border-b border-dashed border-slate-400 mb-1"></div>
-                  <div class="text-[10px] text-slate-500 font-semibold">ผู้รับเงิน / Authorized Signature</div>
+                  <div class="text-xs text-slate-500 font-semibold">ผู้รับเงิน / Authorized Signature</div>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </teleport>
     </div>
@@ -468,7 +462,8 @@ import {
   Banknote,
   Printer,
   Edit3,
-  FileText
+  FileText,
+  X
 } from 'lucide-vue-next';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
@@ -478,6 +473,12 @@ import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import { formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const activeTab = ref('all-invoices');
 const runningLateFees = ref(false);
@@ -553,6 +554,13 @@ const sendingBulkReminder = ref(false);
 const unpaidCount = computed(() => {
   return invoiceStore.invoices.filter((i) => i.status !== 'paid').length;
 });
+
+const statusBadgeVariant = (status) => {
+  if (status === 'paid') return 'success';
+  if (status === 'pending' || status === 'draft') return 'warning';
+  if (status === 'overdue' || status === 'void' || status === 'rejected') return 'danger';
+  return 'neutral';
+};
 
 const paymentForm = reactive({
   paymentMethod: 'CASH',

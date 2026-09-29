@@ -1,24 +1,20 @@
 <template>
   <div class="space-y-6 font-sans">
     <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-indigo-600 via-blue-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-cyan-600 via-teal-600 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <CalendarCheck class="w-6 h-6 text-indigo-200" />
+          <CalendarCheck class="w-6 h-6 text-cyan-200" />
           <h1 class="text-2xl font-black tracking-tight text-white">จองพื้นที่ส่วนกลาง (Facility Booking)</h1>
         </div>
-        <p class="text-xs text-indigo-100/80 mt-1 max-w-xl">
+        <p class="text-xs text-cyan-100/80 mt-1 max-w-xl">
           จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด
         </p>
       </div>
-      <button
-        v-if="activeTab === 'facilities'"
-        @click="openCreateFacilityModal"
-        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
-      >
+      <Button v-if="activeTab === 'facilities'" variant="ghost" class="bg-white/15 hover:bg-white/25 border border-white/30 text-white shrink-0" @click="openCreateFacilityModal">
         <Plus class="w-4 h-4" />
         <span>เพิ่มพื้นที่ส่วนกลาง</span>
-      </button>
+      </Button>
     </div>
 
     <Tabs v-model="activeTab">
@@ -28,7 +24,7 @@
       </TabsList>
 
       <TabsContent value="facilities">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -44,27 +40,18 @@
                   <td class="p-3.5 font-bold text-slate-900">{{ f.name }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ f.description || '-' }}</td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="f.isActive ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-slate-100 border-slate-300 text-slate-500'"
-                    >
+                    <Badge :variant="f.isActive ? 'success' : 'neutral'">
                       {{ f.isActive ? 'เปิดให้จอง' : 'ปิดใช้งาน' }}
-                    </span>
+                    </Badge>
                   </td>
                   <td class="p-3.5 text-right space-x-1.5">
-                    <button
-                      @click="toggleFacilityActive(f)"
-                      class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 cursor-pointer"
-                    >
+                    <Button variant="outline" size="sm" @click="toggleFacilityActive(f)">
                       {{ f.isActive ? 'ปิดใช้งาน' : 'เปิดใช้งาน' }}
-                    </button>
-                    <button
-                      @click="handleDeleteFacility(f.id)"
-                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1"
-                    >
+                    </Button>
+                    <Button variant="outline" size="sm" class="text-rose-700 border-rose-200 hover:bg-rose-50" @click="handleDeleteFacility(f.id)">
                       <Trash2 class="w-3.5 h-3.5" />
                       <span>ลบ</span>
-                    </button>
+                    </Button>
                   </td>
                 </tr>
                 <tr v-if="facilities.length === 0">
@@ -73,11 +60,11 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
 
       <TabsContent value="bookings">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -95,21 +82,20 @@
                   <td class="p-3.5 text-xs text-slate-600">{{ b.tenant ? `${b.tenant.firstName} ${b.tenant.lastName}` : '-' }}</td>
                   <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(b.startTime) }} - {{ formatTime(b.endTime) }}</td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="b.status === 'CONFIRMED' ? 'bg-indigo-100 border-indigo-300 text-indigo-800' : 'bg-slate-100 border-slate-300 text-slate-500'"
-                    >
+                    <Badge :variant="b.status === 'CONFIRMED' ? 'success' : 'neutral'">
                       {{ b.status === 'CONFIRMED' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว' }}
-                    </span>
+                    </Badge>
                   </td>
                   <td class="p-3.5 text-right">
-                    <button
+                    <Button
                       v-if="b.status === 'CONFIRMED'"
+                      variant="outline"
+                      size="sm"
+                      class="text-rose-700 border-rose-200 hover:bg-rose-50"
                       @click="handleCancelBooking(b.id)"
-                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer"
                     >
                       ยกเลิกการจอง
-                    </button>
+                    </Button>
                   </td>
                 </tr>
                 <tr v-if="bookings.length === 0">
@@ -118,50 +104,41 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
     </Tabs>
 
     <!-- Create Facility Modal -->
-    <div v-if="showModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
-        <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">เพิ่มพื้นที่ส่วนกลาง</h3>
-          <button @click="showModal = false" class="text-indigo-100 hover:text-white p-1 rounded-lg cursor-pointer">
-            <X class="w-5 h-5" />
-          </button>
+    <Dialog :open="showModal" @update:open="showModal = $event">
+      <DialogContent class="max-w-md p-0 overflow-hidden">
+        <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white">
+          <DialogHeader class="pr-6">
+            <DialogTitle class="text-white">เพิ่มพื้นที่ส่วนกลาง</DialogTitle>
+          </DialogHeader>
         </div>
         <form @submit.prevent="handleCreateFacility" class="p-6 space-y-4">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อพื้นที่</label>
-            <input
-              v-model="form.name"
-              required
-              type="text"
-              placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-            />
+            <Input v-model="form.name" required type="text" placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส" class="font-bold" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">รายละเอียด (Optional)</label>
             <textarea
               v-model="form.description"
               rows="2"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="flex w-full rounded-md border border-input bg-background px-3.5 py-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring"
             ></textarea>
           </div>
-          <div class="pt-3 flex gap-3">
-            <button type="button" @click="showModal = false" class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold cursor-pointer">
-              ยกเลิก
-            </button>
-            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="showModal = false">ยกเลิก</Button>
+            <Button type="submit" :disabled="submitting">
               <CheckCircle2 class="w-4 h-4" />
               <span>{{ submitting ? 'กำลังบันทึก...' : 'บันทึก' }}</span>
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -171,7 +148,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
-import { CalendarCheck, Plus, Trash2, X, CheckCircle2 } from 'lucide-vue-next';
+import { CalendarCheck, Plus, Trash2, CheckCircle2 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const buildingStore = useBuildingStore();
 

@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-slate-200 shadow-xl text-center space-y-6">
+    <div class="max-w-md w-full bg-white rounded-xl p-8 border border-slate-200 shadow-xl text-center space-y-6">
       <!-- Icon Shield Alert -->
-      <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-inner">
-        
+      <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mx-auto shadow-inner">
+        <ShieldAlert class="w-10 h-10" />
       </div>
 
       <!-- Title & Message -->
@@ -19,14 +19,14 @@
       <div class="space-y-3 pt-2">
         <router-link
           to="/liff/profile"
-          class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md"
+          class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md"
         >
           กลับไปยัง Horspace (ฮอร์สเปซ)
         </router-link>
 
         <router-link
           to="/login"
-          class="block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-semibold transition-all border border-slate-200"
+          class="block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200"
         >
           เข้าสู่ระบบด้วยบัญชีผู้ดูแลระบบ (Admin Login)
         </router-link>
@@ -36,5 +36,5 @@
 </template>
 
 <script setup>
-import { ShieldAlert, Smartphone, LogIn } from 'lucide-vue-next';
+import { ShieldAlert } from 'lucide-vue-next';
 </script>

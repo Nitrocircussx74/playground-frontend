@@ -3,7 +3,7 @@
     <!-- 1. Header Toolbar -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 border border-purple-200/80 rounded-full text-purple-700 text-xs font-bold mb-1.5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-slate-700 text-xs font-bold mb-1.5">
           <MessageSquareQuote class="w-3.5 h-3.5" />
           <span>Developer & Product Feedback Hub</span>
         </div>
@@ -16,69 +16,63 @@
       </div>
 
       <div class="flex items-center gap-2 self-start sm:self-auto">
-        <button
-          @click="fetchFeedbacks"
-          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200 flex items-center gap-1.5 cursor-pointer"
-        >
+        <Button variant="secondary" @click="fetchFeedbacks">
           <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรชข้อมูล</span>
-        </button>
+        </Button>
 
-        <button
-          @click="showSubmitModal = true"
-          class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
+        <Button @click="showSubmitModal = true">
           <MessageSquarePlus class="w-3.5 h-3.5" />
           <span>ส่งความคิดเห็นใหม่</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- 2. Statistics Overview Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3">
       <!-- Total -->
-      <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+      <Card class="p-4 space-y-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
           <span>ทั้งหมด</span>
           <ListChecks class="w-4 h-4 text-slate-400" />
         </div>
         <div class="text-2xl font-black text-slate-900">{{ stats.total }}</div>
-        <div class="text-[10px] text-slate-400">รายการฟีดแบ็กทั้งหมด</div>
-      </div>
+        <div class="text-xs text-slate-400">รายการฟีดแบ็กทั้งหมด</div>
+      </Card>
 
       <!-- New / Pending -->
-      <div class="p-4 bg-purple-50/60 rounded-2xl border border-purple-100 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-purple-700 uppercase tracking-wider flex items-center justify-between">
+      <Card class="p-4 bg-slate-100 border-slate-200 space-y-1">
+        <div class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
           <span>รอตรวจสอบ</span>
-          <Clock class="w-4 h-4 text-purple-600" />
+          <Clock class="w-4 h-4 text-slate-500" />
         </div>
-        <div class="text-2xl font-black text-purple-700">{{ stats.newCount }}</div>
-        <div class="text-[10px] text-purple-500">ความคิดเห็นใหม่ (NEW)</div>
-      </div>
+        <div class="text-2xl font-black text-slate-700">{{ stats.newCount }}</div>
+        <div class="text-xs text-slate-500">ความคิดเห็นใหม่ (NEW)</div>
+      </Card>
 
       <!-- In Progress / Planned -->
-      <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-100 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider flex items-center justify-between">
+      <Card class="p-4 bg-amber-50/60 border-amber-100 space-y-1">
+        <div class="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center justify-between">
           <span>กำลังดำเนินการ</span>
           <Clock3 class="w-4 h-4 text-amber-600" />
         </div>
         <div class="text-2xl font-black text-amber-700">{{ stats.inReviewCount + stats.plannedCount }}</div>
-        <div class="text-[10px] text-amber-600">In Review & Planned</div>
-      </div>
+        <div class="text-xs text-amber-600">In Review & Planned</div>
+      </Card>
 
       <!-- Resolved -->
-      <div class="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100 shadow-2xs space-y-1">
-        <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
+      <Card class="p-4 bg-emerald-50/60 border-emerald-100 space-y-1">
+        <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
           <span>แก้ไข/เสร็จสิ้น</span>
           <CheckCircle2 class="w-4 h-4 text-emerald-600" />
         </div>
         <div class="text-2xl font-black text-emerald-700">{{ stats.resolvedCount }}</div>
-        <div class="text-[10px] text-emerald-600">เรียบร้อยแล้ว</div>
-      </div>
+        <div class="text-xs text-emerald-600">เรียบร้อยแล้ว</div>
+      </Card>
 
       <!-- Average Rating -->
-      <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-1 col-span-2 sm:col-span-1">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+      <Card class="p-4 space-y-1 col-span-2 sm:col-span-1">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
           <span>คะแนนเฉลี่ย</span>
           <Star class="w-4 h-4 text-amber-400 fill-amber-400" />
         </div>
@@ -86,21 +80,21 @@
           <span class="text-2xl font-black text-slate-900">{{ stats.avgRating }}</span>
           <span class="text-xs text-slate-400 font-bold">/ 5.0</span>
         </div>
-        <div class="text-[10px] text-slate-400">จากผู้ประเมินทั้งหมด</div>
-      </div>
+        <div class="text-xs text-slate-400">จากผู้ประเมินทั้งหมด</div>
+      </Card>
     </div>
 
     <!-- 3. Search & Filter Bar -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+    <Card class="p-4 sm:p-5 space-y-3">
       <div class="flex items-center justify-between">
         <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-          <Filter class="w-3.5 h-3.5 text-purple-600" />
+          <Filter class="w-3.5 h-3.5 text-slate-600" />
           <span>ตัวกรองค้นหา (Filter Feedbacks)</span>
         </div>
         <button
           v-if="hasActiveFilters"
           @click="resetFilters"
-          class="text-xs text-purple-600 hover:text-purple-800 font-bold cursor-pointer"
+          class="text-xs text-slate-500 hover:text-slate-800 font-bold cursor-pointer"
         >
           ล้างตัวกรองทั้งหมด
         </button>
@@ -109,14 +103,14 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <!-- Search Keyword -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">ค้นหา (Search)</label>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">ค้นหา (Search)</label>
           <div class="relative">
-            <input
+            <Input
               v-model="filters.search"
               @input="handleSearchInput"
               type="text"
               placeholder="ค้นหาข้อความ, ผู้ส่ง, เบอร์..."
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:bg-white"
+              class="pl-8 h-auto py-1.5"
             />
             <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
           </div>
@@ -124,75 +118,59 @@
 
         <!-- Platform Filter -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">ช่องทาง (Platform)</label>
-          <select
-            v-model="filters.platform"
-            @change="fetchFeedbacks"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">ช่องทาง (Platform)</label>
+          <Select v-model="filters.platform" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกช่องทาง (All Platforms)</option>
             <option value="CMS_ADMIN">Admin Backoffice (CMS)</option>
             <option value="TENANT_LIFF">LINE LIFF Portal</option>
             <option value="TENANT_WEB">Tenant Web Portal</option>
-          </select>
+          </Select>
         </div>
 
         <!-- Category Filter -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">หมวดหมู่ (Category)</label>
-          <select
-            v-model="filters.category"
-            @change="fetchFeedbacks"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">หมวดหมู่ (Category)</label>
+          <Select v-model="filters.category" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกหมวดหมู่ (All Categories)</option>
             <option value="BUG">รายงานบั๊ก / ข้อผิดพลาด (BUG)</option>
             <option value="FEATURE_REQUEST">ขอฟีเจอร์ใหม่ (FEATURE_REQUEST)</option>
             <option value="UI_UX">ความสะดวก / UX (UI_UX)</option>
             <option value="GENERAL">ทั่วไป / ข้อเสนอแนะ (GENERAL)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- Status Filter -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">สถานะ (Status)</label>
-          <select
-            v-model="filters.status"
-            @change="fetchFeedbacks"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">สถานะ (Status)</label>
+          <Select v-model="filters.status" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกสถานะ (All Status)</option>
             <option value="NEW">NEW (ใหม่ รอตรวจ)</option>
             <option value="IN_REVIEW">IN_REVIEW (กำลังพิจารณา)</option>
             <option value="PLANNED">PLANNED (วางแผนพัฒนา)</option>
             <option value="RESOLVED">RESOLVED (แก้ไขเสร็จแล้ว)</option>
             <option value="REJECTED">REJECTED (ยกเลิก/ไม่ดำเนินการ)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- Rating Filter -->
         <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">คะแนน (Rating)</label>
-          <select
-            v-model="filters.rating"
-            @change="fetchFeedbacks"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-          >
+          <label class="block text-xs font-semibold text-slate-500 mb-1">คะแนน (Rating)</label>
+          <Select v-model="filters.rating" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกคะแนน (All Ratings)</option>
             <option value="5">5 ดาว (ดีเยี่ยม)</option>
             <option value="4">4 ดาว (พึงพอใจ)</option>
             <option value="3">3 ดาว (ปานกลาง)</option>
             <option value="2">2 ดาว (พอใช้)</option>
             <option value="1">1 ดาว (ต้องปรับปรุง)</option>
-          </select>
+          </Select>
         </div>
       </div>
-    </div>
+    </Card>
 
     <!-- 4. Feedback Feed / Table -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
+    <Card class="p-0 overflow-hidden">
       <div v-if="loading && feedbacks.length === 0" class="p-12 text-center text-slate-500">
-        <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดรายการความคิดเห็น...
       </div>
 
@@ -213,7 +191,7 @@
             <div class="flex items-center gap-2 flex-wrap">
               <!-- Platform Pill -->
               <span
-                class="px-2.5 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1.5"
+                class="px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5"
                 :class="getPlatformBadgeClass(item.platform)"
               >
                 <component :is="getPlatformIcon(item.platform)" class="w-3 h-3" />
@@ -222,7 +200,7 @@
 
               <!-- Category Pill -->
               <span
-                class="px-2.5 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1.5"
+                class="px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5"
                 :class="getCategoryBadgeClass(item.category)"
               >
                 <component :is="getCategoryIcon(item.category)" class="w-3 h-3" />
@@ -237,21 +215,21 @@
                   class="w-3.5 h-3.5"
                   :class="s <= item.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'"
                 />
-                <span class="text-[10px] text-slate-500 font-bold ml-1 font-mono">({{ item.rating }}/5)</span>
+                <span class="text-xs text-slate-500 font-bold ml-1 font-mono">({{ item.rating }}/5)</span>
               </div>
 
               <!-- Time Ago -->
-              <span class="text-[11px] text-slate-400">
+              <span class="text-xs text-slate-400">
                 • {{ formatTime(item.createdAt) }}
               </span>
             </div>
 
             <!-- Status Dropdown & Action Buttons -->
             <div class="flex items-center gap-2">
-              <select
-                :value="item.status"
-                @change="handleQuickStatusChange(item, $event.target.value)"
-                class="text-xs font-bold rounded-xl px-2.5 py-1 border transition-all cursor-pointer focus:outline-hidden"
+              <Select
+                :model-value="item.status"
+                @update:model-value="(val) => handleQuickStatusChange(item, val)"
+                class="h-auto text-xs font-bold rounded-xl px-2.5 py-1 border-0 cursor-pointer"
                 :class="getStatusSelectClass(item.status)"
               >
                 <option value="NEW">NEW (ใหม่)</option>
@@ -259,23 +237,15 @@
                 <option value="PLANNED">PLANNED (วางแผนแล้ว)</option>
                 <option value="RESOLVED">RESOLVED (เสร็จสิ้น)</option>
                 <option value="REJECTED">REJECTED (ปฏิเสธ)</option>
-              </select>
+              </Select>
 
-              <button
-                @click="openDetailModal(item)"
-                class="p-1.5 hover:bg-slate-100 text-slate-500 hover:text-purple-600 rounded-lg transition-colors cursor-pointer"
-                title="ดูรายละเอียดเชิงลึก & บันทึกนักพัฒนา"
-              >
+              <Button variant="ghost" size="icon" class="h-8 w-8 text-slate-500 hover:text-teal-600" @click="openDetailModal(item)" title="ดูรายละเอียดเชิงลึก & บันทึกนักพัฒนา">
                 <Eye class="w-4 h-4" />
-              </button>
+              </Button>
 
-              <button
-                @click="handleDelete(item)"
-                class="p-1.5 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer"
-                title="ลบฟีดแบ็กนี้"
-              >
+              <Button variant="ghost" size="icon" class="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50" @click="handleDelete(item)" title="ลบฟีดแบ็กนี้">
                 <Trash2 class="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -297,21 +267,21 @@
               :href="resolveImageUrl(img)"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-purple-500 transition-all shrink-0 group relative block"
+              class="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:border-slate-400 transition-all shrink-0 group relative block"
             >
               <img :src="resolveImageUrl(img)" alt="Attachment" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
             </a>
           </div>
 
           <!-- Bottom: Sender Info & Technical Context Tags -->
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
             <!-- Sender details -->
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-700 flex items-center gap-1">
                 <User class="w-3.5 h-3.5 text-slate-400" />
                 <span>{{ item.senderName || 'ผู้ใช้ไม่ระบุชื่อ (Guest)' }}</span>
               </span>
-              <span v-if="item.senderRole" class="px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded font-mono text-[10px]">
+              <span v-if="item.senderRole" class="px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded font-mono text-xs">
                 {{ item.senderRole }}
               </span>
               <span v-if="item.senderPhone" class="text-slate-400 font-mono flex items-center gap-1">
@@ -321,7 +291,7 @@
             </div>
 
             <!-- Context snippet -->
-            <div class="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+            <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
               <span v-if="item.currentRoute" class="truncate max-w-[180px] flex items-center gap-1" title="Path Route">
                 <MapPin class="w-3 h-3" />
                 <span>{{ item.currentRoute }}</span>
@@ -336,10 +306,10 @@
           <!-- Dev Notes Banner (if any) -->
           <div
             v-if="item.developerNotes"
-            class="p-2.5 bg-purple-50/70 border border-purple-100 rounded-xl text-xs text-purple-900 flex items-start gap-2"
+            class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 flex items-start gap-2"
           >
-            <span class="font-bold shrink-0 text-purple-600">บันทึกทีมพัฒนา:</span>
-            <span class="text-[11px] leading-relaxed">{{ item.developerNotes }}</span>
+            <span class="font-bold shrink-0 text-slate-600">บันทึกทีมพัฒนา:</span>
+            <span class="text-xs leading-relaxed">{{ item.developerNotes }}</span>
           </div>
         </div>
       </div>
@@ -350,67 +320,46 @@
           หน้า {{ currentPage }} จาก {{ totalPages }} (ทั้งหมด {{ totalItems }} รายการ)
         </div>
         <div class="flex items-center gap-1.5">
-          <button
-            :disabled="currentPage <= 1"
-            @click="changePage(currentPage - 1)"
-            class="px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 cursor-pointer"
-          >
+          <Button variant="outline" size="sm" :disabled="currentPage <= 1" @click="changePage(currentPage - 1)">
             ก่อนหน้า
-          </button>
-          <button
-            :disabled="currentPage >= totalPages"
-            @click="changePage(currentPage + 1)"
-            class="px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 cursor-pointer"
-          >
+          </Button>
+          <Button variant="outline" size="sm" :disabled="currentPage >= totalPages" @click="changePage(currentPage + 1)">
             ถัดไป
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
 
     <!-- 5. Feedback Detail & Developer Note Modal -->
-    <div
-      v-if="activeDetailItem"
-      class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
-      @click.self="activeDetailItem = null"
-    >
-      <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-xl w-full shadow-2xl border border-slate-100 space-y-5 my-8 relative">
-        <button
-          @click="activeDetailItem = null"
-          class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
-        >
-          <X class="w-5 h-5" />
-        </button>
-
+    <Dialog :open="!!activeDetailItem" @update:open="(val) => { if (!val) activeDetailItem = null }">
+      <DialogContent v-if="activeDetailItem" class="max-w-xl">
         <!-- Header -->
-        <div class="space-y-1">
+        <DialogHeader>
           <div class="flex items-center gap-2">
             <span
-              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1"
+              class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1"
               :class="getCategoryBadgeClass(activeDetailItem.category)"
             >
               <component :is="getCategoryIcon(activeDetailItem.category)" class="w-3 h-3" />
               <span>{{ formatCategory(activeDetailItem.category) }}</span>
             </span>
             <span
-              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1"
+              class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1"
               :class="getPlatformBadgeClass(activeDetailItem.platform)"
             >
               <component :is="getPlatformIcon(activeDetailItem.platform)" class="w-3 h-3" />
               <span>{{ formatPlatform(activeDetailItem.platform) }}</span>
             </span>
           </div>
-          <h2 class="text-lg font-black text-slate-900 tracking-tight pt-1">
-            {{ activeDetailItem.title || 'รายละเอียดข้อเสนอแนะ' }}
-          </h2>
-          <p class="text-xs text-slate-400 font-mono">
+          <DialogTitle>{{ activeDetailItem.title || 'รายละเอียดข้อเสนอแนะ' }}</DialogTitle>
+          <DialogDescription class="font-mono">
             ID: {{ activeDetailItem.id }} • บันทึกเมื่อ {{ formatTime(activeDetailItem.createdAt) }}
-          </p>
-        </div>
+          </DialogDescription>
+        </DialogHeader>
 
         <!-- Content -->
-        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ข้อความ / รายละเอียด</div>
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ข้อความ / รายละเอียด</div>
           <p class="text-xs sm:text-sm text-slate-800 whitespace-pre-line leading-relaxed">
             {{ activeDetailItem.content }}
           </p>
@@ -450,10 +399,10 @@
         <!-- Technical Context Diagnostics -->
         <div class="space-y-1.5">
           <div class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <Terminal class="w-3.5 h-3.5 text-purple-600" />
+            <Terminal class="w-3.5 h-3.5 text-slate-500" />
             <span>Technical Context (ข้อมูลแวดล้อมทางเทคนิค)</span>
           </div>
-          <div class="p-3 bg-slate-900 text-slate-200 rounded-2xl text-[10px] font-mono space-y-1 overflow-x-auto">
+          <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono space-y-1 overflow-x-auto">
             <div><span class="text-slate-500">Route:</span> {{ activeDetailItem.currentRoute || 'N/A' }}</div>
             <div><span class="text-slate-500">Sender Role:</span> {{ activeDetailItem.senderRole || 'N/A' }}</div>
             <div><span class="text-slate-500">Sender Name:</span> {{ activeDetailItem.senderName || 'N/A' }}</div>
@@ -469,16 +418,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">ปรับเปลี่ยนสถานะ</label>
-              <select
-                v-model="modalForm.status"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-              >
+              <Select v-model="modalForm.status" class="font-bold">
                 <option value="NEW">NEW (ใหม่)</option>
                 <option value="IN_REVIEW">IN_REVIEW (กำลังพิจารณา)</option>
                 <option value="PLANNED">PLANNED (วางแผนพัฒนา)</option>
                 <option value="RESOLVED">RESOLVED (แก้ไขเสร็จแล้ว)</option>
                 <option value="REJECTED">REJECTED (ไม่ดำเนินการ)</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -488,30 +434,20 @@
               v-model="modalForm.developerNotes"
               rows="3"
               placeholder="บันทึกรายละเอียด เช่น Release v1.4, แก้ไขที่ PR #12..."
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20 focus:bg-white"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-ring/30 focus:bg-white"
             ></textarea>
           </div>
         </div>
 
-        <!-- Modal Actions -->
-        <div class="flex gap-2.5 pt-2">
-          <button
-            @click="handleSaveDetail"
-            :disabled="savingDetail"
-            class="flex-1 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-          >
+        <DialogFooter>
+          <Button variant="outline" @click="activeDetailItem = null">ปิด</Button>
+          <Button @click="handleSaveDetail" :disabled="savingDetail">
             <Save class="w-4 h-4" />
             <span>{{ savingDetail ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง' }}</span>
-          </button>
-          <button
-            @click="activeDetailItem = null"
-            class="py-2.5 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer"
-          >
-            ปิด
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     <!-- 6. Developer Feedback Submission Modal Component -->
     <DeveloperFeedbackModal
@@ -532,7 +468,6 @@ import {
   Search,
   Eye,
   Trash2,
-  X,
   Save,
   User,
   Terminal,
@@ -555,6 +490,11 @@ import {
 import api from '@/utils/api';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import DeveloperFeedbackModal from '@/components/DeveloperFeedbackModal.vue';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const loading = ref(false);
 const feedbacks = ref([]);
@@ -769,20 +709,21 @@ const getCategoryIcon = (c) => {
 const getCategoryBadgeClass = (c) => {
   switch (c) {
     case 'BUG': return 'bg-rose-50 text-rose-700 border-rose-200';
-    case 'FEATURE_REQUEST': return 'bg-purple-50 text-purple-700 border-purple-200';
+    case 'FEATURE_REQUEST': return 'bg-cyan-50 text-cyan-700 border-cyan-200';
     case 'UI_UX': return 'bg-amber-50 text-amber-700 border-amber-200';
     case 'GENERAL': return 'bg-blue-50 text-blue-700 border-blue-200';
     default: return 'bg-slate-100 text-slate-700 border-slate-200';
   }
 };
 
+// Status semantics: pending/open -> warning (amber), resolved -> success (emerald), rejected -> danger (rose), else neutral
 const getStatusSelectClass = (s) => {
   switch (s) {
-    case 'NEW': return 'bg-purple-50 text-purple-700 border-purple-200';
+    case 'NEW': return 'bg-amber-50 text-amber-700 border-amber-200';
     case 'IN_REVIEW': return 'bg-amber-50 text-amber-700 border-amber-200';
-    case 'PLANNED': return 'bg-blue-50 text-blue-700 border-blue-200';
+    case 'PLANNED': return 'bg-slate-100 text-slate-600 border-slate-200';
     case 'RESOLVED': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-    case 'REJECTED': return 'bg-slate-100 text-slate-500 border-slate-200';
+    case 'REJECTED': return 'bg-rose-50 text-rose-700 border-rose-200';
     default: return 'bg-slate-50 text-slate-700 border-slate-200';
   }
 };

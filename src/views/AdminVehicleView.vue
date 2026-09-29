@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6 font-sans">
     <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-cyan-600 via-sky-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl">
+    <div class="bg-gradient-to-r from-cyan-600 via-sky-600 to-slate-900 p-6 rounded-xl text-white shadow-xl">
       <div class="flex items-center gap-2 mb-1">
         <Car class="w-6 h-6 text-cyan-200" />
         <h1 class="text-2xl font-black tracking-tight text-white">จัดการยานพาหนะ/ผู้มาเยือน (Vehicle & Visitor)</h1>
@@ -18,7 +18,7 @@
       </TabsList>
 
       <TabsContent value="vehicles">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -36,27 +36,22 @@
                   <td class="p-3.5 text-xs text-slate-600">{{ v.tenant ? `${v.tenant.firstName} ${v.tenant.lastName}` : '-' }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ v.vehicleType === 'car' ? 'รถยนต์' : 'มอเตอร์ไซค์' }} {{ v.brand ? `(${v.brand})` : '' }}</td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="{
-                        'bg-amber-100 border-amber-300 text-amber-800': v.status === 'PENDING',
-                        'bg-emerald-100 border-emerald-300 text-emerald-800': v.status === 'APPROVED',
-                        'bg-rose-100 border-rose-300 text-rose-800': v.status === 'REJECTED'
-                      }"
+                    <Badge
+                      :variant="{ PENDING: 'warning', APPROVED: 'success', REJECTED: 'danger' }[v.status]"
                     >
                       {{ { PENDING: 'รออนุมัติ', APPROVED: 'อนุมัติแล้ว', REJECTED: 'ปฏิเสธ' }[v.status] }}
-                    </span>
+                    </Badge>
                   </td>
                   <td class="p-3.5 text-right space-x-1.5">
                     <template v-if="v.status === 'PENDING'">
-                      <button @click="handleApprove(v.id)" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-1">
+                      <Button size="sm" class="bg-emerald-600 hover:bg-emerald-600/90" @click="handleApprove(v.id)">
                         <CheckCircle2 class="w-3.5 h-3.5" />
                         <span>อนุมัติ</span>
-                      </button>
-                      <button @click="handleReject(v.id)" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1">
+                      </Button>
+                      <Button variant="outline" size="sm" class="text-rose-700 border-rose-200 hover:bg-rose-50" @click="handleReject(v.id)">
                         <X class="w-3.5 h-3.5" />
                         <span>ปฏิเสธ</span>
-                      </button>
+                      </Button>
                     </template>
                   </td>
                 </tr>
@@ -66,11 +61,11 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
 
       <TabsContent value="visitors">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -89,12 +84,9 @@
                   <td class="p-3.5 text-xs text-slate-600 font-mono">{{ v.licensePlate || '-' }}</td>
                   <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(v.expectedDate) }}</td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="v.status === 'EXPECTED' ? 'bg-sky-100 border-sky-300 text-sky-800' : 'bg-slate-100 border-slate-300 text-slate-500'"
-                    >
+                    <Badge :variant="v.status === 'EXPECTED' ? 'warning' : 'neutral'">
                       {{ v.status === 'EXPECTED' ? 'รอมาตามนัด' : 'ยกเลิกแล้ว' }}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
                 <tr v-if="visitors.length === 0">
@@ -103,7 +95,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
     </Tabs>
   </div>
@@ -116,6 +108,9 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
 import { Car, CheckCircle2, X } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const buildingStore = useBuildingStore();
 

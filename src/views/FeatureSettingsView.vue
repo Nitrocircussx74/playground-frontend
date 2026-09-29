@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6 max-w-6xl mx-auto font-sans">
     <!-- Top Header Banner -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+    <Card class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
       <div class="space-y-1">
         <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shadow-xs">
+          <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shadow-xs">
             <ToggleLeft class="w-5 h-5" />
           </div>
           <span>ตั้งค่าการเปิด-ปิดฟีเจอร์ (Feature Settings)</span>
@@ -15,37 +15,31 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button
-          @click="loadData"
-          class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-        >
+        <Button variant="outline" @click="loadData">
           <RotateCw class="w-3.5 h-3.5" :class="{ 'animate-spin': featureStore.isLoading }" />
           <span>รีเฟรชข้อมูล</span>
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
 
     <!-- Building Selector & Search Filter Bar -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Building Selection -->
-      <div class="md:col-span-2 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <Card class="md:col-span-2 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0">
           <Building2 class="w-4 h-4 text-teal-600" />
           <span>เลือกอาคารที่ต้องการตั้งค่า:</span>
         </div>
-        <select
-          v-model="buildingStore.activeBuildingId"
-          class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 font-medium focus:outline-hidden focus:border-teal-400 cursor-pointer w-full sm:w-auto min-w-[240px]"
-        >
+        <Select v-model="buildingStore.activeBuildingId" class="w-full sm:w-auto min-w-[240px]">
           <option value="">ค่าเริ่มต้นทุกอาคาร (Global Default)</option>
           <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
             {{ b.name }}
           </option>
-        </select>
-      </div>
+        </Select>
+      </Card>
 
       <!-- Search Input -->
-      <div class="relative bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center px-3.5 py-2">
+      <Card class="relative flex items-center px-3.5 py-2">
         <Search class="w-4 h-4 text-slate-400 shrink-0 mr-2" />
         <input
           v-model="searchQuery"
@@ -53,17 +47,17 @@
           placeholder="ค้นหาชื่อฟีเจอร์..."
           class="w-full text-xs text-slate-800 placeholder:text-slate-400 bg-transparent focus:outline-hidden"
         />
-      </div>
+      </Card>
     </div>
 
     <!-- Loading State -->
-    <div v-if="featureStore.isLoading" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+    <Card v-if="featureStore.isLoading" class="p-12 text-center text-slate-500 space-y-3">
       <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto"></div>
       <div class="text-xs font-medium">กำลังโหลดสถานะฟีเจอร์...</div>
-    </div>
+    </Card>
 
     <!-- Error State -->
-    <div v-else-if="featureStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
+    <div v-else-if="featureStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-medium flex items-center gap-2">
       <AlertCircle class="w-4 h-4 shrink-0" />
       <span>{{ featureStore.errorMessage }}</span>
     </div>
@@ -83,17 +77,17 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
+        <Card
           v-for="item in displayFeatures"
           :key="item.key"
-          class="p-5 bg-white border border-slate-200/80 rounded-3xl shadow-xs hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
+          class="p-5 hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
         >
           <div class="space-y-3">
             <!-- Card Header: Icon + Title + Status + Switch -->
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
                 <div
-                  class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
+                  class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
                   :class="getFeatureIconBg(item.key)"
                 >
                   <component :is="getFeatureIcon(item.key)" class="w-5 h-5" />
@@ -105,17 +99,14 @@
                     </h3>
                   </div>
                   <div class="flex items-center gap-1.5 mt-0.5">
-                    <span
-                      class="text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1"
-                      :class="item.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/70' : 'bg-slate-100 text-slate-500 border border-slate-200'"
-                    >
+                    <Badge :variant="item.isActive ? 'success' : 'neutral'">
                       <span class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
                       <span>{{ item.isActive ? 'เปิดใช้งานอยู่' : 'ปิดใช้งาน' }}</span>
-                    </span>
+                    </Badge>
 
                     <span
                       v-if="buildingStore.activeBuildingId && item.isBuildingOverride"
-                      class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100"
+                      class="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100"
                     >
                       เฉพาะอาคารนี้
                     </span>
@@ -144,11 +135,11 @@
           </div>
 
           <!-- Card Footer: Key info -->
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
             <span>KEY: {{ item.key }}</span>
             <span class="text-slate-400 font-sans">มีผลทันทีใน LINE</span>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   </div>
@@ -178,6 +169,10 @@ import {
   Vote,
   FileText
 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select } from '@/components/ui/select';
 
 const featureStore = useFeatureStore();
 const buildingStore = useBuildingStore();
@@ -260,9 +255,9 @@ const getFeatureIconBg = (key) => {
     case 'ENABLE_VEHICLE_MANAGEMENT':
       return 'bg-cyan-50 text-cyan-600';
     case 'ENABLE_FACILITY_BOOKING':
-      return 'bg-indigo-50 text-indigo-600';
+      return 'bg-blue-50 text-blue-600';
     case 'ENABLE_VOTING':
-      return 'bg-violet-50 text-violet-600';
+      return 'bg-yellow-50 text-yellow-600';
     case 'ENABLE_E_CONTRACT':
       return 'bg-rose-50 text-rose-600';
     default:

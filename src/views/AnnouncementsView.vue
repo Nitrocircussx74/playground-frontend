@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header Title Banner -->
-    <div class="bg-gradient-to-r from-rose-900 via-cyan-900 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-rose-900 via-cyan-900 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 bg-rose-500/30 border border-rose-400/40 rounded-full text-xs font-bold tracking-wider uppercase text-rose-200">
@@ -17,17 +17,14 @@
         </p>
       </div>
 
-      <button
-        @click="showCreateModal = !showCreateModal"
-        class="px-5 py-2.5 bg-gradient-to-r from-rose-500 to-cyan-600 hover:from-rose-600 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
-      >
+      <Button class="bg-gradient-to-r from-rose-500 to-cyan-600 hover:from-rose-600 hover:to-cyan-700 shadow-lg shadow-rose-600/30 shrink-0" @click="showCreateModal = !showCreateModal">
         <component :is="showCreateModal ? X : Plus" class="w-4 h-4" />
         <span>{{ showCreateModal ? 'ปิดฟอร์ม' : 'บรอดแคสต์ประกาศใหม่ (New Broadcast)' }}</span>
-      </button>
+      </Button>
     </div>
 
     <!-- Create Announcement Form Panel -->
-    <div v-if="showCreateModal" class="p-6 bg-white border border-slate-200 rounded-3xl shadow-lg space-y-5 animate-in fade-in zoom-in-95 duration-150">
+    <Card v-if="showCreateModal" class="p-6 shadow-lg space-y-5">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
           <Smartphone class="w-5 h-5 text-rose-600" />
@@ -41,55 +38,37 @@
           <!-- Title -->
           <div class="md:col-span-2">
             <label class="block text-xs font-bold text-slate-700 mb-1">หัวข้อประกาศ (Announcement Title)</label>
-            <input
-              v-model="form.title"
-              type="text"
-              placeholder="เช่น แจ้งปิดปรับปรุงระบบน้ำประปาชั่วคราว หรือ แจ้งกำหนดชำระค่าเช่าประจำเดือน"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-            />
+            <Input v-model="form.title" type="text" placeholder="เช่น แจ้งปิดปรับปรุงระบบน้ำประปาชั่วคราว หรือ แจ้งกำหนดชำระค่าเช่าประจำเดือน" required class="font-semibold" />
           </div>
 
           <!-- Target Type Selector -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">กลุ่มเป้าหมาย (Target Audience)</label>
-            <select
-              v-model="form.targetType"
-              @change="handleTargetTypeChange"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-            >
+            <Select v-model="form.targetType" class="font-bold" @change="handleTargetTypeChange">
               <option value="ALL">ลูกบ้านทุกตึกทั้งหมด (All Buildings)</option>
               <option value="BUILDING">เฉพาะตึกที่ระบุ (Specific Building)</option>
               <option value="FLOOR">เฉพาะชั้นที่ระบุ (Specific Floor)</option>
-            </select>
+            </Select>
           </div>
 
           <!-- Dynamic Building Selector -->
           <div v-if="form.targetType === 'BUILDING' || form.targetType === 'FLOOR'">
             <label class="block text-xs font-bold text-slate-700 mb-1">เลือกหอพัก/อาคาร (Select Building)</label>
-            <select
-              v-model="form.buildingId"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-            >
+            <Select v-model="form.buildingId" required class="font-bold">
               <option value="" disabled>-- เลือกหอพัก --</option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
                 {{ b.name }}
               </option>
-            </select>
+            </Select>
           </div>
 
           <!-- Dynamic Floor Selector -->
           <div v-if="form.targetType === 'FLOOR'">
             <label class="block text-xs font-bold text-slate-700 mb-1">เลือกชั้น (Select Floor)</label>
-            <select
-              v-model="form.floor"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-            >
+            <Select v-model="form.floor" required class="font-bold">
               <option value="" disabled>-- เลือกชั้น --</option>
               <option v-for="f in 10" :key="f" :value="f">Floor {{ f }} (ชั้น {{ f }})</option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -108,7 +87,7 @@
 
           <!-- Image Preview -->
           <div v-if="form.imageUrl" class="mt-2 relative inline-block">
-            <img :src="form.imageUrl" class="h-28 rounded-2xl object-cover border border-slate-200 shadow-xs" />
+            <img :src="form.imageUrl" class="h-28 rounded-xl object-cover border border-slate-200 shadow-xs" />
             <button
               type="button"
               @click="form.imageUrl = ''"
@@ -133,29 +112,25 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end pt-2">
-          <button
-            type="submit"
-            :disabled="submitting || uploadingImage"
-            class="px-6 py-3 bg-gradient-to-r from-rose-600 to-cyan-600 hover:from-rose-700 hover:to-cyan-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
-          >
+          <Button type="submit" size="lg" class="bg-gradient-to-r from-rose-600 to-cyan-600 hover:from-rose-700 hover:to-cyan-700 shadow-md shadow-rose-600/20" :disabled="submitting || uploadingImage">
             <Send class="w-4 h-4" />
             <span>ตรวจสอบและส่ง LINE Broadcast</span>
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
 
     <!-- Announcement History List -->
-    <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+    <Card class="p-0 overflow-hidden">
       <div class="p-5 border-b border-slate-200 flex items-center justify-between">
         <div>
           <h3 class="font-bold text-slate-900 text-sm">ประวัติการบรอดแคสต์ทั้งหมด (Broadcast History)</h3>
           <p class="text-xs text-slate-400">รายการข่าวสารที่เคยบรอดแคสต์ไปหาลูกบ้านย้อนหลัง</p>
         </div>
-        <button @click="fetchAnnouncements" class="text-xs text-rose-600 hover:underline font-semibold cursor-pointer flex items-center gap-1.5">
+        <Button variant="link" size="sm" class="h-auto p-0 text-rose-600" @click="fetchAnnouncements">
           <RotateCw class="w-3.5 h-3.5" />
           <span>รีเฟรชประวัติ</span>
-        </button>
+        </Button>
       </div>
 
       <div class="divide-y divide-slate-100">
@@ -164,7 +139,7 @@
             <div class="flex items-center gap-2.5 flex-wrap">
               <span class="font-bold text-slate-900 text-base">{{ item.title }}</span>
               <span
-                class="text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1.5"
+                class="text-xs font-extrabold px-3 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1.5"
                 :class="{
                   'bg-cyan-50 border-cyan-200 text-cyan-800': item.targetType === 'ALL' || item.targetType === 'all',
                   'bg-teal-50 border-teal-200 text-teal-800': item.targetType === 'BUILDING' || item.targetType === 'building',
@@ -180,24 +155,21 @@
 
             <div class="flex items-center gap-3">
               <span class="text-xs text-slate-400 font-mono">{{ new Date(item.createdAt).toLocaleString('th-TH') }}</span>
-              <button
-                @click="handleDeleteAnnouncement(item.id, item.title)"
-                class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold border border-rose-200 cursor-pointer flex items-center gap-1"
-              >
+              <Button variant="outline" size="sm" class="text-rose-700 border-rose-200 hover:bg-rose-50" @click="handleDeleteAnnouncement(item.id, item.title)">
                 <Trash2 class="w-3.5 h-3.5" />
                 <span>ลบ</span>
-              </button>
+              </Button>
             </div>
           </div>
 
           <!-- Cover Image Thumbnail -->
           <div v-if="item.imageUrl" class="max-w-md">
-            <img :src="item.imageUrl" class="h-36 rounded-2xl object-cover border border-slate-200 shadow-2xs" />
+            <img :src="item.imageUrl" class="h-36 rounded-xl object-cover border border-slate-200 shadow-2xs" />
           </div>
 
           <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">{{ item.content }}</p>
 
-          <div class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
+          <div class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
             <User class="w-3.5 h-3.5 text-slate-400" />
             <span>ผู้ส่ง: {{ item.createdBy || 'Admin' }}</span>
           </div>
@@ -207,7 +179,7 @@
           ยังไม่มีประวัติการส่งประกาศข่าวสารในระบบ
         </div>
       </div>
-    </div>
+    </Card>
   </div>
 </template>
 
@@ -230,6 +202,10 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import api from '@/utils/api';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 
 const buildingStore = useBuildingStore();
 const showCreateModal = ref(false);

@@ -15,58 +15,52 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5">
-        <button
-          @click="openCheckinModal()"
-          class="px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
+        <Button @click="openCheckinModal()">
           <UserPlus class="w-3.5 h-3.5" />
           <span>+ เช็คอินผู้เช่า (Walk-in)</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="!isRoomOwnerRole"
+          class="bg-emerald-600 hover:bg-emerald-600/90 shadow-emerald-600/20"
           @click="showImportModal = true"
-          class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <Upload class="w-3.5 h-3.5" />
           <span>นำเข้า CSV</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="!isRoomOwnerRole"
+          variant="outline"
           @click="showCreateModal = !showCreateModal"
-          class="px-3.5 py-2 bg-white hover:bg-slate-50 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
           <Plus class="w-3.5 h-3.5" />
           <span>{{ showCreateModal ? 'ปิดแบบฟอร์ม' : '+ เพิ่มยูนิตใหม่' }}</span>
-        </button>
+        </Button>
 
-        <button
-          @click="roomStore.fetchRooms(buildingStore.activeBuildingId)"
-          class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 shadow-2xs flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
-          <RefreshCw class="w-3.5 h-3.5 text-slate-500" :class="{ 'animate-spin': roomStore.isLoading }" />
+        <Button variant="outline" @click="roomStore.fetchRooms(buildingStore.activeBuildingId)">
+          <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': roomStore.isLoading }" />
           <span>รีเฟรช</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- Category / Unit Type Filter Tabs (Horizontal Scrollable) -->
-    <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-1.5 overflow-x-auto">
+    <Card class="p-2 flex items-center gap-1.5 overflow-x-auto">
       <button
         v-for="type in unitTypeOptions"
         :key="type.value"
         @click="activeTypeFilter = type.value"
         class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
-        :class="activeTypeFilter === type.value ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
+        :class="activeTypeFilter === type.value ? 'bg-cyan-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
       >
         <component :is="type.icon" class="w-3.5 h-3.5" />
         <span>{{ type.label }}</span>
-        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold" :class="activeTypeFilter === type.value ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-500'">
+        <span class="text-xs px-1.5 py-0.2 rounded-full font-mono font-bold" :class="activeTypeFilter === type.value ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-500'">
           {{ getCountByType(type.value) }}
         </span>
       </button>
-    </div>
+    </Card>
 
     <!-- Status Sub-Filter Pills -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1">
@@ -83,7 +77,7 @@
     </div>
 
     <!-- Create Room / Rental Unit Form Panel -->
-    <div v-if="showCreateModal" class="p-6 bg-white border border-cyan-200/90 rounded-3xl shadow-md space-y-4">
+    <Card v-if="showCreateModal" class="p-6 border-cyan-200/90 shadow-md space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
           <Store class="w-5 h-5 text-cyan-600" />
@@ -99,116 +93,82 @@
         <!-- 1. Unit Type -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">ประเภทพื้นที่เช่า (Unit Type)</label>
-          <select
-            v-model="form.unitType"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
-          >
+          <Select v-model="form.unitType">
             <option value="residential">ห้องพักอาศัย (Residential)</option>
             <option value="commercial_shop">ร้านค้า / ล็อคหน้าร้าน (Shop / Kiosk)</option>
             <option value="vending_spot">จุดวางตู้เต่าบิน / ตู้บริการ (Vending Spot)</option>
             <option value="parking">ช่องจอดรถ (Parking Slot)</option>
             <option value="storage">ห้องสต็อก / ล็อกเกอร์เก็บของ (Storage)</option>
             <option value="billboard_rooftop">ดาดฟ้า / เสาสัญญาณ / ป้ายโฆษณา (Rooftop)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- 2. Unit / Room Number -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">รหัส/หมายเลขยูนิต (Number/ID)</label>
-          <input
+          <Input
             v-model="form.roomNumber"
             type="text"
             :placeholder="getPlaceholderByUnitType(form.unitType)"
             required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+            class="font-mono"
           />
         </div>
 
         <!-- 3. Floor -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">ชั้น (Floor)</label>
-          <input
-            v-model.number="form.floor"
-            type="number"
-            min="0"
-            placeholder="เช่น 1, 2"
-            required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-          />
+          <Input v-model.number="form.floor" type="number" min="0" placeholder="เช่น 1, 2" required />
         </div>
 
         <!-- 4. Area Sq.M. -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">ขนาดพื้นที่ (ตร.ม.)</label>
-          <input
-            v-model.number="form.areaSqm"
-            type="number"
-            step="0.1"
-            placeholder="เช่น 24.5"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-          />
+          <Input v-model.number="form.areaSqm" type="number" step="0.1" placeholder="เช่น 24.5" />
         </div>
 
         <!-- 5. Monthly Price -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">ราคาเช่ารายเดือน (บาท)</label>
-          <input
-            v-model.number="form.price"
-            type="number"
-            step="100"
-            placeholder="เช่น 4500"
-            required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-          />
+          <Input v-model.number="form.price" type="number" step="100" placeholder="เช่น 4500" required />
         </div>
 
         <!-- 6. Location Zone -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">โซนที่ตั้ง (Location Zone)</label>
-          <input
-            v-model="form.locationZone"
-            type="text"
-            placeholder="เช่น ชั้น 1 ริมถนน, ลานจอด A"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-          />
+          <Input v-model="form.locationZone" type="text" placeholder="เช่น ชั้น 1 ริมถนน, ลานจอด A" />
         </div>
 
         <!-- 7. Billing Model -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">รูปแบบการคิดเงิน (Billing Model)</label>
-          <select
-            v-model="form.billingModel"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
-          >
+          <Select v-model="form.billingModel">
             <option value="fixed">เหมาจ่ายรายเดือนคงที่ (Fixed Rent)</option>
             <option value="revenue_share">ส่วนแบ่งยอดขาย (Revenue Share / GP %)</option>
             <option value="metered_only">คิดตามมิเตอร์จริง (Metered Only)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- 8. Revenue Share % (If selected) -->
         <div v-if="form.billingModel === 'revenue_share'">
           <label class="block text-xs font-bold text-amber-700 mb-1">ส่วนแบ่งยอดขาย (% GP)</label>
-          <input
+          <Input
             v-model.number="form.revSharePercent"
             type="number"
             step="0.5"
             placeholder="เช่น 10%"
-            class="w-full bg-amber-50/50 border border-amber-300 rounded-xl px-3.5 py-2 text-sm text-amber-900 focus:outline-hidden focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-bold"
+            class="bg-amber-50/50 border-amber-300 text-amber-900 font-bold focus-visible:ring-amber-500/20"
           />
         </div>
 
         <!-- 9. Initial Status -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">สถานะเริ่มต้น (Status)</label>
-          <select
-            v-model="form.status"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
-          >
+          <Select v-model="form.status">
             <option value="available">ว่างพร้อมให้เช่า (Available)</option>
             <option value="occupied">มีผู้เช่า (Occupied)</option>
             <option value="maintenance">ปิดปรับปรุง/ซ่อมแซม (Maintenance)</option>
-          </select>
+          </Select>
         </div>
 
         <!-- 10. Room Owner (Landlord/Investor) -->
@@ -227,53 +187,46 @@
               <span>เพิ่มเจ้าของใหม่</span>
             </button>
           </div>
-          <select
-            v-model="form.ownerId"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer"
-          >
+          <Select v-model="form.ownerId">
             <option :value="null">ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
             <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
               {{ owner.name }} ({{ owner.phone || owner.email }})
             </option>
-          </select>
+          </Select>
         </div>
 
         <div class="col-span-full flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            @click="showCreateModal = false"
-            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
-          >
+          <Button type="button" variant="outline" @click="showCreateModal = false">
             ยกเลิก
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             :disabled="roomStore.isLoading"
-            class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer"
+            class="bg-emerald-600 hover:bg-emerald-600/90 shadow-emerald-600/20"
           >
             {{ roomStore.isLoading ? 'กำลังบันทึก...' : 'บันทึกยูนิต/พื้นที่เช่า' }}
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
 
-    <div v-if="roomStore.isLoading && !showCreateModal" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
+    <Card v-if="roomStore.isLoading && !showCreateModal" class="p-12 text-center text-slate-500">
       <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
       กำลังโหลดข้อมูลพื้นที่เช่า...
-    </div>
+    </Card>
 
-    <div v-else-if="roomStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-medium">
+    <div v-else-if="roomStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-medium">
       {{ roomStore.errorMessage }}
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="filteredRooms.length === 0" class="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200 space-y-3">
-      <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+    <Card v-else-if="filteredRooms.length === 0" class="p-12 text-center text-slate-500 space-y-3">
+      <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400">
         <Building2 class="w-6 h-6" />
       </div>
       <div class="font-bold text-slate-800 text-base">ไม่พบข้อมูลพื้นที่เช่าตามตัวกรอง</div>
       <p class="text-xs text-slate-400">คุณสามารถเพิ่มยูนิตใหม่ หรือเปลี่ยนแท็บตัวกรองด้านบนได้</p>
-    </div>
+    </Card>
 
     <!-- Room / Rental Unit Cards Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -284,45 +237,40 @@
         <div v-if="room.status === 'available'" class="space-y-1.5">
           <div class="grid grid-cols-2 gap-2">
             <!-- 1. ทางเลือกผ่าน LINE -->
-            <button
-              @click="openInviteModal(room)"
-              class="w-full py-2 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
+            <Button
+              variant="outline"
+              class="w-full text-emerald-800 border-emerald-200 bg-emerald-50 hover:bg-emerald-100"
               title="สร้าง Invite Code / QR ให้ลูกบ้านลงทะเบียนผ่าน LINE"
+              @click="openInviteModal(room)"
             >
               <Key class="w-3.5 h-3.5 text-emerald-600" />
               <span>Invite Code (LINE)</span>
-            </button>
+            </Button>
 
             <!-- 2. ทางเลือกไม่ผ่าน LINE (Walk-in) -->
-            <button
-              @click="openCheckinModal(room)"
-              class="w-full py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95"
+            <Button
+              class="w-full"
               title="แอดมินกรอกข้อมูลและทำสัญญาเข้าพักทันที"
+              @click="openCheckinModal(room)"
             >
               <UserPlus class="w-3.5 h-3.5" />
               <span>เช็คอิน (Walk-in)</span>
-            </button>
+            </Button>
           </div>
 
           <!-- 3. ดูประวัติสัญญา -->
-          <button
-            @click="openHistoryModal(room)"
-            class="w-full py-1.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-          >
+          <Button variant="outline" class="w-full" @click="openHistoryModal(room)">
             <History class="w-3.5 h-3.5 text-slate-400" />
             <span>ประวัติสัญญาเช่า</span>
-          </button>
+          </Button>
         </div>
 
         <!-- Occupied / Maintenance Room Actions -->
         <div v-else class="grid grid-cols-1 gap-2">
-          <button
-            @click="openHistoryModal(room)"
-            class="w-full py-2 bg-white hover:bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:border-cyan-300"
-          >
+          <Button variant="outline" class="w-full text-cyan-700 border-cyan-200 hover:bg-cyan-50" @click="openHistoryModal(room)">
             <History class="w-3.5 h-3.5" />
             <span>ดูประวัติสัญญาเช่า</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -358,91 +306,60 @@
     />
 
     <!-- Quick Create Room Owner Modal -->
-    <div
-      v-if="showQuickCreateOwnerModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
-    >
-      <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2 font-black text-slate-900 text-sm">
+    <Dialog :open="showQuickCreateOwnerModal" @update:open="showQuickCreateOwnerModal = $event">
+      <DialogContent class="max-w-md">
+        <DialogHeader>
+          <DialogTitle class="flex items-center gap-2">
             <Crown class="w-4 h-4 text-amber-500" />
             <span>เพิ่มรายชื่อเจ้าของห้อง / นักลงทุน (New Room Owner)</span>
-          </div>
-          <button @click="showQuickCreateOwnerModal = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-            <X class="w-4 h-4" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         <form @submit.prevent="handleQuickCreateOwner" class="space-y-3 text-xs">
           <div>
             <label class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล *</label>
-            <input
-              v-model="quickOwnerForm.name"
-              type="text"
-              required
-              placeholder="เช่น คุณสมชาย ลงทุนดี"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-            />
+            <Input v-model="quickOwnerForm.name" type="text" required placeholder="เช่น คุณสมชาย ลงทุนดี" />
           </div>
 
           <div>
             <label class="block font-bold text-slate-700 mb-1">อีเมล (สำหรับเข้าสู่ระบบ) *</label>
-            <input
-              v-model="quickOwnerForm.email"
-              type="email"
-              required
-              placeholder="owner@example.com"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-            />
+            <Input v-model="quickOwnerForm.email" type="email" required placeholder="owner@example.com" class="font-mono" />
           </div>
 
           <div>
             <label class="block font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ (ไม่บังคับ)</label>
-            <input
-              v-model="quickOwnerForm.phone"
-              type="tel"
-              placeholder="081-xxx-xxxx"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-            />
+            <Input v-model="quickOwnerForm.phone" type="tel" placeholder="081-xxx-xxxx" class="font-mono" />
           </div>
 
           <div>
             <label class="block font-bold text-slate-700 mb-1">รหัสผ่านเริ่มต้น *</label>
-            <input
+            <Input
               v-model="quickOwnerForm.password"
               type="password"
               required
               minlength="6"
               placeholder="•••••••• (อย่างน้อย 6 ตัวอักษร)"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+              class="font-mono"
             />
           </div>
 
-          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 font-medium flex items-start gap-1.5">
+          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-medium flex items-start gap-1.5">
             <Info class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <span>บัญชีนี้จะมีระดับสิทธิ์ <strong>ROOM_OWNER</strong> สามารถเข้าดูและจัดการได้เฉพาะห้องที่ผูกไว้เท่านั้น</span>
           </div>
 
-          <div class="pt-2 flex justify-end gap-2">
-            <button
-              type="button"
-              @click="showQuickCreateOwnerModal = false"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer"
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="showQuickCreateOwnerModal = false">
               ยกเลิก
-            </button>
-            <button
-              type="submit"
-              :disabled="creatingOwner"
-              class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
-            >
+            </Button>
+            <Button type="submit" :disabled="creatingOwner">
               <UserPlus class="w-3.5 h-3.5" />
               <span>{{ creatingOwner ? 'กำลังสร้าง...' : 'บันทึกเจ้าของห้อง' }}</span>
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -458,6 +375,11 @@ import RoomInviteModal from '@/components/RoomInviteModal.vue';
 import RoomImportModal from '@/components/RoomImportModal.vue';
 import RoomTenancyHistoryModal from '@/components/RoomTenancyHistoryModal.vue';
 import ManualTenantCheckinModal from '@/components/ManualTenantCheckinModal.vue';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import {
   Upload,
   Plus,
@@ -474,8 +396,7 @@ import {
   Box,
   Radio,
   Crown,
-  Info,
-  X
+  Info
 } from 'lucide-vue-next';
 
 const roomStore = useRoomStore();

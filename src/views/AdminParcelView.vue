@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 bg-amber-400/30 border border-amber-300/40 rounded-full text-xs font-bold tracking-wider uppercase text-amber-100">
@@ -17,82 +17,82 @@
         </p>
       </div>
 
-      <button
-        @click="openCreateModal"
-        class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-amber-600/30 flex items-center gap-2 shrink-0 cursor-pointer"
-      >
+      <Button class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-600/30 shrink-0" @click="openCreateModal">
         <Plus class="w-4 h-4" />
         <span>บันทึกพัสดุเข้าใหม่ (Receive Parcel)</span>
-      </button>
+      </Button>
     </div>
 
     <!-- KPI Stats Bar -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
+      <Card class="p-4 flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
           <Package class="w-5 h-5" />
         </div>
         <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">พัสดุทั้งหมดในระบบ</div>
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">พัสดุทั้งหมดในระบบ</div>
           <div class="text-xl font-black text-slate-900 font-mono">{{ parcels.length }} รายการ</div>
         </div>
-      </div>
+      </Card>
 
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
+      <Card class="p-4 flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
           <Clock class="w-5 h-5" />
         </div>
         <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รอรับที่นิติฯ (Pending)</div>
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">รอรับที่นิติฯ (Pending)</div>
           <div class="text-xl font-black text-amber-600 font-mono">{{ pendingCount }} รายการ</div>
         </div>
-      </div>
+      </Card>
 
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-3">
+      <Card class="p-4 flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
           <CheckCircle2 class="w-5 h-5" />
         </div>
         <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">รับไปแล้ว (Picked Up)</div>
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">รับไปแล้ว (Picked Up)</div>
           <div class="text-xl font-black text-emerald-600 font-mono">{{ pickedUpCount }} รายการ</div>
         </div>
-      </div>
+      </Card>
     </div>
 
     <!-- Filter & Data Table -->
-    <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+    <Card class="p-0 overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <!-- Filter Tabs -->
         <div class="flex items-center gap-2">
-          <button
+          <Button
+            :variant="filterStatus === 'ALL' ? undefined : 'secondary'"
+            :class="filterStatus === 'ALL' ? 'bg-orange-600 hover:bg-orange-600/90' : ''"
+            size="sm"
             @click="filterStatus = 'ALL'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
-            :class="filterStatus === 'ALL' ? 'bg-orange-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
             ทั้งหมด ({{ parcels.length }})
-          </button>
-          <button
+          </Button>
+          <Button
+            :variant="filterStatus === 'PENDING' ? undefined : 'secondary'"
+            :class="filterStatus === 'PENDING' ? 'bg-amber-500 hover:bg-amber-500/90' : ''"
+            size="sm"
             @click="filterStatus = 'PENDING'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
-            :class="filterStatus === 'PENDING' ? 'bg-amber-500 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
             <Clock class="w-3.5 h-3.5" />
             <span>รอรับ ({{ pendingCount }})</span>
-          </button>
-          <button
+          </Button>
+          <Button
+            :variant="filterStatus === 'PICKED_UP' ? undefined : 'secondary'"
+            :class="filterStatus === 'PICKED_UP' ? 'bg-emerald-600 hover:bg-emerald-600/90' : ''"
+            size="sm"
             @click="filterStatus = 'PICKED_UP'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
-            :class="filterStatus === 'PICKED_UP' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
             <CheckCircle2 class="w-3.5 h-3.5" />
             <span>รับแล้ว ({{ pickedUpCount }})</span>
-          </button>
+          </Button>
         </div>
 
-        <button @click="fetchParcels" class="text-xs text-orange-600 hover:underline font-semibold cursor-pointer flex items-center gap-1">
+        <Button variant="link" size="sm" class="h-auto p-0 text-orange-600" @click="fetchParcels">
           <RotateCw class="w-3.5 h-3.5" />
           <span>รีเฟรชรายการ</span>
-        </button>
+        </Button>
       </div>
 
       <div class="overflow-x-auto">
@@ -134,36 +134,28 @@
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(item.receivedAt) }}</td>
               <td class="p-3.5 text-xs text-slate-500 font-mono">{{ item.pickedUpAt ? formatDate(item.pickedUpAt) : '-' }}</td>
               <td class="p-3.5">
-                <span
-                  class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1"
-                  :class="{
-                    'bg-amber-100 border-amber-300 text-amber-800': item.status === 'PENDING',
-                    'bg-emerald-100 border-emerald-300 text-emerald-800': item.status === 'PICKED_UP'
-                  }"
-                >
+                <Badge :variant="item.status === 'PENDING' ? 'warning' : 'success'">
                   <component :is="item.status === 'PENDING' ? Clock : CheckCircle2" class="w-3 h-3" />
                   <span>{{ item.status === 'PENDING' ? 'รอรับที่นิติฯ' : 'รับแล้ว' }}</span>
-                </span>
+                </Badge>
               </td>
               <td class="p-3.5 text-right space-x-1.5">
                 <!-- Mark as Picked Up Button -->
-                <button
+                <Button
                   v-if="item.status === 'PENDING'"
+                  size="sm"
+                  class="bg-emerald-600 hover:bg-emerald-600/90"
                   @click="handleMarkPickedUp(item.id, item.room?.roomNumber)"
-                  class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer inline-flex items-center gap-1"
                 >
                   <CheckCircle2 class="w-3.5 h-3.5" />
                   <span>จ่ายพัสดุแล้ว</span>
-                </button>
+                </Button>
 
                 <!-- Delete Button -->
-                <button
-                  @click="handleDeleteParcel(item.id)"
-                  class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer inline-flex items-center gap-1"
-                >
+                <Button variant="outline" size="sm" class="text-rose-700 border-rose-200 hover:bg-rose-50" @click="handleDeleteParcel(item.id)">
                   <Trash2 class="w-3.5 h-3.5" />
                   <span>ลบ</span>
-                </button>
+                </Button>
               </td>
             </tr>
 
@@ -175,45 +167,36 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
 
     <!-- Receive Parcel Modal -->
-    <div v-if="showModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Package class="w-5 h-5 text-amber-200" />
-            <h3 class="font-bold text-base text-white">บันทึกรับพัสดุเข้าใหม่ (Receive Parcel)</h3>
-          </div>
-          <button @click="showModal = false" class="text-orange-100 hover:text-white p-1 rounded-lg cursor-pointer">
-            <X class="w-5 h-5" />
-          </button>
+    <Dialog :open="showModal" @update:open="showModal = $event">
+      <DialogContent class="max-w-md p-0 overflow-hidden">
+        <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white">
+          <DialogHeader class="pr-6">
+            <DialogTitle class="text-white flex items-center gap-2">
+              <Package class="w-5 h-5 text-amber-200" />
+              <span>บันทึกรับพัสดุเข้าใหม่ (Receive Parcel)</span>
+            </DialogTitle>
+          </DialogHeader>
         </div>
 
         <form @submit.prevent="handleCreateParcel" class="p-6 space-y-4">
           <!-- Room Selector -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">เลือกห้องพัก (Select Room)</label>
-            <select
-              v-model="form.roomId"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-            >
+            <Select v-model="form.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in roomStore.rooms" :key="r.id" :value="r.id">
                 ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
               </option>
-            </select>
+            </Select>
           </div>
 
           <!-- Courier Selector -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">บริษัทขนส่ง (Courier)</label>
-            <select
-              v-model="form.courier"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-            >
+            <Select v-model="form.courier" required class="font-bold">
               <option value="Shopee Express">Shopee Express</option>
               <option value="Lazada Logistics">Lazada Logistics</option>
               <option value="Kerry Express">Kerry Express</option>
@@ -221,18 +204,13 @@
               <option value="J&T Express">J&T Express</option>
               <option value="ไปรษณีย์ไทย (Thailand Post)">ไปรษณีย์ไทย (EMS/ลงทะเบียน)</option>
               <option value="อื่นๆ (Other)">อื่นๆ</option>
-            </select>
+            </Select>
           </div>
 
           <!-- Tracking Number -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">หมายเลขพัสดุ / Tracking Number (Optional)</label>
-            <input
-              v-model="form.trackingNumber"
-              type="text"
-              placeholder="เช่น TH0192837465 หรือ SHP99887766"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-            />
+            <Input v-model="form.trackingNumber" type="text" placeholder="เช่น TH0192837465 หรือ SHP99887766" class="font-mono" />
           </div>
 
           <!-- Photo Upload -->
@@ -247,7 +225,7 @@
             <div v-if="uploading" class="text-xs text-orange-600 font-semibold animate-pulse mt-1">กำลังอัปโหลดรูปภาพ...</div>
 
             <div v-if="form.photoUrl" class="mt-2 relative inline-block">
-              <img :src="form.photoUrl" class="h-24 rounded-2xl object-cover border border-slate-200 shadow-xs" />
+              <img :src="form.photoUrl" class="h-24 rounded-xl object-cover border border-slate-200 shadow-xs" />
               <button
                 type="button"
                 @click="form.photoUrl = ''"
@@ -258,26 +236,16 @@
             </div>
           </div>
 
-          <div class="pt-3 flex gap-3">
-            <button
-              type="button"
-              @click="showModal = false"
-              class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              :disabled="submitting || uploading"
-              class="w-1/2 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-600/20 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="showModal = false">ยกเลิก</Button>
+            <Button type="submit" class="bg-orange-600 hover:bg-orange-600/90" :disabled="submitting || uploading">
               <CheckCircle2 class="w-4 h-4" />
               <span>{{ submitting ? 'กำลังบันทึก...' : 'บันทึกพัสดุ' }}</span>
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -298,6 +266,12 @@ import {
   Trash2,
   X
 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();

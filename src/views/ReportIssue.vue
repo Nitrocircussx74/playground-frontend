@@ -12,7 +12,7 @@
         </button>
         <div>
           <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">แจ้งซ่อม & ร้องเรียน</h1>
-          <p class="text-[11px] text-slate-500">ส่งเรื่องแจ้งซ่อม หรือแจ้งปัญหาให้เจ้าหน้าที่หอพัก</p>
+          <p class="text-xs text-slate-500">ส่งเรื่องแจ้งซ่อม หรือแจ้งปัญหาให้เจ้าหน้าที่หอพัก</p>
         </div>
       </div>
 
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Tenant & Room Info Banner -->
-    <div v-if="tenantProfile?.rooms?.length" class="p-3.5 bg-gradient-to-r from-teal-50/80 to-cyan-50/60 rounded-2xl border border-teal-100/80 flex items-center justify-between text-xs shadow-2xs">
+    <div v-if="tenantProfile?.rooms?.length" class="p-3.5 bg-gradient-to-r from-teal-50/80 to-cyan-50/60 rounded-xl border border-teal-100/80 flex items-center justify-between text-xs shadow-2xs">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
           <DoorClosed class="w-4 h-4" />
@@ -35,13 +35,13 @@
           <div class="font-bold text-slate-800">
             ห้อง {{ currentRoom?.roomNumber || '-' }}
           </div>
-          <div class="text-[11px] text-slate-500">
+          <div class="text-xs text-slate-500">
             {{ currentRoom?.building?.name || 'อาคารหลัก' }}
           </div>
         </div>
       </div>
 
-      <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
+      <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
         ผู้เช่าปัจจุบัน
       </span>
     </div>
@@ -49,19 +49,19 @@
     <!-- Disabled Feature Notice Banner -->
     <div
       v-if="!featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
-      class="p-5 bg-amber-50 border border-amber-200 rounded-3xl text-amber-900 space-y-2 shadow-xs"
+      class="p-5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 space-y-2 shadow-xs"
     >
       <div class="flex items-center gap-2 font-bold text-xs">
         <AlertTriangle class="w-4 h-4 text-amber-600 shrink-0" />
         <span>ระบบแจ้งซ่อมและร้องเรียนถูกปิดใช้งานชั่วคราว</span>
       </div>
-      <p class="text-[11px] text-amber-700 leading-relaxed">
+      <p class="text-xs text-amber-700 leading-relaxed">
         ผู้ดูแลหอพักได้ปิดการรับเรื่องแจ้งซ่อมหรือร้องเรียนผ่านระบบออนไลน์ชั่วคราว หากมีเหตุฉุกเฉินกรุณาติดต่อเจ้าหน้าที่โดยตรง
       </p>
     </div>
 
     <!-- Main Issue Report Form Card -->
-    <div v-else class="bg-white rounded-3xl border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5">
+    <div v-else class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5">
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- 1. Category Selection -->
         <div class="space-y-2">
@@ -75,13 +75,13 @@
               v-for="cat in categories"
               :key="cat.value"
               @click="form.category = cat.value"
-              class="p-2.5 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5"
+              class="p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5"
               :class="form.category === cat.value
                 ? 'bg-teal-50 border-teal-500 text-teal-900 font-bold ring-2 ring-teal-500/20 shadow-xs'
                 : 'bg-slate-50/70 hover:bg-slate-100 border-slate-200 text-slate-600 font-medium'"
             >
               <component :is="cat.icon" class="w-4 h-4" :class="form.category === cat.value ? 'text-teal-600' : 'text-slate-400'" />
-              <span class="text-[11px] leading-tight">{{ cat.label }}</span>
+              <span class="text-xs leading-tight">{{ cat.label }}</span>
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@
             <label for="description" class="block text-xs font-bold text-slate-700">
               รายละเอียดปัญหา / ข้อร้องเรียน <span class="text-rose-500">*</span>
             </label>
-            <span class="text-[10px] text-slate-400 font-mono">{{ form.description.length }}/500</span>
+            <span class="text-xs text-slate-400 font-mono">{{ form.description.length }}/500</span>
           </div>
 
           <textarea
@@ -102,7 +102,7 @@
             maxlength="500"
             required
             :placeholder="categoryPlaceholder"
-            class="w-full text-xs bg-slate-50/70 border border-slate-200 rounded-2xl p-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all resize-none leading-relaxed"
+            class="w-full text-xs bg-slate-50/70 border border-slate-200 rounded-xl p-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all resize-none leading-relaxed"
           ></textarea>
         </div>
 
@@ -117,7 +117,7 @@
             <div
               v-for="(img, idx) in previewImages"
               :key="idx"
-              class="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 shadow-2xs group"
+              class="relative aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-2xs group"
             >
               <img :src="img.url" alt="Preview" class="w-full h-full object-cover" />
               <button
@@ -135,10 +135,10 @@
               v-if="previewImages.length < 5"
               type="button"
               @click="triggerFileInput"
-              class="aspect-square rounded-2xl border-2 border-dashed border-slate-200 hover:border-teal-400 bg-slate-50 hover:bg-teal-50/50 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer"
+              class="aspect-square rounded-xl border-2 border-dashed border-slate-200 hover:border-teal-400 bg-slate-50 hover:bg-teal-50/50 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer"
             >
               <Plus class="w-5 h-5" />
-              <span class="text-[10px] font-medium">เพิ่มรูป</span>
+              <span class="text-xs font-medium">เพิ่มรูป</span>
             </button>
           </div>
 
@@ -146,15 +146,15 @@
           <div
             v-else
             @click="triggerFileInput"
-            class="p-5 rounded-2xl border-2 border-dashed border-slate-200 hover:border-teal-400 bg-slate-50/80 hover:bg-teal-50/40 text-center transition-all cursor-pointer space-y-1.5 group"
+            class="p-5 rounded-xl border-2 border-dashed border-slate-200 hover:border-teal-400 bg-slate-50/80 hover:bg-teal-50/40 text-center transition-all cursor-pointer space-y-1.5 group"
           >
-            <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
               <Camera class="w-5 h-5" />
             </div>
             <div class="text-xs font-semibold text-slate-700">
               แตะเพื่อเลือกรูปภาพจากเครื่อง หรือถ่ายรูปใหม่
             </div>
-            <p class="text-[10px] text-slate-400">
+            <p class="text-xs text-slate-400">
               รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 5MB ต่อรูป
             </p>
           </div>
@@ -175,7 +175,7 @@
           <button
             type="submit"
             :disabled="submitting || !form.description.trim()"
-            class="w-full py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 active:scale-[0.99] text-white rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+            class="w-full py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
           >
             <span v-if="submitting" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
             <Send v-else class="w-4 h-4" />

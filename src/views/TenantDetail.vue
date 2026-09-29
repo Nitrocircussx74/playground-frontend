@@ -3,13 +3,9 @@
     <!-- Top Header Bar / Navigation -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <button
-          @click="goBack"
-          class="p-2.5 bg-white hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 transition-all shadow-2xs flex items-center justify-center cursor-pointer"
-          title="ย้อนกลับ"
-        >
-          <span class="text-base font-bold">←</span>
-        </button>
+        <Button variant="outline" size="icon" @click="goBack" title="ย้อนกลับ">
+          <ArrowLeft class="w-4 h-4" />
+        </Button>
         <div>
           <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <User class="w-5 h-5 text-cyan-600" />
@@ -22,39 +18,33 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button
-          @click="loadTenantData"
-          class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
-        >
+        <Button variant="outline" @click="loadTenantData">
           <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" />
           <span>รีเฟรชข้อมูล</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="p-16 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-4">
+    <Card v-if="loading" class="p-16 text-center space-y-4">
       <div class="w-10 h-10 border-4 border-cyan-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p class="text-sm text-slate-600 font-medium">กำลังโหลดข้อมูลโปรไฟล์ผู้เช่าแบบ 360°...</p>
-    </div>
+    </Card>
 
     <!-- Error / Not Found State -->
-    <div v-else-if="error || !tenant" class="p-12 text-center bg-white border border-slate-200 rounded-3xl shadow-xs space-y-3">
-      <div class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 mb-3"><AlertCircle class="w-8 h-8" /></div>
+    <Card v-else-if="error || !tenant" class="p-12 text-center space-y-3">
+      <div class="w-16 h-16 bg-rose-50 rounded-xl flex items-center justify-center mx-auto text-rose-500 mb-3"><AlertCircle class="w-8 h-8" /></div>
       <h3 class="text-lg font-bold text-slate-800">ไม่พบข้อมูลผู้เช่า</h3>
       <p class="text-xs text-slate-500">{{ error || 'ไม่พบเรคคอร์ดของผู้เช่ารายนี้ในระบบ' }}</p>
-      <button
-        @click="goBack"
-        class="mt-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer"
-      >
+      <Button @click="goBack" class="mt-2">
         กลับไปหน้าหลัก
-      </button>
-    </div>
+      </Button>
+    </Card>
 
     <!-- Content State -->
     <div v-else class="space-y-6">
       <!-- Header Section (360-degree Profile Summary Card) -->
-      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-cyan-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-cyan-950 text-white rounded-xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
         <!-- Accent Glow background decoration -->
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-teal-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -68,11 +58,11 @@
                 v-if="tenant.linePictureUrl"
                 :src="tenant.linePictureUrl"
                 :alt="tenant.firstName"
-                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-cyan-500/40 shadow-lg"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover ring-4 ring-cyan-500/40 shadow-lg"
               />
               <div
                 v-else
-                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center ring-4 ring-cyan-500/40 shadow-lg"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center ring-4 ring-cyan-500/40 shadow-lg"
               >
                 {{ tenant.firstName ? tenant.firstName.charAt(0).toUpperCase() : 'U' }}
               </div>
@@ -173,14 +163,15 @@
 
               <!-- LINE Linking Action for Non-LINE / Walk-in Tenants -->
               <div v-if="!tenant.lineUserId" class="pt-2 flex flex-wrap items-center gap-2">
-                <button
+                <Button
                   @click="openLineLinkModal"
-                  class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  size="sm"
+                  class="bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/30 active:scale-95"
                 >
                   <MessageSquare class="w-3.5 h-3.5" />
                   <span>สร้างรหัส/QR เชื่อมต่อบัญชี LINE</span>
-                </button>
-                <span class="text-[11px] text-slate-300">
+                </Button>
+                <span class="text-xs text-slate-300">
                   (สำหรับผู้เช่าที่ลงทะเบียนแบบ Walk-in แล้วต้องการผูก LINE ภายหลัง)
                 </span>
               </div>
@@ -188,17 +179,17 @@
           </div>
 
           <!-- Profile Quick Stats Summary Right -->
-          <div class="grid grid-cols-3 gap-3 bg-slate-900/60 backdrop-blur-md p-3.5 rounded-2xl border border-slate-800/80 text-center shrink-0">
+          <div class="grid grid-cols-3 gap-3 bg-slate-900/60 backdrop-blur-md p-3.5 rounded-xl border border-slate-800/80 text-center shrink-0">
             <div class="px-2">
-              <div class="text-[11px] text-slate-400 font-medium">สัญญาเช่า</div>
+              <div class="text-xs text-slate-400 font-medium">สัญญาเช่า</div>
               <div class="text-lg font-extrabold text-white mt-0.5">{{ tenant.leaseContracts?.length || 0 }}</div>
             </div>
             <div class="px-2 border-x border-slate-800">
-              <div class="text-[11px] text-slate-400 font-medium">ประวัติบิล</div>
+              <div class="text-xs text-slate-400 font-medium">ประวัติบิล</div>
               <div class="text-lg font-extrabold text-white mt-0.5">{{ tenant.invoices?.length || 0 }}</div>
             </div>
             <div class="px-2">
-              <div class="text-[11px] text-slate-400 font-medium">แจ้งซ่อม</div>
+              <div class="text-xs text-slate-400 font-medium">แจ้งซ่อม</div>
               <div class="text-lg font-extrabold text-white mt-0.5">{{ tenant.maintenanceRequests?.length || 0 }}</div>
             </div>
           </div>
@@ -208,7 +199,7 @@
       <!-- Tabs Component Layout -->
       <Tabs v-model="activeTab" class="w-full">
         <!-- Tabs Trigger List Navigation -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <Card class="p-2">
           <TabsList class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-full">
             <TabsTrigger value="overview" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
               <FileText class="w-4 h-4" />
@@ -218,7 +209,7 @@
             <TabsTrigger value="billing" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
               <Receipt class="w-4 h-4" />
               <span>ประวัติการชำระเงิน</span>
-              <span v-if="latePaymentsCount > 0" class="px-1.5 py-0.5 text-[10px] bg-rose-500 text-white rounded-full font-bold">
+              <span v-if="latePaymentsCount > 0" class="px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full font-bold">
                 {{ latePaymentsCount }}
               </span>
             </TabsTrigger>
@@ -226,7 +217,7 @@
             <TabsTrigger value="maintenance" class="flex-1 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
               <Wrench class="w-4 h-4" />
               <span>ประวัติแจ้งซ่อม</span>
-              <span v-if="pendingMaintenanceCount > 0" class="px-1.5 py-0.5 text-[10px] bg-amber-500 text-white rounded-full font-bold">
+              <span v-if="pendingMaintenanceCount > 0" class="px-1.5 py-0.5 text-xs bg-amber-500 text-white rounded-full font-bold">
                 {{ pendingMaintenanceCount }}
               </span>
             </TabsTrigger>
@@ -236,14 +227,14 @@
               <span>การเข้าถึง & ความปลอดภัย</span>
             </TabsTrigger>
           </TabsList>
-        </div>
+        </Card>
 
         <!-- TAB 1: ภาพรวม & สัญญาเช่า (Overview & Leases) -->
         <TabsContent value="overview">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Tenancy History & Rooms -->
             <div class="lg:col-span-2 space-y-6">
-              <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-4">
+              <Card class="p-6 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div>
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -260,10 +251,10 @@
                 </div>
 
                 <!-- Empty Leases List -->
-                <div v-if="!tenant.leaseContracts || tenant.leaseContracts.length === 0" class="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200/60 text-slate-400 space-y-1">
-                  <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><FileText class="w-6 h-6" /></div>
+                <div v-if="!tenant.leaseContracts || tenant.leaseContracts.length === 0" class="p-8 text-center bg-slate-50 rounded-xl border border-slate-200/60 text-slate-400 space-y-1">
+                  <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><FileText class="w-6 h-6" /></div>
                   <div class="text-xs font-bold text-slate-600">ยังไม่มีบันทึกสัญญาเช่า</div>
-                  <p class="text-[11px]">ผู้เช่าคนนี้ยังไม่มีประวัติเปิดสัญญาเช่าอย่างเป็นทางการในระบบ</p>
+                  <p class="text-xs">ผู้เช่าคนนี้ยังไม่มีประวัติเปิดสัญญาเช่าอย่างเป็นทางการในระบบ</p>
                 </div>
 
                 <!-- Leases Timeline List -->
@@ -271,7 +262,7 @@
                   <div
                     v-for="lease in tenant.leaseContracts"
                     :key="lease.id"
-                    class="p-5 rounded-2xl border transition-all space-y-3"
+                    class="p-5 rounded-xl border transition-all space-y-3"
                     :class="lease.status === 'ACTIVE' ? 'bg-cyan-50/40 border-cyan-200 shadow-2xs' : 'bg-slate-50/60 border-slate-200'"
                   >
                     <!-- Lease Item Header -->
@@ -294,27 +285,20 @@
                       </div>
 
                       <!-- Lease Status Badge -->
-                      <span
-                        class="px-3 py-1 rounded-full text-xs font-bold"
-                        :class="{
-                          'bg-emerald-100 text-emerald-800 border border-emerald-300': lease.status === 'ACTIVE',
-                          'bg-slate-200 text-slate-700 border border-slate-300': lease.status === 'ENDED',
-                          'bg-rose-100 text-rose-800 border border-rose-300': lease.status === 'CANCELLED'
-                        }"
-                      >
+                      <Badge :variant="lease.status === 'ACTIVE' ? 'success' : lease.status === 'CANCELLED' ? 'danger' : 'neutral'">
                         {{ lease.status === 'ACTIVE' ? 'กำลังพักอาศัย' : lease.status === 'ENDED' ? 'ย้ายออกแล้ว' : 'ยกเลิกสัญญา' }}
-                      </span>
+                      </Badge>
                     </div>
 
                     <!-- Dates & Deposit Info -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-white p-3 rounded-xl border border-slate-200/80 text-xs">
                       <div>
-                        <span class="text-slate-400 block text-[10px]">วันเริ่มสัญญา:</span>
+                        <span class="text-slate-400 block text-xs">วันเริ่มสัญญา:</span>
                         <span class="font-bold text-slate-800">{{ formatDate(lease.startDate) }}</span>
                       </div>
 
                       <div>
-                        <span class="text-slate-400 block text-[10px]">วันสิ้นสุดสัญญา:</span>
+                        <span class="text-slate-400 block text-xs">วันสิ้นสุดสัญญา:</span>
                         <span class="font-bold text-slate-800">
                           {{ lease.actualEndDate ? formatDate(lease.actualEndDate) : formatDate(lease.expectedEndDate) }}
                           <span v-if="lease.status === 'ACTIVE'" class="text-cyan-600 font-normal"> (ปัจจุบัน)</span>
@@ -322,7 +306,7 @@
                       </div>
 
                       <div class="col-span-2 sm:col-span-1">
-                        <span class="text-slate-400 block text-[10px]">เงินประกัน/มัดจำ:</span>
+                        <span class="text-slate-400 block text-xs">เงินประกัน/มัดจำ:</span>
                         <span class="font-bold text-cyan-700">{{ formatCurrency(lease.depositAmount) }}</span>
                       </div>
                     </div>
@@ -333,7 +317,7 @@
                         <span class="font-bold">เหตุผลที่ย้ายออก:</span> {{ lease.moveOutReason }}
                       </div>
 
-                      <div v-if="lease.moveOutRecord" class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-amber-200/60 text-[11px]">
+                      <div v-if="lease.moveOutRecord" class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-amber-200/60 text-xs">
                         <span>ยอดคืนมัดจำสุทธิ: <strong>{{ formatCurrency(lease.moveOutRecord.netRefund) }}</strong></span>
                         <span class="px-2 py-0.5 rounded-md bg-amber-200/60 font-bold">
                           สถานะคืนเงิน: {{ lease.moveOutRecord.refundStatus === 'PAID' ? 'ชำระคืนเรียบร้อย' : 'รอคืนเงิน' }}
@@ -342,19 +326,19 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
 
             <!-- Right 1 Col: Internal Notes Box (RBAC Controlled for OWNER / MANAGER) -->
             <div class="space-y-6">
-              <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-4">
+              <Card class="p-6 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                     <Lock class="w-4 h-4" />
                     <span>บันทึกภายใน (Internal Notes)</span>
                   </h3>
                   <span
-                    class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase"
+                    class="text-xs font-extrabold px-2.5 py-1 rounded-md uppercase"
                     :class="canManageNotes ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-100 text-slate-500'"
                   >
                     {{ canManageNotes ? 'OWNER / MANAGER ONLY' : 'READ ONLY' }}
@@ -367,7 +351,7 @@
 
                 <!-- Blacklist Flag Checkbox Toggle -->
                 <div
-                  class="p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3"
+                  class="p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3"
                   :class="notesForm.isBlacklisted ? 'bg-rose-50 border-rose-300' : 'bg-slate-50 border-slate-200'"
                 >
                   <div class="flex items-center gap-2.5">
@@ -382,7 +366,7 @@
                       กำหนดสถานะ Blacklist (ติดแบล็กลิสต์)
                     </label>
                   </div>
-                  <span v-if="notesForm.isBlacklisted" class="text-[11px] font-extrabold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-md">
+                  <span v-if="notesForm.isBlacklisted" class="text-xs font-extrabold text-rose-600 bg-rose-100 px-2 py-0.5 rounded-md">
                     ความเสี่ยงสูง
                   </span>
                 </div>
@@ -395,28 +379,22 @@
                     rows="6"
                     :disabled="!canManageNotes || savingNotes"
                     placeholder="พิมพ์บันทึกภายใน เช่น จ่ายค่าเช่าตรงเวลา, มักขอผ่อนผันค่าน้ำไฟ, มีเสียงดังรบกวนห้องข้างเคียง..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 disabled:bg-slate-100 disabled:text-slate-500"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 disabled:bg-slate-100 disabled:text-slate-500"
                   ></textarea>
                 </div>
 
                 <!-- Action Save Button for Authorized Admin -->
-                <div v-if="canManageNotes">
-                  <button
-                    @click="saveInternalNotes"
-                    :disabled="savingNotes"
-                    class="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-cyan-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span v-if="savingNotes" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>{{ savingNotes ? 'กำลังบันทึก...' : 'บันทึกข้อมูลภายใน' }}</span>
-                  </button>
-                </div>
+                <Button v-if="canManageNotes" class="w-full" :disabled="savingNotes" @click="saveInternalNotes">
+                  <span v-if="savingNotes" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>{{ savingNotes ? 'กำลังบันทึก...' : 'บันทึกข้อมูลภายใน' }}</span>
+                </Button>
 
                 <!-- Restricted Access Alert Notice -->
-                <div v-else class="p-3 bg-slate-100 border border-slate-200 rounded-2xl text-[11px] text-slate-600 flex items-center gap-2">
+                <div v-else class="p-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-600 flex items-center gap-2">
                   <span>ℹ️</span>
                   <span>คุณมีสิทธิ์อ่านเท่านั้น (เฉพาะ Role OWNER หรือ MANAGER ที่แก้ไขได้)</span>
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         </TabsContent>
@@ -427,40 +405,40 @@
             <!-- Header Summary Metrics Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <!-- Metric 1: Total Paid Amount -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ยอดรวมที่เคยจ่าย</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ยอดรวมที่เคยจ่าย</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">{{ formatCurrency(totalPaidAmount) }}</div>
-                <div class="text-[10px] text-slate-400">จากบิลที่ชำระเรียบร้อยแล้ว</div>
-              </div>
+                <div class="text-xs text-slate-400">จากบิลที่ชำระเรียบร้อยแล้ว</div>
+              </Card>
 
               <!-- Metric 2: Late Payments Count -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">จำนวนครั้งที่จ่ายช้า</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">จำนวนครั้งที่จ่ายช้า</div>
                 <div class="text-xl sm:text-2xl font-extrabold" :class="latePaymentsCount > 0 ? 'text-rose-600' : 'text-slate-800'">
                   {{ latePaymentsCount }} ครั้ง
                 </div>
-                <div class="text-[10px] text-slate-400">จ่ายหลังวันครบกำหนด หรือค้างชำระ</div>
-              </div>
+                <div class="text-xs text-slate-400">จ่ายหลังวันครบกำหนด หรือค้างชำระ</div>
+              </Card>
 
               <!-- Metric 3: Total Invoices -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">จำนวนบิลทั้งหมด</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">จำนวนบิลทั้งหมด</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-cyan-700">{{ tenant.invoices?.length || 0 }} ใบ</div>
-                <div class="text-[10px] text-slate-400">ประวัติออกบิลย้อนหลัง</div>
-              </div>
+                <div class="text-xs text-slate-400">ประวัติออกบิลย้อนหลัง</div>
+              </Card>
 
               <!-- Metric 4: Outstanding Balance -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ยอดค้างชำระปัจจุบัน</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ยอดค้างชำระปัจจุบัน</div>
                 <div class="text-xl sm:text-2xl font-extrabold" :class="outstandingBalance > 0 ? 'text-amber-600' : 'text-slate-800'">
                   {{ formatCurrency(outstandingBalance) }}
                 </div>
-                <div class="text-[10px] text-slate-400">สถานะ Pending หรือ Overdue</div>
-              </div>
+                <div class="text-xs text-slate-400">สถานะ Pending หรือ Overdue</div>
+              </Card>
             </div>
 
             <!-- Invoices History Table Card -->
-            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <Card class="p-0 overflow-hidden">
               <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -475,15 +453,15 @@
 
               <!-- Empty Invoices Table -->
               <div v-if="!tenant.invoices || tenant.invoices.length === 0" class="p-12 text-center text-slate-400 space-y-2">
-                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Receipt class="w-6 h-6" /></div>
+                <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Receipt class="w-6 h-6" /></div>
                 <div class="text-xs font-bold text-slate-600">ยังไม่มีประวัติใบแจ้งหนี้</div>
-                <p class="text-[11px]">ไม่พบบิลค่าเช่าของผู้เช่ารายนี้ในระบบ</p>
+                <p class="text-xs">ไม่พบบิลค่าเช่าของผู้เช่ารายนี้ในระบบ</p>
               </div>
 
               <!-- Invoices Table -->
               <div v-else class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-700">
-                  <thead class="bg-slate-50 border-b border-slate-200/80 text-[11px] font-bold text-slate-500 uppercase">
+                  <thead class="bg-slate-50 border-b border-slate-200/80 text-xs font-bold text-slate-500 uppercase">
                     <tr>
                       <th class="py-3.5 px-4">เลขที่บิล</th>
                       <th class="py-3.5 px-4">รอบบิล</th>
@@ -506,25 +484,18 @@
                         {{ inv.paidAt ? formatDate(inv.paidAt) : '-' }}
                       </td>
                       <td class="py-3.5 px-4 text-center">
-                        <span
-                          class="px-2.5 py-1 rounded-full text-[11px] font-bold inline-block"
-                          :class="{
-                            'bg-emerald-100 text-emerald-800 border border-emerald-200': inv.status === 'paid',
-                            'bg-amber-100 text-amber-800 border border-amber-200': inv.status === 'pending',
-                            'bg-rose-100 text-rose-800 border border-rose-200': inv.status === 'overdue'
-                          }"
-                        >
+                        <Badge :variant="inv.status === 'paid' ? 'success' : inv.status === 'pending' ? 'warning' : 'danger'">
                           {{ inv.status === 'paid' ? 'ชำระแล้ว' : inv.status === 'pending' ? 'รอชำระ' : 'เกินกำหนด' }}
-                        </span>
+                        </Badge>
                       </td>
                       <td class="py-3.5 px-4 text-right">
-                        <span v-if="getInvoicePaymentBehavior(inv).isLate" class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 text-[11px] font-bold">
+                        <span v-if="getInvoicePaymentBehavior(inv).isLate" class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 text-xs font-bold">
                           จ่ายช้า {{ getInvoicePaymentBehavior(inv).daysLate }} วัน
                         </span>
-                        <span v-else-if="inv.status === 'paid'" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                        <span v-else-if="inv.status === 'paid'" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-semibold">
                           ตรงเวลา
                         </span>
-                        <span v-else class="text-slate-400 text-[11px] italic">
+                        <span v-else class="text-slate-400 text-xs italic">
                           -
                         </span>
                       </td>
@@ -532,7 +503,7 @@
                   </tbody>
                 </table>
               </div>
-            </div>
+            </Card>
           </div>
         </TabsContent>
 
@@ -542,36 +513,36 @@
             <!-- Summary Metrics Header -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <!-- Metric 1: Total Maintenance Requests -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">แจ้งซ่อมทั้งหมด</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">แจ้งซ่อมทั้งหมด</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ tenant.maintenanceRequests?.length || 0 }} ครั้ง</div>
-                <div class="text-[10px] text-slate-400">ประวัติขอรับบริการซ่อม</div>
-              </div>
+                <div class="text-xs text-slate-400">ประวัติขอรับบริการซ่อม</div>
+              </Card>
 
               <!-- Metric 2: Resolved Requests -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ซ่อมเสร็จสิ้น</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ซ่อมเสร็จสิ้น</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">{{ resolvedMaintenanceCount }} รายการ</div>
-                <div class="text-[10px] text-slate-400">สถานะ Resolved</div>
-              </div>
+                <div class="text-xs text-slate-400">สถานะ Resolved</div>
+              </Card>
 
               <!-- Metric 3: In Progress / Pending -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">กำลังดำเนินการ</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">กำลังดำเนินการ</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-amber-600">{{ pendingMaintenanceCount }} รายการ</div>
-                <div class="text-[10px] text-slate-400">รอดำเนินการหรือกำลังซ่อม</div>
-              </div>
+                <div class="text-xs text-slate-400">รอดำเนินการหรือกำลังซ่อม</div>
+              </Card>
 
               <!-- Metric 4: Total Repair Cost -->
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs space-y-1">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ค่าซ่อมแซมรวม</div>
+              <Card class="p-5 space-y-1">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ค่าซ่อมแซมรวม</div>
                 <div class="text-xl sm:text-2xl font-extrabold text-cyan-700">{{ formatCurrency(totalRepairCost) }}</div>
-                <div class="text-[10px] text-slate-400">รวมทุกรายการแจ้งซ่อม</div>
-              </div>
+                <div class="text-xs text-slate-400">รวมทุกรายการแจ้งซ่อม</div>
+              </Card>
             </div>
 
             <!-- Maintenance Request Log Cards / List -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-4">
+            <Card class="p-6 space-y-4">
               <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                   <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -586,9 +557,9 @@
 
               <!-- Empty State -->
               <div v-if="!tenant.maintenanceRequests || tenant.maintenanceRequests.length === 0" class="p-12 text-center text-slate-400 space-y-2">
-                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Wrench class="w-6 h-6" /></div>
+                <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Wrench class="w-6 h-6" /></div>
                 <div class="text-xs font-bold text-slate-600">ยังไม่มีรายการแจ้งซ่อม</div>
-                <p class="text-[11px]">ผู้เช่าคนนี้ไม่เคยส่งคำขอแจ้งซ่อมแซมสิ่งของในห้องพัก</p>
+                <p class="text-xs">ผู้เช่าคนนี้ไม่เคยส่งคำขอแจ้งซ่อมแซมสิ่งของในห้องพัก</p>
               </div>
 
               <!-- Maintenance Log Items -->
@@ -596,7 +567,7 @@
                 <div
                   v-for="req in tenant.maintenanceRequests"
                   :key="req.id"
-                  class="p-5 rounded-2xl border bg-slate-50/70 border-slate-200 hover:border-cyan-300 transition-all space-y-3"
+                  class="p-5 rounded-xl border bg-slate-50/70 border-slate-200 hover:border-cyan-300 transition-all space-y-3"
                 >
                   <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="space-y-1">
@@ -610,37 +581,29 @@
                     </div>
 
                     <!-- Status Badge -->
-                    <span
-                      class="px-3 py-1 rounded-full text-xs font-bold"
-                      :class="{
-                        'bg-amber-100 text-amber-800 border border-amber-300': req.status === 'pending',
-                        'bg-blue-100 text-blue-800 border border-blue-300': req.status === 'in_progress',
-                        'bg-emerald-100 text-emerald-800 border border-emerald-300': req.status === 'resolved',
-                        'bg-slate-200 text-slate-700 border border-slate-300': req.status === 'cancelled'
-                      }"
-                    >
+                    <Badge :variant="req.status === 'resolved' ? 'success' : req.status === 'cancelled' ? 'neutral' : 'warning'">
                       {{
                         req.status === 'pending' ? 'รอดำเนินการ' :
                         req.status === 'in_progress' ? 'กำลังซ่อม' :
                         req.status === 'resolved' ? 'ซ่อมเสร็จสิ้น' : 'ยกเลิก'
                       }}
-                    </span>
+                    </Badge>
                   </div>
 
                   <!-- Details Grid -->
                   <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-3 rounded-xl border border-slate-200/80 text-xs">
                     <div>
-                      <span class="text-slate-400 block text-[10px]">ช่างผู้รับผิดชอบ:</span>
+                      <span class="text-slate-400 block text-xs">ช่างผู้รับผิดชอบ:</span>
                       <span class="font-bold text-slate-800">{{ req.technicianName || 'ยังไม่มอบหมาย' }}</span>
                     </div>
 
                     <div>
-                      <span class="text-slate-400 block text-[10px]">ค่าซ่อมแซม:</span>
+                      <span class="text-slate-400 block text-xs">ค่าซ่อมแซม:</span>
                       <span class="font-bold text-cyan-700">{{ formatCurrency(req.repairCost) }}</span>
                     </div>
 
                     <div v-if="Number(req.repairCost || 0) > 0">
-                      <span class="text-slate-400 block text-[10px]">ผู้รับผิดชอบค่าใช้จ่าย:</span>
+                      <span class="text-slate-400 block text-xs">ผู้รับผิดชอบค่าใช้จ่าย:</span>
                       <span class="font-bold" :class="req.payer === 'TENANT' ? 'text-amber-700' : 'text-slate-800'">
                         {{ req.payer === 'TENANT' ? 'ลูกบ้านจ่ายเอง' : 'นิติออกให้' }}
                         <span v-if="req.payer === 'TENANT'" class="font-normal text-slate-400">
@@ -650,7 +613,7 @@
                     </div>
 
                     <div>
-                      <span class="text-slate-400 block text-[10px]">วันที่แจ้ง:</span>
+                      <span class="text-slate-400 block text-xs">วันที่แจ้ง:</span>
                       <span class="font-mono text-slate-700">{{ formatDate(req.createdAt) }}</span>
                     </div>
                   </div>
@@ -661,7 +624,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </TabsContent>
 
@@ -673,17 +636,10 @@
     </div>
 
     <!-- LINE Account Linking Modal for Existing Tenant -->
-    <div v-if="showLineLinkModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 border border-slate-200 text-slate-900 relative">
-        <button
-          @click="showLineLinkModal = false"
-          class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
-        >
-          <X class="w-4 h-4" />
-        </button>
-
+    <Dialog :open="showLineLinkModal" @update:open="showLineLinkModal = $event">
+      <DialogContent class="max-w-md space-y-5">
         <div class="text-center space-y-2">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-2xs">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-2xs">
             <MessageSquare class="w-6 h-6" />
           </div>
           <h3 class="text-lg font-extrabold text-slate-900 tracking-tight">เชื่อมต่อบัญชี LINE ให้ผู้เช่า</h3>
@@ -698,22 +654,22 @@
         </div>
 
         <div v-else class="space-y-4">
-          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-2">
-            <div class="text-[11px] font-bold text-slate-500 uppercase">รหัสเชิญ 6 หลัก (Invite Code)</div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center space-y-2">
+            <div class="text-xs font-bold text-slate-500 uppercase">รหัสเชิญ 6 หลัก (Invite Code)</div>
             <div class="text-3xl font-black font-mono tracking-widest text-emerald-600">
               {{ generatedInviteCode }}
             </div>
-            <div class="text-[11px] text-slate-400">
+            <div class="text-xs text-slate-400">
               หมดอายุใน 7 วัน (ใช้คู่กับเบอร์โทรศัพท์ 4 ตัวท้าย: <span class="font-mono font-bold text-slate-700">{{ (tenant?.phone || '').slice(-4) }}</span>)
             </div>
           </div>
 
           <div v-if="qrCodeDataUrl" class="text-center space-y-2">
             <div class="text-xs font-bold text-slate-600">หรือให้ลูกบ้านสแกน QR Code เพื่อเปิด LINE LIFF:</div>
-            <img :src="qrCodeDataUrl" alt="LINE Onboarding QR" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200 shadow-xs" />
+            <img :src="qrCodeDataUrl" alt="LINE Onboarding QR" class="w-48 h-48 mx-auto rounded-xl border border-slate-200 shadow-xs" />
           </div>
 
-          <div class="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-[11px] text-emerald-900 space-y-1">
+          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-900 space-y-1">
             <div class="font-bold">วิธีการเชื่อมต่อสำหรับลูกบ้าน:</div>
             <ol class="list-decimal pl-4 space-y-0.5 text-emerald-800">
               <li>เปิด LINE ของหอพัก และเข้าเมนู "ผูกบัญชีลูกบ้าน"</li>
@@ -722,15 +678,12 @@
             </ol>
           </div>
 
-          <button
-            @click="showLineLinkModal = false"
-            class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
-          >
+          <Button class="w-full bg-slate-900 hover:bg-slate-800" @click="showLineLinkModal = false">
             ปิดหน้าต่าง (Close)
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -749,8 +702,7 @@ import {
   ShieldCheck,
   Home,
   Lock,
-  X,
-  CheckCircle2
+  ArrowLeft
 } from 'lucide-vue-next';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -762,6 +714,10 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import TenantSecurityTab from '@/components/TenantSecurityTab.vue';
 import { formatShortDate as formatDate, formatCurrency } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 const route = useRoute();
 const router = useRouter();

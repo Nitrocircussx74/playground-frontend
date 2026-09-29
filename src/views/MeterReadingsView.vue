@@ -3,41 +3,25 @@
     <!-- View Navigation Tabs Header -->
     <div class="flex items-center justify-between border-b border-slate-200 pb-3">
       <div class="flex items-center gap-2">
-        <button
-          @click="activeTab = 'fast-table'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
-          :class="activeTab === 'fast-table' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-        >
-          <Zap class="w-6 h-6 text-amber-500" />
+        <Button :variant="activeTab === 'fast-table' ? 'default' : 'outline'" @click="activeTab = 'fast-table'">
+          <Zap class="w-4 h-4 text-amber-500" />
           <span>ตารางคีย์มิเตอร์ (Fast Entry)</span>
-        </button>
+        </Button>
 
-        <button
-          @click="activeTab = 'draft-review'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
-          :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-        >
+        <Button :variant="activeTab === 'draft-review' ? 'default' : 'outline'" @click="activeTab = 'draft-review'">
           <FileText class="w-4 h-4" />
           <span>ตรวจทานบิล Draft (Review & Publish)</span>
-        </button>
+        </Button>
 
-        <button
-          @click="activeTab = 'single-history'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'single-history' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-        >
+        <Button :variant="activeTab === 'single-history' ? 'default' : 'outline'" @click="activeTab = 'single-history'">
           <History class="w-4 h-4" />
           <span>ประวัติการจดมิเตอร์</span>
-        </button>
+        </Button>
 
-        <button
-          id="tour-btn-import-excel"
-          @click="showImportModal = true"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-md shadow-teal-600/20 cursor-pointer"
-        >
+        <Button id="tour-btn-import-excel" @click="showImportModal = true">
           <BarChart2 class="w-4 h-4" />
           <span>นำเข้าไฟล์ Excel/CSV</span>
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -54,53 +38,38 @@
     <!-- Tab 3: Single Entry & History Logs -->
     <div v-else-if="activeTab === 'single-history'" class="space-y-6">
       <!-- Form for Recording Single Meter -->
-      <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-4">
+      <Card class="p-6 space-y-4">
         <h2 class="text-lg font-semibold text-slate-900">บันทึกมิเตอร์รายห้อง (Single Meter Entry)</h2>
 
         <form @submit.prevent="handleSubmit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Select Room</label>
-            <select
-              v-model="form.roomId"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-            >
+            <Select v-model="form.roomId" required>
               <option value="" disabled>-- Select Room --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
                 Room {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }} ({{ room.status }})
               </option>
-            </select>
+            </Select>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Meter Type</label>
-            <select
-              v-model="form.meterType"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-            >
+            <Select v-model="form.meterType" required>
               <option value="water">Water (น้ำ)</option>
               <option value="electric">Electric (ไฟ)</option>
-            </select>
+            </Select>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Billing Cycle</label>
-            <div class="p-1 bg-slate-50 border border-slate-300 rounded-xl">
+            <div class="p-1 bg-slate-50 border border-input rounded-xl">
               <CycleDatePicker v-model="form.billingCycle" />
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Current Reading</label>
-            <input
-              v-model.number="form.currentReading"
-              type="number"
-              step="0.01"
-              placeholder="e.g. 135"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-            />
+            <Input v-model.number="form.currentReading" type="number" step="0.01" placeholder="e.g. 135" required class="text-sm" />
           </div>
 
           <div class="col-span-full flex items-center justify-between pt-2">
@@ -109,22 +78,18 @@
               <span>Meter has been reset (มิเตอร์วนรอบกลับมา 0)</span>
             </label>
 
-            <button
-              type="submit"
-              :disabled="meterStore.isLoading"
-              class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 disabled:opacity-50"
-            >
+            <Button type="submit" :disabled="meterStore.isLoading">
               {{ meterStore.isLoading ? 'Saving...' : 'Save Meter Reading' }}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
+      </Card>
 
       <!-- Meter Records Table -->
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+      <Card class="p-0 overflow-hidden">
         <div class="p-4 border-b border-slate-200 flex items-center justify-between">
           <h3 class="font-semibold text-slate-900">Recent Meter Records</h3>
-          <button @click="meterStore.fetchMeterRecords(buildingStore.activeBuildingId)" class="text-xs text-teal-600 hover:underline font-semibold">Refresh</button>
+          <Button variant="link" size="sm" class="h-auto p-0" @click="meterStore.fetchMeterRecords(buildingStore.activeBuildingId)">Refresh</Button>
         </div>
 
         <div class="overflow-x-auto">
@@ -160,7 +125,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </div>
     <!-- Bulk Meter Import Modal -->
     <MeterImportModal
@@ -182,6 +147,10 @@ import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
 import MeterImportModal from '@/components/MeterImportModal.vue';
 import CycleDatePicker from '@/components/common/CycleDatePicker.vue';
 import { showSuccess, showError } from '@/utils/swal';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 
 const activeTab = ref('fast-table');
 const showImportModal = ref(false);
