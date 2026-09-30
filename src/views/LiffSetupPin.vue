@@ -16,7 +16,7 @@
 
       <!-- Icon Badge -->
       <div
-        class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+        class="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
         :class="isResetMode ? 'bg-amber-50 border border-amber-100 text-amber-600' : 'bg-teal-50 border border-teal-100 text-teal-600'"
       >
         <KeyRound v-if="isResetMode" class="w-6 h-6" />
@@ -24,14 +24,14 @@
       </div>
 
       <!-- User Info Pill (if resetting with phone/name) -->
-      <div v-if="userInfoText" class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-[11px] font-medium text-slate-600 border border-slate-200/60">
+      <div v-if="userInfoText" class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600 border border-slate-200/60">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
         <span class="truncate max-w-[200px]">{{ userInfoText }}</span>
       </div>
 
       <div class="space-y-1">
         <span
-          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border"
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border"
           :class="isResetMode ? 'bg-amber-50 text-amber-700 border-amber-200/80' : 'bg-teal-50 text-teal-600 border-teal-100'"
         >
           {{ isResetMode ? 'รีเซ็ตรหัส PIN • ' : '' }}ขั้นตอนที่ {{ step }} จาก 2

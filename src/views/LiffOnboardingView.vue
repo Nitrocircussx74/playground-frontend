@@ -3,15 +3,15 @@
     <div class="w-full max-w-sm space-y-5">
       <!-- Header Branding -->
       <div class="text-center space-y-2.5">
-        <div class="w-16 h-16 rounded-2xl bg-white/95 p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
+        <div class="w-16 h-16 rounded-xl bg-white/95 p-1 border border-slate-100 shadow-md shadow-emerald-950/5 mx-auto flex items-center justify-center overflow-hidden">
           <img src="/horspace-app-icon.webp" alt="Horspace Logo" width="64" height="64" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
 
         <div class="space-y-1">
-          <div v-if="buildingName && buildingName !== 'หอพัก'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50/80 border border-emerald-200/80 rounded-full text-xs font-bold text-emerald-800 shadow-xs mb-1">
-            <Building2 class="w-3.5 h-3.5 text-emerald-600" />
+          <Badge v-if="buildingName && buildingName !== 'หอพัก'" variant="success" class="border border-emerald-200/80 shadow-xs font-bold mb-1">
+            <Building2 class="w-3.5 h-3.5" />
             <span>{{ buildingName }}</span>
-          </div>
+          </Badge>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
             Horspace <span class="text-emerald-600 font-semibold">(ฮอร์สเปซ)</span>
           </h1>
@@ -20,7 +20,7 @@
       </div>
 
       <!-- Mode Selector Tabs -->
-      <div class="grid grid-cols-2 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/50 text-xs font-semibold">
+      <div class="grid grid-cols-2 p-1 bg-slate-100/90 rounded-xl border border-slate-200/50 text-xs font-semibold">
         <button
           type="button"
           @click="activeMode = 'phone'"
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Form Card -->
-      <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-100/90 shadow-xs space-y-4">
+      <Card class="p-5 sm:p-6 space-y-4">
         <!-- MODE 1: Phone Verification -->
         <div v-if="activeMode === 'phone'">
           <!-- Case A: Existing User detected in Horspace -> Prompt PIN -->
@@ -50,12 +50,12 @@
             <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
               <div>
                 <div class="font-bold text-slate-800">{{ existingUserName || 'ลูกบ้าน Horspace' }}</div>
-                <div class="text-[11px] text-slate-500 font-mono">{{ phoneInput }}</div>
+                <div class="text-xs text-slate-500 font-mono">{{ phoneInput }}</div>
               </div>
               <button
                 type="button"
                 @click="isExistingUserPrompt = false; pinInput = ''; errorMessage = ''"
-                class="text-[11px] text-emerald-700 hover:text-emerald-800 font-medium cursor-pointer"
+                class="text-xs text-emerald-700 hover:text-emerald-800 font-medium cursor-pointer"
               >
                 เปลี่ยนเบอร์
               </button>
@@ -66,7 +66,7 @@
                 {{ existingUserHasPin ? 'กรอกรหัส PIN 6 หลักเดิมของคุณ' : 'ตั้งรหัส PIN 6 หลักใหม่สำหรับบัญชีนี้' }}
                 <span class="text-rose-500">*</span>
               </label>
-              <input
+              <Input
                 v-model="pinInput"
                 type="password"
                 inputmode="numeric"
@@ -75,17 +75,17 @@
                 placeholder="••••••"
                 required
                 autofocus
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 font-mono font-bold text-xl text-center tracking-[0.3em] text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
+                class="h-auto px-3.5 py-3 bg-slate-50 border-slate-200 rounded-xl font-mono font-bold text-xl text-center tracking-[0.3em] placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
               />
               <div class="flex items-center justify-between pt-0.5">
-                <p class="text-[11px] text-slate-400">
+                <p class="text-xs text-slate-400">
                   {{ existingUserHasPin ? 'ระบบจะเชื่อมต่อบัญชีเข้ากับตึกนี้ทันที' : 'บัญชีนี้ยังไม่เคยตั้งรหัส PIN ระบบจะบันทึกเป็น PIN ใหม่และผูกกับตึกนี้ทันที' }}
                 </p>
                 <button
                   v-if="existingUserHasPin"
                   type="button"
                   @click="handleForgotPin"
-                  class="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
+                  class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer transition-colors"
                 >
                   ลืมรหัส PIN?
                 </button>
@@ -102,7 +102,7 @@
                 <button
                   type="button"
                   @click="handleForgotPin"
-                  class="text-[11px] font-bold text-rose-700 underline hover:text-rose-900 cursor-pointer"
+                  class="text-xs font-bold text-rose-700 underline hover:text-rose-900 cursor-pointer"
                 >
                   คลิกที่นี่เพื่อตั้งรหัส PIN ใหม่
                 </button>
@@ -110,15 +110,15 @@
             </div>
 
             <!-- Submit Button -->
-            <button
+            <Button
               type="button"
+              class="w-full"
               :disabled="submitting || pinInput.length !== 6"
               @click="handleLinkAndLogin"
-              class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <CheckCircle2 class="w-4 h-4" />
               <span>{{ submitting ? (existingUserHasPin ? 'กำลังผูกบัญชี...' : 'กำลังตั้ง PIN และผูกบัญชี...') : (existingUserHasPin ? 'ยืนยัน PIN & เข้าสู่ระบบ' : 'ตั้งรหัส PIN ใหม่ & เข้าสู่ระบบ') }}</span>
-            </button>
+            </Button>
           </div>
 
           <!-- Case B: Regular Phone Input -->
@@ -127,14 +127,14 @@
               <label class="block font-medium text-slate-700">
                 เบอร์โทรศัพท์ที่ลงทะเบียนไว้ <span class="text-rose-500">*</span>
               </label>
-              <input
+              <Input
                 v-model="phoneInput"
                 type="tel"
                 placeholder="เช่น 0898765432"
                 required
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono font-bold text-sm text-center tracking-widest text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
+                class="h-auto px-3.5 py-2.5 bg-slate-50 border-slate-200 rounded-xl font-mono font-bold text-sm text-center tracking-widest placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
               />
-              <p class="text-[11px] text-slate-400 text-center pt-0.5">ระบบจะค้นหาห้องพักและผูกบัญชี LINE โดยอัตโนมัติ</p>
+              <p class="text-xs text-slate-400 text-center pt-0.5">ระบบจะค้นหาห้องพักและผูกบัญชี LINE โดยอัตโนมัติ</p>
             </div>
 
             <!-- Alert Error Message -->
@@ -144,14 +144,10 @@
             </div>
 
             <!-- Submit Button -->
-            <button
-              type="submit"
-              :disabled="submitting || !phoneInput"
-              class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
-            >
+            <Button type="submit" class="w-full" :disabled="submitting || !phoneInput">
               <CheckCircle2 class="w-4 h-4" />
               <span>{{ submitting ? 'กำลังยืนยันข้อมูล...' : 'ยืนยันเบอร์ & เข้าสู่ระบบ' }}</span>
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -162,13 +158,13 @@
             <label class="block font-medium text-slate-700">
               รหัสเชิญ 6 หลัก <span class="text-rose-500">*</span>
             </label>
-            <input
+            <Input
               v-model="form.inviteCode"
               type="text"
               maxlength="6"
               placeholder="เช่น X7K9M2"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono font-bold text-sm text-center uppercase tracking-widest text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
+              class="h-auto px-3.5 py-2.5 bg-slate-50 border-slate-200 rounded-xl font-mono font-bold text-sm text-center uppercase tracking-widest placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
             />
           </div>
 
@@ -177,13 +173,13 @@
             <label class="block font-medium text-slate-700">
               เบอร์โทรศัพท์ 4 ตัวท้าย <span class="text-rose-500">*</span>
             </label>
-            <input
+            <Input
               v-model="form.phoneLast4"
               type="text"
               maxlength="4"
               placeholder="เช่น 5678"
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono font-bold text-sm text-center tracking-widest text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 transition-colors"
+              class="h-auto px-3.5 py-2.5 bg-slate-50 border-slate-200 rounded-xl font-mono font-bold text-sm text-center tracking-widest placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
             />
           </div>
 
@@ -194,16 +190,12 @@
           </div>
 
           <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="submitting || !form.inviteCode || !form.phoneLast4"
-            class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
-          >
+          <Button type="submit" class="w-full" :disabled="submitting || !form.inviteCode || !form.phoneLast4">
             <CheckCircle2 class="w-4 h-4" />
             <span>{{ submitting ? 'กำลังยืนยันข้อมูล...' : 'ยืนยันการผูกบัญชี' }}</span>
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   </div>
 </template>
@@ -212,7 +204,6 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
-  Link2,
   Phone,
   KeyRound,
   AlertCircle,
@@ -225,6 +216,10 @@ import authService from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { showSuccess, showConfirm } from '@/utils/swal';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 const route = useRoute();
 const router = useRouter();

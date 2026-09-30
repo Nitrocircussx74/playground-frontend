@@ -9,20 +9,20 @@
 
     <div class="w-full max-w-md mx-auto">
       <!-- 0. Mandatory Add Friend State (หน้าแจ้งเตือนและบังคับเพิ่มเพื่อน LINE Official) -->
-      <div
+      <Card
         v-if="needsAddFriend"
-        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-emerald-950/5 p-6 sm:p-8 space-y-6 text-center animate-in fade-in zoom-in-95 duration-200"
+        class="bg-white/95 backdrop-blur-xl border-slate-100 shadow-xl shadow-emerald-950/5 p-6 sm:p-8 space-y-6 text-center animate-in fade-in zoom-in-95 duration-200"
       >
         <!-- Hero Graphic with Glowing Icon -->
         <div class="relative inline-flex items-center justify-center">
-          <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#06C755] to-emerald-400 p-4 shadow-xl shadow-[#06C755]/25 flex items-center justify-center ring-8 ring-emerald-50/80">
+          <div class="w-20 h-20 rounded-xl bg-gradient-to-tr from-[#06C755] to-emerald-400 p-4 shadow-xl shadow-[#06C755]/25 flex items-center justify-center ring-8 ring-emerald-50/80">
             <svg class="w-full h-full fill-current text-white" viewBox="0 0 24 24">
               <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.477.254l2.486 3.37V8.108c0-.345.282-.63.63-.63.345 0 .624.285.624.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
             </svg>
           </div>
           <span class="absolute -bottom-1 -right-1 flex h-6 w-6">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-6 w-6 bg-emerald-500 border-2 border-white items-center justify-center text-white text-[10px] font-bold">
+            <span class="relative inline-flex rounded-full h-6 w-6 bg-emerald-500 border-2 border-white items-center justify-center text-white text-xs font-bold">
               <UserPlus class="w-3.5 h-3.5" />
             </span>
           </span>
@@ -30,10 +30,10 @@
 
         <!-- Typography & Descriptions -->
         <div class="space-y-2">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200/80 rounded-full text-emerald-800 text-[11px] font-bold tracking-wide">
-            <Sparkles class="w-3.5 h-3.5 text-emerald-600" />
+          <Badge variant="success" class="font-bold tracking-wide">
+            <Sparkles class="w-3.5 h-3.5" />
             <span>ช่องทางทางการของหอพัก</span>
-          </div>
+          </Badge>
           <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             เพิ่มเพื่อนกับ LINE Official
           </h1>
@@ -44,88 +44,89 @@
 
         <!-- Feature Benefit Grid Cards -->
         <div class="grid grid-cols-2 gap-2.5 text-left pt-1">
-          <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+          <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
             <div class="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
               <Bell class="w-3.5 h-3.5" />
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800">แจ้งเตือนบิล</div>
-              <div class="text-[10px] text-slate-400 leading-tight">ค่าน้ำ ค่าไฟ ทุกเดือน</div>
+              <div class="text-xs text-slate-400 leading-tight">ค่าน้ำ ค่าไฟ ทุกเดือน</div>
             </div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+          <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
             <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0 mt-0.5">
               <Package class="w-3.5 h-3.5" />
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800">แจ้งเตือนพัสดุ</div>
-              <div class="text-[10px] text-slate-400 leading-tight">รู้ทันทีเมื่อของมาถึง</div>
+              <div class="text-xs text-slate-400 leading-tight">รู้ทันทีเมื่อของมาถึง</div>
             </div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+          <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
             <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
               <Wrench class="w-3.5 h-3.5" />
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800">แจ้งซ่อม 24 ชม.</div>
-              <div class="text-[10px] text-slate-400 leading-tight">ส่งรูปและติดตามช่าง</div>
+              <div class="text-xs text-slate-400 leading-tight">ส่งรูปและติดตามช่าง</div>
             </div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+          <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
             <div class="w-7 h-7 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center shrink-0 mt-0.5">
               <Receipt class="w-3.5 h-3.5" />
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800">ใบเสร็จ e-Receipt</div>
-              <div class="text-[10px] text-slate-400 leading-tight">ดูและโหลดสลิปง่าย</div>
+              <div class="text-xs text-slate-400 leading-tight">ดูและโหลดสลิปง่าย</div>
             </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="space-y-3 pt-2">
-          <button
+          <Button
+            class="w-full bg-gradient-to-r from-[#06C755] to-emerald-600 hover:from-[#05b34c] hover:to-emerald-700 shadow-lg shadow-[#06C755]/25"
             @click="openAddFriendLine()"
-            class="w-full py-3.5 px-5 bg-gradient-to-r from-[#06C755] to-emerald-600 hover:from-[#05b34c] hover:to-emerald-700 text-white rounded-2xl text-sm font-bold transition-all shadow-lg shadow-[#06C755]/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
           >
             <UserPlus class="w-4 h-4" />
             <span>กดเพิ่มเพื่อน (Add Friend)</span>
-          </button>
+          </Button>
 
-          <button
-            @click="recheckFriendshipInEntry()"
+          <Button
+            variant="secondary"
+            class="w-full"
             :disabled="checkingFriendship"
-            class="w-full py-3 px-4 bg-slate-100/90 hover:bg-slate-200 active:bg-slate-300 text-slate-700 rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            @click="recheckFriendshipInEntry()"
           >
             <span v-if="checkingFriendship" class="animate-spin w-3.5 h-3.5 border-2 border-slate-600 border-t-transparent rounded-full"></span>
-            <RotateCw v-else class="w-3.5 h-3.5 text-slate-500" />
+            <RotateCw v-else class="w-3.5 h-3.5" />
             <span>{{ checkingFriendship ? 'กำลังตรวจสอบ...' : 'ฉันเพิ่มเพื่อนแล้ว (ตรวจสอบอีกครั้ง)' }}</span>
-          </button>
+          </Button>
 
           <button
             type="button"
             @click="bypassFriendshipAndContinue"
-            class="w-full py-2 px-3 text-slate-400 hover:text-slate-600 text-[11px] font-medium transition-colors cursor-pointer"
+            class="w-full py-2 px-3 text-slate-400 hover:text-slate-600 text-xs font-medium transition-colors cursor-pointer"
           >
             เพิ่มเพื่อนแล้ว / ดำเนินการต่อเข้าสู่ระบบ →
           </button>
         </div>
-      </div>
+      </Card>
 
       <!-- 1. Loading Indicator (Initial Check) - Splash Screen ใช้ Icon ของแอปเป็นหลัก -->
-      <div
+      <Card
         v-else-if="loading"
-        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10 space-y-5 text-center animate-in fade-in duration-200"
+        class="bg-white/95 backdrop-blur-xl border-slate-100 shadow-xl shadow-slate-200/50 p-8 sm:p-10 space-y-5 text-center animate-in fade-in duration-200"
       >
         <!-- App Icon พร้อมวงแหวน Pulse ล้อมรอบแบบหน้า Splash ของแอป -->
         <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
-          <span class="absolute inset-0 rounded-[1.75rem] bg-emerald-400/20 animate-ping"></span>
-          <span class="absolute inset-0 rounded-[1.75rem] border-3 border-emerald-500/15"></span>
-          <div class="absolute inset-0 rounded-[1.75rem] border-3 border-transparent border-t-emerald-500 border-r-emerald-500 animate-spin"></div>
-          <div class="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg shadow-emerald-900/10 ring-1 ring-slate-100 flex items-center justify-center overflow-hidden">
+          <span class="absolute inset-0 rounded-xl bg-emerald-400/20 animate-ping"></span>
+          <span class="absolute inset-0 rounded-xl border-3 border-emerald-500/15"></span>
+          <div class="absolute inset-0 rounded-xl border-3 border-transparent border-t-emerald-500 border-r-emerald-500 animate-spin"></div>
+          <div class="w-16 h-16 rounded-xl bg-white p-2 shadow-lg shadow-emerald-900/10 ring-1 ring-slate-100 flex items-center justify-center overflow-hidden">
             <img src="/horspace-app-icon.webp" alt="Horspace App Icon" width="64" height="64" class="w-full h-full object-contain" loading="eager" decoding="async" />
           </div>
         </div>
@@ -133,35 +134,35 @@
           <h2 class="text-sm font-bold text-slate-800">Horspace (ฮอร์สเปซ)</h2>
           <p class="text-xs font-medium text-slate-500">{{ statusText }}</p>
         </div>
-      </div>
+      </Card>
 
       <!-- 2. Phone Verification & Existing User PIN Confirmation Form -->
-      <div
+      <Card
         v-else-if="showPhoneVerifyForm"
-        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8 space-y-5 text-left animate-in fade-in zoom-in-95 duration-200"
+        class="bg-white/95 backdrop-blur-xl border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8 space-y-5 text-left animate-in fade-in zoom-in-95 duration-200"
       >
         <!-- State A: Existing User Detected -> Prompt for Central PIN -->
         <div v-if="isExistingUserPrompt" class="space-y-4">
           <div class="flex items-center justify-between">
-            <span class="px-3 py-1 text-[11px] font-bold bg-teal-50 text-teal-700 rounded-full border border-teal-200/80">
+            <Badge variant="neutral" class="bg-teal-50 text-teal-700 border border-teal-200/80 font-bold">
               พบข้อมูลใน Horspace
-            </span>
+            </Badge>
             <button
               type="button"
               @click="isExistingUserPrompt = false; existingPinInput = ''; phoneErrorMessage = ''"
-              class="text-[11px] text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
+              class="text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
             >
               ← เปลี่ยนเบอร์โทร
             </button>
           </div>
 
-          <div class="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 flex items-center gap-3">
+          <div class="p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-100/80 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white font-bold flex items-center justify-center text-sm shrink-0">
               {{ existingUserName ? existingUserName.charAt(0).toUpperCase() : 'U' }}
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">{{ existingUserName || 'ลูกบ้าน Horspace' }}</div>
-              <div class="text-[11px] text-slate-500 font-mono">{{ verifyPhoneInput }}</div>
+              <div class="text-xs text-slate-500 font-mono">{{ verifyPhoneInput }}</div>
             </div>
           </div>
 
@@ -176,7 +177,7 @@
 
           <form @submit.prevent="handleLinkAndLogin" class="space-y-4">
             <div>
-              <input
+              <Input
                 v-model="existingPinInput"
                 type="password"
                 inputmode="numeric"
@@ -185,7 +186,7 @@
                 placeholder="••••••"
                 required
                 autofocus
-                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-2xl font-mono font-bold text-center tracking-[0.4em] text-slate-800 placeholder:text-slate-300 placeholder:tracking-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                class="h-auto px-4 py-3.5 bg-slate-50 border-slate-200 rounded-xl text-2xl font-mono font-bold text-center tracking-[0.4em] placeholder:text-slate-300 placeholder:tracking-normal focus-visible:bg-white"
               />
             </div>
 
@@ -213,16 +214,12 @@
               </div>
             </div>
 
-            <button
-              type="submit"
-              :disabled="verifyingPhone || existingPinInput.length !== 6"
-              class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:from-emerald-700 active:to-teal-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-            >
+            <Button type="submit" class="w-full" :disabled="verifyingPhone || existingPinInput.length !== 6">
               <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
               <span>{{ verifyingPhone
                 ? (existingUserHasPin ? 'กำลังผูกบัญชีและเข้าสู่ระบบ...' : 'กำลังตั้ง PIN และผูกบัญชี...')
                 : (existingUserHasPin ? 'ยืนยัน PIN & เข้าสู่ระบบ' : 'ตั้งรหัส PIN ใหม่ & เข้าสู่ระบบ') }}</span>
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -230,13 +227,13 @@
         <div v-else class="space-y-5">
           <!-- User Profile Header -->
           <div class="flex items-center justify-between">
-            <span class="px-3 py-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200/80">
+            <Badge variant="success" class="font-bold border border-emerald-200/80">
               ยินดีต้อนรับลูกบ้านใหม่
-            </span>
-            <span class="text-[10px] text-slate-400 font-medium">ขั้นตอนที่ 1 จาก 2</span>
+            </Badge>
+            <span class="text-xs text-slate-400 font-medium">ขั้นตอนที่ 1 จาก 2</span>
           </div>
 
-          <div v-if="lineProfile" class="flex items-center gap-3 p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100">
+          <div v-if="lineProfile" class="flex items-center gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-100">
             <img
               v-if="lineProfile.pictureUrl"
               :src="lineProfile.pictureUrl"
@@ -247,7 +244,7 @@
               U
             </div>
             <div class="min-w-0 flex-1">
-              <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">บัญชี LINE</div>
+              <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">บัญชี LINE</div>
               <div class="text-sm font-bold text-slate-800 truncate">{{ lineProfile.displayName || 'ผู้ใช้งาน LINE' }}</div>
             </div>
           </div>
@@ -262,14 +259,14 @@
           <!-- Phone Verification Input & Submit -->
           <form @submit.prevent="handleVerifyByPhone" class="space-y-4">
             <div>
-              <input
+              <Input
                 v-model="verifyPhoneInput"
                 type="tel"
                 maxlength="10"
                 placeholder="08xxxxxxxx"
                 required
                 autofocus
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-base font-mono font-bold text-center tracking-widest text-slate-800 placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                class="h-auto px-4 py-3 bg-slate-50 border-slate-200 rounded-xl text-base font-mono font-bold text-center tracking-widest placeholder:text-slate-300 placeholder:font-normal focus-visible:bg-white"
               />
             </div>
 
@@ -279,35 +276,31 @@
             </div>
 
             <!-- Submit Button -->
-            <button
-              type="submit"
-              :disabled="verifyingPhone || !verifyPhoneInput"
-              class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:from-emerald-700 active:to-teal-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-            >
+            <Button type="submit" class="w-full" :disabled="verifyingPhone || !verifyPhoneInput">
               <span v-if="verifyingPhone" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
               <span>{{ verifyingPhone ? 'กำลังค้นหาและตรวจสอบ...' : 'ยืนยันเบอร์โทรศัพท์' }}</span>
-            </button>
+            </Button>
           </form>
 
           <!-- Option 2: Invite Code Link Card -->
           <div class="pt-3 text-center border-t border-slate-100 space-y-2">
-            <div class="text-[11px] text-slate-400 font-medium">หรือหากคุณได้รับรหัสเชิญเข้าพักจากผู้ดูแล</div>
+            <div class="text-xs text-slate-400 font-medium">หรือหากคุณได้รับรหัสเชิญเข้าพักจากผู้ดูแล</div>
             <router-link
               to="/liff/register"
-              class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 rounded-2xl text-xs font-semibold inline-flex items-center justify-center transition-all border border-slate-200/70"
+              class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold inline-flex items-center justify-center transition-all border border-slate-200/70"
             >
               ลงทะเบียนด้วยรหัสเชิญ (Invite Code)
             </router-link>
           </div>
         </div>
-      </div>
+      </Card>
 
       <!-- 3. LINE Login Prompt (When opened in external browser without active LINE session) -->
-      <div
+      <Card
         v-else
-        class="bg-white/95 backdrop-blur-xl rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8 space-y-5 text-center"
+        class="bg-white/95 backdrop-blur-xl border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8 space-y-5 text-center"
       >
-        <div class="w-16 h-16 rounded-3xl bg-[#06C755] p-3.5 shadow-lg shadow-[#06C755]/25 mx-auto flex items-center justify-center text-white">
+        <div class="w-16 h-16 rounded-xl bg-[#06C755] p-3.5 shadow-lg shadow-[#06C755]/25 mx-auto flex items-center justify-center text-white">
           <svg class="w-full h-full fill-current text-white" viewBox="0 0 24 24">
             <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.477.254l2.486 3.37V8.108c0-.345.282-.63.63-.63.345 0 .624.285.624.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
           </svg>
@@ -318,14 +311,14 @@
           <p class="text-xs text-slate-500">กรุณาเข้าสู่ระบบผ่านบัญชี LINE เพื่อเริ่มต้นใช้งานระบบหอพัก</p>
         </div>
 
-        <button
-          @click="handleLineLogin"
+        <Button
+          class="w-full bg-[#06C755] hover:bg-[#05b34c] shadow-md shadow-[#06C755]/25"
           :disabled="isLoggingIn"
-          class="w-full py-3.5 px-4 bg-[#06C755] hover:bg-[#05b34c] active:bg-[#049b42] text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-[#06C755]/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+          @click="handleLineLogin"
         >
           <span>{{ isLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE' }}</span>
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   </div>
 </template>
@@ -349,6 +342,10 @@ import {
   Receipt,
   Building2
 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 const router = useRouter();
 const route = useRoute();

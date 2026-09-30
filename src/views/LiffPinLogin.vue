@@ -129,7 +129,7 @@
         </button>
         <router-link
           to="/login"
-          class="text-[11px] sm:text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors"
+          class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors"
         >
           เข้าสู่ระบบด้วยเบอร์โทรศัพท์ / รหัสผ่าน
         </router-link>

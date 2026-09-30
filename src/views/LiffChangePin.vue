@@ -4,12 +4,12 @@
     <!-- 1. Header & Step Instructions -->
     <header class="w-full flex flex-col items-center pt-1 sm:pt-2 space-y-2 sm:space-y-3 text-center shrink-0">
       <!-- Icon Badge -->
-      <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100/80 flex items-center justify-center text-teal-600">
+      <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100/80 flex items-center justify-center text-teal-600">
         <KeyRound class="w-5 h-5" />
       </div>
 
       <div class="space-y-1">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-50 text-teal-600 border border-teal-100">
           ขั้นตอนที่ {{ step }} จาก 3
         </span>
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">

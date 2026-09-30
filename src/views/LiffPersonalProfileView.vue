@@ -9,7 +9,7 @@
     <div class="space-y-4 relative z-10">
       <!-- Loading Skeleton State -->
       <div v-if="loading" class="space-y-4 animate-pulse">
-        <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+        <div class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs flex items-center gap-3.5">
           <div class="w-14 h-14 rounded-full bg-slate-100 skeleton-shimmer shrink-0"></div>
           <div class="space-y-2 flex-1">
             <div class="h-4 w-32 bg-slate-100 skeleton-shimmer rounded-md"></div>
@@ -17,7 +17,7 @@
           </div>
         </div>
 
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+        <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3">
           <div v-for="i in 4" :key="i" class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-xl bg-slate-100 skeleton-shimmer"></div>
@@ -31,7 +31,7 @@
       <template v-else>
         <!-- 1. Profile Header Card -->
         <div
-          class="p-5 text-white rounded-3xl shadow-lg relative overflow-hidden transition-all duration-500"
+          class="p-5 text-white rounded-xl shadow-lg relative overflow-hidden transition-all duration-500"
           :style="{
             background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`,
             boxShadow: `0 14px 20px -5px ${themeColor}25, 0 6px 8px -6px ${themeColor}25`
@@ -64,16 +64,16 @@
                 <h1 class="font-bold text-base sm:text-lg truncate text-white">
                   {{ tenantProfile.firstName }} {{ tenantProfile.lastName }}
                 </h1>
-                <span class="px-2 py-0.5 text-[10px] font-semibold bg-white/20 text-white rounded-full backdrop-blur-xs border border-white/30">
+                <Badge class="bg-white/20 text-white font-semibold border border-white/30 backdrop-blur-xs">
                   ลูกบ้าน
-                </span>
+                </Badge>
               </div>
               <p class="text-xs text-teal-100/90 font-mono">{{ tenantProfile.phone || '081-234-5678' }}</p>
               <div class="flex items-center gap-2 pt-0.5">
-                <span class="text-[11px] font-semibold text-yellow-300">
+                <span class="text-xs font-semibold text-yellow-300">
                   ห้อง {{ tenantProfile.roomNumber || '-' }}
                 </span>
-                <span v-if="tenantProfile.buildingName" class="text-[11px] text-teal-100/80">
+                <span v-if="tenantProfile.buildingName" class="text-xs text-teal-100/80">
                   • ตึก {{ tenantProfile.buildingName }}
                 </span>
               </div>
@@ -86,13 +86,15 @@
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span>LINE Verified</span>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               @click="showQrModal = true"
-              class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-all border border-white/30 flex items-center gap-1.5 backdrop-blur-xs cursor-pointer active:scale-95"
+              class="bg-white/20 hover:bg-white/30 text-white font-semibold border border-white/30 backdrop-blur-xs active:scale-95"
             >
               <QrCode class="w-3.5 h-3.5" />
               <span>Digital ID</span>
-            </button>
+            </Button>
           </div>
         </div>
       </template>
@@ -103,7 +105,7 @@
           เมนูทั่วไป (General Settings)
         </h2>
 
-        <div class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden divide-y divide-slate-100">
+        <Card class="overflow-hidden divide-y divide-slate-100">
           <button
             v-for="menu in availableGeneralMenus"
             :key="menu.id"
@@ -120,7 +122,7 @@
                 <div class="text-xs font-semibold leading-snug text-slate-800">
                   {{ menu.title }}
                 </div>
-                <div v-if="menu.subtitle" class="text-[10px] text-slate-400 mt-0.5 truncate font-normal">
+                <div v-if="menu.subtitle" class="text-xs text-slate-400 mt-0.5 truncate font-normal">
                   {{ menu.subtitle }}
                 </div>
               </div>
@@ -129,50 +131,46 @@
               class="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0"
             />
           </button>
-        </div>
+        </Card>
       </div>
 
       <!-- 3. Big Standalone Logout Button at Bottom -->
       <div class="pt-2 pb-2">
-        <button
+        <Button
+          variant="outline"
           @click="handleTenantLogout"
-          class="w-full py-3 bg-rose-50/80 hover:bg-rose-100/80 active:bg-rose-200/80 text-rose-600 border border-rose-100 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs active:scale-[0.99]"
+          class="w-full py-3 h-auto rounded-xl bg-rose-50/80 hover:bg-rose-100/80 active:bg-rose-200/80 text-rose-600 border-rose-100 font-bold shadow-2xs active:scale-[0.99]"
         >
           <LogOut class="w-4 h-4" />
           <span>ออกจากระบบ (Logout)</span>
-        </button>
+        </Button>
       </div>
     </div>
 
     <!-- 4. Digital ID QR Code Modal Pop-up -->
-    <div v-if="showQrModal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200 text-center relative">
-        <button @click="showQrModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer">
-          <X class="w-5 h-5" />
-        </button>
-
-        <div class="space-y-1 pt-2">
-          <h3 class="text-lg font-bold text-slate-900">Digital Tenant ID</h3>
-          <p class="text-xs text-slate-500">แสดง QR Code นี้แก่เจ้าหน้าที่รักษาความปลอดภัย</p>
-        </div>
+    <Dialog :open="showQrModal" @update:open="showQrModal = $event">
+      <DialogContent class="max-w-sm text-center">
+        <DialogHeader>
+          <DialogTitle class="text-center">Digital Tenant ID</DialogTitle>
+          <DialogDescription class="text-center">แสดง QR Code นี้แก่เจ้าหน้าที่รักษาความปลอดภัย</DialogDescription>
+        </DialogHeader>
 
         <div class="py-3">
-          <img :src="digitalIdQrUrl" alt="Digital ID QR" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200 shadow-xs" />
+          <img :src="digitalIdQrUrl" alt="Digital ID QR" class="w-48 h-48 mx-auto rounded-xl border border-slate-200 shadow-xs" />
         </div>
 
-        <div class="p-3 bg-slate-50 rounded-2xl text-xs space-y-1 text-slate-600 font-mono">
+        <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-1 text-slate-600 font-mono">
           <div>ผู้เช่า: <span class="font-bold text-slate-900">{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span></div>
           <div>ห้องพัก: <span class="font-bold text-teal-600">ห้อง {{ tenantProfile.roomNumber || '-' }}</span></div>
         </div>
 
-        <button
-          @click="showQrModal = false"
-          class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all shadow-sm cursor-pointer"
-        >
-          ปิดหน้าต่าง (Close)
-        </button>
-      </div>
-    </div>
+        <DialogFooter class="sm:justify-center">
+          <Button class="w-full bg-slate-900 hover:bg-slate-800" @click="showQrModal = false">
+            ปิดหน้าต่าง (Close)
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     <!-- 6. Developer Feedback Modal -->
     <DeveloperFeedbackModal
@@ -193,6 +191,10 @@ import { useFeatureStore } from '@/stores/useFeatureStore';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import { showSuccess, showError, showWarning, showConfirm } from '@/utils/swal';
 import DeveloperFeedbackModal from '@/components/DeveloperFeedbackModal.vue';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 import {
   User,
@@ -203,8 +205,7 @@ import {
   QrCode,
   ChevronRight,
   KeyRound,
-  MessageSquarePlus,
-  X
+  MessageSquarePlus
 } from 'lucide-vue-next';
 
 const router = useRouter();

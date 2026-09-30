@@ -3,26 +3,21 @@
     <!-- Header with Back Button -->
     <div class="flex items-center justify-between pt-1">
       <div class="flex items-center gap-2.5">
-        <button
-          type="button"
-          @click="goBack"
-          class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
-        >
+        <Button type="button" variant="secondary" size="icon" @click="goBack">
           <ArrowLeft class="w-4 h-4" />
-        </button>
+        </Button>
         <div>
           <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">แจ้งซ่อม & ร้องเรียน</h1>
           <p class="text-xs text-slate-500">ส่งเรื่องแจ้งซ่อม หรือแจ้งปัญหาให้เจ้าหน้าที่หอพัก</p>
         </div>
       </div>
 
-      <router-link
-        to="/liff/issues"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-semibold border border-teal-100 transition-colors shadow-2xs"
-      >
-        <History class="w-3.5 h-3.5" />
-        <span>ประวัติแจ้งเหตุ</span>
-      </router-link>
+      <Button as-child variant="outline" size="sm" class="bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-100">
+        <router-link to="/liff/issues">
+          <History class="w-3.5 h-3.5" />
+          <span>ประวัติแจ้งเหตุ</span>
+        </router-link>
+      </Button>
     </div>
 
     <!-- Tenant & Room Info Banner -->
@@ -41,9 +36,9 @@
         </div>
       </div>
 
-      <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
+      <Badge variant="success" class="font-bold border border-emerald-200">
         ผู้เช่าปัจจุบัน
-      </span>
+      </Badge>
     </div>
 
     <!-- Disabled Feature Notice Banner -->
@@ -61,7 +56,7 @@
     </div>
 
     <!-- Main Issue Report Form Card -->
-    <div v-else class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5">
+    <Card v-else class="p-5 sm:p-6 space-y-5">
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- 1. Category Selection -->
         <div class="space-y-2">
@@ -102,7 +97,7 @@
             maxlength="500"
             required
             :placeholder="categoryPlaceholder"
-            class="w-full text-xs bg-slate-50/70 border border-slate-200 rounded-xl p-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all resize-none leading-relaxed"
+            class="w-full text-xs bg-slate-50/70 border border-slate-200 rounded-xl p-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-ring/30 focus:border-ring transition-all resize-none leading-relaxed"
           ></textarea>
         </div>
 
@@ -172,18 +167,18 @@
 
         <!-- Submit Button -->
         <div class="pt-2">
-          <button
+          <Button
             type="submit"
             :disabled="submitting || !form.description.trim()"
-            class="w-full py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+            class="w-full py-3 h-auto text-xs sm:text-sm bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 active:scale-[0.99] shadow-md shadow-teal-600/20"
           >
             <span v-if="submitting" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
             <Send v-else class="w-4 h-4" />
             <span>{{ submitting ? 'กำลังส่งข้อมูล...' : 'ส่งเรื่องแจ้งเหตุ' }}</span>
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   </div>
 </template>
 
@@ -207,6 +202,9 @@ import {
 import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const router = useRouter();
 const featureStore = useFeatureStore();

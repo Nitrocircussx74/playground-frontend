@@ -16,7 +16,7 @@
         <button
           type="button"
           @click="fetchIssues"
-          class="w-10 h-10 rounded-2xl bg-white hover:bg-slate-100 active:scale-95 text-slate-600 border border-slate-200/80 shadow-2xs flex items-center justify-center transition-all cursor-pointer"
+          class="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 active:scale-95 text-slate-600 border border-slate-200/80 shadow-2xs flex items-center justify-center transition-all cursor-pointer"
           title="รีเฟรชข้อมูล"
         >
           <RotateCw class="w-4 h-4 transition-transform" :class="{ 'animate-spin': loading }" />
@@ -26,7 +26,7 @@
         <router-link
           v-if="featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
           to="/liff/issues/report"
-          class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-700 hover:to-teal-700 active:scale-95 text-white rounded-2xl text-xs font-extrabold shadow-md shadow-cyan-600/25 transition-all cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground rounded-xl text-xs font-extrabold shadow-md shadow-primary/25 transition-all cursor-pointer"
         >
           <Plus class="w-4 h-4" />
           <span>แจ้งเรื่องใหม่</span>
@@ -37,13 +37,13 @@
     <!-- Feature Disabled Notice (Admin ปิดใช้งานระบบแจ้งซ่อม/ร้องเรียนไว้) -->
     <div
       v-if="!featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST')"
-      class="p-5 bg-amber-50 border border-amber-200 rounded-3xl text-amber-900 space-y-2 shadow-xs"
+      class="p-5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 space-y-2 shadow-xs"
     >
       <div class="flex items-center gap-2 font-bold text-xs">
         <AlertTriangle class="w-4 h-4 text-amber-600 shrink-0" />
         <span>ระบบแจ้งซ่อมและร้องเรียนถูกปิดใช้งานชั่วคราว</span>
       </div>
-      <p class="text-[11px] text-amber-700 leading-relaxed">
+      <p class="text-xs text-amber-700 leading-relaxed">
         ผู้ดูแลหอพักได้ปิดการรับเรื่องแจ้งซ่อมหรือร้องเรียนผ่านระบบออนไลน์ชั่วคราว หากมีเหตุฉุกเฉินกรุณาติดต่อเจ้าหน้าที่โดยตรง
       </p>
     </div>
@@ -56,14 +56,14 @@
           :key="tab.value"
           type="button"
           @click="activeTab = tab.value"
-          class="px-3.5 py-2 rounded-2xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 active:scale-95"
+          class="px-3.5 py-2 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 active:scale-95"
           :class="activeTab === tab.value
             ? 'bg-slate-900 text-white shadow-xs'
             : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80'"
         >
           <span>{{ tab.label }}</span>
           <span
-            class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold"
+            class="px-2 py-0.5 rounded-full text-xs font-mono font-bold"
             :class="activeTab === tab.value ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'"
           >
             {{ tab.count }}
@@ -73,10 +73,10 @@
 
       <!-- Loading Skeleton -->
       <div v-if="loading" class="space-y-3.5 animate-pulse">
-        <div v-for="i in 3" :key="i" class="p-5 bg-white rounded-3xl border border-slate-100 shadow-xs space-y-3">
+        <div v-for="i in 3" :key="i" class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3">
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-slate-100"></div>
+              <div class="w-10 h-10 rounded-xl bg-slate-100"></div>
               <div class="space-y-1.5">
                 <div class="h-4 w-28 bg-slate-200 rounded-md"></div>
                 <div class="h-3 w-36 bg-slate-100 rounded-md"></div>
@@ -84,7 +84,7 @@
             </div>
             <div class="h-6 w-24 bg-slate-100 rounded-full"></div>
           </div>
-          <div class="h-12 w-full bg-slate-50 rounded-2xl"></div>
+          <div class="h-12 w-full bg-slate-50 rounded-xl"></div>
         </div>
       </div>
 
@@ -93,13 +93,13 @@
         <div
           v-for="issue in filteredIssues"
           :key="issue.id"
-          class="p-5 bg-white rounded-3xl border border-slate-100/90 shadow-2xs space-y-3.5 transition-all hover:shadow-md"
+          class="p-5 bg-white rounded-xl border border-slate-100/90 shadow-2xs space-y-3.5 transition-all hover:shadow-md"
         >
           <!-- Card Top Bar: Category & Fixed Status Badge -->
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <span
-                class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs text-sm font-bold"
+                class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs text-sm font-bold"
                 :class="getCategoryIconBg(issue.category)"
               >
                 <component :is="getCategoryIcon(issue.category)" class="w-4 h-4" />
@@ -109,7 +109,7 @@
                 <span class="text-xs sm:text-sm font-extrabold text-slate-900 block truncate">
                   {{ getCategoryLabel(issue.category) }}
                 </span>
-                <div class="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 pt-0.5 truncate">
+                <div class="text-xs text-slate-400 font-mono flex items-center gap-1.5 pt-0.5 truncate">
                   <span>ห้อง {{ issue.room?.roomNumber || '-' }}</span>
                   <span>•</span>
                   <span>{{ formatDate(issue.createdAt) }}</span>
@@ -118,17 +118,14 @@
             </div>
 
             <!-- Status Badge (Aligned top-right) -->
-            <span
-              class="px-2.5 py-1 rounded-full text-[11px] font-extrabold border shadow-2xs inline-flex items-center gap-1.5 shrink-0"
-              :class="getStatusBadgeClass(issue.status)"
-            >
+            <Badge :variant="getStatusBadgeVariant(issue.status)" class="font-extrabold shrink-0">
               <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(issue.status)"></span>
               <span>{{ getStatusLabel(issue.status) }}</span>
-            </span>
+            </Badge>
           </div>
 
           <!-- Description Content Box -->
-          <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-100/80">
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-100/80">
             <p class="text-xs sm:text-[13px] text-slate-700 leading-relaxed whitespace-pre-line font-normal">
               {{ issue.description }}
             </p>
@@ -140,7 +137,7 @@
               <div
                 v-for="(imgUrl, idx) in getParsedImages(issue.imageUrls)"
                 :key="idx"
-                class="relative group w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-slate-200/80 shrink-0 bg-slate-100 shadow-2xs cursor-pointer active:scale-95 transition-all"
+                class="relative group w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-slate-200/80 shrink-0 bg-slate-100 shadow-2xs cursor-pointer active:scale-95 transition-all"
                 @click="openImageModal(resolveImageUrl(imgUrl))"
               >
                 <img
@@ -156,11 +153,11 @@
           <!-- Admin Reply Box (if present) -->
           <div
             v-if="issue.adminReply"
-            class="p-4 bg-gradient-to-br from-teal-50/80 to-cyan-50/40 border border-teal-100/80 rounded-2xl space-y-2 text-xs shadow-2xs"
+            class="p-4 bg-primary/5 border border-primary/15 rounded-xl space-y-2 text-xs shadow-2xs"
           >
-            <div class="flex items-center gap-2 text-teal-900 font-extrabold text-xs">
-              <span class="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold shadow-2xs">
-                
+            <div class="flex items-center gap-2 text-primary font-extrabold text-xs">
+              <span class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs shrink-0 font-bold shadow-2xs">
+
               </span>
               <span>ข้อความตอบกลับจากแอดมิน / ช่างซ่อม</span>
             </div>
@@ -172,8 +169,8 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else class="p-10 bg-white rounded-3xl border border-slate-100 text-center space-y-3 shadow-xs">
-        <div class="w-14 h-14 rounded-3xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto shadow-xs">
+      <div v-else class="p-10 bg-white rounded-xl border border-slate-100 text-center space-y-3 shadow-xs">
+        <div class="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto shadow-xs">
           <ClipboardList class="w-7 h-7" />
         </div>
         <div>
@@ -186,7 +183,7 @@
         <div class="pt-1">
           <router-link
             to="/liff/issues/report"
-            class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-teal-600/20 cursor-pointer active:scale-95"
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-bold transition-all shadow-md shadow-primary/20 cursor-pointer active:scale-95"
           >
             <Plus class="w-3.5 h-3.5" />
             <span>แจ้งซ่อม / ร้องเรียนเรื่องแรก</span>
@@ -213,7 +210,7 @@
           <img
             :src="previewModalImage"
             alt="Full Image"
-            class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl mx-auto"
+            class="w-full max-h-[80vh] object-contain rounded-xl shadow-2xl mx-auto"
           />
         </div>
       </div>
@@ -238,6 +235,7 @@ import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
 import { useFeatureStore } from '@/stores/useFeatureStore';
 import api from '@/utils/api';
 import { formatDateTime as formatDate } from '@/utils/formatters';
+import { Badge } from '@/components/ui/badge';
 
 const featureStore = useFeatureStore();
 const loading = ref(true);
@@ -300,19 +298,19 @@ const getStatusLabel = (status) => {
   return map[(status || '').toUpperCase()] || status;
 };
 
-const getStatusBadgeClass = (status) => {
+const getStatusBadgeVariant = (status) => {
   const s = (status || '').toUpperCase();
   switch (s) {
     case 'PENDING':
-      return 'bg-amber-50 text-amber-800 border-amber-200';
+      return 'warning';
     case 'IN_PROGRESS':
-      return 'bg-sky-50 text-sky-800 border-sky-200';
+      return 'neutral';
     case 'RESOLVED':
-      return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      return 'success';
     case 'CANCELLED':
-      return 'bg-rose-50 text-rose-700 border-rose-200';
+      return 'danger';
     default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
+      return 'neutral';
   }
 };
 

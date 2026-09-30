@@ -2,14 +2,14 @@
   <div class="space-y-4 pb-8 font-sans text-slate-800 selection:bg-teal-500 selection:text-white">
     <!-- 1. Header & Executive Profile Banner -->
     <div
-      class="p-5 sm:p-6 text-white rounded-2xl shadow-xs relative overflow-hidden transition-all duration-500"
+      class="p-5 sm:p-6 text-white rounded-xl shadow-xs relative overflow-hidden transition-all duration-500"
       :style="{
         background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -30)})`
       }"
     >
       <div class="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
         <div class="space-y-1.5 min-w-0">
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-xs text-[11px] font-bold tracking-wide border border-white/30">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-xs text-xs font-bold tracking-wide border border-white/30">
             <Building2 class="w-3.5 h-3.5" />
             <span>{{ activeScopeLabel }}</span>
           </div>
@@ -19,7 +19,7 @@
           </h1>
 
           <div class="flex items-center gap-2 text-xs text-white/80">
-            <span class="px-2 py-0.5 rounded-md bg-white/15 text-[10px] font-semibold uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded-md bg-white/15 text-xs font-semibold uppercase tracking-wider">
               แดชบอร์ดเจ้าของตึก (Executive View)
             </span>
           </div>
@@ -27,20 +27,22 @@
 
         <!-- Refresh Button & Quick Actions -->
         <div class="flex items-center gap-2 shrink-0">
-          <button
-            @click="handleRefresh"
+          <Button
+            variant="ghost"
+            size="icon"
             :disabled="dashboardStore.isLoading"
-            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 transition-all text-white backdrop-blur-xs border border-white/20 cursor-pointer disabled:opacity-50"
+            class="rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 text-white backdrop-blur-xs border border-white/20"
             title="รีเฟรชข้อมูล"
+            @click="handleRefresh"
           >
             <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': dashboardStore.isLoading }" />
-          </button>
+          </Button>
         </div>
       </div>
 
       <!-- Building Selector Chips (สลับดูภาพรวมทุกตึก หรือเลือกเฉพาะตึกที่ดูแล) -->
       <div v-if="buildingsList.length > 0" class="mt-4 pt-3.5 border-t border-white/20 space-y-2">
-        <div class="flex items-center justify-between text-[11px] text-white/90 font-medium">
+        <div class="flex items-center justify-between text-xs text-white/90 font-medium">
           <div class="flex items-center gap-1.5">
             <Layers class="w-3.5 h-3.5" />
             <span>เลือกดูตึกที่ดูแล ({{ buildingsList.length }} อาคาร):</span>
@@ -48,7 +50,7 @@
           <button
             v-if="selectedBuildingId"
             @click="selectBuilding('')"
-            class="text-[10px] underline text-teal-200 hover:text-white cursor-pointer font-bold"
+            class="text-xs underline text-teal-200 hover:text-white cursor-pointer font-bold"
           >
             กลับสู่ภาพรวมทุกตึก
           </button>
@@ -58,7 +60,7 @@
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
           <button
             @click="selectBuilding('')"
-            class="px-3 py-1.5 rounded-xl font-bold text-[11px] shrink-0 transition-all cursor-pointer flex items-center gap-1.5"
+            class="px-3 py-1.5 rounded-xl font-bold text-xs shrink-0 transition-all cursor-pointer flex items-center gap-1.5"
             :class="!selectedBuildingId ? 'bg-white text-slate-900 shadow-xs' : 'bg-black/20 hover:bg-black/30 text-white/90 border border-white/15'"
           >
             <Building2 class="w-3.5 h-3.5" />
@@ -69,11 +71,11 @@
             v-for="b in buildingsList"
             :key="b.id"
             @click="selectBuilding(b.id)"
-            class="px-3 py-1.5 rounded-xl font-medium text-[11px] shrink-0 transition-all cursor-pointer flex items-center gap-1.5"
+            class="px-3 py-1.5 rounded-xl font-medium text-xs shrink-0 transition-all cursor-pointer flex items-center gap-1.5"
             :class="selectedBuildingId === b.id ? 'bg-white text-slate-900 font-bold shadow-xs' : 'bg-black/20 hover:bg-black/30 text-white/90 border border-white/15'"
           >
             <span>{{ b.name }}</span>
-            <span v-if="b._count?.rooms || b.totalRooms" class="text-[9px] opacity-75 font-mono">
+            <span v-if="b._count?.rooms || b.totalRooms" class="text-xs opacity-75 font-mono">
               ({{ b._count?.rooms || b.totalRooms }} ห้อง)
             </span>
           </button>
@@ -82,19 +84,19 @@
 
       <!-- Dual-Role & Tenant Preview Mode Switcher Bar -->
       <div class="mt-3 pt-3 border-t border-white/15 flex items-center justify-between gap-3 flex-wrap">
-        <div class="text-[11px] text-white/90 font-medium flex items-center gap-1.5">
+        <div class="text-xs text-white/90 font-medium flex items-center gap-1.5">
           <ArrowRightLeft class="w-3.5 h-3.5" />
           <span>สลับบทบาทการใช้งาน:</span>
         </div>
         <div class="inline-flex p-1 rounded-xl bg-black/20 backdrop-blur-md border border-white/10 text-xs">
           <button
-            class="px-3 py-1 rounded-lg font-bold text-[11px] transition-all bg-white text-slate-900 shadow-xs"
+            class="px-3 py-1 rounded-lg font-bold text-xs transition-all bg-white text-slate-900 shadow-xs"
           >
             โหมดเจ้าของตึก
           </button>
           <button
             @click="switchToTenantView"
-            class="px-3 py-1 rounded-lg font-medium text-[11px] text-white/80 hover:text-white transition-all cursor-pointer"
+            class="px-3 py-1 rounded-lg font-medium text-xs text-white/80 hover:text-white transition-all cursor-pointer"
           >
             {{ authStore.isDualRole || authStore.tenant ? 'ห้องพักของฉัน (ลูกบ้าน)' : 'จำลองมุมมองลูกบ้าน (Preview)' }}
           </button>
@@ -105,7 +107,7 @@
     <!-- Active Filter Scope Indicator -->
     <div
       v-if="selectedBuildingId"
-      class="px-4 py-2.5 bg-teal-50 border border-teal-200/80 rounded-2xl flex items-center justify-between text-xs text-teal-950 shadow-xs"
+      class="px-4 py-2.5 bg-teal-50 border border-teal-200/80 rounded-xl flex items-center justify-between text-xs text-teal-950 shadow-xs"
     >
       <div class="flex items-center gap-2 min-w-0">
         <Building2 class="w-4 h-4 text-teal-700 shrink-0" />
@@ -113,14 +115,14 @@
       </div>
       <button
         @click="selectBuilding('')"
-        class="shrink-0 text-teal-700 hover:text-teal-900 font-bold underline cursor-pointer text-[11px]"
+        class="shrink-0 text-teal-700 hover:text-teal-900 font-bold underline cursor-pointer text-xs"
       >
         ดูภาพรวมทั้งหมด
       </button>
     </div>
 
     <!-- Error Alert Banner -->
-    <div v-if="dashboardStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200/80 rounded-2xl flex items-center justify-between text-xs text-rose-800 shadow-xs">
+    <div v-if="dashboardStore.errorMessage" class="p-4 bg-rose-50 border border-rose-200/80 rounded-xl flex items-center justify-between text-xs text-rose-800 shadow-xs">
       <div class="flex items-center gap-2">
         <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
         <span>{{ dashboardStore.errorMessage }}</span>
@@ -139,7 +141,7 @@
             สรุปการเงินรอบบิลปัจจุบัน ({{ financialData.currentCycle || 'เดือนนี้' }})
           </h2>
         </div>
-        <span class="text-[11px] text-slate-400 font-mono">
+        <span class="text-xs text-slate-400 font-mono">
           หน่วย: บาท
         </span>
       </div>
@@ -181,7 +183,7 @@
     <!-- 3. Building Portfolio Summary (แสดงเฉพาะเมื่อดูภาพรวมทุกตึก) -->
     <div
       v-if="!selectedBuildingId && buildingBreakdownList.length > 0"
-      class="p-4 sm:p-5 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-3.5"
+      class="p-4 sm:p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3.5"
     >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -190,7 +192,7 @@
             สถานะรายอาคารที่ดูแล ({{ buildingBreakdownList.length }} ตึก)
           </h3>
         </div>
-        <span class="text-[11px] text-slate-400">แตะเพื่อดูรายตึก</span>
+        <span class="text-xs text-slate-400">แตะเพื่อดูรายตึก</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -206,12 +208,12 @@
                 <Building2 class="w-3.5 h-3.5 text-teal-600 shrink-0" />
                 <span>{{ b.name }}</span>
               </h4>
-              <p class="text-[11px] text-slate-500 font-mono">
+              <p class="text-xs text-slate-500 font-mono">
                 เข้าพัก {{ b.occupiedRooms || 0 }} / {{ b.totalRooms || 0 }} ห้อง
               </p>
             </div>
             <span
-              class="shrink-0 px-2 py-0.5 rounded-lg text-[10px] font-black font-mono"
+              class="shrink-0 px-2 py-0.5 rounded-lg text-xs font-black font-mono"
               :class="(b.occupancyRate || 0) >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'"
             >
               {{ b.occupancyRate || 0 }}%
@@ -227,7 +229,7 @@
           </div>
 
           <!-- Financial Snapshot -->
-          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-200/60">
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200/60">
             <span class="text-slate-500">รายรับรอบนี้</span>
             <span class="font-bold text-slate-800 font-mono">
               ฿{{ formatCurrency(b.currentRevenue || 0) }}
@@ -238,7 +240,7 @@
     </div>
 
     <!-- 4. Occupancy Progress & Room Breakdown -->
-    <div class="p-4 sm:p-5 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-3.5">
+    <div class="p-4 sm:p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3.5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <DoorOpen class="w-4 h-4 text-slate-700" />
@@ -273,7 +275,7 @@
       <!-- Status Legend & Room Numbers -->
       <div class="grid grid-cols-3 gap-2 pt-1">
         <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100/80 text-center space-y-0.5">
-          <div class="text-[10px] font-semibold text-emerald-800 flex items-center justify-center gap-1">
+          <div class="text-xs font-semibold text-emerald-800 flex items-center justify-center gap-1">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span>มีผู้เช่า</span>
           </div>
@@ -283,7 +285,7 @@
         </div>
 
         <div class="p-2.5 rounded-xl bg-sky-50/70 border border-sky-100/80 text-center space-y-0.5">
-          <div class="text-[10px] font-semibold text-sky-800 flex items-center justify-center gap-1">
+          <div class="text-xs font-semibold text-sky-800 flex items-center justify-center gap-1">
             <span class="w-2 h-2 rounded-full bg-sky-500"></span>
             <span>ห้องว่าง</span>
           </div>
@@ -293,7 +295,7 @@
         </div>
 
         <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-100/80 text-center space-y-0.5">
-          <div class="text-[10px] font-semibold text-amber-800 flex items-center justify-center gap-1">
+          <div class="text-xs font-semibold text-amber-800 flex items-center justify-center gap-1">
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
             <span>รอซ่อม/ปรับปรุง</span>
           </div>
@@ -305,7 +307,7 @@
     </div>
 
     <!-- 5. Urgent Action Counters & Operations (Actionable Hub) -->
-    <div class="p-4 sm:p-5 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-3">
+    <div class="p-4 sm:p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <Wrench class="w-4 h-4 text-slate-700" />
@@ -313,7 +315,7 @@
             งานปฏิบัติการ & เรื่องด่วน (Action Items)
           </h3>
         </div>
-        <span class="text-[10px] text-slate-400">แตะเพื่อจัดการทันที</span>
+        <span class="text-xs text-slate-400">แตะเพื่อจัดการทันที</span>
       </div>
 
       <div class="space-y-2">
@@ -328,7 +330,7 @@
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">สลิปโอนเงินรอยืนยัน</div>
-              <div class="text-[10px] text-slate-400">ตรวจสอบและอนุมัติการชำระเงิน</div>
+              <div class="text-xs text-slate-400">ตรวจสอบและอนุมัติการชำระเงิน</div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -353,7 +355,7 @@
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">งานแจ้งซ่อมรอดำเนินการ</div>
-              <div class="text-[10px] text-slate-400">รายการแจ้งซ่อมที่ยังไม่ปิดงาน</div>
+              <div class="text-xs text-slate-400">รายการแจ้งซ่อมที่ยังไม่ปิดงาน</div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -370,21 +372,21 @@
         <!-- สัญญาจะหมดอายุใน 30 วัน -->
         <div
           @click="openLeasesModal"
-          class="p-3 rounded-xl bg-slate-50 hover:bg-indigo-50/60 active:scale-[0.99] border border-slate-100 hover:border-indigo-300 transition-all cursor-pointer flex items-center justify-between gap-3"
+          class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 active:scale-[0.99] border border-slate-100 hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between gap-3"
         >
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
               <FileText class="w-4 h-4" />
             </div>
             <div class="min-w-0">
               <div class="text-xs font-bold text-slate-800 truncate">สัญญาเช่าใกล้หมดอายุ (30 วัน)</div>
-              <div class="text-[10px] text-slate-400">ติดตามการต่อสัญญา/แจ้งย้ายออก</div>
+              <div class="text-xs text-slate-400">ติดตามการต่อสัญญา/แจ้งย้ายออก</div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <span
               class="px-2.5 py-1 text-xs font-black rounded-lg font-mono"
-              :class="expiringLeasesList.length > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-600'"
+              :class="expiringLeasesList.length > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'"
             >
               {{ expiringLeasesList.length }} สัญญา
             </span>
@@ -399,7 +401,7 @@
       v-if="showSlipModal"
       class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all"
     >
-      <div class="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="w-full max-w-lg bg-white rounded-t-xl sm:rounded-xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
         <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
           <div class="flex items-center gap-2">
             <Receipt class="w-4 h-4 text-emerald-600" />
@@ -421,17 +423,17 @@
           <div
             v-for="inv in pendingSlipsList"
             :key="inv.id"
-            class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 space-y-3"
+            class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3"
           >
             <div class="flex items-start justify-between gap-2">
               <div>
                 <div class="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                  <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                  <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-mono font-bold">
                     ห้อง {{ inv.room?.roomNumber || 'N/A' }}
                   </span>
                   <span>{{ inv.tenant?.firstName }} {{ inv.tenant?.lastName }}</span>
                 </div>
-                <div class="text-[11px] text-slate-500 font-mono mt-0.5">
+                <div class="text-xs text-slate-500 font-mono mt-0.5">
                   รอบบิล: {{ inv.billingCycle }} | เลขที่: {{ inv.invoiceNumber }}
                 </div>
               </div>
@@ -439,7 +441,7 @@
                 <div class="text-xs font-black text-slate-900 font-mono">
                   ฿{{ formatCurrency(inv.grandTotal) }}
                 </div>
-                <div class="text-[10px] text-amber-600 font-medium">
+                <div class="text-xs text-amber-600 font-medium">
                   รอยืนยัน
                 </div>
               </div>
@@ -455,7 +457,7 @@
               />
               <div
                 @click="previewImage(inv.slipUrl)"
-                class="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium flex items-center gap-1 cursor-pointer"
+                class="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-white text-xs font-medium flex items-center gap-1 cursor-pointer"
               >
                 <Maximize2 class="w-3 h-3" />
                 <span>แตะเพื่อขยาย</span>
@@ -464,21 +466,22 @@
 
             <!-- Action Buttons -->
             <div class="grid grid-cols-2 gap-2 pt-1">
-              <button
-                @click="handleRejectSlip(inv)"
+              <Button
+                variant="outline"
                 :disabled="isProcessingAction"
-                class="py-2 px-3 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-700 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                class="border-rose-200 bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-700"
+                @click="handleRejectSlip(inv)"
               >
                 ขอให้ส่งสลิปใหม่
-              </button>
-              <button
-                @click="handleApproveSlip(inv)"
+              </Button>
+              <Button
                 :disabled="isProcessingAction"
-                class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+                class="bg-emerald-600 hover:bg-emerald-700 active:scale-95"
+                @click="handleApproveSlip(inv)"
               >
                 <Check class="w-3.5 h-3.5" />
                 <span>อนุมัติรับชำระ</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -490,7 +493,7 @@
       v-if="showMaintenanceModal"
       class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all"
     >
-      <div class="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="w-full max-w-lg bg-white rounded-t-xl sm:rounded-xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
         <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
           <div class="flex items-center gap-2">
             <Wrench class="w-4 h-4 text-amber-600" />
@@ -512,25 +515,22 @@
           <div
             v-for="req in pendingMaintenanceList"
             :key="req.id"
-            class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 space-y-3"
+            class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 space-y-3"
           >
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">
                 <div class="flex items-center gap-1.5">
-                  <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-mono font-bold">
+                  <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs font-mono font-bold">
                     ห้อง {{ req.room?.roomNumber || 'N/A' }}
                   </span>
-                  <span
-                    class="px-2 py-0.5 rounded text-[10px] font-bold"
-                    :class="req.status === 'in_progress' ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-800'"
-                  >
+                  <Badge :variant="req.status === 'in_progress' ? 'neutral' : 'warning'">
                     {{ req.status === 'in_progress' ? 'กำลังซ่อม' : 'รอดำเนินการ' }}
-                  </span>
+                  </Badge>
                 </div>
                 <h4 class="font-bold text-xs text-slate-900 mt-1 truncate">
                   {{ req.title }}
                 </h4>
-                <p class="text-[11px] text-slate-600 line-clamp-2 mt-0.5">
+                <p class="text-xs text-slate-600 line-clamp-2 mt-0.5">
                   {{ req.description }}
                 </p>
               </div>
@@ -548,23 +548,23 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center gap-2 pt-1">
-              <button
+              <Button
                 v-if="req.status === 'pending'"
-                @click="handleUpdateMaintenance(req, 'in_progress')"
                 :disabled="isProcessingAction"
-                class="flex-1 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+                class="flex-1 bg-sky-600 hover:bg-sky-700 active:scale-95"
+                @click="handleUpdateMaintenance(req, 'in_progress')"
               >
                 <Clock class="w-3.5 h-3.5" />
                 <span>รับเรื่อง / กำลังซ่อม</span>
-              </button>
-              <button
-                @click="handleUpdateMaintenance(req, 'resolved')"
+              </Button>
+              <Button
                 :disabled="isProcessingAction"
-                class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+                class="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-95"
+                @click="handleUpdateMaintenance(req, 'resolved')"
               >
                 <Check class="w-3.5 h-3.5" />
                 <span>ปิดงานซ่อมเสร็จสิ้น</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -576,10 +576,10 @@
       v-if="showLeasesModal"
       class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all"
     >
-      <div class="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="w-full max-w-lg bg-white rounded-t-xl sm:rounded-xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
         <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
           <div class="flex items-center gap-2">
-            <FileText class="w-4 h-4 text-indigo-600" />
+            <FileText class="w-4 h-4 text-blue-600" />
             <h3 class="font-bold text-sm text-slate-900">
               สัญญาเช่าใกล้หมดอายุใน 30 วัน ({{ expiringLeasesList.length }})
             </h3>
@@ -598,32 +598,32 @@
           <div
             v-for="lease in expiringLeasesList"
             :key="lease.id"
-            class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 space-y-2.5"
+            class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2.5"
           >
             <div class="flex items-start justify-between gap-2">
               <div>
                 <div class="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                  <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-mono font-bold">
+                  <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold">
                     ห้อง {{ lease.room?.roomNumber || 'N/A' }}
                   </span>
                   <span>{{ lease.tenant?.firstName }} {{ lease.tenant?.lastName }}</span>
                 </div>
-                <div class="text-[11px] text-slate-500 font-mono mt-0.5">
+                <div class="text-xs text-slate-500 font-mono mt-0.5">
                   สิ้นสุดสัญญา: {{ formatDate(lease.expectedEndDate) }}
                 </div>
               </div>
 
-              <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-bold font-mono">
+              <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 text-xs font-bold font-mono">
                 เหลือ {{ getDaysRemaining(lease.expectedEndDate) }} วัน
               </span>
             </div>
 
             <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-xs">
-              <span class="text-slate-500 text-[11px]">เบอร์ติดต่อ: {{ lease.tenant?.phone || '-' }}</span>
+              <span class="text-slate-500 text-xs">เบอร์ติดต่อ: {{ lease.tenant?.phone || '-' }}</span>
               <a
                 v-if="lease.tenant?.phone"
                 :href="`tel:${lease.tenant.phone}`"
-                class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-xs transition-all"
+                class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all"
               >
                 <Phone class="w-3 h-3" />
                 <span>โทรติดต่อ</span>
@@ -662,7 +662,7 @@
           </button>
         </div>
 
-        <img :src="previewImageUrl" alt="รูปขยาย" class="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-white/10" />
+        <img :src="previewImageUrl" alt="รูปขยาย" class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl border border-white/10" />
       </div>
     </div>
   </div>
@@ -679,6 +679,8 @@ import invoiceService from '@/services/invoiceService';
 import maintenanceService from '@/services/maintenanceService';
 import { showSuccess, showError, showConfirm, showPrompt } from '@/utils/swal';
 import OwnerMetricCard from '@/components/owner/OwnerMetricCard.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Building2,
   RefreshCw,

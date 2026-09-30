@@ -3,7 +3,7 @@
     <!-- Loading Skeleton State -->
     <div v-if="loading" class="space-y-4 animate-pulse">
       <!-- 1. Header Profile Skeleton -->
-      <div class="p-5 sm:p-6 rounded-3xl bg-slate-900/10 border border-slate-200/60 shadow-xs space-y-4">
+      <div class="p-5 sm:p-6 rounded-xl bg-slate-900/10 border border-slate-200/60 shadow-xs space-y-4">
         <div class="flex items-center justify-between gap-3.5 flex-wrap sm:flex-nowrap">
           <div class="flex items-center gap-3.5">
             <div class="w-14 h-14 rounded-full bg-slate-200 shrink-0"></div>
@@ -21,18 +21,18 @@
       </div>
 
       <!-- 2. Action Items / Alerts Skeleton -->
-      <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+      <div class="p-4 sm:p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
           <div class="h-4 w-28 bg-slate-200 rounded-md"></div>
           <div class="h-5 w-16 bg-slate-200 rounded-full"></div>
         </div>
-        <div class="h-16 w-full bg-slate-100 rounded-2xl"></div>
+        <div class="h-16 w-full bg-slate-100 rounded-xl"></div>
       </div>
 
       <!-- 3. Quick Actions Grid Skeleton (4 cards) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div v-for="i in 4" :key="i" class="p-4 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
-          <div class="w-10 h-10 rounded-2xl bg-slate-100"></div>
+        <div v-for="i in 4" :key="i" class="p-4 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-100"></div>
           <div class="space-y-1.5">
             <div class="h-4 w-20 bg-slate-200 rounded-md"></div>
             <div class="h-3 w-28 bg-slate-100 rounded-md"></div>
@@ -41,17 +41,17 @@
       </div>
 
       <!-- 4. Recent Announcements Skeleton -->
-      <div class="p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3.5">
+      <div class="p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3.5">
         <div class="flex items-center justify-between">
           <div class="h-4 w-32 bg-slate-200 rounded-md"></div>
           <div class="h-4 w-12 bg-slate-200 rounded-md"></div>
         </div>
         <div class="space-y-2.5">
-          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
             <div class="h-4 w-3/4 bg-slate-200 rounded-md"></div>
             <div class="h-3 w-1/2 bg-slate-100 rounded-md"></div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
             <div class="h-4 w-2/3 bg-slate-200 rounded-md"></div>
             <div class="h-3 w-1/3 bg-slate-100 rounded-md"></div>
           </div>
@@ -62,28 +62,26 @@
     <!-- Loaded Content -->
     <div v-else class="space-y-5">
       <!-- Session Expired / Not Verified Warning Card -->
-      <div v-if="sessionExpired" class="p-4 bg-amber-50 border border-amber-200/70 rounded-2xl space-y-3 shadow-xs">
+      <Card v-if="sessionExpired" class="p-4 bg-amber-50 border-amber-200/70 space-y-3">
         <div class="flex items-center justify-between text-xs font-semibold text-amber-900">
           <span>เซสชัน LINE หมดอายุ หรือยังไม่ได้ยืนยันตัวตน</span>
-          <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-semibold">
-            Expired
-          </span>
+          <Badge variant="warning">Expired</Badge>
         </div>
         <p class="text-xs text-amber-800 leading-relaxed">
           ไม่พบการเข้าสู่ระบบ LINE หรือ Token หมดอายุ กรุณากดปุ่มด้านล่างเพื่อยืนยันตัวตนผ่าน LINE
         </p>
-        <button
+        <Button
           @click="loginLiff()"
-          class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+          class="w-full bg-[#06C755] hover:bg-[#05b34c] text-white"
         >
           <span>เข้าสู่ระบบด้วย LINE เพื่อต่ออายุเซสชัน</span>
-        </button>
-      </div>
+        </Button>
+      </Card>
 
       <!-- 0. Tenant Preview Mode Banner for Owners -->
       <div
         v-if="isPreviewMode || (authStore.isOwner && !tenantProfile.lineUserId)"
-        class="p-4 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 rounded-2xl flex items-center justify-between gap-3 shadow-md border border-amber-300"
+        class="p-4 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 rounded-xl flex items-center justify-between gap-3 shadow-md border border-amber-300"
       >
         <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 rounded-xl bg-black/15 text-slate-950 flex items-center justify-center shrink-0">
@@ -92,9 +90,9 @@
           <div class="min-w-0">
             <div class="text-xs font-black text-slate-950 flex items-center gap-1.5">
               <span>โหมดจำลองมุมมองลูกบ้าน</span>
-              <span class="px-1.5 py-0.2 text-[9px] rounded-md bg-black/20 text-slate-950 font-bold uppercase">Preview</span>
+              <Badge class="bg-black/20 text-slate-950 font-bold uppercase rounded-md px-1.5 py-0.2">Preview</Badge>
             </div>
-            <div class="text-[11px] text-slate-900 truncate">
+            <div class="text-xs text-slate-900 truncate">
               คุณกำลังดูหน้าจอเสมือนที่ลูกบ้านเห็น
             </div>
           </div>
@@ -111,7 +109,7 @@
 
       <!-- 1. Header Section: Profile & Digital ID Card -->
       <div
-        class="p-5 sm:p-6 text-white rounded-2xl shadow-xs relative overflow-hidden transition-all duration-500"
+        class="p-5 sm:p-6 text-white rounded-xl shadow-xs relative overflow-hidden transition-all duration-500"
         :style="{
           background: `linear-gradient(135deg, ${themeColor}, ${adjustBrightness(themeColor, -25)})`
         }"
@@ -145,42 +143,46 @@
 
               <!-- Current Active Room Badge & Role Badge -->
               <div class="pt-0.5 flex items-center gap-1.5 flex-wrap">
-                <span class="px-2.5 py-0.5 bg-white/20 backdrop-blur-xs text-white font-medium text-[11px] rounded-full border border-white/30 inline-flex items-center gap-1.5">
+                <span class="px-2.5 py-0.5 bg-white/20 backdrop-blur-xs text-white font-medium text-xs rounded-full border border-white/30 inline-flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span>ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber || '-' }}</span>
-                  <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="text-[10px] text-white/80">
+                  <span v-if="selectedRoom?.buildingName || tenantProfile.buildingName" class="text-xs text-white/80">
                     ({{ selectedRoom?.buildingName || tenantProfile.buildingName }})
                   </span>
                 </span>
-                <span
-                  class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"
-                  :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-400/25 text-amber-100 border border-amber-300/40' : 'bg-sky-400/25 text-sky-100 border border-sky-300/40'"
+                <Badge
+                  class="font-bold border"
+                  :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-400/25 text-amber-100 border-amber-300/40' : 'bg-sky-400/25 text-sky-100 border-sky-300/40'"
                 >
-                  <span>{{ tenantProfile.isPrimaryTenant !== false ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}</span>
-                </span>
+                  {{ tenantProfile.isPrimaryTenant !== false ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}
+                </Badge>
               </div>
             </div>
           </div>
 
           <!-- Action Bar: Digital ID & Link More Rooms -->
           <div class="flex items-center gap-2 self-end sm:self-center w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/20 justify-end">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               @click="showLinkRoomModal = true"
-              class="px-3 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-xs font-medium transition-colors border border-white/20 flex items-center gap-1.5 cursor-pointer"
+              class="bg-white/15 hover:bg-white/25 text-white border border-white/20"
             >
               <PlusCircle class="w-3.5 h-3.5" />
               <span>ผูกห้องเพิ่ม</span>
-            </button>
+            </Button>
 
             <!-- Digital ID Button -->
-            <button
+            <Button
               v-if="featureStore.isEnabled('ENABLE_DIGITAL_ID')"
+              variant="ghost"
+              size="sm"
               @click="showQrModal = true"
-              class="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold transition-colors border border-white/30 flex items-center gap-1.5 cursor-pointer"
+              class="bg-white/20 hover:bg-white/30 text-white font-semibold border border-white/30"
             >
               <QrCode class="w-3.5 h-3.5" />
               <span>Digital ID</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -188,7 +190,7 @@
       <!-- 1.2 Owner Mode Quick Switch Banner (สำหรับผู้ใช้ที่มีสิทธิ์เจ้าของตึก) -->
       <div
         v-if="authStore.isOwner || tenantProfile.isOwner"
-        class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl flex items-center justify-between gap-3 shadow-md border border-slate-700/60"
+        class="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl flex items-center justify-between gap-3 shadow-md border border-slate-700/60"
       >
         <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center justify-center shrink-0">
@@ -197,9 +199,9 @@
           <div class="min-w-0">
             <div class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>คุณมีสิทธิ์เจ้าของตึก</span>
-              <span class="px-1.5 py-0.2 text-[9px] rounded-md bg-teal-500 text-slate-950 font-black">Owner</span>
+              <Badge class="bg-teal-500 text-slate-950 font-black rounded-md px-1.5 py-0.2">Owner</Badge>
             </div>
-            <div class="text-[11px] text-slate-300 truncate">
+            <div class="text-xs text-slate-300 truncate">
               ดูยอดเงิน อัตราห้องพัก และเรื่องด่วน
             </div>
           </div>
@@ -217,37 +219,37 @@
       <!-- 1.5 Web Tenant LINE Binding Banner (แนะนำให้ผูก LINE OA หากยังไม่มี LINE ID) -->
       <div
         v-if="!tenantProfile.lineUserId && !currentLineUserId"
-        class="p-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 shadow-xs"
+        class="p-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl flex items-center justify-between gap-3 shadow-xs"
       >
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-2xl bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-sm shadow-[#06C755]/20">
+          <div class="w-10 h-10 rounded-xl bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-sm shadow-[#06C755]/20">
             <MessageSquare class="w-5 h-5 fill-current text-white" />
           </div>
           <div class="min-w-0">
             <div class="text-xs font-bold text-slate-800">
               รับแจ้งเตือนบิลและพัสดุผ่าน LINE
             </div>
-            <div class="text-[11px] text-slate-500">
+            <div class="text-xs text-slate-500">
               เพิ่มเพื่อนกับ LINE Official เพื่อรับการแจ้งเตือนแบบเรียลไทม์
             </div>
           </div>
         </div>
-        <button
+        <Button
           @click="openAddFriendLine()"
-          class="shrink-0 px-3.5 py-2 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-xl text-xs font-bold shadow-xs transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          class="shrink-0 bg-[#06C755] hover:bg-[#05b34c] text-white font-bold active:scale-95"
         >
           <span>เพิ่มเพื่อน</span>
-        </button>
+        </Button>
       </div>
 
       <!-- 2. Multi-Room Selector (Shown if > 1 room) -->
-      <div v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+      <Card v-if="tenantProfile.rooms && tenantProfile.rooms.length > 1" class="p-4 sm:p-5 space-y-3">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xs font-bold text-slate-700">
               ห้องพักของคุณ ({{ tenantProfile.rooms.length }} ห้อง)
             </h2>
-            <p class="text-[11px] text-slate-400 mt-0.5">แตะที่ห้องเพื่อสลับดูข้อมูล</p>
+            <p class="text-xs text-slate-400 mt-0.5">แตะที่ห้องเพื่อสลับดูข้อมูล</p>
           </div>
           <button
             @click="showLinkRoomModal = true"
@@ -266,7 +268,7 @@
             :key="room.id"
             @click="selectRoom(room)"
             :aria-pressed="selectedRoomId === room.id"
-            class="p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative overflow-hidden active:scale-[0.99]"
+            class="p-3 sm:p-3.5 rounded-xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer relative overflow-hidden active:scale-[0.99]"
             :class="selectedRoomId === room.id 
               ? 'bg-teal-50/60 border-teal-200 shadow-2xs' 
               : 'bg-slate-50/60 hover:bg-slate-100/70 border-slate-100/90 text-slate-600'"
@@ -300,15 +302,15 @@
                   >
                     ห้อง {{ room.roomNumber }}
                   </span>
-                  <span
+                  <Badge
                     v-if="selectedRoomId === room.id"
-                    class="px-1.5 py-0.5 text-[9px] font-bold rounded-md bg-teal-100 text-teal-700"
+                    class="rounded-md px-1.5 py-0.5 bg-teal-100 text-teal-700"
                     :style="{ backgroundColor: `${themeColor}18`, color: themeColor }"
                   >
                     ใช้งานอยู่
-                  </span>
+                  </Badge>
                 </div>
-                <div class="text-[10px] text-slate-400 truncate mt-0.5 font-medium">
+                <div class="text-xs text-slate-400 truncate mt-0.5 font-medium">
                   {{ room.buildingName || 'อาคารหลัก' }}
                 </div>
               </div>
@@ -328,23 +330,23 @@
             ></div>
           </button>
         </div>
-      </div>
+      </Card>
 
       <!-- กำลังสลับห้อง: Skeleton แทนทุกส่วนที่ผูกกับห้อง/ตึก จนกว่าข้อมูลห้องใหม่ + ฟีเจอร์ตึกใหม่จะมาครบ
            (Header และรายการห้องยังอยู่ ผู้ใช้เห็นว่ากำลังโหลดห้องไหน และกดสลับต่อได้) -->
       <div v-if="switchingRoom" class="space-y-4 animate-pulse" role="status" aria-live="polite">
         <span class="sr-only">กำลังโหลดข้อมูลห้อง {{ selectedRoom?.roomNumber }}</span>
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+        <div class="p-4 sm:p-5 rounded-xl bg-white border border-slate-100 shadow-xs space-y-3">
           <div class="h-4 w-32 bg-slate-200 rounded-md"></div>
-          <div class="h-16 w-full bg-slate-100 rounded-2xl"></div>
+          <div class="h-16 w-full bg-slate-100 rounded-xl"></div>
         </div>
         <div class="space-y-2.5">
           <div class="h-4 w-20 bg-slate-200 rounded-md"></div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div v-for="i in 4" :key="i" class="h-28 bg-white rounded-2xl border border-slate-100 shadow-xs"></div>
+            <div v-for="i in 4" :key="i" class="h-28 bg-white rounded-xl border border-slate-100 shadow-xs"></div>
           </div>
         </div>
-        <div class="h-40 bg-white rounded-2xl border border-slate-100 shadow-xs"></div>
+        <div class="h-40 bg-white rounded-xl border border-slate-100 shadow-xs"></div>
       </div>
 
       <template v-else>
@@ -362,7 +364,7 @@
               สถานะ & การแจ้งเตือนห้องพัก
             </h2>
           </div>
-          <span v-if="!hasAnyActionItems" class="text-[11px] font-medium text-emerald-600 inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+          <span v-if="!hasAnyActionItems" class="text-xs font-medium text-emerald-600 inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
             <CheckCircle2 class="w-3 h-3 text-emerald-600" />
             <span>ทุกอย่างเรียบร้อยดี</span>
           </span>
@@ -374,19 +376,19 @@
           <div
             v-if="featureStore.isEnabled('ENABLE_LINE_PAYMENT') && unpaidInvoices.length > 0"
             @click="goToPayment(unpaidInvoices[0])"
-            class="p-4 bg-gradient-to-r from-rose-50/95 via-amber-50/40 to-white rounded-2xl border border-rose-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+            class="p-4 bg-gradient-to-r from-rose-50/95 via-amber-50/40 to-white rounded-xl border border-rose-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-11 h-11 rounded-2xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-500/20 group-hover:scale-105 transition-transform">
+                <div class="w-11 h-11 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-500/20 group-hover:scale-105 transition-transform">
                   <CreditCard class="w-5 h-5" />
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-700">
+                    <Badge variant="danger" class="font-bold">
                       รอชำระเงิน ({{ unpaidInvoices.length }} บิล)
-                    </span>
-                    <span v-if="unpaidInvoices[0].dueDate" class="text-[10px] text-slate-400 font-medium">
+                    </Badge>
+                    <span v-if="unpaidInvoices[0].dueDate" class="text-xs text-slate-400 font-medium">
                       ครบกำหนด {{ formatDate(unpaidInvoices[0].dueDate) }}
                     </span>
                   </div>
@@ -409,19 +411,19 @@
           <div
             v-if="featureStore.isEnabled('ENABLE_PARCEL_NOTIFY') && pendingParcels.length > 0"
             @click="router.push('/liff/parcels')"
-            class="p-4 bg-gradient-to-r from-orange-50/95 via-amber-50/40 to-white rounded-2xl border border-orange-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+            class="p-4 bg-gradient-to-r from-orange-50/95 via-amber-50/40 to-white rounded-xl border border-orange-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-11 h-11 rounded-2xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+                <div class="w-11 h-11 rounded-xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
                   <Package class="w-5 h-5" />
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">
+                    <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-orange-100 text-orange-700">
                       พัสดุมาถึงห้อง ({{ pendingParcels.length }} ชิ้น)
                     </span>
-                    <span v-if="pendingParcels[0].courier" class="text-[10px] text-slate-400 font-medium">
+                    <span v-if="pendingParcels[0].courier" class="text-xs text-slate-400 font-medium">
                       {{ pendingParcels[0].courier }}
                     </span>
                   </div>
@@ -444,19 +446,19 @@
           <div
             v-if="featureStore.isEnabled('ENABLE_MAINTENANCE_REQUEST') && activeMaintenance.length > 0"
             @click="router.push('/liff/issues')"
-            class="p-4 bg-gradient-to-r from-sky-50/95 via-teal-50/40 to-white rounded-2xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
+            class="p-4 bg-gradient-to-r from-sky-50/95 via-teal-50/40 to-white rounded-xl border border-sky-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-11 h-11 rounded-2xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+                <div class="w-11 h-11 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
                   <Wrench class="w-5 h-5" />
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-sky-100 text-sky-700">
+                    <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-sky-100 text-sky-700">
                       กำลังดำเนินการซ่อม ({{ activeMaintenance.length }} งาน)
                     </span>
-                    <span class="text-[10px] text-slate-400 font-medium">
+                    <span class="text-xs text-slate-400 font-medium">
                       {{ formatMaintenanceStatus(activeMaintenance[0].status) }}
                     </span>
                   </div>
@@ -479,7 +481,7 @@
         <!-- 4. All Clear Status Card (กรณีไม่มีรายการค้างชำระ/ตกค้าง) -->
         <div
           v-else
-          class="p-4 bg-white rounded-2xl border border-slate-100/90 shadow-2xs flex items-center justify-between gap-3"
+          class="p-4 bg-white rounded-xl border border-slate-100/90 shadow-2xs flex items-center justify-between gap-3"
         >
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
@@ -487,7 +489,7 @@
             </div>
             <div>
               <div class="text-xs font-bold text-slate-800">ไม่มีรายการค้างชำระหรือพัสดุตกค้าง</div>
-              <div class="text-[11px] text-slate-400">สถานะห้องพักและบัญชีของคุณเป็นปัจจุบันเรียบร้อยครับ</div>
+              <div class="text-xs text-slate-400">สถานะห้องพักและบัญชีของคุณเป็นปัจจุบันเรียบร้อยครับ</div>
             </div>
           </div>
         </div>
@@ -504,7 +506,7 @@
             v-for="menu in availableQuickActions"
             :key="menu.id"
             @click="handleMenuClick(menu)"
-            class="p-4 bg-white hover:bg-slate-50/80 rounded-2xl border border-slate-100 shadow-xs text-left transition-all group flex flex-col justify-between h-28 cursor-pointer active:scale-[0.99] relative overflow-hidden"
+            class="p-4 bg-white hover:bg-slate-50/80 rounded-xl border border-slate-100 shadow-xs text-left transition-all group flex flex-col justify-between h-28 cursor-pointer active:scale-[0.99] relative overflow-hidden"
           >
             <div
               class="relative w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
@@ -545,7 +547,7 @@
               <div class="font-bold text-xs text-slate-800 group-hover:text-teal-600 transition-colors">
                 {{ menu.title }}
               </div>
-              <div class="text-[10px] text-slate-400 font-medium truncate mt-0.5">{{ menu.subtitle }}</div>
+              <div class="text-xs text-slate-400 font-medium truncate mt-0.5">{{ menu.subtitle }}</div>
             </div>
           </button>
         </div>
@@ -563,7 +565,7 @@
               <span>ข่าวสาร & ประกาศหอพัก</span>
               <span
                 v-if="unreadCount > 0"
-                class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white animate-pulse shadow-2xs"
+                class="px-2 py-0.5 text-xs font-bold rounded-full bg-rose-500 text-white animate-pulse shadow-2xs"
               >
                 {{ unreadCount }} ใหม่
               </span>
@@ -583,7 +585,7 @@
         <div
           v-if="announcements.length === 1"
           @click="openAnnouncementModal(announcements[0])"
-          class="bg-white rounded-3xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden cursor-pointer group active:scale-[0.99]"
+          class="bg-white rounded-xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden cursor-pointer group active:scale-[0.99]"
         >
           <div v-if="announcements[0].imageUrl && !failedAnnouncementImageIds.has(announcements[0].id)" class="w-full h-36 sm:h-44 relative overflow-hidden bg-slate-100">
             <img
@@ -595,27 +597,27 @@
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
             <span
               v-if="!isRead(announcements[0].id)"
-              class="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-md animate-pulse"
+              class="absolute top-3 left-3 px-2 py-0.5 text-xs font-bold rounded-full bg-rose-500 text-white shadow-md animate-pulse"
             >
               ข่าวใหม่
             </span>
             <span
-              class="absolute bottom-3 left-3 px-2 py-0.5 text-[10px] font-medium rounded-lg bg-black/60 text-white backdrop-blur-md"
+              class="absolute bottom-3 left-3 px-2 py-0.5 text-xs font-medium rounded-lg bg-black/60 text-white backdrop-blur-md"
             >
               {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
             </span>
           </div>
           <div v-else class="p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-600 text-white flex items-center justify-between">
-            <span class="text-[10px] font-semibold bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-xs">
+            <span class="text-xs font-semibold bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-xs">
               {{ announcements[0].building?.name || 'ประกาศทั่วไป' }}
             </span>
-            <span v-if="!isRead(announcements[0].id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
+            <span v-if="!isRead(announcements[0].id)" class="text-xs font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
               ข่าวใหม่
             </span>
           </div>
 
           <div class="p-4 space-y-2">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>{{ formatDate(announcements[0].createdAt) }}</span>
               <span>{{ announcements[0].createdBy || 'ผู้ดูแลหอพัก' }}</span>
             </div>
@@ -642,7 +644,7 @@
               v-for="item in announcements"
               :key="item.id"
               @click="openAnnouncementModal(item)"
-              class="w-[270px] sm:w-[300px] shrink-0 snap-start bg-white rounded-2xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-[0.99]"
+              class="w-[270px] sm:w-[300px] shrink-0 snap-start bg-white rounded-xl border border-slate-100/90 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-[0.99]"
             >
               <!-- Cover or Header -->
               <div>
@@ -656,40 +658,40 @@
                   <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                   <span
                     v-if="!isRead(item.id)"
-                    class="absolute top-2.5 left-2.5 px-2 py-0.5 text-[9px] font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse"
+                    class="absolute top-2.5 left-2.5 px-2 py-0.5 text-xs font-bold rounded-full bg-rose-500 text-white shadow-2xs animate-pulse"
                   >
                     ใหม่
                   </span>
                   <span
-                    class="absolute bottom-2 left-2 px-2 py-0.5 text-[9px] font-medium rounded-md bg-black/60 text-white backdrop-blur-md"
+                    class="absolute bottom-2 left-2 px-2 py-0.5 text-xs font-medium rounded-md bg-black/60 text-white backdrop-blur-md"
                   >
                     {{ item.building?.name || 'ประกาศทั่วไป' }}
                   </span>
                 </div>
                 <div v-else class="p-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-teal-500/10 border-b border-slate-100/80 flex items-center justify-between">
-                  <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                     {{ item.building?.name || 'ประกาศทั่วไป' }}
                   </span>
-                  <span v-if="!isRead(item.id)" class="text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
+                  <span v-if="!isRead(item.id)" class="text-xs font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-2xs animate-pulse">
                     ใหม่
                   </span>
                 </div>
 
                 <!-- Content Body -->
                 <div class="p-3.5 space-y-1.5">
-                  <div class="text-[10px] text-slate-400 font-mono">
+                  <div class="text-xs text-slate-400 font-mono">
                     {{ formatDate(item.createdAt) }}
                   </div>
                   <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
                     {{ item.title }}
                   </h3>
-                  <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                  <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                     {{ item.content }}
                   </p>
                 </div>
               </div>
 
-              <div class="p-3 pt-0 flex items-center justify-between text-[11px] font-semibold text-emerald-600 border-t border-slate-50 mt-1">
+              <div class="p-3 pt-0 flex items-center justify-between text-xs font-semibold text-emerald-600 border-t border-slate-50 mt-1">
                 <span>อ่านต่อ</span>
                 <ChevronRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
@@ -702,7 +704,7 @@
       </div>
 
       <!-- 3.8 Roommates & Co-Residents Section (สมาชิกในห้องพัก) -->
-      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+      <div class="p-4 sm:p-5 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
@@ -712,7 +714,7 @@
               <h2 class="text-xs font-bold text-slate-800">
                 สมาชิกร่วมห้องพัก
               </h2>
-              <p class="text-[10px] text-slate-400 mt-0.5">
+              <p class="text-xs text-slate-400 mt-0.5">
                 ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber }} ({{ 1 + (tenantProfile.roommates?.length || 0) }} คน)
               </p>
             </div>
@@ -746,13 +748,13 @@
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-800 truncate flex items-center gap-1.5">
                   <span>{{ tenantProfile.firstName }} {{ tenantProfile.lastName }}</span>
-                  <span class="text-[9px] px-1.5 py-0.2 bg-teal-100 text-teal-700 rounded-md font-semibold">คุณ</span>
+                  <span class="text-xs px-1.5 py-0.2 bg-teal-100 text-teal-700 rounded-md font-semibold">คุณ</span>
                 </div>
-                <div class="text-[10px] text-slate-400 font-mono">{{ tenantProfile.phone || '-' }}</div>
+                <div class="text-xs text-slate-400 font-mono">{{ tenantProfile.phone || '-' }}</div>
               </div>
             </div>
             <span
-              class="px-2 py-0.5 text-[9px] font-bold rounded-full shrink-0"
+              class="px-2 py-0.5 text-xs font-bold rounded-full shrink-0"
               :class="tenantProfile.isPrimaryTenant !== false ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'"
             >
               {{ tenantProfile.isPrimaryTenant !== false ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}
@@ -779,23 +781,23 @@
                   <div class="text-xs font-bold text-slate-800 truncate">
                     {{ mate.name || `${mate.firstName} ${mate.lastName}` }}
                   </div>
-                  <div class="text-[10px] text-slate-400 font-mono">{{ mate.phone || '-' }}</div>
+                  <div class="text-xs text-slate-400 font-mono">{{ mate.phone || '-' }}</div>
                 </div>
               </div>
-              <span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-slate-100 text-slate-600 shrink-0">
+              <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600 shrink-0">
                 ผู้อยู่อาศัยร่วม
               </span>
             </div>
           </template>
 
-          <div v-else class="p-3 text-center rounded-xl bg-slate-50/50 border border-dashed border-slate-200/80 text-[11px] text-slate-400">
+          <div v-else class="p-3 text-center rounded-xl bg-slate-50/50 border border-dashed border-slate-200/80 text-xs text-slate-400">
             ยังไม่มีผู้อยู่อาศัยร่วมในห้องนี้ แตะปุ่ม "เชิญรูมเมท" เพื่อแชร์รหัสเชิญ
           </div>
         </div>
       </div>
 
       <!-- 3.9 Meter Usage History & Trends (สถิติการใช้น้ำ-ไฟ ย้อนหลัง 6 เดือน) -->
-      <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3.5">
+      <div class="p-4 sm:p-5 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3.5">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div
@@ -809,14 +811,14 @@
               <h2 class="text-xs font-bold text-slate-800">
                 สถิติการใช้น้ำ-ไฟ ย้อนหลัง
               </h2>
-              <p class="text-[10px] text-slate-400 mt-0.5">
+              <p class="text-xs text-slate-400 mt-0.5">
                 ห้อง {{ selectedRoom?.roomNumber || tenantProfile.roomNumber }} (6 เดือนล่าสุด)
               </p>
             </div>
           </div>
 
           <!-- Type Switcher Pill -->
-          <div class="flex items-center p-0.5 bg-slate-100 rounded-xl text-[11px] font-semibold">
+          <div class="flex items-center p-0.5 bg-slate-100 rounded-xl text-xs font-semibold">
             <button
               @click="meterTypeFilter = 'electric'"
               class="px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1"
@@ -839,14 +841,14 @@
         <!-- Latest Summary Stats -->
         <div v-if="latestMeterUsage" class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
           <div>
-            <div class="text-[10px] text-slate-400 font-medium">รอบบิลล่าสุด ({{ latestMeterUsage.billingCycle }})</div>
+            <div class="text-xs text-slate-400 font-medium">รอบบิลล่าสุด ({{ latestMeterUsage.billingCycle }})</div>
             <div class="text-base font-bold text-slate-800 mt-0.5 flex items-baseline gap-1">
               <span>{{ Number(latestMeterUsage.unitsUsed || 0).toLocaleString() }}</span>
               <span class="text-xs font-normal text-slate-500">{{ meterTypeFilter === 'electric' ? 'kWh' : 'หน่วย' }}</span>
             </div>
           </div>
           <div v-if="meterTrendPercent !== null" class="text-right">
-            <div class="text-[10px] text-slate-400 font-medium">เทียบเดือนก่อนหน้า</div>
+            <div class="text-xs text-slate-400 font-medium">เทียบเดือนก่อนหน้า</div>
             <div
               class="text-xs font-bold mt-0.5 flex items-center justify-end gap-1"
               :class="meterTrendPercent > 0 ? 'text-rose-600' : 'text-emerald-600'"
@@ -867,7 +869,7 @@
               class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group"
             >
               <!-- Value Label -->
-              <span class="text-[10px] font-bold text-slate-600 transition-transform group-hover:scale-110">
+              <span class="text-xs font-bold text-slate-600 transition-transform group-hover:scale-110">
                 {{ Number(rec.unitsUsed || 0) }}
               </span>
 
@@ -881,7 +883,7 @@
               </div>
 
               <!-- Cycle Label -->
-              <span class="text-[10px] text-slate-400 font-mono truncate max-w-full">
+              <span class="text-xs text-slate-400 font-mono truncate max-w-full">
                 {{ rec.billingCycle }}
               </span>
             </div>
@@ -892,7 +894,7 @@
         <div v-else class="p-6 text-center rounded-xl bg-slate-50/50 border border-dashed border-slate-200/80 space-y-1">
           <BarChart3 class="w-6 h-6 text-slate-300 mx-auto" />
           <div class="text-xs font-semibold text-slate-600">ยังไม่มีประวัติการจดมิเตอร์</div>
-          <p class="text-[10px] text-slate-400">ระบบจะแสดงกราฟเมื่อมีการบันทึกมิเตอร์รอบบิลแรก</p>
+          <p class="text-xs text-slate-400">ระบบจะแสดงกราฟเมื่อมีการบันทึกมิเตอร์รอบบิลแรก</p>
         </div>
       </div>
       </template>
@@ -900,7 +902,7 @@
       <!-- 4. Personal Profile & Settings Link Card -->
       <router-link
         to="/liff/settings"
-        class="p-4 bg-white hover:bg-slate-50 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
+        class="p-4 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between transition-all group cursor-pointer block"
       >
         <div class="flex items-center gap-3 min-w-0">
           <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
@@ -909,9 +911,9 @@
           <div class="min-w-0 flex-1">
             <div class="font-bold text-xs text-slate-800 group-hover:text-teal-600 transition-colors flex items-center gap-1.5 flex-wrap">
               <span>โปรไฟล์และการตั้งค่า</span>
-              <span class="px-2 py-0.5 text-[10px] font-semibold bg-teal-50 text-teal-600 rounded-full border border-teal-100">Settings</span>
+              <span class="px-2 py-0.5 text-xs font-semibold bg-teal-50 text-teal-600 rounded-full border border-teal-100">Settings</span>
             </div>
-            <div class="text-[11px] text-slate-400 font-medium mt-0.5 truncate">
+            <div class="text-xs text-slate-400 font-medium mt-0.5 truncate">
               เปลี่ยนรหัส PIN, ข้อมูลผู้เช่า, รถยนต์/มอเตอร์ไซค์
             </div>
           </div>
@@ -924,7 +926,7 @@
 
     <!-- Digital ID QR Code Modal -->
     <div v-if="showQrModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 text-center relative">
+      <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 text-center relative">
         <button @click="showQrModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1">
           <X class="w-5 h-5" />
         </button>
@@ -954,13 +956,13 @@
 
     <!-- Roommate Invite Modal -->
     <div v-if="showRoommateModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl space-y-4 border border-slate-100 text-center relative animate-in fade-in zoom-in-95 duration-150">
+      <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl space-y-4 border border-slate-100 text-center relative animate-in fade-in zoom-in-95 duration-150">
         <button @click="showRoommateModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded-lg cursor-pointer">
           <X class="w-5 h-5" />
         </button>
 
         <div class="space-y-1 pt-1">
-          <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-2">
+          <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-2">
             <UserPlus class="w-5 h-5" />
           </div>
           <h3 class="text-base font-bold text-slate-900">เชิญรูมเมทเข้าห้องพัก</h3>
@@ -971,16 +973,16 @@
 
         <!-- QR Code -->
         <div v-if="roommateQrUrl" class="py-1">
-          <img :src="roommateQrUrl" alt="Roommate Invite QR" class="w-44 h-44 mx-auto rounded-2xl border border-slate-100 p-2 bg-white shadow-2xs" />
+          <img :src="roommateQrUrl" alt="Roommate Invite QR" class="w-44 h-44 mx-auto rounded-xl border border-slate-100 p-2 bg-white shadow-2xs" />
         </div>
 
         <!-- Invite Code Box -->
-        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">รหัสเชิญรูมเมท (6 หลัก)</div>
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">รหัสเชิญรูมเมท (6 หลัก)</div>
           <div class="text-2xl font-black font-mono tracking-widest text-teal-600" :style="{ color: themeColor }">
             {{ roommateInviteData?.code }}
           </div>
-          <div class="text-[10px] text-slate-400">
+          <div class="text-xs text-slate-400">
             ห้อง {{ roommateInviteData?.roomNumber }} | หมดอายุใน 7 วัน
           </div>
         </div>
@@ -1007,7 +1009,7 @@
 
     <!-- Link Room Modal -->
     <div v-if="showLinkRoomModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 relative">
+      <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 relative">
         <button @click="showLinkRoomModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1">
           <X class="w-5 h-5" />
         </button>
@@ -1057,12 +1059,12 @@
         @click.self="closeAnnouncementModal"
       >
         <div
-          class="bg-white w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-3xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
+          class="bg-white w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200"
         >
           <!-- Modal Top Header Bar -->
           <div class="shrink-0 px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white/95 backdrop-blur-md sticky top-0 z-10">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+              <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                 {{ selectedAnnouncement.building?.name || 'ประกาศทั่วไป' }}
               </span>
               <span class="text-xs text-slate-400 font-mono">
@@ -1081,7 +1083,7 @@
           <!-- Scrollable Modal Content -->
           <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
             <!-- Full Cover Image -->
-            <div v-if="selectedAnnouncement.imageUrl" class="w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-100 shadow-xs">
+            <div v-if="selectedAnnouncement.imageUrl" class="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-100 shadow-xs">
               <img
                 :src="selectedAnnouncement.imageUrl"
                 :alt="selectedAnnouncement.title"
@@ -1095,12 +1097,12 @@
             </h2>
 
             <!-- Author & Metadata Pill -->
-            <div class="flex items-center gap-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs text-slate-600">
+            <div class="flex items-center gap-3 p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-xs text-slate-600">
               <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                 <User class="w-3.5 h-3.5" />
               </div>
               <div>
-                <div class="text-[10px] text-slate-400">ผู้ประกาศ</div>
+                <div class="text-xs text-slate-400">ผู้ประกาศ</div>
                 <div class="font-semibold text-slate-800">{{ selectedAnnouncement.createdBy || 'ผู้ดูแลหอพัก' }}</div>
               </div>
             </div>
@@ -1171,6 +1173,11 @@ import {
   TrendingDown,
   FileText
 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const router = useRouter();
 const route = useRoute();
@@ -1660,8 +1667,8 @@ const quickActionsConfig = [
     title: 'จองพื้นที่ส่วนกลาง',
     subtitle: 'ฟิตเนส สระว่ายน้ำ ฯลฯ',
     icon: CalendarCheck,
-    bgClass: 'bg-indigo-50',
-    iconClass: 'text-indigo-600',
+    bgClass: 'bg-blue-50',
+    iconClass: 'text-blue-600',
     route: '/liff/facility-bookings',
     featureKey: 'ENABLE_FACILITY_BOOKING'
   },
@@ -1680,8 +1687,8 @@ const quickActionsConfig = [
     title: 'โหวต & แบบสำรวจ',
     subtitle: 'ร่วมแสดงความคิดเห็น',
     icon: Vote,
-    bgClass: 'bg-purple-50',
-    iconClass: 'text-purple-600',
+    bgClass: 'bg-pink-50',
+    iconClass: 'text-pink-600',
     route: '/liff/polls',
     featureKey: 'ENABLE_VOTING'
   },

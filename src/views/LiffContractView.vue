@@ -10,63 +10,58 @@
         <span>กลับหน้าหลัก</span>
       </router-link>
 
-      <button
-        v-if="contract"
-        @click="handlePrint"
-        class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold text-xs rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-        :style="{ backgroundColor: themeColor }"
-      >
+      <Button v-if="contract" size="sm" @click="handlePrint">
         <Printer class="w-3.5 h-3.5" />
         <span>พิมพ์ / บันทึก PDF</span>
-      </button>
+      </Button>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="p-8 text-center space-y-3 no-print">
-      <div class="w-8 h-8 border-3 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div class="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p class="text-xs text-slate-400 font-medium">กำลังโหลดข้อมูลสัญญาเช่า...</p>
     </div>
 
     <!-- No Contract Empty State -->
-    <div v-else-if="!contract" class="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-200 space-y-2 no-print">
+    <Card v-else-if="!contract" class="p-8 text-center border-dashed space-y-2 no-print">
       <FileText class="w-10 h-10 text-slate-300 mx-auto" />
       <h3 class="text-sm font-bold text-slate-700">ไม่พบข้อมูลสัญญาเช่าที่ใช้งานอยู่</h3>
       <p class="text-xs text-slate-400">กรุณาติดต่อเจ้าหน้าที่ดูแลหอพักหากต้องการเปิดดูสัญญาเช่า</p>
-    </div>
+    </Card>
 
     <!-- Contract Content -->
     <div v-else class="space-y-4">
       <!-- Summary Highlight Card (No print) -->
-      <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-5 shadow-lg space-y-4 no-print border border-slate-700">
+      <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl p-5 shadow-lg space-y-4 no-print border border-slate-700">
         <div class="flex items-start justify-between">
           <div>
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/30">
+            <Badge variant="success" class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               สัญญาใช้งานอยู่ (Active)
-            </span>
+            </Badge>
             <h2 class="text-xl font-black mt-1.5">ห้อง {{ contract.room?.roomNumber }}</h2>
             <p class="text-xs text-slate-300">{{ contract.building?.name || 'อาคารหอพัก' }}</p>
           </div>
-          <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400">
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-theme-primary-light">
             <FileCheck class="w-5 h-5" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t border-slate-700/60 text-xs">
           <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
-            <div class="text-[10px] text-slate-400">ค่าเช่ารายเดือน</div>
-            <div class="font-black text-sm text-teal-400 mt-0.5">฿{{ Number(contract.room?.price || 0).toLocaleString() }}</div>
+            <div class="text-xs text-slate-400">ค่าเช่ารายเดือน</div>
+            <div class="font-black text-sm text-theme-primary-light mt-0.5">฿{{ Number(contract.room?.price || 0).toLocaleString() }}</div>
           </div>
           <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
-            <div class="text-[10px] text-slate-400">เงินประกันมัดจำ</div>
+            <div class="text-xs text-slate-400">เงินประกันมัดจำ</div>
             <div class="font-black text-sm text-emerald-400 mt-0.5">฿{{ Number(contract.depositAmount || 0).toLocaleString() }}</div>
           </div>
           <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
-            <div class="text-[10px] text-slate-400">วันเริ่มสัญญา</div>
-            <div class="font-bold text-[11px] text-slate-200 mt-0.5 font-mono">{{ formatDate(contract.startDate) }}</div>
+            <div class="text-xs text-slate-400">วันเริ่มสัญญา</div>
+            <div class="font-bold text-xs text-slate-200 mt-0.5 font-mono">{{ formatDate(contract.startDate) }}</div>
           </div>
           <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
-            <div class="text-[10px] text-slate-400">วันสิ้นสุดสัญญา</div>
-            <div class="font-bold text-[11px] text-slate-200 mt-0.5 font-mono">{{ formatDate(contract.expectedEndDate) }}</div>
+            <div class="text-xs text-slate-400">วันสิ้นสุดสัญญา</div>
+            <div class="font-bold text-xs text-slate-200 mt-0.5 font-mono">{{ formatDate(contract.expectedEndDate) }}</div>
           </div>
         </div>
       </div>
@@ -74,23 +69,23 @@
       <!-- Printable A4 Contract Sheet -->
       <div
         id="printable-liff-contract"
-        class="bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200/80 space-y-6 text-xs sm:text-sm leading-relaxed"
+        class="bg-white text-slate-900 rounded-xl p-6 sm:p-10 shadow-sm border border-slate-200/80 space-y-6 text-xs sm:text-sm leading-relaxed"
       >
         <!-- Header Title -->
         <div class="text-center space-y-1 pb-4 border-b-2 border-slate-900">
           <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-950">
             หนังสือสัญญาเช่าห้องพัก / อาคารชุด
           </h1>
-          <p class="text-[11px] font-medium text-slate-600">
+          <p class="text-xs font-medium text-slate-600">
             RESIDENTIAL LEASE AGREEMENT
           </p>
-          <div class="text-[10px] font-mono text-slate-500 pt-1">
+          <div class="text-xs font-mono text-slate-500 pt-1">
             เลขที่สัญญา: <span class="font-bold text-slate-900">{{ contractNumber }}</span>
           </div>
         </div>
 
         <!-- Date & Place -->
-        <div class="flex justify-end text-[11px] font-mono text-slate-700">
+        <div class="flex justify-end text-xs font-mono text-slate-700">
           <div>
             ทำที่: <strong>{{ contract.building?.name || 'อาคารหอพัก' }}</strong><br />
             วันที่ทำสัญญา: <strong>{{ formatDateThai(contract.startDate) }}</strong>
@@ -98,7 +93,7 @@
         </div>
 
         <!-- Parties -->
-        <div class="space-y-2 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200 text-xs">
+        <div class="space-y-2 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200 text-xs">
           <p class="indent-4 text-justify leading-relaxed">
             สัญญาฉบับนี้ทำขึ้นระหว่าง <strong>{{ contract.building?.name || 'ผู้ให้เช่า' }}</strong> 
             ตั้งอยู่ ณ เลขที่ <strong>{{ contract.building?.address || '-' }}</strong> 
@@ -146,7 +141,7 @@
 
           <div>
             <strong>ข้อ 6. กฎระเบียบอาคาร:</strong>
-            <div class="mt-1 p-3 bg-slate-50 rounded-xl border border-slate-200 whitespace-pre-line text-[11px] text-slate-700 leading-relaxed">
+            <div class="mt-1 p-3 bg-slate-50 rounded-xl border border-slate-200 whitespace-pre-line text-xs text-slate-700 leading-relaxed">
               {{ contract.building?.setting?.termsAndConditions || defaultTerms }}
             </div>
           </div>
@@ -162,7 +157,7 @@
               <div class="text-xs font-bold text-slate-900">
                 (...................................................)
               </div>
-              <div class="text-[10px] text-slate-500">ผู้ให้เช่า (Lessor)</div>
+              <div class="text-xs text-slate-500">ผู้ให้เช่า (Lessor)</div>
             </div>
 
             <div class="space-y-1.5">
@@ -172,7 +167,7 @@
               <div class="text-xs font-bold text-slate-900">
                 ({{ contract.tenant ? `${contract.tenant.firstName} ${contract.tenant.lastName}` : '...................................................' }})
               </div>
-              <div class="text-[10px] text-slate-500">ผู้เช่า (Lessee)</div>
+              <div class="text-xs text-slate-500">ผู้เช่า (Lessee)</div>
             </div>
           </div>
         </div>
@@ -187,6 +182,9 @@ import { useRoute } from 'vue-router';
 import { useDynamicTheme } from '@/composables/useDynamicTheme';
 import api from '@/utils/api';
 import { formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   ChevronLeft,
   Printer,

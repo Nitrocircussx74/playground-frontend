@@ -3,8 +3,8 @@
     <div class="space-y-4">
       <!-- Loading Skeleton State -->
       <div v-if="loading" class="space-y-4 animate-pulse">
-        <div class="p-6 bg-slate-200/70 skeleton-shimmer rounded-2xl h-36"></div>
-        <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+        <div class="p-6 bg-slate-200/70 skeleton-shimmer rounded-xl h-36"></div>
+        <div class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3">
           <div class="h-4 w-28 bg-slate-100 skeleton-shimmer rounded-md"></div>
           <div class="space-y-2 pt-2">
             <div class="h-3 w-full bg-slate-100 skeleton-shimmer rounded-md"></div>
@@ -15,7 +15,7 @@
       </div>
 
       <!-- Error State -->
-      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs text-center font-medium">
+      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
 
@@ -23,12 +23,12 @@
         <!-- 0. Due Date & Late Fee Alert Banner -->
         <div
           v-if="invoice.status === 'overdue' || Number(invoice.lateFeeCharge) > 0"
-          class="p-3.5 bg-rose-50 border border-rose-200/80 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs shadow-2xs"
+          class="p-3.5 bg-rose-50 border border-rose-200/80 rounded-xl flex items-start gap-2.5 text-rose-800 text-xs shadow-2xs"
         >
-          
+
           <div class="space-y-0.5">
             <div class="font-bold">บิลนี้เกินกำหนดชำระ (ครบกำหนด: {{ formatDate(invoice.dueDate) }})</div>
-            <p class="text-[11px] text-rose-700 leading-relaxed">
+            <p class="text-xs text-rose-700 leading-relaxed">
               มีค่าปรับชำระล่าช้าเพิ่มขึ้น <strong class="font-mono">฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</strong> กรุณาชำระเงินและแนบสลิปโดยเร็ว
             </p>
           </div>
@@ -36,49 +36,46 @@
 
         <div
           v-else-if="invoice.status === 'pending'"
-          class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl flex items-start gap-2.5 text-amber-900 text-xs shadow-2xs"
+          class="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-xl flex items-start gap-2.5 text-amber-900 text-xs shadow-2xs"
         >
-          
+
           <div class="space-y-0.5">
             <div class="font-bold">ครบกำหนดชำระ: {{ formatDate(invoice.dueDate) }}</div>
-            <p class="text-[11px] text-amber-800 leading-relaxed">
+            <p class="text-xs text-amber-800 leading-relaxed">
               กรุณาชำระเงินภายในวันครบกำหนด เพื่อหลีกเลี่ยงค่าปรับชำระล่าช้า
             </p>
           </div>
         </div>
 
         <!-- 1. Header Card (ยอดสุทธิ & สถานะบิล) -->
-        <div class="p-5 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-700 text-white rounded-2xl shadow-md relative overflow-hidden space-y-2.5">
-          <div class="flex items-center justify-between text-xs text-teal-100">
+        <div class="p-5 bg-gradient-to-br from-primary to-theme-primary-dark text-primary-foreground rounded-xl shadow-md relative overflow-hidden space-y-2.5">
+          <div class="flex items-center justify-between text-xs text-white/80">
             <span>รอบบิล {{ invoice.billingCycle }}</span>
-            <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{{ invoice.invoiceNumber }}</span>
+            <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-xs">{{ invoice.invoiceNumber }}</span>
           </div>
 
           <div>
-            <div class="text-[11px] text-teal-100/90 font-medium">ห้องพักหมายเลข</div>
+            <div class="text-xs text-white/80 font-medium">ห้องพักหมายเลข</div>
             <div class="text-xl font-bold">ห้อง {{ invoice.room?.roomNumber }}</div>
           </div>
 
           <div class="pt-2.5 border-t border-white/20 flex items-center justify-between">
             <div>
-              <div class="text-[10px] text-teal-100/80">สถานะชำระเงิน</div>
-              <span
-                class="inline-block mt-0.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs"
-                :class="statusBadgeClass"
-              >
+              <div class="text-xs text-white/70">สถานะชำระเงิน</div>
+              <Badge :variant="statusBadgeVariant" class="mt-0.5 font-bold">
                 {{ statusBadgeText }}
-              </span>
+              </Badge>
             </div>
 
             <div class="text-right">
-              <div class="text-[10px] text-teal-100/80">ยอดชำระสุทธิ</div>
+              <div class="text-xs text-white/70">ยอดชำระสุทธิ</div>
               <div class="text-xl font-bold font-mono">฿{{ Number(invoice.grandTotal).toLocaleString() }}</div>
             </div>
           </div>
         </div>
 
         <!-- 2. Bill Breakdown Table (แจกแจงค่าเช่า, ค่าน้ำ, ค่าไฟ, ค่าส่วนกลาง, ค่าปรับ) -->
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+        <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-xs space-y-2.5">
           <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">รายละเอียดค่าใช้จ่าย (Bill Breakdown)</h3>
 
           <div class="space-y-2 text-xs divide-y divide-slate-100">
@@ -92,7 +89,7 @@
                 <span class="text-slate-600">ค่าน้ำประปา</span>
                 <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.waterTotal).toLocaleString() }}</span>
               </div>
-              <div class="text-[10px] text-slate-400 font-mono">
+              <div class="text-xs text-slate-400 font-mono">
                 มิเตอร์: {{ invoice.waterPrevious || 100 }} → {{ invoice.waterCurrent || 115 }} ({{ (invoice.waterCurrent || 115) - (invoice.waterPrevious || 100) }} หน่วย)
               </div>
             </div>
@@ -102,7 +99,7 @@
                 <span class="text-slate-600">ค่าไฟฟ้า</span>
                 <span class="font-bold text-slate-800 font-mono">฿{{ Number(invoice.electricTotal).toLocaleString() }}</span>
               </div>
-              <div class="text-[10px] text-slate-400 font-mono">
+              <div class="text-xs text-slate-400 font-mono">
                 มิเตอร์: {{ invoice.electricPrevious || 1000 }} → {{ invoice.electricCurrent || 1080 }} ({{ (invoice.electricCurrent || 1080) - (invoice.electricPrevious || 1000) }} หน่วย)
               </div>
             </div>
@@ -142,14 +139,14 @@
         <!-- 3. Payment Section: PromptPay QR Code & Slip Upload -->
         <div v-if="invoice.status === 'pending' || invoice.status === 'overdue'" class="space-y-3">
           <!-- PromptPay QR Box -->
-          <div ref="qrCardRef" class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
-            <div class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-900 text-xs font-bold px-3.5 py-1.5 rounded-full border border-teal-200 shadow-2xs">
-              <QrCode class="w-3.5 h-3.5 text-teal-800" />
+          <div ref="qrCardRef" class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs text-center space-y-3">
+            <div class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3.5 py-1.5 rounded-full border border-primary/20 shadow-2xs">
+              <QrCode class="w-3.5 h-3.5 text-primary" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
             <div class="py-1">
-              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
+              <img :src="qrData.qrDataUrl || mockQrUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
             </div>
 
             <div class="text-xs text-slate-600 space-y-1 font-mono">
@@ -160,7 +157,7 @@
                   v-if="qrData.promptpayNumber"
                   type="button"
                   @click="copyPromptPayNumber"
-                  class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
+                  class="text-xs px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
                 >
                   {{ isCopied ? 'คัดลอกแล้ว ' : 'คัดลอก' }}
                 </button>
@@ -174,16 +171,16 @@
                 type="button"
                 @click="handleSaveQrCode"
                 :disabled="savingQr"
-                class="w-full sm:w-auto px-5 py-2.5 bg-teal-50 hover:bg-teal-100 active:bg-teal-200 text-teal-700 border border-teal-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                class="w-full sm:w-auto px-5 py-2.5 bg-primary/5 hover:bg-primary/10 active:bg-primary/15 text-primary border border-primary/20 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                <Download class="w-4 h-4 text-teal-600" />
+                <Download class="w-4 h-4 text-primary" />
                 <span>{{ savingQr ? 'กำลังบันทึกภาพ...' : 'บันทึกรูป QR Code ลงเครื่อง' }}</span>
               </button>
             </div>
           </div>
 
           <!-- Slip Upload Form -->
-          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+          <div class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs space-y-3">
             <h3 class="text-xs font-bold text-slate-800">แนบสลิปโอนเงิน (Upload Slip)</h3>
 
             <form @submit.prevent="handleUploadSlip" class="space-y-3">
@@ -193,7 +190,7 @@
                   accept="image/png, image/jpeg, image/jpg"
                   required
                   @change="handleFileChange"
-                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-600 hover:file:bg-teal-100 cursor-pointer"
+                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                 />
               </div>
 
@@ -213,29 +210,29 @@
         </div>
 
         <!-- 4. Reviewing State Message Box -->
-        <div v-else-if="invoice.status === 'reviewing'" class="p-5 bg-sky-50/80 border border-sky-100 rounded-2xl text-center space-y-1.5">
+        <div v-else-if="invoice.status === 'reviewing'" class="p-5 bg-sky-50/80 border border-sky-100 rounded-xl text-center space-y-1.5">
           <h3 class="text-xs font-bold text-sky-900">กำลังอยู่ระหว่างการตรวจสอบสลิป</h3>
-          <p class="text-[11px] text-sky-700 leading-relaxed">
+          <p class="text-xs text-sky-700 leading-relaxed">
             ระบบได้รับสลิปโอนเงินเรียบร้อยแล้ว เจ้าหน้าที่กำลังดำเนินการตรวจสอบครับ
           </p>
         </div>
 
         <!-- 5. Paid State Message Box -->
-        <div v-else-if="invoice.status === 'paid'" class="p-5 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-center space-y-1.5">
+        <div v-else-if="invoice.status === 'paid'" class="p-5 bg-emerald-50/70 border border-emerald-100 rounded-xl text-center space-y-1.5">
           <h3 class="text-xs font-bold text-emerald-900">ชำระเงินเรียบร้อยแล้ว (Paid)</h3>
-          <p class="text-[11px] text-emerald-700 leading-relaxed">
+          <p class="text-xs text-emerald-700 leading-relaxed">
             ขอบคุณสำหรับการชำระเงิน คุณสามารถดาวน์โหลดใบเสร็จรับเงินหรือใบแจ้งหนี้ได้ด้านล่างนี้ครับ
           </p>
         </div>
 
         <!-- 6. Document Downloads Action Box (Always accessible) -->
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+        <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-xs space-y-2.5">
           <div class="flex items-center justify-between">
             <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-              <FileText class="w-3.5 h-3.5 text-teal-600" />
+              <FileText class="w-3.5 h-3.5 text-primary" />
               <span>เอกสารดาวน์โหลด (PDF)</span>
             </h3>
-            <span class="text-[10px] text-slate-400 font-mono">{{ invoice.invoiceNumber }}</span>
+            <span class="text-xs text-slate-400 font-mono">{{ invoice.invoiceNumber }}</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -244,9 +241,9 @@
               type="button"
               :disabled="downloadingInvoice"
               @click="downloadInvoicePdf"
-              class="w-full py-2.5 px-3 bg-teal-50 hover:bg-teal-100 active:bg-teal-200 text-teal-700 rounded-xl text-xs font-semibold transition-all border border-teal-200/70 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+              class="w-full py-2.5 px-3 bg-primary/5 hover:bg-primary/10 active:bg-primary/15 text-primary rounded-xl text-xs font-semibold transition-all border border-primary/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
             >
-              <span v-if="downloadingInvoice" class="animate-spin w-3.5 h-3.5 border-2 border-teal-600 border-t-transparent rounded-full"></span>
+              <span v-if="downloadingInvoice" class="animate-spin w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full"></span>
               <Download v-else class="w-3.5 h-3.5" />
               <span>{{ downloadingInvoice ? 'กำลังสร้างไฟล์ PDF...' : 'ดาวน์โหลดใบแจ้งหนี้ (PDF)' }}</span>
             </button>
@@ -280,6 +277,7 @@ import api from '@/utils/api';
 import { showSuccess, showError } from '@/utils/swal';
 import { formatShortDate as formatDate } from '@/utils/formatters';
 import { FileText, Download, Receipt, QrCode } from 'lucide-vue-next';
+import { Badge } from '@/components/ui/badge';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -425,14 +423,14 @@ const statusBadgeText = computed(() => {
   return map[invoice.value.status] || invoice.value.status;
 });
 
-const statusBadgeClass = computed(() => {
+const statusBadgeVariant = computed(() => {
   const map = {
-    pending: 'bg-amber-100 border-amber-300 text-amber-900',
-    overdue: 'bg-rose-100 border-rose-300 text-rose-900',
-    reviewing: 'bg-blue-100 border-blue-300 text-blue-900',
-    paid: 'bg-emerald-100 border-emerald-300 text-emerald-900'
+    pending: 'warning',
+    overdue: 'danger',
+    reviewing: 'neutral',
+    paid: 'success'
   };
-  return map[invoice.value.status] || 'bg-slate-100 border-slate-300 text-slate-800';
+  return map[invoice.value.status] || 'neutral';
 });
 
 const handleFileChange = (e) => {

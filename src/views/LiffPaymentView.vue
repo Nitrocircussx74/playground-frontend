@@ -2,20 +2,20 @@
   <div class="space-y-4 pb-6 font-sans text-slate-800">
     <div class="space-y-4">
       <!-- Loading State -->
-      <div v-if="loading" class="p-8 bg-white rounded-2xl shadow-xs border border-slate-100 text-center text-slate-400 text-xs">
-        <div class="animate-spin w-6 h-6 border-2 border-teal-600 border-t-transparent rounded-full mx-auto mb-2.5"></div>
+      <Card v-if="loading" class="p-8 text-center text-slate-400 text-xs">
+        <div class="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2.5"></div>
         กำลังโหลดข้อมูลชำระเงิน...
-      </div>
+      </Card>
 
       <!-- Error State -->
-      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs text-center font-medium">
+      <div v-else-if="errorMessage" class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
 
       <!-- Invoice & Payment Details Card -->
       <div v-else class="space-y-4">
         <!-- Verification Success Banner -->
-        <div v-if="verificationResult" class="p-5 rounded-2xl border text-center space-y-2 shadow-xs"
+        <Card v-if="verificationResult" class="p-5 text-center space-y-2 shadow-xs"
           :class="verificationResult.autoApproved ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950' : 'bg-amber-50/70 border-amber-200 text-amber-950'"
         >
           <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg mx-auto font-bold"
@@ -33,31 +33,28 @@
           </p>
 
           <div class="pt-2">
-            <router-link
-              to="/liff/profile"
-              class="inline-block px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition-all shadow-xs"
-            >
-              กลับสู่หน้าหลัก
-            </router-link>
+            <Button as-child class="bg-slate-800 hover:bg-slate-900">
+              <router-link to="/liff/profile">กลับสู่หน้าหลัก</router-link>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         <template v-else>
           <!-- Header Info -->
-          <div class="p-5 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-700 text-white rounded-2xl shadow-md space-y-2">
-            <div class="flex items-center justify-between text-xs text-teal-100">
+          <div class="p-5 bg-gradient-to-br from-primary via-primary to-primary/80 text-white rounded-xl shadow-md space-y-2">
+            <div class="flex items-center justify-between text-xs text-white/80">
               <span>{{ invoice.billingCycle }}</span>
-              <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-[10px]">{{ invoice.invoiceNumber }}</span>
+              <span class="font-mono bg-white/20 px-2 py-0.5 rounded-md text-xs">{{ invoice.invoiceNumber }}</span>
             </div>
             <div class="text-xl font-bold">ห้อง {{ invoice.room?.roomNumber }}</div>
             <div class="mt-3 pt-2.5 border-t border-white/20 flex items-center justify-between">
-              <span class="text-xs text-teal-100/90 font-medium">ยอดชำระสุทธิ</span>
+              <span class="text-xs text-white/80 font-medium">ยอดชำระสุทธิ</span>
               <span class="text-xl font-bold font-mono">฿{{ Number(invoice.grandTotal).toLocaleString() }}</span>
             </div>
           </div>
 
           <!-- Breakdown Details -->
-          <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-2.5">
+          <Card class="p-4 space-y-2.5">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">รายละเอียดค่าใช้จ่าย</h3>
 
             <div class="space-y-2 text-xs divide-y divide-slate-100">
@@ -105,17 +102,20 @@
                 <span class="font-mono text-sm font-extrabold">+฿{{ Number(invoice.lateFeeCharge).toLocaleString() }}</span>
               </div>
             </div>
-          </div>
+          </Card>
 
           <!-- PromptPay QR Code Box (Capture Card Area) -->
-          <div ref="qrCardRef" class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs text-center space-y-3">
+          <!-- Note: kept as a plain div, NOT the Card component — `qrCardRef` is captured directly
+               via html2canvas in handleSaveQrCode(), which needs a real DOM element ref, not a
+               Vue component instance. Buttons inside are left as native <button> for the same reason. -->
+          <div ref="qrCardRef" class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs text-center space-y-3">
             <div class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-900 text-xs font-bold px-3.5 py-1.5 rounded-full border border-teal-200 shadow-2xs">
               <QrCode class="w-3.5 h-3.5 text-teal-800" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
             <div v-if="qrData.qrDataUrl" class="py-1">
-              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-2xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
+              <img :src="qrData.qrDataUrl" alt="PromptPay QR Code" class="w-48 h-48 mx-auto rounded-xl border border-slate-200/80 shadow-sm p-1.5 bg-white" />
             </div>
 
             <div class="text-xs text-slate-600 space-y-1 font-mono">
@@ -126,7 +126,7 @@
                   v-if="qrData.promptpayNumber"
                   type="button"
                   @click="copyPromptPayNumber"
-                  class="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
+                  class="text-xs px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-sans font-medium transition-colors cursor-pointer"
                 >
                   {{ isCopied ? 'คัดลอกแล้ว ' : 'คัดลอก' }}
                 </button>
@@ -149,7 +149,7 @@
           </div>
 
           <!-- Upload Slip Form -->
-          <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-xs space-y-3">
+          <Card class="p-5 space-y-3">
             <h3 class="text-xs font-bold text-slate-800">แนบสลิปโอนเงิน (Upload Slip)</h3>
 
             <form @submit.prevent="handleUploadSlip" class="space-y-3">
@@ -159,35 +159,25 @@
                   accept="image/png, image/jpeg, image/jpg"
                   required
                   @change="handleFileChange"
-                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-600 hover:file:bg-teal-100 cursor-pointer"
+                  class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                 />
               </div>
 
               <!-- Optional Amount Override for Testing Auto Verification -->
               <div>
-                <label class="block text-[11px] font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อยืนยันยอดชำระ)</label>
-                <input
-                  v-model="declaredAmount"
-                  type="number"
-                  step="0.01"
-                  :placeholder="`฿${invoice.grandTotal || 0}`"
-                  class="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-mono text-slate-800 focus:outline-hidden focus:bg-white focus:ring-1 focus:ring-teal-400"
-                />
+                <label class="block text-xs font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อยืนยันยอดชำระ)</label>
+                <Input v-model="declaredAmount" type="number" step="0.01" :placeholder="`฿${invoice.grandTotal || 0}`" class="font-mono" />
               </div>
 
               <div v-if="previewUrl" class="text-center">
                 <img :src="previewUrl" class="h-40 mx-auto object-cover rounded-xl border border-slate-100 shadow-xs" />
               </div>
 
-              <button
-                type="submit"
-                :disabled="submitting || !selectedFile"
-                class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all shadow-xs disabled:opacity-50 cursor-pointer active:scale-[0.99]"
-              >
+              <Button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600" :disabled="submitting || !selectedFile">
                 {{ submitting ? 'กำลังตรวจสอบสลิป...' : 'ส่งสลิป & ยืนยันการชำระเงิน' }}
-              </button>
+              </Button>
             </form>
-          </div>
+          </Card>
         </template>
       </div>
     </div>
@@ -203,6 +193,9 @@ import api from '@/utils/api';
 import { showError, showSuccess } from '@/utils/swal';
 import { captureAndDownloadElement, downloadImage } from '@/utils/downloadHelper';
 import { Download, QrCode } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const route = useRoute();
 const authStore = useAuthStore();
