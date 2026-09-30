@@ -1,25 +1,18 @@
 <template>
   <div class="space-y-6">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 bg-amber-400/30 border border-amber-300/40 rounded-full text-xs font-bold tracking-wider uppercase text-amber-100">
-            Smart Parcel Management
-          </span>
-        </div>
-        <div class="flex items-center gap-2 mt-1">
-          <Package class="w-6 h-6 text-amber-200" />
-          <h1 class="text-2xl font-black tracking-tight text-white">จัดการพัสดุ (Parcel Management)</h1>
-        </div>
-        <p class="text-xs text-amber-100/80 mt-1 max-w-xl">
-          บันทึกรับพัสดุ ถ่ายรูปหน้ากล่อง แจ้งเตือนลูกบ้านทาง LINE อัตโนมัติ พร้อมอัปเดตสถานะการรับของ
-        </p>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <Package class="w-5 h-5 text-orange-600" />
+          <span>จัดการพัสดุ</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">บันทึกรับพัสดุ ถ่ายรูปหน้ากล่อง แจ้งเตือนลูกบ้านทาง LINE อัตโนมัติ</p>
       </div>
 
-      <Button class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-600/30 shrink-0" @click="openCreateModal">
+      <Button class="bg-orange-600 hover:bg-orange-700 shrink-0" @click="openCreateModal">
         <Plus class="w-4 h-4" />
-        <span>บันทึกพัสดุเข้าใหม่ (Receive Parcel)</span>
+        <span>บันทึกพัสดุเข้าใหม่</span>
       </Button>
     </div>
 
@@ -59,35 +52,21 @@
     <!-- Filter & Data Table -->
     <Card class="p-0 overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <!-- Filter Tabs -->
-        <div class="flex items-center gap-2">
-          <Button
-            :variant="filterStatus === 'ALL' ? undefined : 'secondary'"
-            :class="filterStatus === 'ALL' ? 'bg-orange-600 hover:bg-orange-600/90' : ''"
-            size="sm"
-            @click="filterStatus = 'ALL'"
-          >
-            ทั้งหมด ({{ parcels.length }})
-          </Button>
-          <Button
-            :variant="filterStatus === 'PENDING' ? undefined : 'secondary'"
-            :class="filterStatus === 'PENDING' ? 'bg-amber-500 hover:bg-amber-500/90' : ''"
-            size="sm"
-            @click="filterStatus = 'PENDING'"
-          >
-            <Clock class="w-3.5 h-3.5" />
-            <span>รอรับ ({{ pendingCount }})</span>
-          </Button>
-          <Button
-            :variant="filterStatus === 'PICKED_UP' ? undefined : 'secondary'"
-            :class="filterStatus === 'PICKED_UP' ? 'bg-emerald-600 hover:bg-emerald-600/90' : ''"
-            size="sm"
-            @click="filterStatus = 'PICKED_UP'"
-          >
-            <CheckCircle2 class="w-3.5 h-3.5" />
-            <span>รับแล้ว ({{ pickedUpCount }})</span>
-          </Button>
-        </div>
+        <Tabs v-model="filterStatus">
+          <TabsList>
+            <TabsTrigger value="ALL" active-class="bg-white text-orange-700 shadow-sm shadow-orange-600/10 font-bold">
+              ทั้งหมด ({{ parcels.length }})
+            </TabsTrigger>
+            <TabsTrigger value="PENDING" active-class="bg-white text-orange-700 shadow-sm shadow-orange-600/10 font-bold">
+              <Clock class="w-3.5 h-3.5" />
+              <span>รอรับ ({{ pendingCount }})</span>
+            </TabsTrigger>
+            <TabsTrigger value="PICKED_UP" active-class="bg-white text-orange-700 shadow-sm shadow-orange-600/10 font-bold">
+              <CheckCircle2 class="w-3.5 h-3.5" />
+              <span>รับแล้ว ({{ pickedUpCount }})</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         <Button variant="link" size="sm" class="h-auto p-0 text-orange-600" @click="fetchParcels">
           <RotateCw class="w-3.5 h-3.5" />
@@ -100,39 +79,42 @@
           <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
             <tr>
               <th class="p-3.5">รูปหน้ากล่อง</th>
-              <th class="p-3.5">ห้องพัก</th>
-              <th class="p-3.5">ผู้เช่า</th>
-              <th class="p-3.5">บริษัทขนส่ง</th>
-              <th class="p-3.5">เลขแทรคกิ้ง</th>
-              <th class="p-3.5">เวลาที่รับเข้า</th>
-              <th class="p-3.5">เวลาที่รับของออก</th>
+              <th class="p-3.5">ห้อง / ผู้เช่า</th>
+              <th class="p-3.5">ขนส่ง</th>
+              <th class="p-3.5">เวลา</th>
               <th class="p-3.5">สถานะ</th>
-              <th class="p-3.5 text-right">Actions</th>
+              <th class="p-3.5 text-right">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <tr v-for="item in filteredParcels" :key="item.id" class="hover:bg-slate-50/60 transition-colors">
+            <tr v-for="item in filteredParcels" :key="item.id" class="hover:bg-slate-50/60 transition-colors align-top">
               <td class="p-3.5">
-                <div v-if="item.photoUrl">
-                  <a :href="item.photoUrl" target="_blank">
-                    <img :src="item.photoUrl" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-110 transition-transform" />
-                  </a>
-                </div>
-                <div v-else class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold">
+                <a v-if="item.photoUrl" :href="item.photoUrl" target="_blank">
+                  <img :src="item.photoUrl" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-105 transition-transform" />
+                </a>
+                <div v-else class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold text-center px-1">
                   ไม่มีรูป
                 </div>
               </td>
-              <td class="p-3.5 font-bold text-slate-900">ห้อง {{ item.room?.roomNumber }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}</td>
-              <td class="p-3.5 text-xs text-slate-600 font-medium">
-                {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : (item.room?.tenant ? `${item.room.tenant.firstName} ${item.room.tenant.lastName}` : 'N/A') }}
+              <td class="p-3.5">
+                <div class="font-bold text-slate-900">
+                  ห้อง {{ item.room?.roomNumber }} {{ item.room?.building?.name || item.building?.name ? `(${item.room?.building?.name || item.building?.name})` : '' }}
+                </div>
+                <div class="text-xs text-slate-600 font-medium mt-0.5">
+                  {{ item.tenant ? `${item.tenant.firstName} ${item.tenant.lastName}` : (item.room?.tenant ? `${item.room.tenant.firstName} ${item.room.tenant.lastName}` : 'N/A') }}
+                </div>
               </td>
-              <td class="p-3.5 font-bold text-orange-700 text-xs flex items-center gap-1">
-                <Truck class="w-3.5 h-3.5 text-orange-600" />
-                <span>{{ item.courier }}</span>
+              <td class="p-3.5">
+                <div class="font-bold text-orange-700 text-xs flex items-center gap-1">
+                  <Truck class="w-3.5 h-3.5 text-orange-600" />
+                  <span>{{ item.courier }}</span>
+                </div>
+                <div class="font-mono text-xs text-teal-700 font-semibold mt-0.5">{{ item.trackingNumber || '-' }}</div>
               </td>
-              <td class="p-3.5 font-mono text-xs text-teal-700 font-semibold">{{ item.trackingNumber || '-' }}</td>
-              <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(item.receivedAt) }}</td>
-              <td class="p-3.5 text-xs text-slate-500 font-mono">{{ item.pickedUpAt ? formatDate(item.pickedUpAt) : '-' }}</td>
+              <td class="p-3.5 text-xs text-slate-500">
+                <div>รับเข้า: <span class="font-mono">{{ formatDateTime(item.receivedAt) }}</span></div>
+                <div v-if="item.pickedUpAt" class="mt-0.5">รับออก: <span class="font-mono">{{ formatDateTime(item.pickedUpAt) }}</span></div>
+              </td>
               <td class="p-3.5">
                 <Badge :variant="item.status === 'PENDING' ? 'warning' : 'success'">
                   <component :is="item.status === 'PENDING' ? Clock : CheckCircle2" class="w-3 h-3" />
@@ -160,7 +142,7 @@
             </tr>
 
             <tr v-if="filteredParcels.length === 0">
-              <td colspan="9" class="p-8 text-center text-slate-400 text-xs">
+              <td colspan="6" class="p-8 text-center text-slate-400 text-xs">
                 ไม่มีรายการพัสดุในหมวดหมู่นี้
               </td>
             </tr>
@@ -255,6 +237,7 @@ import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import uploadService from '@/services/uploadService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatDateTime } from '@/utils/formatters';
 import api from '@/utils/api';
 import {
   Package,
@@ -272,6 +255,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();
@@ -391,15 +375,4 @@ const handleDeleteParcel = async (parcelId) => {
   }
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
-  const d = new Date(dateStr);
-  return d.toLocaleString('th-TH', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
 </script>

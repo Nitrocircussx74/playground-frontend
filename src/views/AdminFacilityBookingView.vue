@@ -1,17 +1,15 @@
 <template>
   <div class="space-y-6 font-sans">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-cyan-600 via-teal-600 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <div class="flex items-center gap-2 mb-1">
-          <CalendarCheck class="w-6 h-6 text-cyan-200" />
-          <h1 class="text-2xl font-black tracking-tight text-white">จองพื้นที่ส่วนกลาง (Facility Booking)</h1>
-        </div>
-        <p class="text-xs text-cyan-100/80 mt-1 max-w-xl">
-          จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด
-        </p>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <CalendarCheck class="w-5 h-5 text-primary" />
+          <span>จองพื้นที่ส่วนกลาง</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด</p>
       </div>
-      <Button v-if="activeTab === 'facilities'" variant="ghost" class="bg-white/15 hover:bg-white/25 border border-white/30 text-white shrink-0" @click="openCreateFacilityModal">
+      <Button v-if="activeTab === 'facilities'" class="shrink-0" @click="openCreateFacilityModal">
         <Plus class="w-4 h-4" />
         <span>เพิ่มพื้นที่ส่วนกลาง</span>
       </Button>
@@ -80,7 +78,9 @@
                 <tr v-for="b in bookings" :key="b.id" class="hover:bg-slate-50/60 transition-colors">
                   <td class="p-3.5 font-bold text-slate-900">{{ b.facility?.name }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ b.tenant ? `${b.tenant.firstName} ${b.tenant.lastName}` : '-' }}</td>
-                  <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(b.startTime) }} - {{ formatTime(b.endTime) }}</td>
+                  <td class="p-3.5 text-xs text-slate-500 font-mono">
+                    {{ formatShortDate(b.startTime) }} · {{ formatTimeRange(b.startTime, b.endTime) }} น.
+                  </td>
                   <td class="p-3.5">
                     <Badge :variant="b.status === 'CONFIRMED' ? 'success' : 'neutral'">
                       {{ b.status === 'CONFIRMED' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว' }}
@@ -147,6 +147,7 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatDate, formatShortDate } from '@/utils/formatters';
 import api from '@/utils/api';
 import { CalendarCheck, Plus, Trash2, CheckCircle2 } from 'lucide-vue-next';
 import { Card } from '@/components/ui/card';
@@ -244,6 +245,6 @@ const handleCancelBooking = async (id) => {
   }
 };
 
-const formatDate = (d) => new Date(d).toLocaleString('th-TH');
-const formatTime = (d) => new Date(d).toLocaleTimeString('th-TH');
+const timeOptions = { hour: '2-digit', minute: '2-digit' };
+const formatTimeRange = (start, end) => `${formatDate(start, timeOptions)}-${formatDate(end, timeOptions)}`;
 </script>
