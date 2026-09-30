@@ -45,11 +45,11 @@ export const useInvoiceStore = defineStore('invoice', {
       }
     },
 
-    async updateStatus(invoiceId, status) {
+    async updateStatus(invoiceId, status, extra = {}) {
       this.isLoading = true;
       this.errorMessage = '';
       try {
-        const response = await invoiceService.updateInvoiceStatus(invoiceId, { status });
+        const response = await invoiceService.updateInvoiceStatus(invoiceId, { status, ...extra });
         await this.fetchInvoices();
         return response;
       } catch (error) {
