@@ -1,14 +1,12 @@
 <template>
   <div class="space-y-6 font-sans">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-cyan-600 via-sky-600 to-slate-900 p-6 rounded-xl text-white shadow-xl">
-      <div class="flex items-center gap-2 mb-1">
-        <Car class="w-6 h-6 text-cyan-200" />
-        <h1 class="text-2xl font-black tracking-tight text-white">จัดการยานพาหนะ/ผู้มาเยือน (Vehicle & Visitor)</h1>
-      </div>
-      <p class="text-xs text-cyan-100/80 mt-1 max-w-xl">
-        อนุมัติ/ปฏิเสธทะเบียนรถของลูกบ้าน และดูรายชื่อแขกที่แจ้งล่วงหน้า
-      </p>
+    <!-- Header -->
+    <div>
+      <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <Car class="w-5 h-5 text-primary" />
+        <span>จัดการยานพาหนะ/ผู้มาเยือน</span>
+      </h1>
+      <p class="text-xs text-slate-500 mt-0.5">อนุมัติ/ปฏิเสธทะเบียนรถของลูกบ้าน และดูรายชื่อแขกที่แจ้งล่วงหน้า</p>
     </div>
 
     <Tabs v-model="activeTab">
@@ -82,7 +80,7 @@
                   <td class="p-3.5 font-bold text-slate-900">{{ v.visitorName }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ v.tenant ? `${v.tenant.firstName} ${v.tenant.lastName}` : '-' }}</td>
                   <td class="p-3.5 text-xs text-slate-600 font-mono">{{ v.licensePlate || '-' }}</td>
-                  <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(v.expectedDate) }}</td>
+                  <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatShortDate(v.expectedDate) }}</td>
                   <td class="p-3.5">
                     <Badge :variant="v.status === 'EXPECTED' ? 'warning' : 'neutral'">
                       {{ v.status === 'EXPECTED' ? 'รอมาตามนัด' : 'ยกเลิกแล้ว' }}
@@ -106,6 +104,7 @@ import { ref, onMounted, watch } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatShortDate } from '@/utils/formatters';
 import api from '@/utils/api';
 import { Car, CheckCircle2, X } from 'lucide-vue-next';
 import { Card } from '@/components/ui/card';
@@ -168,5 +167,4 @@ const handleReject = async (id) => {
   }
 };
 
-const formatDate = (d) => new Date(d).toLocaleDateString('th-TH');
 </script>

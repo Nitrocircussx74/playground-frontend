@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-6 font-sans">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-cyan-600 via-teal-600 to-slate-900 p-6 rounded-xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <div class="inline-flex items-center gap-2 mb-1.5">
-          <Vote class="w-6 h-6 text-cyan-200" />
-          <h1 class="text-2xl font-black tracking-tight text-white">โหวต & แบบสำรวจความเห็น (Polls)</h1>
-        </div>
-        <p class="text-xs text-cyan-100/80 mt-1 max-w-xl">สร้างโพลสอบถามความเห็นลูกบ้าน และดูผลโหวตแบบเรียลไทม์</p>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <Vote class="w-5 h-5 text-primary" />
+          <span>โหวต & แบบสำรวจความเห็น</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">สร้างโพลสอบถามความเห็นลูกบ้าน และดูผลโหวตแบบเรียลไทม์</p>
       </div>
-      <Button variant="ghost" class="bg-white/15 hover:bg-white/25 border border-white/30 text-white shrink-0" @click="openCreateModal">
+      <Button class="shrink-0" @click="openCreateModal">
         <Plus class="w-4 h-4" />
         <span>สร้างโพลใหม่</span>
       </Button>
@@ -35,7 +35,7 @@
             </div>
             <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
               <div
-                class="h-full bg-cyan-500"
+                class="h-full bg-primary"
                 :style="{ width: (results[poll.id].totalVotes ? (r.votes / results[poll.id].totalVotes) * 100 : 0) + '%' }"
               ></div>
             </div>
@@ -77,9 +77,9 @@
     <!-- Create Poll Modal -->
     <Dialog :open="showModal" @update:open="showModal = $event">
       <DialogContent class="max-w-md p-0 overflow-hidden">
-        <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white">
+        <div class="px-6 py-4 bg-primary text-primary-foreground">
           <DialogHeader class="pr-6">
-            <DialogTitle class="text-white">สร้างโพลใหม่</DialogTitle>
+            <DialogTitle class="text-primary-foreground">สร้างโพลใหม่</DialogTitle>
           </DialogHeader>
         </div>
         <form @submit.prevent="handleCreatePoll" class="p-6 space-y-4">
@@ -101,7 +101,7 @@
                 <X class="w-4 h-4" />
               </button>
             </div>
-            <button type="button" @click="form.options.push('')" class="text-xs text-cyan-600 font-semibold hover:underline cursor-pointer flex items-center gap-1">
+            <button type="button" @click="form.options.push('')" class="text-xs text-primary font-semibold hover:underline cursor-pointer flex items-center gap-1">
               <Plus class="w-3.5 h-3.5" />
               <span>เพิ่มตัวเลือก</span>
             </button>

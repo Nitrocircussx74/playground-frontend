@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <FileText class="w-6 h-6 text-cyan-600" />
+          <FileText class="w-6 h-6 text-primary" />
           <span>จัดการสัญญาเช่า & ประวัติการเข้าอยู่ (Leases & Tenancy)</span>
         </h1>
         <p class="text-sm text-slate-500">
@@ -23,29 +23,19 @@
     <Card class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
         <!-- Status Filter Tabs -->
-        <div id="tour-lease-status-tabs" class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
-          <button
-            @click="selectedStatus = 'ALL'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-            :class="selectedStatus === 'ALL' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
-          >
-            ทั้งหมด ({{ leases.length }})
-          </button>
-          <button
-            @click="selectedStatus = 'ACTIVE'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-            :class="selectedStatus === 'ACTIVE' ? 'bg-emerald-600 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
-          >
-            กำลังพักอาศัย ({{ activeLeasesCount }})
-          </button>
-          <button
-            @click="selectedStatus = 'ENDED'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-            :class="selectedStatus === 'ENDED' ? 'bg-slate-700 text-white shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-800'"
-          >
-            ย้ายออกแล้ว ({{ endedLeasesCount }})
-          </button>
-        </div>
+        <Tabs v-model="selectedStatus">
+          <TabsList id="tour-lease-status-tabs">
+            <TabsTrigger value="ALL" active-class="bg-white text-slate-900 shadow-2xs font-extrabold">
+              ทั้งหมด ({{ leases.length }})
+            </TabsTrigger>
+            <TabsTrigger value="ACTIVE" active-class="bg-emerald-600 text-white shadow-2xs font-extrabold">
+              กำลังพักอาศัย ({{ activeLeasesCount }})
+            </TabsTrigger>
+            <TabsTrigger value="ENDED" active-class="bg-slate-700 text-white shadow-2xs font-extrabold">
+              ย้ายออกแล้ว ({{ endedLeasesCount }})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       <!-- Search Input -->
@@ -179,7 +169,7 @@
           <router-link
             v-if="item.tenantId || item.tenant?.id"
             :to="`/tenants/${item.tenantId || item.tenant?.id}`"
-            class="py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+            class="py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
           >
             <User class="w-3.5 h-3.5" /><span>โปรไฟล์</span>
           </router-link>
@@ -250,6 +240,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const buildingStore = useBuildingStore();
 const leases = ref([]);

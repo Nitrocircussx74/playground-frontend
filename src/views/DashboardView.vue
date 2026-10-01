@@ -413,7 +413,7 @@
                       <span class="block text-xs text-slate-400 font-mono mt-0.5">{{ lease.tenant?.phone || '-' }}</span>
                     </td>
                     <td class="p-3.5 font-bold text-amber-700 font-mono">
-                      {{ lease.expectedEndDate ? new Date(lease.expectedEndDate).toLocaleDateString('th-TH') : '-' }}
+                      {{ formatShortDate(lease.expectedEndDate) }}
                     </td>
                     <td class="p-3.5 text-right font-extrabold text-emerald-700 font-mono text-sm">
                       ฿{{ Number(lease.depositAmount || 0).toLocaleString() }}
@@ -482,6 +482,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, ArcElement, Categ
 import { useDashboardStore } from '@/stores/useDashboardStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';
+import { formatShortDate } from '@/utils/formatters';
 import { startTour } from '@/utils/tours';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);

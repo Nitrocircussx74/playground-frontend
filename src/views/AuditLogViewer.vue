@@ -100,7 +100,7 @@
               <!-- Timestamp -->
               <td class="px-6 py-4 font-mono text-xs text-slate-600">
                 <div>{{ formatDate(log.createdAt) }}</div>
-                <div class="text-xs text-slate-400">{{ formatTime(log.createdAt) }}</div>
+                <div class="text-xs text-slate-400">{{ formatDate(log.createdAt, { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }}</div>
               </td>
 
               <!-- Admin User -->
@@ -381,8 +381,4 @@ const truncateUuid = (uuid) => {
   return uuid.length > 12 ? `${uuid.slice(0, 8)}...` : uuid;
 };
 
-const formatTime = (dateStr) => {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleTimeString('th-TH');
-};
 </script>

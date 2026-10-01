@@ -1,32 +1,25 @@
 <template>
   <div class="space-y-6">
-    <!-- Top Hero Banner & Actions -->
-    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-xl p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-cyan-800/40">
-      <div class="space-y-1">
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
-            System Administration
-          </span>
-          <span class="text-xs text-cyan-300 font-medium">RBAC Security Center</span>
-        </div>
-        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
-          <ShieldCheck class="w-6 h-6 text-cyan-300" />
-          <span>Admin User & Role Management</span>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <ShieldCheck class="w-5 h-5 text-primary" />
+          <span>ผู้ดูแลระบบและสิทธิ์การเข้าถึง</span>
         </h1>
-        <p class="text-xs text-cyan-200 max-w-xl">
-          ศูนย์กลางบริหารจัดการผู้ใช้งานระบบหลังบ้าน กำหนดระดับสิทธิ์ (OWNER / MANAGER) และควบคุมสิทธิ์การเข้าถึงตึก
+        <p class="text-xs text-slate-500 mt-0.5">
+          บริหารจัดการผู้ใช้งานระบบหลังบ้าน กำหนดระดับสิทธิ์ (OWNER / MANAGER) และควบคุมสิทธิ์การเข้าถึงตึก
         </p>
       </div>
 
-      <div class="flex items-center gap-3 shrink-0">
-        <Button class="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 shadow-lg shadow-cyan-950/50 hover:shadow-cyan-500/30 border border-cyan-400/30" @click="openCreateModal">
-          <Plus class="w-4 h-4" />
-          <span>เพิ่มแอดมินใหม่ (Add User)</span>
-        </Button>
-
-        <Button variant="ghost" class="bg-white/10 hover:bg-white/20 text-white border border-white/15" :disabled="loading" @click="fetchUsers">
+      <div class="flex items-center gap-2 shrink-0">
+        <Button variant="outline" :disabled="loading" @click="fetchUsers">
           <RefreshCw :class="['w-4 h-4', loading ? 'animate-spin' : '']" />
           <span class="hidden sm:inline">รีเฟรช</span>
+        </Button>
+        <Button @click="openCreateModal">
+          <Plus class="w-4 h-4" />
+          <span>เพิ่มแอดมินใหม่</span>
         </Button>
       </div>
     </div>
@@ -246,11 +239,11 @@
     <Dialog :open="showModal" @update:open="showModal = $event">
       <DialogContent class="max-w-xl p-0 flex flex-col max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 text-white">
+        <div class="px-6 py-4 bg-primary text-primary-foreground">
           <DialogHeader class="pr-6">
-            <DialogTitle class="text-white flex items-center gap-2">
-              <Settings v-if="isEditing" class="w-5 h-5 text-cyan-300" />
-              <UserPlus v-else class="w-5 h-5 text-cyan-300" />
+            <DialogTitle class="text-primary-foreground flex items-center gap-2">
+              <Settings v-if="isEditing" class="w-5 h-5" />
+              <UserPlus v-else class="w-5 h-5" />
               <span>{{ isEditing ? `แก้ไขสิทธิ์ผู้ใช้งาน: ${form.name}` : 'เพิ่มผู้ดูแลระบบใหม่ (Add Admin User)' }}</span>
             </DialogTitle>
           </DialogHeader>

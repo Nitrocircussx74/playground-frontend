@@ -1,33 +1,31 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-6 py-4">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+    <!-- Header -->
+    <Card class="border-slate-200 bg-white shadow-sm p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl font-extrabold ring-2 ring-white/20 shadow-inner">
+        <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-extrabold text-primary shrink-0">
           {{ userInitials }}
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-white">{{ meData?.name || authStore.currentUser?.name || 'Admin User' }}</h1>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900">{{ meData?.name || authStore.currentUser?.name || 'Admin User' }}</h1>
           <div class="flex items-center gap-2 mt-1">
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
-              {{ meData?.role || authStore.currentUser?.role || 'ADMIN' }}
-            </span>
-            <span class="text-xs text-cyan-200">{{ meData?.email || authStore.currentUser?.email }}</span>
+            <Badge>{{ meData?.role || authStore.currentUser?.role || 'ADMIN' }}</Badge>
+            <span class="text-xs text-slate-500">{{ meData?.email || authStore.currentUser?.email }}</span>
           </div>
         </div>
       </div>
 
-      <Button variant="ghost" class="bg-white/10 hover:bg-white/20 text-white border border-white/15" :disabled="loading" @click="fetchProfile">
-        <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>Refresh Profile</span>
+      <Button variant="outline" :disabled="loading" @click="fetchProfile">
+        <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
       </Button>
-    </div>
+    </Card>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Card 1: Information & Building Access Rights -->
       <Card class="border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <User class="w-5 h-5 text-cyan-600" />
+            <User class="w-5 h-5 text-primary" />
             <span>ข้อมูลส่วนตัว & สิทธิ์การเข้าถึงตึก</span>
           </CardTitle>
           <CardDescription class="text-xs text-slate-500">
