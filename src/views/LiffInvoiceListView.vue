@@ -201,7 +201,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { initLiff, isLiffLoggedIn, getLiffProfile } from '@/utils/liff';
+import { initLiff, isLiffLoggedIn, getLiffProfile, loginLiff } from '@/utils/liff';
 import { downloadOrSharePdf } from '@/utils/downloadHelper';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/utils/api';
