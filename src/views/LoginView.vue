@@ -26,7 +26,7 @@
             <CardTitle class="text-2xl font-extrabold tracking-tight text-white">
               Horspace <span class="text-cyan-400 font-bold">CMS</span>
             </CardTitle>
-            <p class="text-[11px] font-semibold text-cyan-400 tracking-wide mt-1">
+            <p class="text-xs font-semibold text-cyan-400 tracking-wide mt-1">
               Central Management System for Properties
             </p>
           </div>
@@ -80,12 +80,12 @@
 
             <!-- Quick Demo Credential Autofill Helper (dev only — never ships to production) -->
             <div v-if="isDev" class="pt-1 flex items-center justify-between gap-2">
-              <span class="text-[11px] text-slate-400">กรอกข้อมูลทดสอบ:</span>
+              <span class="text-xs text-slate-400">กรอกข้อมูลทดสอบ:</span>
               <div class="flex items-center gap-3">
                 <button
                   type="button"
                   @click="fillDemoAccount('owner')"
-                  class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
+                  class="text-xs font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
                 >
                   เจ้าของหอพัก (Owner)
                 </button>
@@ -93,7 +93,7 @@
                 <button
                   type="button"
                   @click="fillDemoAccount('superadmin')"
-                  class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
+                  class="text-xs font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer"
                 >
                   Super Admin
                 </button>
@@ -119,7 +119,7 @@
         </CardContent>
 
         <CardFooter class="px-6 sm:px-8 pb-8 pt-2">
-          <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-[11px] space-y-1.5">
+          <div class="w-full p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-xs space-y-1.5">
             <div class="flex items-center gap-1.5 text-cyan-300 font-bold">
               <ShieldCheck class="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Enterprise Security Authentication</span>

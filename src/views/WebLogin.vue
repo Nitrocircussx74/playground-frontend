@@ -27,7 +27,7 @@
             <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
               เข้าสู่ระบบลูกบ้าน <span class="text-cyan-400">(Web Portal)</span>
             </h1>
-            <p class="text-[11px] font-semibold text-emerald-400 tracking-wide mt-1">
+            <p class="text-xs font-semibold text-emerald-400 tracking-wide mt-1">
               Horspace Dual-Mode Living Platform
             </p>
           </div>
@@ -62,7 +62,7 @@
               </svg>
               <span>{{ isLineLoggingIn ? 'กำลังเชื่อมต่อ LINE...' : 'เข้าสู่ระบบด้วย LINE (แนะนำ)' }}</span>
             </button>
-            <p class="text-[11px] text-center text-slate-500">
+            <p class="text-xs text-center text-slate-500">
               บนคอมพิวเตอร์สามารถสแกน QR Code ด้วยมือถือเพื่อเข้าสู่ระบบได้ทันที
             </p>
           </div>
@@ -70,7 +70,7 @@
           <!-- Divider -->
           <div class="relative flex items-center justify-center">
             <div class="border-t border-slate-800 w-full"></div>
-            <span class="bg-slate-900 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+            <span class="bg-slate-900 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider shrink-0">
               หรือ เข้าสู่ระบบด้วยรหัส PIN
             </span>
             <div class="border-t border-slate-800 w-full"></div>
@@ -82,7 +82,7 @@
             <div class="space-y-1.5">
               <label for="weblogin-phone" class="text-xs font-bold text-slate-300 flex items-center justify-between">
                 <span>หมายเลขโทรศัพท์ที่ลงทะเบียน</span>
-                <span class="text-[10px] text-slate-400 font-normal">เช่น 0812345678</span>
+                <span class="text-xs text-slate-400 font-normal">เช่น 0812345678</span>
               </label>
               <input
                 id="weblogin-phone"
@@ -104,7 +104,7 @@
                 <button
                   type="button"
                   @click="showPin = !showPin"
-                  class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+                  class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
                 >
                   {{ showPin ? 'ซ่อนรหัส' : 'แสดงรหัส' }}
                 </button>
@@ -192,7 +192,7 @@
 
             <!-- Help footer -->
             <div class="text-center pt-3 border-t border-slate-800/60">
-              <p class="text-[11px] text-slate-500">
+              <p class="text-xs text-slate-500">
                 ลืมรหัส PIN หรือยังไม่เคยลงทะเบียน? ติดต่อนิติบุคคลประจำหอพัก
               </p>
             </div>
