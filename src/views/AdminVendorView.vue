@@ -116,8 +116,9 @@
 
         <form @submit.prevent="handleSubmit" class="space-y-3">
           <div class="space-y-1">
-            <label class="block text-xs font-semibold text-slate-700">ชื่อช่าง / บริษัท / ร้าน *</label>
+            <label for="vendor-name" class="block text-xs font-semibold text-slate-700">ชื่อช่าง / บริษัท / ร้าน *</label>
             <Input
+              id="vendor-name"
               v-model="form.name"
               type="text"
               required
@@ -126,8 +127,8 @@
           </div>
 
           <div class="space-y-1">
-            <label class="block text-xs font-semibold text-slate-700">หมวดหมู่ความเชี่ยวชาญ *</label>
-            <Select v-model="form.category" required>
+            <label for="vendor-category" class="block text-xs font-semibold text-slate-700">หมวดหมู่ความเชี่ยวชาญ *</label>
+            <Select id="vendor-category" v-model="form.category" required>
               <option value="ช่างแอร์">ช่างแอร์</option>
               <option value="ช่างไฟ">ช่างไฟ</option>
               <option value="ช่างประปา">ช่างประปา</option>
@@ -140,16 +141,18 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <label class="block text-xs font-semibold text-slate-700">เบอร์โทรศัพท์</label>
+              <label for="vendor-phone" class="block text-xs font-semibold text-slate-700">เบอร์โทรศัพท์</label>
               <Input
+                id="vendor-phone"
                 v-model="form.phone"
                 type="tel"
                 placeholder="08x-xxx-xxxx"
               />
             </div>
             <div class="space-y-1">
-              <label class="block text-xs font-semibold text-slate-700">LINE ID</label>
+              <label for="vendor-line-id" class="block text-xs font-semibold text-slate-700">LINE ID</label>
               <Input
+                id="vendor-line-id"
                 v-model="form.lineId"
                 type="text"
                 placeholder="ไอดีไลน์"
@@ -158,8 +161,9 @@
           </div>
 
           <div class="space-y-1">
-            <label class="block text-xs font-semibold text-slate-700">หมายเหตุ / ขอบเขตงาน</label>
+            <label for="vendor-note" class="block text-xs font-semibold text-slate-700">หมายเหตุ / ขอบเขตงาน</label>
             <textarea
+              id="vendor-note"
               v-model="form.note"
               rows="3"
               placeholder="เช่น รับงานเฉพาะช่วงกลางวัน, มีค่าเปิดงาน 300 บาท"

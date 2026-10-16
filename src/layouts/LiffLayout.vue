@@ -2,7 +2,7 @@
   <!-- App Shell: Locked Viewport Container (ห้ามขยับทั้ง Header และ Footer) -->
   <div class="fixed inset-0 h-[100dvh] w-full bg-slate-50 flex flex-col font-sans text-slate-800 selection:bg-teal-500 selection:text-white overflow-hidden">
     <!-- 1. Top Navigation Bar (Header) - ปักหมุดถาวรด้านบน -->
-    <header class="shrink-0 h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 z-30 px-4 sm:px-6 shadow-2xs select-none">
+    <header class="shrink-0 min-h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 z-30 px-4 sm:px-6 shadow-2xs select-none pt-[env(safe-area-inset-top)]">
       <div class="max-w-4xl mx-auto h-full flex items-center justify-between">
         <!-- Left: Back Button or Logo -->
         <div class="flex items-center gap-2">
@@ -10,7 +10,7 @@
             v-if="showBackButton"
             variant="ghost"
             size="icon"
-            class="w-8 h-8 bg-slate-100/80 hover:bg-slate-200 text-slate-600"
+            class="w-11 h-11 bg-slate-100/80 hover:bg-slate-200 text-slate-600"
             aria-label="ย้อนกลับ"
             @click="handleBack"
           >

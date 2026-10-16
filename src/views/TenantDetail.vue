@@ -373,8 +373,9 @@
 
                 <!-- Textarea Internal Notes -->
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ข้อความบันทึกภายในเพิ่มเติม:</label>
+                  <label for="tenant-internal-notes" class="text-xs font-bold text-slate-700">ข้อความบันทึกภายในเพิ่มเติม:</label>
                   <textarea
+                    id="tenant-internal-notes"
                     v-model="notesForm.internalNotes"
                     rows="6"
                     :disabled="!canManageNotes || savingNotes"

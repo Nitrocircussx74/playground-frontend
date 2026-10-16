@@ -41,6 +41,7 @@
           <!-- Feedback Alert -->
           <div
             v-if="errorMessage"
+            role="alert"
             class="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-2xl text-xs flex items-center gap-2 animate-shake"
           >
             <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
@@ -53,7 +54,7 @@
               type="button"
               :disabled="isLineLoggingIn || isLoading"
               @click="handleLineWebLogin"
-              class="w-full py-3.5 px-4 bg-gradient-to-r from-[#06C755] via-emerald-500 to-[#06C755] hover:from-[#05b34c] hover:to-emerald-600 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-[#06C755]/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+              class="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-emerald-700/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
             >
               <div v-if="isLineLoggingIn" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <svg v-else class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24">
@@ -79,11 +80,12 @@
           <form @submit.prevent="handleWebLogin" class="space-y-4">
             <!-- 1. Phone Number Input -->
             <div class="space-y-1.5">
-              <label class="text-xs font-bold text-slate-300 flex items-center justify-between">
+              <label for="weblogin-phone" class="text-xs font-bold text-slate-300 flex items-center justify-between">
                 <span>หมายเลขโทรศัพท์ที่ลงทะเบียน</span>
                 <span class="text-[10px] text-slate-400 font-normal">เช่น 0812345678</span>
               </label>
               <input
+                id="weblogin-phone"
                 v-model="phoneNumber"
                 type="tel"
                 inputmode="numeric"
@@ -109,7 +111,8 @@
               </label>
 
               <!-- PIN Indicator Dots / Boxes -->
-              <div class="flex items-center justify-center gap-2.5 py-1">
+              <span class="sr-only" aria-live="polite">กรอกรหัส PIN แล้ว {{ pin.length }} จาก 6 หลัก</span>
+              <div class="flex items-center justify-center gap-2.5 py-1" role="group" aria-label="รหัส PIN 6 หลัก">
                 <div
                   v-for="index in 6"
                   :key="index"
@@ -136,7 +139,7 @@
                     type="button"
                     :disabled="isLoading"
                     @click="pressPinDigit(num)"
-                    class="h-10 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
+                    class="h-12 sm:h-14 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
                   >
                     {{ num }}
                   </button>
@@ -146,7 +149,7 @@
                     type="button"
                     :disabled="isLoading || pin.length === 0"
                     @click="clearPin"
-                    class="h-10 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
+                    class="h-12 sm:h-14 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
                   >
                     ล้าง
                   </button>
@@ -156,7 +159,7 @@
                     type="button"
                     :disabled="isLoading"
                     @click="pressPinDigit(0)"
-                    class="h-10 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
+                    class="h-12 sm:h-14 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
                   >
                     0
                   </button>
@@ -166,7 +169,7 @@
                     type="button"
                     :disabled="isLoading || pin.length === 0"
                     @click="deletePinDigit"
-                    class="h-10 rounded-xl text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
+                    class="h-12 sm:h-14 rounded-xl text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
                     title="ลบตัวเลขล่าสุด"
                   >
                     ลบ
@@ -180,7 +183,7 @@
               <button
                 type="submit"
                 :disabled="isLoading || !phoneNumber || pin.length !== 6"
-                class="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:to-teal-500 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full py-3 px-4 bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-700 hover:from-cyan-800 hover:to-teal-800 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 <span>{{ isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย PIN (Sign In)' }}</span>
@@ -202,15 +205,17 @@
 
 <script setup>
 import { AlertCircle, Phone, Lock } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/utils/api';
 import { useAuthStore } from '@/stores/auth';
 import { loginLiff } from '@/utils/liff';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const { fetchAndApplyBuildingTheme } = useDynamicTheme();
 
 const phoneNumber = ref('');
 const pin = ref('');
@@ -218,6 +223,13 @@ const showPin = ref(false);
 const isLoading = ref(false);
 const isLineLoggingIn = ref(false);
 const errorMessage = ref('');
+
+onMounted(() => {
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+  if (targetBuilding) {
+    fetchAndApplyBuildingTheme(targetBuilding);
+  }
+});
 
 const pressPinDigit = (num) => {
   if (pin.value.length < 6) {

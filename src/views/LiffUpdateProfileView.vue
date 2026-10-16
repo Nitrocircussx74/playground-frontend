@@ -50,8 +50,9 @@
 
         <div class="space-y-3">
           <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-600">ชื่อ-นามสกุล ผู้เช่า</label>
+            <label for="update-profile-name" class="block text-xs font-medium text-slate-600">ชื่อ-นามสกุล ผู้เช่า</label>
             <input
+              id="update-profile-name"
               type="text"
               :value="`${profile.firstName} ${profile.lastName}`"
               disabled
@@ -61,8 +62,9 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-slate-600">ห้องพัก</label>
+              <label for="update-profile-room" class="block text-xs font-medium text-slate-600">ห้องพัก</label>
               <input
+                id="update-profile-room"
                 type="text"
                 :value="`ห้อง ${profile.roomNumber}`"
                 disabled
@@ -71,8 +73,9 @@
             </div>
 
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-slate-600">วันสิ้นสุดสัญญา</label>
+              <label for="update-profile-contract-end" class="block text-xs font-medium text-slate-600">วันสิ้นสุดสัญญา</label>
               <input
+                id="update-profile-contract-end"
                 type="text"
                 :value="profile.contractEndDate"
                 disabled
@@ -90,15 +93,16 @@
       <!-- Section 2: Contact Info (Editable) -->
       <Card class="p-4 sm:p-5 space-y-3.5">
         <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-          <Phone class="w-4 h-4 text-teal-500" />
+          <Phone class="w-4 h-4 text-primary" />
           <h3 class="text-xs font-bold text-slate-800">ข้อมูลติดต่อ</h3>
         </div>
 
         <div class="space-y-1">
-          <label class="block text-xs font-medium text-slate-700">
+          <label for="update-profile-phone" class="block text-xs font-medium text-slate-700">
             เบอร์โทรศัพท์ <span class="text-rose-500">*</span>
           </label>
           <Input
+            id="update-profile-phone"
             v-model="profile.phone"
             type="tel"
             maxlength="10"
@@ -121,7 +125,7 @@
       >
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <div class="flex items-center gap-2">
-            <Car class="w-4 h-4 text-teal-500" />
+            <Car class="w-4 h-4 text-primary" />
             <h3 class="text-xs font-bold text-slate-800">จัดการยานพาหนะ</h3>
           </div>
           <Button type="button" variant="link" size="sm" class="h-auto p-0" @click="showAddVehicleModal = true">
@@ -184,16 +188,17 @@
 
         <form @submit.prevent="addVehicle" class="space-y-3 text-xs">
           <div class="space-y-1">
-            <label class="block font-medium text-slate-700">ประเภทพาหนะ</label>
-            <Select v-model="newVehicle.type" required>
+            <label for="update-profile-vehicle-type" class="block font-medium text-slate-700">ประเภทพาหนะ</label>
+            <Select id="update-profile-vehicle-type" v-model="newVehicle.type" required>
               <option value="motorcycle">รถจักรยานยนต์</option>
               <option value="car">รถยนต์</option>
             </Select>
           </div>
 
           <div class="space-y-1">
-            <label class="block font-medium text-slate-700">เลขทะเบียนรถ <span class="text-rose-500">*</span></label>
+            <label for="update-profile-vehicle-plate" class="block font-medium text-slate-700">เลขทะเบียนรถ <span class="text-rose-500">*</span></label>
             <Input
+              id="update-profile-vehicle-plate"
               v-model="newVehicle.licensePlate"
               type="text"
               placeholder="เช่น 1กข-9999 กทม"
@@ -203,8 +208,9 @@
           </div>
 
           <div class="space-y-1">
-            <label class="block font-medium text-slate-700">ยี่ห้อ / รุ่น <span class="text-rose-500">*</span></label>
+            <label for="update-profile-vehicle-brand-model" class="block font-medium text-slate-700">ยี่ห้อ / รุ่น <span class="text-rose-500">*</span></label>
             <Input
+              id="update-profile-vehicle-brand-model"
               v-model="newVehicle.brandModel"
               type="text"
               placeholder="เช่น Honda Click / Toyota Yaris"

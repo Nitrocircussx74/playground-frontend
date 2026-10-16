@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="ประวัติการเข้าอยู่และสัญญาเช่า">
     <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
@@ -268,7 +268,7 @@
         </div>
 
         <!-- Terminate Lease Dialog Modal -->
-        <div v-if="showTerminateModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div v-if="showTerminateModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="แจ้งย้ายออกและสิ้นสุดสัญญา">
           <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div class="px-6 py-4 bg-gradient-to-r from-rose-700 to-red-800 text-white flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -280,8 +280,9 @@
 
             <form @submit.prevent="handleTerminateSubmit" class="p-6 space-y-4">
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">วันที่ย้ายออกจริง (Actual Move-out Date)</label>
+                <label for="terminate-actual-end-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่ย้ายออกจริง (Actual Move-out Date)</label>
                 <input
+                  id="terminate-actual-end-date"
                   v-model="terminateForm.actualEndDate"
                   type="date"
                   required
@@ -290,8 +291,9 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เหตุผลการย้ายออก (Move-out Reason)</label>
+                <label for="terminate-move-out-reason" class="block text-xs font-bold text-slate-700 mb-1">เหตุผลการย้ายออก (Move-out Reason)</label>
                 <input
+                  id="terminate-move-out-reason"
                   v-model="terminateForm.moveOutReason"
                   type="text"
                   placeholder="เช่น สิ้นสุดสัญญาตามกำหนด / ย้ายไปต่างจังหวัด"
@@ -300,8 +302,9 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุแอดมิน / บันทึกภายใน (Admin Note / Blacklist)</label>
+                <label for="terminate-admin-note" class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุแอดมิน / บันทึกภายใน (Admin Note / Blacklist)</label>
                 <textarea
+                  id="terminate-admin-note"
                   v-model="terminateForm.adminNote"
                   rows="2"
                   placeholder="เช่น คืนมัดจำเรียบร้อย / หักค่าน้ำไฟค้างชำระ 500 บาท"
@@ -338,7 +341,7 @@
         />
 
         <!-- Add Resident Modal -->
-        <div v-if="showAddResidentModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div v-if="showAddResidentModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="เพิ่มผู้อยู่อาศัยร่วม">
           <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div class="flex items-center justify-between">
               <h3 class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
@@ -350,8 +353,9 @@
 
             <form @submit.prevent="handleAddResident" class="space-y-3">
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
+                <label for="resident-first-name" class="block text-[11px] font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-first-name"
                   v-model="newResidentForm.firstName"
                   type="text"
                   placeholder="เช่น สมศักดิ์"
@@ -361,8 +365,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
+                <label for="resident-last-name" class="block text-[11px] font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-last-name"
                   v-model="newResidentForm.lastName"
                   type="text"
                   placeholder="เช่น มั่นคง"
@@ -372,8 +377,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
+                <label for="resident-phone" class="block text-[11px] font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-phone"
                   v-model="newResidentForm.phone"
                   type="tel"
                   placeholder="เช่น 0812345678"
@@ -383,8 +389,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">เลขบัตรประชาชน (ไม่บังคับ)</label>
+                <label for="resident-id-card" class="block text-[11px] font-bold text-slate-700 mb-1">เลขบัตรประชาชน (ไม่บังคับ)</label>
                 <input
+                  id="resident-id-card"
                   v-model="newResidentForm.idCard"
                   type="text"
                   placeholder="13 หลัก"
@@ -418,7 +425,7 @@
 
 <script setup>
 import { LogOut, Save, Users, Crown, Plus, Edit3, Key, FileText, X, User, Trash2 } from 'lucide-vue-next';
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
 import { formatDate } from '@/utils/formatters';
@@ -430,6 +437,23 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'updated']);
+
+const handleEscapeKey = (e) => {
+  if (e.key !== 'Escape') return;
+  if (showAddResidentModal.value) {
+    showAddResidentModal.value = false;
+  } else if (props.show) {
+    emit('close');
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const activeTab = ref('current');
 const loading = ref(false);

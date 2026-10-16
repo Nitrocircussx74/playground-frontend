@@ -452,6 +452,8 @@
               <img
                 :src="inv.slipUrl"
                 alt="สลิปโอนเงิน"
+                loading="lazy"
+                decoding="async"
                 @click="previewImage(inv.slipUrl)"
                 class="w-full h-32 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-all"
               />
@@ -541,6 +543,8 @@
               <img
                 :src="req.photoUrl || req.imageUrl"
                 alt="รูปแจ้งซ่อม"
+                loading="lazy"
+                decoding="async"
                 @click="previewImage(req.photoUrl || req.imageUrl)"
                 class="w-full h-32 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-all"
               />

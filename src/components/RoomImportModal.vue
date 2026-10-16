@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs" role="dialog" aria-modal="true" aria-label="นำเข้าห้องพักจำนวนมาก">
     <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-gradient-to-r from-teal-900 to-slate-900 text-white flex items-center justify-between">
@@ -74,8 +74,9 @@
         <!-- Tab 2: Quick Generator -->
         <div v-if="activeTab === 'generator'" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">เริ่มต้นที่ชั้น (Start)</label>
+            <label for="room-import-start-floor" class="block text-xs font-semibold text-slate-700 mb-1">เริ่มต้นที่ชั้น (Start)</label>
             <input
+              id="room-import-start-floor"
               v-model.number="genForm.startFloor"
               type="number"
               min="1"
@@ -83,8 +84,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">ถึงชั้น (End)</label>
+            <label for="room-import-end-floor" class="block text-xs font-semibold text-slate-700 mb-1">ถึงชั้น (End)</label>
             <input
+              id="room-import-end-floor"
               v-model.number="genForm.endFloor"
               type="number"
               min="1"
@@ -92,8 +94,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">จำนวนห้อง/ชั้น</label>
+            <label for="room-import-rooms-per-floor" class="block text-xs font-semibold text-slate-700 mb-1">จำนวนห้อง/ชั้น</label>
             <input
+              id="room-import-rooms-per-floor"
               v-model.number="genForm.roomsPerFloor"
               type="number"
               min="1"
@@ -101,8 +104,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">ราคาค่าเช่า/เดือน</label>
+            <label for="room-import-default-price" class="block text-xs font-semibold text-slate-700 mb-1">ราคาค่าเช่า/เดือน</label>
             <input
+              id="room-import-default-price"
               v-model.number="genForm.defaultPrice"
               type="number"
               step="100"
@@ -182,7 +186,7 @@
 
 <script setup>
 import { X, CheckCircle2, FileText, AlertCircle, Zap, Upload } from 'lucide-vue-next';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';
@@ -192,6 +196,20 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+const handleEscapeKey = (e) => {
+  if (e.key === 'Escape' && props.show) {
+    close();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const roomStore = useRoomStore();
 const buildingStore = useBuildingStore();

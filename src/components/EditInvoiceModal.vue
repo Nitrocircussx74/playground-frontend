@@ -17,8 +17,9 @@
         <!-- Room & Billing Cycle (Create Mode) -->
         <div v-if="!isEditing" class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
+            <label for="invoice-room-id" class="block font-semibold text-slate-700 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
             <select
+              id="invoice-room-id"
               v-model="form.roomId"
               required
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-hidden"
@@ -41,8 +42,9 @@
         <!-- Room Price & Water Total -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ค่าเช่าห้องพัก (บาท)</label>
+            <label for="invoice-room-price" class="block font-semibold text-slate-700 mb-1">ค่าเช่าห้องพัก (บาท)</label>
             <input
+              id="invoice-room-price"
               v-model.number="form.roomPrice"
               type="number"
               min="0"
@@ -52,8 +54,9 @@
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ค่าน้ำประปา (บาท)</label>
+            <label for="invoice-water-total" class="block font-semibold text-slate-700 mb-1">ค่าน้ำประปา (บาท)</label>
             <input
+              id="invoice-water-total"
               v-model.number="form.customWaterTotal"
               type="number"
               min="0"
@@ -66,8 +69,9 @@
         <!-- Electric Total & Common Fee Waive Toggle -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ค่าไฟฟ้า (บาท)</label>
+            <label for="invoice-electric-total" class="block font-semibold text-slate-700 mb-1">ค่าไฟฟ้า (บาท)</label>
             <input
+              id="invoice-electric-total"
               v-model.number="form.customElectricTotal"
               type="number"
               min="0"
@@ -77,8 +81,9 @@
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ค่าส่วนกลาง (บาท)</label>
+            <label for="invoice-common-fee" class="block font-semibold text-slate-700 mb-1">ค่าส่วนกลาง (บาท)</label>
             <input
+              id="invoice-common-fee"
               v-model.number="form.commonFee"
               type="number"
               min="0"
@@ -95,8 +100,8 @@
             <p class="text-[11px] text-teal-600">ตั้งค่าส่วนกลางเป็น 0 บาท สำหรับโปรโมชั่นหรือเงื่อนไขพิเศษ</p>
           </div>
 
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" v-model="form.waiveCommonFee" class="sr-only peer" />
+          <label for="invoice-waive-common-fee" class="relative inline-flex items-center cursor-pointer">
+            <input id="invoice-waive-common-fee" type="checkbox" v-model="form.waiveCommonFee" class="sr-only peer" />
             <div class="w-9 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
           </label>
         </div>

@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white print:static">
+    <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white print:static" role="dialog" aria-modal="true" aria-label="แจ้งย้ายออกและคำนวณคืนเงินมัดจำ">
       <div id="print-refund-root" class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150 print:border-none print:shadow-none print:m-0 print:max-w-none print:w-full">
         <!-- Modal Header (Hidden on Print) -->
         <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between print:hidden">
@@ -81,12 +81,12 @@
 
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
-                    <input :value="oldWater" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
+                    <label for="moveout-water-old-reading" class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
+                    <input id="moveout-water-old-reading" :value="oldWater" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-blue-800 font-bold">เลขใหม่วันย้ายออก</label>
-                    <input v-model.number="form.finalWaterMeter" type="number" min="0" class="w-full bg-white border border-blue-400 rounded-xl px-3 py-1.5 font-mono font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20" />
+                    <label for="moveout-water-new-reading" class="block text-[10px] text-blue-800 font-bold">เลขใหม่วันย้ายออก</label>
+                    <input id="moveout-water-new-reading" v-model.number="form.finalWaterMeter" type="number" min="0" class="w-full bg-white border border-blue-400 rounded-xl px-3 py-1.5 font-mono font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20" />
                   </div>
                 </div>
 
@@ -105,12 +105,12 @@
 
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
-                    <input :value="oldElectric" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
+                    <label for="moveout-electric-old-reading" class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
+                    <input id="moveout-electric-old-reading" :value="oldElectric" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-amber-800 font-bold">เลขใหม่วันย้ายออก</label>
-                    <input v-model.number="form.finalElectricMeter" type="number" min="0" class="w-full bg-white border border-amber-400 rounded-xl px-3 py-1.5 font-mono font-bold text-amber-950 focus:ring-2 focus:ring-amber-500/20" />
+                    <label for="moveout-electric-new-reading" class="block text-[10px] text-amber-800 font-bold">เลขใหม่วันย้ายออก</label>
+                    <input id="moveout-electric-new-reading" v-model.number="form.finalElectricMeter" type="number" min="0" class="w-full bg-white border border-amber-400 rounded-xl px-3 py-1.5 font-mono font-bold text-amber-950 focus:ring-2 focus:ring-amber-500/20" />
                   </div>
                 </div>
 
@@ -354,7 +354,7 @@
 
 <script setup>
 import { CheckCircle2, LogOut, Droplet, Plus, AlertCircle, Printer, Zap, DollarSign, X } from 'lucide-vue-next';
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import Swal from 'sweetalert2';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
@@ -367,6 +367,20 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'completed']);
+
+const handleEscapeKey = (e) => {
+  if (e.key === 'Escape' && props.show) {
+    emit('close');
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const step = ref(1);
 const processing = ref(false);

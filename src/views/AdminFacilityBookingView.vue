@@ -126,12 +126,13 @@
         </div>
         <form @submit.prevent="handleCreateFacility" class="p-6 space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อพื้นที่</label>
-            <Input v-model="form.name" required type="text" placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส" class="font-bold" />
+            <label for="facility-name" class="block text-xs font-bold text-slate-700 mb-1">ชื่อพื้นที่</label>
+            <Input id="facility-name" v-model="form.name" required type="text" placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส" class="font-bold" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">รายละเอียด (Optional)</label>
+            <label for="facility-description" class="block text-xs font-bold text-slate-700 mb-1">รายละเอียด (Optional)</label>
             <textarea
+              id="facility-description"
               v-model="form.description"
               rows="2"
               class="flex w-full rounded-md border border-input bg-background px-3.5 py-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring"

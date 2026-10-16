@@ -40,7 +40,7 @@
 
       <!-- Registration Form Card -->
       <Card v-else class="p-5 sm:p-6 space-y-4">
-        <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 text-rose-700 text-xs font-medium rounded-xl flex items-center gap-2">
+        <div v-if="errorMessage" role="alert" class="p-3 bg-rose-50 border border-rose-100 text-rose-700 text-xs font-medium rounded-xl flex items-center gap-2">
           <AlertCircle class="w-4 h-4 shrink-0" />
           <span>{{ errorMessage }}</span>
         </div>
@@ -60,7 +60,7 @@
           <!-- 1. Invite Code -->
           <div class="space-y-1">
             <div class="flex items-center justify-between">
-              <label class="block text-xs font-medium text-slate-700">
+              <label for="register-invite-code" class="block text-xs font-medium text-slate-700">
                 รหัสเชิญลงทะเบียน <span class="text-rose-500">*</span>
               </label>
 
@@ -77,6 +77,7 @@
             </div>
 
             <Input
+              id="register-invite-code"
               v-model="form.inviteCode"
               @input="onInviteInput"
               type="text"
@@ -89,24 +90,24 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-slate-700">ชื่อจริง <span class="text-rose-500">*</span></label>
-              <Input v-model="form.firstName" type="text" placeholder="สมชาย" required />
+              <label for="register-first-name" class="block text-xs font-medium text-slate-700">ชื่อจริง <span class="text-rose-500">*</span></label>
+              <Input id="register-first-name" v-model="form.firstName" type="text" placeholder="สมชาย" required />
             </div>
 
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-slate-700">นามสกุล <span class="text-rose-500">*</span></label>
-              <Input v-model="form.lastName" type="text" placeholder="ใจดี" required />
+              <label for="register-last-name" class="block text-xs font-medium text-slate-700">นามสกุล <span class="text-rose-500">*</span></label>
+              <Input id="register-last-name" v-model="form.lastName" type="text" placeholder="ใจดี" required />
             </div>
           </div>
 
           <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-700">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
-            <Input v-model="form.phone" type="tel" placeholder="0812345678" required class="font-mono" />
+            <label for="register-phone" class="block text-xs font-medium text-slate-700">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
+            <Input id="register-phone" v-model="form.phone" type="tel" placeholder="0812345678" required class="font-mono" />
           </div>
 
           <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-700">เลขบัตรประชาชน (ไม่บังคับ)</label>
-            <Input v-model="form.idCard" type="text" placeholder="1100200300401" maxlength="13" class="font-mono" />
+            <label for="register-id-card" class="block text-xs font-medium text-slate-700">เลขบัตรประชาชน (ไม่บังคับ)</label>
+            <Input id="register-id-card" v-model="form.idCard" type="text" placeholder="1100200300401" maxlength="13" class="font-mono" />
           </div>
 
           <Button type="submit" class="w-full mt-1" :disabled="loading">

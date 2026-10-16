@@ -3,6 +3,9 @@
     <div
       v-if="isOpen"
       class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 select-none overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="ส่งข้อเสนอแนะ"
       @click.self="closeModal"
     >
       <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 my-8 relative animate-scale-up">
@@ -16,7 +19,7 @@
 
         <!-- Header -->
         <div class="space-y-1">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 border border-purple-200/80 rounded-full text-purple-700 text-xs font-bold">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-bold">
             <MessageSquareQuote class="w-3.5 h-3.5" />
             <span>Developer & Product Feedback</span>
           </div>
@@ -41,7 +44,7 @@
                 @click="form.category = cat.value"
                 class="p-2.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer"
                 :class="form.category === cat.value
-                  ? 'bg-purple-600 text-white border-purple-600 shadow-xs font-bold'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-xs font-bold'
                   : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/80 font-medium'"
               >
                 <component :is="cat.icon" class="w-4 h-4" />
@@ -54,7 +57,7 @@
           <div class="space-y-1.5">
             <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>ความพึงพอใจโดยรวม</span>
-              <span v-if="form.rating > 0" class="text-xs text-purple-600 font-extrabold">
+              <span v-if="form.rating > 0" class="text-xs text-primary font-extrabold">
                 {{ ratingLabels[form.rating] }}
               </span>
             </label>
@@ -76,38 +79,41 @@
 
           <!-- 3. Title (Optional) -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700">หัวข้อ (สั้นๆ ได้ใจความ)</label>
+            <label for="feedback-title" class="text-xs font-bold text-slate-700">หัวข้อ (สั้นๆ ได้ใจความ)</label>
             <input
+              id="feedback-title"
               v-model="form.title"
               type="text"
               placeholder="เช่น ขอเพิ่มปุ่มดาวน์โหลดรายงานแบบ Excel..."
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all placeholder:text-slate-400"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-slate-400"
             />
           </div>
 
           <!-- 4. Content / Description -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <label for="feedback-content" class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>รายละเอียดความคิดเห็น / ปัญหาที่พบ <span class="text-rose-500">*</span></span>
               <span class="text-[10px] text-slate-400 font-normal">ข้อมูลที่ชัดเจนช่วยให้แก้ปัญหาได้ตรงจุด</span>
             </label>
             <textarea
+              id="feedback-content"
               v-model="form.content"
               rows="4"
               required
               placeholder="กรุณาอธิบายปัญหาหรือข้อเสนอแนะของคุณ..."
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all placeholder:text-slate-400 leading-relaxed"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-slate-400 leading-relaxed"
             ></textarea>
           </div>
 
           <!-- 5. Image Attachment Upload -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <label for="feedback-screenshot-upload" class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>แนบรูปภาพหน้าจอ (Screenshots)</span>
               <span class="text-[10px] text-slate-400">ถ้ามี</span>
             </label>
             <div class="flex items-center gap-2">
               <input
+                id="feedback-screenshot-upload"
                 ref="fileInput"
                 type="file"
                 accept="image/*"
@@ -173,7 +179,7 @@
             <button
               type="submit"
               :disabled="submitting || !form.content.trim()"
-              class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              class="flex-1 py-3 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Send class="w-4 h-4" />
               <span>{{ submitting ? 'กำลังส่งข้อมูล...' : 'ส่งความคิดเห็น' }}</span>
@@ -193,7 +199,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   X,
@@ -279,6 +285,20 @@ const deviceSummary = computed(() => {
 const closeModal = () => {
   isOpen.value = false;
 };
+
+const handleEscapeKey = (e) => {
+  if (e.key === 'Escape' && isOpen.value) {
+    closeModal();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const resolveImageUrl = (path) => {
   if (!path) return '';

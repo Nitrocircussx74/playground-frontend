@@ -90,7 +90,7 @@
             <tr v-for="item in filteredParcels" :key="item.id" class="hover:bg-slate-50/60 transition-colors align-top">
               <td class="p-3.5">
                 <a v-if="item.photoUrl" :href="item.photoUrl" target="_blank">
-                  <img :src="item.photoUrl" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-105 transition-transform" />
+                  <img :src="item.photoUrl" alt="รูปพัสดุ" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-105 transition-transform" />
                 </a>
                 <div v-else class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold text-center px-1">
                   ไม่มีรูป
@@ -166,8 +166,8 @@
         <form @submit.prevent="handleCreateParcel" class="p-6 space-y-4">
           <!-- Room Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">เลือกห้องพัก (Select Room)</label>
-            <Select v-model="form.roomId" required class="font-bold">
+            <label for="parcel-room" class="block text-xs font-bold text-slate-700 mb-1">เลือกห้องพัก (Select Room)</label>
+            <Select id="parcel-room" v-model="form.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in roomStore.rooms" :key="r.id" :value="r.id">
                 ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
@@ -177,8 +177,8 @@
 
           <!-- Courier Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">บริษัทขนส่ง (Courier)</label>
-            <Select v-model="form.courier" required class="font-bold">
+            <label for="parcel-courier" class="block text-xs font-bold text-slate-700 mb-1">บริษัทขนส่ง (Courier)</label>
+            <Select id="parcel-courier" v-model="form.courier" required class="font-bold">
               <option value="Shopee Express">Shopee Express</option>
               <option value="Lazada Logistics">Lazada Logistics</option>
               <option value="Kerry Express">Kerry Express</option>
@@ -191,14 +191,15 @@
 
           <!-- Tracking Number -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">หมายเลขพัสดุ / Tracking Number (Optional)</label>
-            <Input v-model="form.trackingNumber" type="text" placeholder="เช่น TH0192837465 หรือ SHP99887766" class="font-mono" />
+            <label for="parcel-tracking-number" class="block text-xs font-bold text-slate-700 mb-1">หมายเลขพัสดุ / Tracking Number (Optional)</label>
+            <Input id="parcel-tracking-number" v-model="form.trackingNumber" type="text" placeholder="เช่น TH0192837465 หรือ SHP99887766" class="font-mono" />
           </div>
 
           <!-- Photo Upload -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">ถ่ายภาพ / อัปโหลดรูปหน้ากล่อง (Parcel Photo)</label>
+            <label for="parcel-photo" class="block text-xs font-bold text-slate-700 mb-1">ถ่ายภาพ / อัปโหลดรูปหน้ากล่อง (Parcel Photo)</label>
             <input
+              id="parcel-photo"
               type="file"
               accept="image/*"
               @change="handlePhotoUpload"
@@ -207,11 +208,11 @@
             <div v-if="uploading" class="text-xs text-orange-600 font-semibold animate-pulse mt-1">กำลังอัปโหลดรูปภาพ...</div>
 
             <div v-if="form.photoUrl" class="mt-2 relative inline-block">
-              <img :src="form.photoUrl" class="h-24 rounded-xl object-cover border border-slate-200 shadow-xs" />
+              <img :src="form.photoUrl" alt="ตัวอย่างรูปพัสดุที่อัปโหลด" class="h-24 rounded-xl object-cover border border-slate-200 shadow-xs" />
               <button
                 type="button"
                 @click="form.photoUrl = ''"
-                class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold cursor-pointer"
+                class="absolute -top-2.5 -right-2.5 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center font-bold cursor-pointer"
                 aria-label="ลบรูปภาพ"
                 title="ลบรูปภาพ"
               >
