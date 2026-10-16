@@ -157,7 +157,7 @@
               </span>
             </div>
 
-            <Button variant="ghost" size="icon" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeDetail">
+            <Button variant="ghost" size="icon" class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeDetail">
               <X class="w-4 h-4" />
             </Button>
           </div>

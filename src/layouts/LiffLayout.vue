@@ -10,7 +10,7 @@
             v-if="showBackButton"
             variant="ghost"
             size="icon"
-            class="w-8 h-8 bg-slate-100/80 hover:bg-slate-200 text-slate-600"
+            class="w-11 h-11 bg-slate-100/80 hover:bg-slate-200 text-slate-600"
             aria-label="ย้อนกลับ"
             @click="handleBack"
           >
