@@ -53,7 +53,7 @@
               type="button"
               :disabled="isLineLoggingIn || isLoading"
               @click="handleLineWebLogin"
-              class="w-full py-3.5 px-4 bg-gradient-to-r from-[#06C755] via-emerald-500 to-[#06C755] hover:from-[#05b34c] hover:to-emerald-600 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-[#06C755]/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+              class="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-emerald-700/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
             >
               <div v-if="isLineLoggingIn" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <svg v-else class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@
               <button
                 type="submit"
                 :disabled="isLoading || !phoneNumber || pin.length !== 6"
-                class="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:to-teal-500 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full py-3 px-4 bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-700 hover:from-cyan-800 hover:to-teal-800 active:scale-[0.99] text-white rounded-2xl text-sm font-extrabold shadow-lg shadow-cyan-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div v-if="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 <span>{{ isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย PIN (Sign In)' }}</span>

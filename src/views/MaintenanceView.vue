@@ -534,7 +534,7 @@
                   @click="editForm.payer = 'TENANT'"
                   :disabled="Boolean(selectedTicket.billedInvoiceId)"
                   class="font-bold"
-                  :class="editForm.payer === 'TENANT' ? 'bg-amber-500 border-amber-500 text-white hover:bg-amber-500' : 'bg-slate-50 text-slate-600'"
+                  :class="editForm.payer === 'TENANT' ? 'bg-amber-700 border-amber-700 text-white hover:bg-amber-700' : 'bg-slate-50 text-slate-600'"
                 >
                   ลูกบ้านจ่ายเอง
                 </Button>
