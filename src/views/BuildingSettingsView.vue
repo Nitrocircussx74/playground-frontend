@@ -189,7 +189,7 @@
                           v-if="form.logoUrl && !isReadOnly"
                           type="button"
                           @click="form.logoUrl = ''"
-                          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer"
+                          class="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer"
                           title="ลบรูปโลโก้"
                         >
                           

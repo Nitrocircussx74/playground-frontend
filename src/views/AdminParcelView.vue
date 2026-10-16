@@ -211,7 +211,7 @@
               <button
                 type="button"
                 @click="form.photoUrl = ''"
-                class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold cursor-pointer"
+                class="absolute -top-2.5 -right-2.5 bg-rose-600 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center font-bold cursor-pointer"
                 aria-label="ลบรูปภาพ"
                 title="ลบรูปภาพ"
               >
