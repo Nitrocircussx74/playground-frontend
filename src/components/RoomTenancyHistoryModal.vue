@@ -280,8 +280,9 @@
 
             <form @submit.prevent="handleTerminateSubmit" class="p-6 space-y-4">
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">วันที่ย้ายออกจริง (Actual Move-out Date)</label>
+                <label for="terminate-actual-end-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่ย้ายออกจริง (Actual Move-out Date)</label>
                 <input
+                  id="terminate-actual-end-date"
                   v-model="terminateForm.actualEndDate"
                   type="date"
                   required
@@ -290,8 +291,9 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เหตุผลการย้ายออก (Move-out Reason)</label>
+                <label for="terminate-move-out-reason" class="block text-xs font-bold text-slate-700 mb-1">เหตุผลการย้ายออก (Move-out Reason)</label>
                 <input
+                  id="terminate-move-out-reason"
                   v-model="terminateForm.moveOutReason"
                   type="text"
                   placeholder="เช่น สิ้นสุดสัญญาตามกำหนด / ย้ายไปต่างจังหวัด"
@@ -300,8 +302,9 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุแอดมิน / บันทึกภายใน (Admin Note / Blacklist)</label>
+                <label for="terminate-admin-note" class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุแอดมิน / บันทึกภายใน (Admin Note / Blacklist)</label>
                 <textarea
+                  id="terminate-admin-note"
                   v-model="terminateForm.adminNote"
                   rows="2"
                   placeholder="เช่น คืนมัดจำเรียบร้อย / หักค่าน้ำไฟค้างชำระ 500 บาท"
@@ -350,8 +353,9 @@
 
             <form @submit.prevent="handleAddResident" class="space-y-3">
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
+                <label for="resident-first-name" class="block text-[11px] font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-first-name"
                   v-model="newResidentForm.firstName"
                   type="text"
                   placeholder="เช่น สมศักดิ์"
@@ -361,8 +365,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
+                <label for="resident-last-name" class="block text-[11px] font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-last-name"
                   v-model="newResidentForm.lastName"
                   type="text"
                   placeholder="เช่น มั่นคง"
@@ -372,8 +377,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
+                <label for="resident-phone" class="block text-[11px] font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
                 <input
+                  id="resident-phone"
                   v-model="newResidentForm.phone"
                   type="tel"
                   placeholder="เช่น 0812345678"
@@ -383,8 +389,9 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">เลขบัตรประชาชน (ไม่บังคับ)</label>
+                <label for="resident-id-card" class="block text-[11px] font-bold text-slate-700 mb-1">เลขบัตรประชาชน (ไม่บังคับ)</label>
                 <input
+                  id="resident-id-card"
                   v-model="newResidentForm.idCard"
                   type="text"
                   placeholder="13 หลัก"

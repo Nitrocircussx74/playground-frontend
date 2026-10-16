@@ -49,8 +49,8 @@
 
         <form @submit.prevent="handleSubmit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Room</label>
-            <Select v-model="form.roomId" required>
+            <label for="meter-room" class="block text-xs font-semibold text-slate-700 mb-1">Select Room</label>
+            <Select id="meter-room" v-model="form.roomId" required>
               <option value="" disabled>-- Select Room --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
                 Room {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }} ({{ room.status }})
@@ -59,8 +59,8 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Meter Type</label>
-            <Select v-model="form.meterType" required>
+            <label for="meter-type" class="block text-xs font-semibold text-slate-700 mb-1">Meter Type</label>
+            <Select id="meter-type" v-model="form.meterType" required>
               <option value="water">Water (น้ำ)</option>
               <option value="electric">Electric (ไฟ)</option>
             </Select>
@@ -74,8 +74,8 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Current Reading</label>
-            <Input v-model.number="form.currentReading" type="number" step="0.01" placeholder="e.g. 135" required class="text-sm" />
+            <label for="meter-current-reading" class="block text-xs font-semibold text-slate-700 mb-1">Current Reading</label>
+            <Input id="meter-current-reading" v-model.number="form.currentReading" type="number" step="0.01" placeholder="e.g. 135" required class="text-sm" />
           </div>
 
           <div class="col-span-full flex items-center justify-between pt-2">

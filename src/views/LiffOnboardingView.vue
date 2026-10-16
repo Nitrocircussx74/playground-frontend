@@ -62,11 +62,12 @@
             </div>
 
             <div class="space-y-1">
-              <label class="block font-medium text-slate-700">
+              <label for="onboarding-pin" class="block font-medium text-slate-700">
                 {{ existingUserHasPin ? 'กรอกรหัส PIN 6 หลักเดิมของคุณ' : 'ตั้งรหัส PIN 6 หลักใหม่สำหรับบัญชีนี้' }}
                 <span class="text-rose-500">*</span>
               </label>
               <PasswordInput
+                id="onboarding-pin"
                 v-model="pinInput"
                 inputmode="numeric"
                 pattern="[0-9]*"
@@ -123,10 +124,11 @@
           <!-- Case B: Regular Phone Input -->
           <form v-else @submit.prevent="handleVerifyByPhone" class="space-y-3.5 text-xs">
             <div class="space-y-1">
-              <label class="block font-medium text-slate-700">
+              <label for="onboarding-phone" class="block font-medium text-slate-700">
                 เบอร์โทรศัพท์ที่ลงทะเบียนไว้ <span class="text-rose-500">*</span>
               </label>
               <Input
+                id="onboarding-phone"
                 v-model="phoneInput"
                 type="tel"
                 placeholder="เช่น 0898765432"
@@ -154,10 +156,11 @@
         <form v-else @submit.prevent="handleLinkAccount" class="space-y-3.5 text-xs">
           <!-- 1. Invite Code (6-digit alphanumeric) -->
           <div class="space-y-1">
-            <label class="block font-medium text-slate-700">
+            <label for="onboarding-invite-code" class="block font-medium text-slate-700">
               รหัสเชิญ 6 หลัก <span class="text-rose-500">*</span>
             </label>
             <Input
+              id="onboarding-invite-code"
               v-model="form.inviteCode"
               type="text"
               maxlength="6"
@@ -169,10 +172,11 @@
 
           <!-- 2. Phone Last 4 Digits -->
           <div class="space-y-1">
-            <label class="block font-medium text-slate-700">
+            <label for="onboarding-phone-last4" class="block font-medium text-slate-700">
               เบอร์โทรศัพท์ 4 ตัวท้าย <span class="text-rose-500">*</span>
             </label>
             <Input
+              id="onboarding-phone-last4"
               v-model="form.phoneLast4"
               type="text"
               maxlength="4"

@@ -12,13 +12,14 @@
       <form @submit.prevent="handleSubmit" class="space-y-4 text-xs">
         <template v-if="mode === 'create'">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ชื่อตึก/อาคาร <span class="text-rose-500">*</span></label>
-            <Input v-model="form.name" type="text" placeholder="e.g. อาคาร C (East Wing)" required />
+            <label for="building-name" class="block font-semibold text-slate-700 mb-1">ชื่อตึก/อาคาร <span class="text-rose-500">*</span></label>
+            <Input id="building-name" v-model="form.name" type="text" placeholder="e.g. อาคาร C (East Wing)" required />
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หรือรายละเอียดตึก</label>
+            <label for="building-address" class="block font-semibold text-slate-700 mb-1">ที่อยู่หรือรายละเอียดตึก</label>
             <textarea
+              id="building-address"
               v-model="form.address"
               rows="2"
               placeholder="e.g. 123/3 ถนนสุขุมวิท"
@@ -29,9 +30,10 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ธีมสีประจำตึก (Hex)</label>
+            <label for="building-theme-color" class="block font-semibold text-slate-700 mb-1">ธีมสีประจำตึก (Hex)</label>
             <div class="flex items-center gap-2">
               <input
+                id="building-theme-color"
                 type="color"
                 v-model="form.themeColor"
                 class="w-8 h-8 rounded-lg cursor-pointer border border-input p-0.5 bg-background shrink-0"
@@ -47,9 +49,9 @@
                 <img v-if="form.logoUrl" :src="form.logoUrl" alt="Logo" class="w-full h-full object-contain" />
                 <Building2 v-else class="w-4 h-4 text-slate-400" />
               </div>
-              <label class="cursor-pointer flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-all">
+              <label for="building-logo-upload" class="cursor-pointer flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-all">
                 <span>{{ isUploadingLogo ? 'กำลังอัปโหลด...' : (form.logoUrl ? 'เปลี่ยนรูป' : 'อัปโหลดรูป') }}</span>
-                <input type="file" accept="image/png, image/jpeg, image/jpg, image/webp" class="hidden" @change="handleLogoUpload" :disabled="isUploadingLogo" />
+                <input id="building-logo-upload" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" class="hidden" @change="handleLogoUpload" :disabled="isUploadingLogo" />
               </label>
               <button v-if="form.logoUrl" type="button" @click="form.logoUrl = ''" class="text-rose-500 hover:text-rose-700 font-bold px-1" title="ลบรูป">
                 <X class="w-3.5 h-3.5" />
@@ -59,14 +61,14 @@
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">{{ mode === 'create' ? 'เบอร์/หมายเลข PromptPay ประจำตึก' : 'หมายเลข PromptPay ประจำตึก' }}</label>
-          <Input v-model="form.promptpayNum" type="text" placeholder="e.g. 0812345678" class="font-mono" />
+          <label for="building-promptpay-num" class="block font-semibold text-slate-700 mb-1">{{ mode === 'create' ? 'เบอร์/หมายเลข PromptPay ประจำตึก' : 'หมายเลข PromptPay ประจำตึก' }}</label>
+          <Input id="building-promptpay-num" v-model="form.promptpayNum" type="text" placeholder="e.g. 0812345678" class="font-mono" />
         </div>
 
         <template v-if="mode === 'edit'">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">อัปโหลด PromptPay QR Code</label>
-            <Input type="file" accept="image/*" @change="handleQrUpload" />
+            <label for="building-qr-upload" class="block font-semibold text-slate-700 mb-1">อัปโหลด PromptPay QR Code</label>
+            <Input id="building-qr-upload" type="file" accept="image/*" @change="handleQrUpload" />
           </div>
 
           <div v-if="form.paymentQrUrl" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">

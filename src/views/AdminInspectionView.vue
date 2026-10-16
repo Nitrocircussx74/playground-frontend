@@ -133,8 +133,8 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-              <label class="block text-xs font-semibold text-slate-700">เลือกสัญญาเช่า/ห้อง *</label>
-              <Select v-model="form.leaseId" required>
+              <label for="inspection-lease" class="block text-xs font-semibold text-slate-700">เลือกสัญญาเช่า/ห้อง *</label>
+              <Select id="inspection-lease" v-model="form.leaseId" required>
                 <option value="" disabled>-- เลือกห้องพัก --</option>
                 <option v-for="l in leases" :key="l.id" :value="l.id">
                   ห้อง {{ l.room?.roomNumber }} - {{ l.tenant?.firstName }} {{ l.tenant?.lastName }}
@@ -143,8 +143,8 @@
             </div>
 
             <div class="space-y-1">
-              <label class="block text-xs font-semibold text-slate-700">ประเภทการตรวจ *</label>
-              <Select v-model="form.type" required>
+              <label for="inspection-type" class="block text-xs font-semibold text-slate-700">ประเภทการตรวจ *</label>
+              <Select id="inspection-type" v-model="form.type" required>
                 <option value="MOVE_IN">ก่อนเข้าอยู่ (Move-in)</option>
                 <option value="MOVE_OUT">ก่อนย้ายออก (Move-out)</option>
               </Select>
@@ -207,8 +207,9 @@
           </div>
 
           <div class="space-y-1">
-            <label class="block text-xs font-semibold text-slate-700">บันทึกข้อสังเกตของเจ้าหน้าที่</label>
+            <label for="inspection-admin-note" class="block text-xs font-semibold text-slate-700">บันทึกข้อสังเกตของเจ้าหน้าที่</label>
             <textarea
+              id="inspection-admin-note"
               v-model="form.adminNote"
               rows="2"
               placeholder="เช่น ตรวจสอบพร้อมผู้เช่า รับทราบสภาพห้องเรียบร้อย"

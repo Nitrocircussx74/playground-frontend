@@ -76,8 +76,9 @@
 
           <!-- 3. Title (Optional) -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700">หัวข้อ (สั้นๆ ได้ใจความ)</label>
+            <label for="feedback-title" class="text-xs font-bold text-slate-700">หัวข้อ (สั้นๆ ได้ใจความ)</label>
             <input
+              id="feedback-title"
               v-model="form.title"
               type="text"
               placeholder="เช่น ขอเพิ่มปุ่มดาวน์โหลดรายงานแบบ Excel..."
@@ -87,11 +88,12 @@
 
           <!-- 4. Content / Description -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <label for="feedback-content" class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>รายละเอียดความคิดเห็น / ปัญหาที่พบ <span class="text-rose-500">*</span></span>
               <span class="text-[10px] text-slate-400 font-normal">ข้อมูลที่ชัดเจนช่วยให้แก้ปัญหาได้ตรงจุด</span>
             </label>
             <textarea
+              id="feedback-content"
               v-model="form.content"
               rows="4"
               required
@@ -102,12 +104,13 @@
 
           <!-- 5. Image Attachment Upload -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <label for="feedback-screenshot-upload" class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>แนบรูปภาพหน้าจอ (Screenshots)</span>
               <span class="text-[10px] text-slate-400">ถ้ามี</span>
             </label>
             <div class="flex items-center gap-2">
               <input
+                id="feedback-screenshot-upload"
                 ref="fileInput"
                 type="file"
                 accept="image/*"

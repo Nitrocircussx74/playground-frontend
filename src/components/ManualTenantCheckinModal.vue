@@ -38,8 +38,9 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
+              <label for="checkin-first-name" class="block text-xs font-bold text-slate-700 mb-1">ชื่อจริง <span class="text-rose-500">*</span></label>
               <input
+                id="checkin-first-name"
                 v-model="form.firstName"
                 type="text"
                 placeholder="เช่น สมชาย"
@@ -49,8 +50,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
+              <label for="checkin-last-name" class="block text-xs font-bold text-slate-700 mb-1">นามสกุล <span class="text-rose-500">*</span></label>
               <input
+                id="checkin-last-name"
                 v-model="form.lastName"
                 type="text"
                 placeholder="เช่น ใจดี"
@@ -60,8 +62,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
+              <label for="checkin-phone" class="block text-xs font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
               <input
+                id="checkin-phone"
                 v-model="form.phone"
                 type="tel"
                 placeholder="เช่น 0812345678"
@@ -71,8 +74,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">เลขบัตรประชาชน / พาสปอร์ต</label>
+              <label for="checkin-id-card" class="block text-xs font-bold text-slate-700 mb-1">เลขบัตรประชาชน / พาสปอร์ต</label>
               <input
+                id="checkin-id-card"
                 v-model="form.idCard"
                 type="text"
                 placeholder="เลข 13 หลัก หรือ Passport ID"
@@ -91,8 +95,9 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-bold text-slate-700 mb-1">ยูนิตที่ต้องการเข้าพัก <span class="text-rose-500">*</span></label>
+              <label for="checkin-room-id" class="block text-xs font-bold text-slate-700 mb-1">ยูนิตที่ต้องการเข้าพัก <span class="text-rose-500">*</span></label>
               <select
+                id="checkin-room-id"
                 v-model="form.roomId"
                 @change="handleRoomSelect"
                 required
@@ -116,8 +121,9 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">วันที่เริ่มสัญญา / เข้าอยู่ <span class="text-rose-500">*</span></label>
+              <label for="checkin-start-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่เริ่มสัญญา / เข้าอยู่ <span class="text-rose-500">*</span></label>
               <input
+                id="checkin-start-date"
                 v-model="form.startDate"
                 type="date"
                 required
@@ -126,8 +132,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">วันที่สิ้นสุดสัญญา (โดยประมาณ)</label>
+              <label for="checkin-end-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่สิ้นสุดสัญญา (โดยประมาณ)</label>
               <input
+                id="checkin-end-date"
                 v-model="form.expectedEndDate"
                 type="date"
                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
@@ -135,8 +142,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">เงินประกันมัดจำ (บาท)</label>
+              <label for="checkin-deposit-amount" class="block text-xs font-bold text-slate-700 mb-1">เงินประกันมัดจำ (บาท)</label>
               <input
+                id="checkin-deposit-amount"
                 v-model.number="form.depositAmount"
                 type="number"
                 step="100"
@@ -147,8 +155,9 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์น้ำวันเข้าพัก</label>
+                <label for="checkin-water-reading" class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์น้ำวันเข้าพัก</label>
                 <input
+                  id="checkin-water-reading"
                   v-model="form.initialWaterReading"
                   type="number"
                   min="0"
@@ -158,8 +167,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์ไฟวันเข้าพัก</label>
+                <label for="checkin-electric-reading" class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์ไฟวันเข้าพัก</label>
                 <input
+                  id="checkin-electric-reading"
                   v-model="form.initialElectricReading"
                   type="number"
                   min="0"
@@ -172,8 +182,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">บันทึกภายใน / หมายเหตุ (Admin Note)</label>
+              <label for="checkin-admin-note" class="block text-xs font-bold text-slate-700 mb-1">บันทึกภายใน / หมายเหตุ (Admin Note)</label>
               <input
+                id="checkin-admin-note"
                 v-model="form.adminNote"
                 type="text"
                 placeholder="เช่น ผู้เช่า Walk-in ชำระเงินสดแล้ว"

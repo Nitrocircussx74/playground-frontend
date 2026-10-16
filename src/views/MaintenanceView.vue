@@ -491,8 +491,9 @@
           <!-- Technician & Cost (Optional for Repairs) -->
           <div class="grid grid-cols-2 gap-3" v-if="selectedTicket.category === 'REPAIR'">
             <div>
-              <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
+              <label for="maintenance-technician-name" class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
               <Input
+                id="maintenance-technician-name"
                 v-model="editForm.technicianName"
                 type="text"
                 placeholder="e.g. ช่างสมชาย"
@@ -500,8 +501,9 @@
               />
             </div>
             <div>
-              <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
+              <label for="maintenance-repair-cost" class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
               <Input
+                id="maintenance-repair-cost"
                 v-model.number="editForm.repairCost"
                 type="number"
                 min="0"
@@ -549,7 +551,7 @@
           <!-- Admin Reply Note with Quick Suggestion Chips -->
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <label class="block font-bold text-slate-800">ข้อความตอบกลับลูกบ้าน (LINE LIFF Notification):</label>
+              <label for="maintenance-admin-note" class="block font-bold text-slate-800">ข้อความตอบกลับลูกบ้าน (LINE LIFF Notification):</label>
             </div>
 
             <!-- Quick Template Chips -->
@@ -568,6 +570,7 @@
             </div>
 
             <textarea
+              id="maintenance-admin-note"
               v-model="editForm.adminNote"
               rows="3"
               placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่รับเรื่องแล้ว กำลังส่งช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
@@ -615,8 +618,8 @@
 
         <form @submit.prevent="handleCreateSubmit" class="space-y-4 text-xs text-slate-700">
           <div>
-            <label class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
-            <Select v-model="newForm.roomId" required class="font-bold">
+            <label for="maintenance-new-room" class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
+            <Select id="maintenance-new-room" v-model="newForm.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
                 ห้อง {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }}
@@ -625,8 +628,9 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
+            <label for="maintenance-new-title" class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
             <Input
+              id="maintenance-new-title"
               v-model="newForm.title"
               type="text"
               placeholder="e.g. เครื่องปรับอากาศมีเสียงดัง / หลอดไฟห้องน้ำเสีย"
@@ -636,8 +640,9 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">รายละเอียดเพิ่มเติม <span class="text-rose-500">*</span></label>
+            <label for="maintenance-new-description" class="block font-bold text-slate-800 mb-1">รายละเอียดเพิ่มเติม <span class="text-rose-500">*</span></label>
             <textarea
+              id="maintenance-new-description"
               v-model="newForm.description"
               rows="3"
               placeholder="ระบุอาการชำรุด หรือตำแหน่งที่ต้องการให้ช่างเข้าตรวจสอบ..."
@@ -647,8 +652,9 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">อัปโหลดรูปภาพประกอบ</label>
+            <label for="maintenance-new-image" class="block font-bold text-slate-800 mb-1">อัปโหลดรูปภาพประกอบ</label>
             <input
+              id="maintenance-new-image"
               type="file"
               accept="image/*"
               @change="handleFileChange"

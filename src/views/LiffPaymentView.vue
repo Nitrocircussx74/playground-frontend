@@ -165,8 +165,8 @@
 
               <!-- Optional Amount Override for Testing Auto Verification -->
               <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อยืนยันยอดชำระ)</label>
-                <Input v-model="declaredAmount" type="number" step="0.01" :placeholder="`฿${invoice.grandTotal || 0}`" class="font-mono" />
+                <label for="payment-declared-amount" class="block text-xs font-medium text-slate-400 mb-1">ยอดเงินในสลิป (ระบุเพื่อยืนยันยอดชำระ)</label>
+                <Input id="payment-declared-amount" v-model="declaredAmount" type="number" step="0.01" :placeholder="`฿${invoice.grandTotal || 0}`" class="font-mono" />
               </div>
 
               <div v-if="previewUrl" class="text-center">

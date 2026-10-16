@@ -89,8 +89,9 @@
         </div>
         <form @submit.prevent="handleCreatePoll" class="p-6 space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">คำถาม</label>
+            <label for="poll-question" class="block text-xs font-bold text-slate-700 mb-1">คำถาม</label>
             <Input
+              id="poll-question"
               v-model="form.question"
               required
               type="text"
@@ -101,7 +102,7 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">ตัวเลือก (อย่างน้อย 2 ตัวเลือก)</label>
             <div v-for="(opt, idx) in form.options" :key="idx" class="flex items-center gap-2 mb-2">
-              <Input v-model="form.options[idx]" type="text" required />
+              <Input v-model="form.options[idx]" type="text" required :aria-label="`ตัวเลือกที่ ${idx + 1}`" />
               <button
                 v-if="form.options.length > 2"
                 type="button"

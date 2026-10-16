@@ -74,8 +74,9 @@
         <!-- Tab 2: Quick Generator -->
         <div v-if="activeTab === 'generator'" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">เริ่มต้นที่ชั้น (Start)</label>
+            <label for="room-import-start-floor" class="block text-xs font-semibold text-slate-700 mb-1">เริ่มต้นที่ชั้น (Start)</label>
             <input
+              id="room-import-start-floor"
               v-model.number="genForm.startFloor"
               type="number"
               min="1"
@@ -83,8 +84,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">ถึงชั้น (End)</label>
+            <label for="room-import-end-floor" class="block text-xs font-semibold text-slate-700 mb-1">ถึงชั้น (End)</label>
             <input
+              id="room-import-end-floor"
               v-model.number="genForm.endFloor"
               type="number"
               min="1"
@@ -92,8 +94,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">จำนวนห้อง/ชั้น</label>
+            <label for="room-import-rooms-per-floor" class="block text-xs font-semibold text-slate-700 mb-1">จำนวนห้อง/ชั้น</label>
             <input
+              id="room-import-rooms-per-floor"
               v-model.number="genForm.roomsPerFloor"
               type="number"
               min="1"
@@ -101,8 +104,9 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">ราคาค่าเช่า/เดือน</label>
+            <label for="room-import-default-price" class="block text-xs font-semibold text-slate-700 mb-1">ราคาค่าเช่า/เดือน</label>
             <input
+              id="room-import-default-price"
               v-model.number="genForm.defaultPrice"
               type="number"
               step="100"
