@@ -139,7 +139,7 @@
                     type="button"
                     :disabled="isLoading"
                     @click="pressPinDigit(num)"
-                    class="h-10 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
+                    class="h-12 sm:h-14 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
                   >
                     {{ num }}
                   </button>
@@ -149,7 +149,7 @@
                     type="button"
                     :disabled="isLoading || pin.length === 0"
                     @click="clearPin"
-                    class="h-10 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
+                    class="h-12 sm:h-14 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
                   >
                     ล้าง
                   </button>
@@ -159,7 +159,7 @@
                     type="button"
                     :disabled="isLoading"
                     @click="pressPinDigit(0)"
-                    class="h-10 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
+                    class="h-12 sm:h-14 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-600 text-white font-bold text-base shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40"
                   >
                     0
                   </button>
@@ -169,7 +169,7 @@
                     type="button"
                     :disabled="isLoading || pin.length === 0"
                     @click="deletePinDigit"
-                    class="h-10 rounded-xl text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
+                    class="h-12 sm:h-14 rounded-xl text-slate-400 hover:text-slate-200 active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30"
                     title="ลบตัวเลขล่าสุด"
                   >
                     ลบ
