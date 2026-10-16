@@ -64,6 +64,8 @@
             <img
               :src="item.imageUrl"
               :alt="item.title"
+              loading="lazy"
+              decoding="async"
               class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
