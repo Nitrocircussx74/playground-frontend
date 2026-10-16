@@ -46,8 +46,9 @@
 
         <!-- 2. Filter Status -->
         <div class="flex items-center gap-1.5">
-          <label class="text-[11px] font-bold text-slate-600 shrink-0">สถานะ:</label>
+          <label for="delivery-logs-status-filter" class="text-[11px] font-bold text-slate-600 shrink-0">สถานะ:</label>
           <select
+            id="delivery-logs-status-filter"
             v-model="selectedStatus"
             @change="fetchLogs(1)"
             class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"
@@ -60,8 +61,9 @@
 
         <!-- 3. Filter Type -->
         <div class="flex items-center gap-1.5">
-          <label class="text-[11px] font-bold text-slate-600 shrink-0">ประเภท:</label>
+          <label for="delivery-logs-type-filter" class="text-[11px] font-bold text-slate-600 shrink-0">ประเภท:</label>
           <select
+            id="delivery-logs-type-filter"
             v-model="selectedType"
             @change="fetchLogs(1)"
             class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"

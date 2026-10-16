@@ -102,18 +102,18 @@
         <CardContent>
           <form @submit.prevent="handleChangePassword" class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านปัจจุบัน (Current Password)</label>
-              <PasswordInput v-model="pwdForm.currentPassword" required placeholder="••••••••" />
+              <label for="profile-current-password" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านปัจจุบัน (Current Password)</label>
+              <PasswordInput id="profile-current-password" v-model="pwdForm.currentPassword" required placeholder="••••••••" />
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ (New Password)</label>
-              <PasswordInput v-model="pwdForm.newPassword" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" />
+              <label for="profile-new-password" class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ (New Password)</label>
+              <PasswordInput id="profile-new-password" v-model="pwdForm.newPassword" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" />
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่ (Confirm Password)</label>
-              <PasswordInput v-model="pwdForm.confirmPassword" required placeholder="••••••••" />
+              <label for="profile-confirm-password" class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่ (Confirm Password)</label>
+              <PasswordInput id="profile-confirm-password" v-model="pwdForm.confirmPassword" required placeholder="••••••••" />
             </div>
 
             <div class="pt-2">

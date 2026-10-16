@@ -91,19 +91,19 @@
           </div>
           <form @submit.prevent="handleRegisterVehicle" class="p-5 space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ทะเบียนรถ</label>
-              <Input v-model="vehicleForm.licensePlate" required type="text" placeholder="เช่น กข-1234" class="font-mono" />
+              <label for="vehicle-license-plate" class="block text-xs font-bold text-slate-700 mb-1">ทะเบียนรถ</label>
+              <Input id="vehicle-license-plate" v-model="vehicleForm.licensePlate" required type="text" placeholder="เช่น กข-1234" class="font-mono" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ประเภท</label>
-              <Select v-model="vehicleForm.vehicleType">
+              <label for="vehicle-type" class="block text-xs font-bold text-slate-700 mb-1">ประเภท</label>
+              <Select id="vehicle-type" v-model="vehicleForm.vehicleType">
                 <option value="car">รถยนต์</option>
                 <option value="motorcycle">มอเตอร์ไซค์</option>
               </Select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ยี่ห้อ (Optional)</label>
-              <Input v-model="vehicleForm.brand" type="text" />
+              <label for="vehicle-brand" class="block text-xs font-bold text-slate-700 mb-1">ยี่ห้อ (Optional)</label>
+              <Input id="vehicle-brand" v-model="vehicleForm.brand" type="text" />
             </div>
             <div class="pt-2 flex gap-3">
               <Button type="button" variant="outline" class="w-1/2" @click="showVehicleForm = false">ยกเลิก</Button>
@@ -124,16 +124,16 @@
           </div>
           <form @submit.prevent="handleCreateVisitor" class="p-5 space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อแขก</label>
-              <Input v-model="visitorForm.visitorName" required type="text" />
+              <label for="visitor-name" class="block text-xs font-bold text-slate-700 mb-1">ชื่อแขก</label>
+              <Input id="visitor-name" v-model="visitorForm.visitorName" required type="text" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">วันที่คาดว่าจะมา</label>
-              <Input v-model="visitorForm.expectedDate" required type="date" />
+              <label for="visitor-expected-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่คาดว่าจะมา</label>
+              <Input id="visitor-expected-date" v-model="visitorForm.expectedDate" required type="date" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ทะเบียนรถ (Optional)</label>
-              <Input v-model="visitorForm.licensePlate" type="text" class="font-mono" />
+              <label for="visitor-license-plate" class="block text-xs font-bold text-slate-700 mb-1">ทะเบียนรถ (Optional)</label>
+              <Input id="visitor-license-plate" v-model="visitorForm.licensePlate" type="text" class="font-mono" />
             </div>
             <div class="pt-2 flex gap-3">
               <Button type="button" variant="outline" class="w-1/2" @click="showVisitorForm = false">ยกเลิก</Button>

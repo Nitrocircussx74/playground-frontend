@@ -79,11 +79,12 @@
           <form @submit.prevent="handleWebLogin" class="space-y-4">
             <!-- 1. Phone Number Input -->
             <div class="space-y-1.5">
-              <label class="text-xs font-bold text-slate-300 flex items-center justify-between">
+              <label for="weblogin-phone" class="text-xs font-bold text-slate-300 flex items-center justify-between">
                 <span>หมายเลขโทรศัพท์ที่ลงทะเบียน</span>
                 <span class="text-[10px] text-slate-400 font-normal">เช่น 0812345678</span>
               </label>
               <input
+                id="weblogin-phone"
                 v-model="phoneNumber"
                 type="tel"
                 inputmode="numeric"

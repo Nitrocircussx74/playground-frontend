@@ -166,8 +166,8 @@
         <form @submit.prevent="handleCreateParcel" class="p-6 space-y-4">
           <!-- Room Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">เลือกห้องพัก (Select Room)</label>
-            <Select v-model="form.roomId" required class="font-bold">
+            <label for="parcel-room" class="block text-xs font-bold text-slate-700 mb-1">เลือกห้องพัก (Select Room)</label>
+            <Select id="parcel-room" v-model="form.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="r in roomStore.rooms" :key="r.id" :value="r.id">
                 ห้อง {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) - {{ r.tenant ? `${r.tenant.firstName} ${r.tenant.lastName}` : 'ห้องว่าง' }}
@@ -177,8 +177,8 @@
 
           <!-- Courier Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">บริษัทขนส่ง (Courier)</label>
-            <Select v-model="form.courier" required class="font-bold">
+            <label for="parcel-courier" class="block text-xs font-bold text-slate-700 mb-1">บริษัทขนส่ง (Courier)</label>
+            <Select id="parcel-courier" v-model="form.courier" required class="font-bold">
               <option value="Shopee Express">Shopee Express</option>
               <option value="Lazada Logistics">Lazada Logistics</option>
               <option value="Kerry Express">Kerry Express</option>
@@ -191,14 +191,15 @@
 
           <!-- Tracking Number -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">หมายเลขพัสดุ / Tracking Number (Optional)</label>
-            <Input v-model="form.trackingNumber" type="text" placeholder="เช่น TH0192837465 หรือ SHP99887766" class="font-mono" />
+            <label for="parcel-tracking-number" class="block text-xs font-bold text-slate-700 mb-1">หมายเลขพัสดุ / Tracking Number (Optional)</label>
+            <Input id="parcel-tracking-number" v-model="form.trackingNumber" type="text" placeholder="เช่น TH0192837465 หรือ SHP99887766" class="font-mono" />
           </div>
 
           <!-- Photo Upload -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">ถ่ายภาพ / อัปโหลดรูปหน้ากล่อง (Parcel Photo)</label>
+            <label for="parcel-photo" class="block text-xs font-bold text-slate-700 mb-1">ถ่ายภาพ / อัปโหลดรูปหน้ากล่อง (Parcel Photo)</label>
             <input
+              id="parcel-photo"
               type="file"
               accept="image/*"
               @change="handlePhotoUpload"

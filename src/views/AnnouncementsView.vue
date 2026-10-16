@@ -29,14 +29,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Title -->
           <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-700 mb-1">หัวข้อประกาศ</label>
-            <Input v-model="form.title" type="text" placeholder="เช่น แจ้งปิดปรับปรุงระบบน้ำประปาชั่วคราว หรือ แจ้งกำหนดชำระค่าเช่าประจำเดือน" required class="font-semibold" />
+            <label for="announcement-title" class="block text-xs font-bold text-slate-700 mb-1">หัวข้อประกาศ</label>
+            <Input id="announcement-title" v-model="form.title" type="text" placeholder="เช่น แจ้งปิดปรับปรุงระบบน้ำประปาชั่วคราว หรือ แจ้งกำหนดชำระค่าเช่าประจำเดือน" required class="font-semibold" />
           </div>
 
           <!-- Target Type Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">กลุ่มเป้าหมาย</label>
-            <Select v-model="form.targetType" class="font-bold" @change="handleTargetTypeChange">
+            <label for="announcement-target-type" class="block text-xs font-bold text-slate-700 mb-1">กลุ่มเป้าหมาย</label>
+            <Select id="announcement-target-type" v-model="form.targetType" class="font-bold" @change="handleTargetTypeChange">
               <option value="ALL">ลูกบ้านทุกตึกทั้งหมด</option>
               <option value="BUILDING">เฉพาะตึกที่ระบุ</option>
               <option value="FLOOR">เฉพาะชั้นที่ระบุ</option>
@@ -45,8 +45,8 @@
 
           <!-- Dynamic Building Selector -->
           <div v-if="form.targetType === 'BUILDING' || form.targetType === 'FLOOR'">
-            <label class="block text-xs font-bold text-slate-700 mb-1">เลือกหอพัก/อาคาร</label>
-            <Select v-model="form.buildingId" required class="font-bold">
+            <label for="announcement-building" class="block text-xs font-bold text-slate-700 mb-1">เลือกหอพัก/อาคาร</label>
+            <Select id="announcement-building" v-model="form.buildingId" required class="font-bold">
               <option value="" disabled>-- เลือกหอพัก --</option>
               <option v-for="b in buildingStore.buildings" :key="b.id" :value="b.id">
                 {{ b.name }}
@@ -56,8 +56,8 @@
 
           <!-- Dynamic Floor Selector -->
           <div v-if="form.targetType === 'FLOOR'">
-            <label class="block text-xs font-bold text-slate-700 mb-1">เลือกชั้น</label>
-            <Select v-model="form.floor" required class="font-bold">
+            <label for="announcement-floor" class="block text-xs font-bold text-slate-700 mb-1">เลือกชั้น</label>
+            <Select id="announcement-floor" v-model="form.floor" required class="font-bold">
               <option value="" disabled>-- เลือกชั้น --</option>
               <option v-for="f in 10" :key="f" :value="f">ชั้น {{ f }}</option>
             </Select>
@@ -82,9 +82,10 @@
 
         <!-- Optional Image Upload -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">รูปภาพประกอบ (ไม่บังคับ)</label>
+          <label for="announcement-image" class="block text-xs font-bold text-slate-700 mb-1">รูปภาพประกอบ (ไม่บังคับ)</label>
           <div class="flex items-center gap-3">
             <input
+              id="announcement-image"
               type="file"
               accept="image/*"
               @change="handleImageUpload"
@@ -110,8 +111,9 @@
 
         <!-- Content Details -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">เนื้อหาประกาศ</label>
+          <label for="announcement-content" class="block text-xs font-bold text-slate-700 mb-1">เนื้อหาประกาศ</label>
           <textarea
+            id="announcement-content"
             v-model="form.content"
             rows="4"
             placeholder="พิมพ์รายละเอียดประกาศข่าวสารที่ต้องการส่งหาลูกบ้านทาง LINE..."

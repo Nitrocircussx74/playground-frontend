@@ -1021,8 +1021,9 @@
 
         <form @submit.prevent="handleLinkRoom" class="space-y-3">
           <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-700">รหัสเชิญห้องพัก</label>
+            <label for="profile-link-room-invite-code" class="block text-xs font-medium text-slate-700">รหัสเชิญห้องพัก</label>
             <input
+              id="profile-link-room-invite-code"
               v-model="inviteCodeInput"
               type="text"
               placeholder="เช่น ROOM-A102-XYZ"

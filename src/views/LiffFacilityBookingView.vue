@@ -91,17 +91,17 @@
           </div>
           <form @submit.prevent="handleBook" class="p-5 space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">วันที่</label>
-              <input v-model="bookForm.date" type="date" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
+              <label for="facility-booking-date" class="block text-xs font-bold text-slate-700 mb-1">วันที่</label>
+              <input id="facility-booking-date" v-model="bookForm.date" type="date" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เวลาเริ่ม</label>
-                <input v-model="bookForm.startTime" type="time" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
+                <label for="facility-booking-start-time" class="block text-xs font-bold text-slate-700 mb-1">เวลาเริ่ม</label>
+                <input id="facility-booking-start-time" v-model="bookForm.startTime" type="time" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">เวลาสิ้นสุด</label>
-                <input v-model="bookForm.endTime" type="time" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
+                <label for="facility-booking-end-time" class="block text-xs font-bold text-slate-700 mb-1">เวลาสิ้นสุด</label>
+                <input id="facility-booking-end-time" v-model="bookForm.endTime" type="time" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs" />
               </div>
             </div>
             <div class="pt-2 flex gap-3">

@@ -81,12 +81,12 @@
 
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
-                    <input :value="oldWater" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
+                    <label for="moveout-water-old-reading" class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
+                    <input id="moveout-water-old-reading" :value="oldWater" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-blue-800 font-bold">เลขใหม่วันย้ายออก</label>
-                    <input v-model.number="form.finalWaterMeter" type="number" min="0" class="w-full bg-white border border-blue-400 rounded-xl px-3 py-1.5 font-mono font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20" />
+                    <label for="moveout-water-new-reading" class="block text-[10px] text-blue-800 font-bold">เลขใหม่วันย้ายออก</label>
+                    <input id="moveout-water-new-reading" v-model.number="form.finalWaterMeter" type="number" min="0" class="w-full bg-white border border-blue-400 rounded-xl px-3 py-1.5 font-mono font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20" />
                   </div>
                 </div>
 
@@ -105,12 +105,12 @@
 
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
-                    <input :value="oldElectric" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
+                    <label for="moveout-electric-old-reading" class="block text-[10px] text-slate-500 font-bold">เลขเดิมครั้งก่อน</label>
+                    <input id="moveout-electric-old-reading" :value="oldElectric" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-1.5 font-mono text-slate-600 font-bold" />
                   </div>
                   <div>
-                    <label class="block text-[10px] text-amber-800 font-bold">เลขใหม่วันย้ายออก</label>
-                    <input v-model.number="form.finalElectricMeter" type="number" min="0" class="w-full bg-white border border-amber-400 rounded-xl px-3 py-1.5 font-mono font-bold text-amber-950 focus:ring-2 focus:ring-amber-500/20" />
+                    <label for="moveout-electric-new-reading" class="block text-[10px] text-amber-800 font-bold">เลขใหม่วันย้ายออก</label>
+                    <input id="moveout-electric-new-reading" v-model.number="form.finalElectricMeter" type="number" min="0" class="w-full bg-white border border-amber-400 rounded-xl px-3 py-1.5 font-mono font-bold text-amber-950 focus:ring-2 focus:ring-amber-500/20" />
                   </div>
                 </div>
 
