@@ -927,7 +927,7 @@
     <!-- Digital ID QR Code Modal -->
     <div v-if="showQrModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 text-center relative">
-        <button @click="showQrModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1">
+        <button @click="showQrModal = false" class="absolute top-2 right-2 w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-700">
           <X class="w-5 h-5" />
         </button>
 
@@ -957,7 +957,7 @@
     <!-- Roommate Invite Modal -->
     <div v-if="showRoommateModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl space-y-4 border border-slate-100 text-center relative animate-in fade-in zoom-in-95 duration-150">
-        <button @click="showRoommateModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1 rounded-lg cursor-pointer">
+        <button @click="showRoommateModal = false" class="absolute top-2 right-2 w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer">
           <X class="w-5 h-5" />
         </button>
 
@@ -1010,7 +1010,7 @@
     <!-- Link Room Modal -->
     <div v-if="showLinkRoomModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg space-y-4 border border-slate-100 relative">
-        <button @click="showLinkRoomModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-1">
+        <button @click="showLinkRoomModal = false" class="absolute top-2 right-2 w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-700">
           <X class="w-5 h-5" />
         </button>
 
@@ -1075,7 +1075,7 @@
 
             <button
               @click="closeAnnouncementModal"
-              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+              class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
             >
               <X class="w-4 h-4" />
             </button>
