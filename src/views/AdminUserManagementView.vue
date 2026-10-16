@@ -258,38 +258,38 @@
           <!-- Name & Email -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล (Name)</label>
-              <Input v-model="form.name" type="text" required placeholder="e.g. สมชาย ใจดี" />
+              <label for="admin-user-name" class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล (Name)</label>
+              <Input id="admin-user-name" v-model="form.name" type="text" required placeholder="e.g. สมชาย ใจดี" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">อีเมลเข้าใช้งาน (Email)</label>
-              <Input v-model="form.email" type="email" required :disabled="isEditing" placeholder="manager@dorm.com" class="font-mono" />
+              <label for="admin-user-email" class="block text-xs font-bold text-slate-700 mb-1">อีเมลเข้าใช้งาน (Email)</label>
+              <Input id="admin-user-email" v-model="form.email" type="email" required :disabled="isEditing" placeholder="manager@dorm.com" class="font-mono" />
             </div>
           </div>
 
           <!-- Phone & Password -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">
+              <label for="admin-user-phone" class="block text-xs font-bold text-slate-700 mb-1">
                 เบอร์โทรศัพท์ (สำหรับผูก LINE / SMS)
               </label>
-              <Input v-model="form.phone" type="tel" placeholder="0812345678" class="font-mono" />
+              <Input id="admin-user-phone" v-model="form.phone" type="tel" placeholder="0812345678" class="font-mono" />
               <span class="text-xs text-slate-400 mt-0.5 block">ระบุเบอร์เดียวกับที่ผูก LINE เพื่อรับสิทธิ์อัตโนมัติ</span>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">
+              <label for="admin-user-password" class="block text-xs font-bold text-slate-700 mb-1">
                 {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
               </label>
-              <PasswordInput v-model="form.password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
+              <PasswordInput id="admin-user-password" v-model="form.password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
             </div>
           </div>
 
           <!-- Role Select -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">เลือกระดับสิทธิ์ (Role)</label>
-            <Select v-model="form.role" required class="font-extrabold">
+            <label for="admin-user-role" class="block text-xs font-bold text-slate-700 mb-1">เลือกระดับสิทธิ์ (Role)</label>
+            <Select id="admin-user-role" v-model="form.role" required class="font-extrabold">
               <option value="SUPER_ADMIN">SUPER_ADMIN (ผู้ดูแลระบบสูงสุด - Full System Access)</option>
               <option value="OWNER">OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์ระดับเจ้าของดูได้ทุกตึก)</option>
               <option value="ROOM_OWNER">ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
@@ -313,10 +313,12 @@
               <label
                 v-for="b in buildings"
                 :key="b.id"
+                :for="`admin-building-${b.id}`"
                 class="flex items-center gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer select-none"
                 :class="form.buildingIds.includes(b.id) ? 'bg-cyan-50/80 border-cyan-400 text-cyan-950 font-bold shadow-2xs' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'"
               >
                 <input
+                  :id="`admin-building-${b.id}`"
                   type="checkbox"
                   :value="b.id"
                   v-model="form.buildingIds"

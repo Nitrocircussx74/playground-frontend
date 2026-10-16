@@ -87,8 +87,9 @@
             <CardContent class="space-y-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ชื่ออาคาร/ตึก <span class="text-rose-500">*</span></label>
+                  <label for="building-name" class="text-xs font-bold text-slate-700">ชื่ออาคาร/ตึก <span class="text-rose-500">*</span></label>
                   <Input
+                    id="building-name"
                     v-model="form.name"
                     :disabled="isReadOnly"
                     placeholder="เช่น อาคาร A (Main Building)"
@@ -97,8 +98,9 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">เบอร์โทรศัพท์ติดต่อ</label>
+                  <label for="building-phone" class="text-xs font-bold text-slate-700">เบอร์โทรศัพท์ติดต่อ</label>
                   <Input
+                    id="building-phone"
                     v-model="form.phone"
                     :disabled="isReadOnly"
                     placeholder="เช่น 02-123-4567 หรือ 081-234-5678"
@@ -112,8 +114,9 @@
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-700">ที่อยู่หรือสถานที่ตั้ง</label>
+                <label for="building-address" class="text-xs font-bold text-slate-700">ที่อยู่หรือสถานที่ตั้ง</label>
                 <Input
+                  id="building-address"
                   v-model="form.address"
                   :disabled="isReadOnly"
                   placeholder="เช่น 123/1 ถนนสุขุมวิท เขตวัฒนา กรุงเทพมหานคร"
@@ -136,15 +139,17 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <!-- Theme Color Picker & Presets -->
                   <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-700 block">ธีมสีหลักประจำตึก (Theme Color)</label>
+                    <label for="building-theme-color" class="text-xs font-bold text-slate-700 block">ธีมสีหลักประจำตึก (Theme Color)</label>
                     <div class="flex items-center gap-3">
                       <input
                         type="color"
                         v-model="form.themeColor"
                         :disabled="isReadOnly"
+                        aria-label="เลือกสีธีมด้วยตัวเลือกสี"
                         class="w-10 h-10 rounded-xl cursor-pointer border border-slate-300 p-0.5 bg-white shrink-0"
                       />
                       <Input
+                        id="building-theme-color"
                         v-model="form.themeColor"
                         :disabled="isReadOnly"
                         placeholder="#0E7490"
@@ -171,7 +176,7 @@
 
                   <!-- Building Logo Upload & Preview -->
                   <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-700 block">โลโก้ประจำตึก (Building Logo)</label>
+                    <label for="building-logo-upload" class="text-xs font-bold text-slate-700 block">โลโก้ประจำตึก (Building Logo)</label>
                     <div class="flex items-start gap-4">
                       <!-- Logo preview box / avatar -->
                       <div class="relative group shrink-0">
@@ -189,7 +194,7 @@
                           v-if="form.logoUrl && !isReadOnly"
                           type="button"
                           @click="form.logoUrl = ''"
-                          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer"
+                          class="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer"
                           title="ลบรูปโลโก้"
                         >
                           
@@ -210,6 +215,7 @@
                             <span>{{ isUploadingLogo ? 'กำลังอัปโหลด...' : (form.logoUrl ? 'เปลี่ยนรูปโลโก้' : 'อัปโหลดรูปโลโก้') }}</span>
                           </button>
                           <input
+                            id="building-logo-upload"
                             ref="logoFileInput"
                             type="file"
                             accept="image/png, image/jpeg, image/jpg, image/webp"
@@ -273,7 +279,7 @@
 
               <!-- Cover Image Upload & Preview -->
               <div class="space-y-2 pt-2 border-t border-slate-100">
-                <label class="text-xs font-bold text-slate-700 block">รูปภาพหน้าปกตึก (Building Cover Image)</label>
+                <label for="building-cover-upload" class="text-xs font-bold text-slate-700 block">รูปภาพหน้าปกตึก (Building Cover Image)</label>
                 
                 <div v-if="form.coverImageUrl" class="relative group rounded-xl overflow-hidden border border-slate-200 shadow-xs">
                   <img
@@ -333,6 +339,7 @@
                   </div>
                 </div>
                 <input
+                  id="building-cover-upload"
                   ref="coverFileInput"
                   type="file"
                   accept="image/png, image/jpeg, image/jpg, image/webp"
@@ -385,8 +392,9 @@
             <CardContent class="space-y-5">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">หมายเลข PromptPay <span class="text-rose-500">*</span></label>
+                  <label for="building-promptpay-num" class="text-xs font-bold text-slate-700">หมายเลข PromptPay <span class="text-rose-500">*</span></label>
                   <Input
+                    id="building-promptpay-num"
                     v-model="form.promptpayNum"
                     :disabled="isReadOnly"
                     placeholder="เช่น 0812345678 หรือ เลขประจำตัวผู้เสียภาษี 13 หลัก"
@@ -401,14 +409,14 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-bank-code" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>ชื่อธนาคารผู้รับโอน</span>
                     <span v-if="activeBankObj" class="text-xs font-bold px-2 py-0.5 rounded-md flex items-center gap-1" :style="{ backgroundColor: activeBankObj.bgColor, color: activeBankObj.textColor }">
                       <span>{{ activeBankObj.icon }}</span>
                       <span>{{ activeBankObj.code }}</span>
                     </span>
                   </label>
-                  <Select v-model="selectedBankCode" :disabled="isReadOnly">
+                  <Select id="building-bank-code" v-model="selectedBankCode" :disabled="isReadOnly">
                     <option value="" disabled>-- เลือกธนาคารผู้รับโอน (Official Thai Banks) --</option>
                     <option
                       v-for="bank in THAI_BANKS"
@@ -434,8 +442,9 @@
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ชื่อบัญชีธนาคาร</label>
+                  <label for="building-bank-account-name" class="text-xs font-bold text-slate-700">ชื่อบัญชีธนาคาร</label>
                   <Input
+                    id="building-bank-account-name"
                     v-model="form.bankAccountName"
                     :disabled="isReadOnly"
                     placeholder="เช่น บริษัท หอพักสุขสบาย จำกัด หรือ นายสมชาย ใจดี"
@@ -445,8 +454,9 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">เลขที่บัญชีธนาคาร</label>
+                  <label for="building-bank-account-no" class="text-xs font-bold text-slate-700">เลขที่บัญชีธนาคาร</label>
                   <Input
+                    id="building-bank-account-no"
                     v-model="form.bankAccountNo"
                     :disabled="isReadOnly"
                     placeholder="เช่น 123-4-56789-0 (10-12 หลัก)"
@@ -461,13 +471,14 @@
 
               <!-- PromptPay QR Code Control Bar -->
               <div class="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
+                <label for="building-payment-qr-url" class="text-xs font-bold text-slate-800 flex items-center justify-between">
                   <span>รูปภาพ PromptPay QR Code ประจำตึก</span>
                   <span class="text-xs text-cyan-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
                 </label>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Input
+                    id="building-payment-qr-url"
                     v-model="form.paymentQrUrl"
                     :disabled="isReadOnly"
                     placeholder="https://example.com/qr.png หรือ Data URL"
@@ -500,8 +511,9 @@
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-700">คำอธิบาย/หมายเหตุการชำระเงิน</label>
+                <label for="building-payment-note" class="text-xs font-bold text-slate-700">คำอธิบาย/หมายเหตุการชำระเงิน</label>
                 <textarea
+                  id="building-payment-note"
                   v-model="form.paymentNote"
                   :disabled="isReadOnly"
                   rows="3"
@@ -550,8 +562,9 @@
               <!-- 1. Utility Rates & Due Date -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">อัตราค่าน้ำ (บาท / หน่วย)</label>
+                  <label for="building-water-rate" class="text-xs font-bold text-slate-700">อัตราค่าน้ำ (บาท / หน่วย)</label>
                   <Input
+                    id="building-water-rate"
                     type="number"
                     step="0.5"
                     v-model="form.waterRate"
@@ -562,8 +575,9 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">อัตราค่าไฟ (บาท / หน่วย)</label>
+                  <label for="building-electric-rate" class="text-xs font-bold text-slate-700">อัตราค่าไฟ (บาท / หน่วย)</label>
                   <Input
+                    id="building-electric-rate"
                     type="number"
                     step="0.5"
                     v-model="form.electricRate"
@@ -574,8 +588,9 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">วันกำหนดชำระเงินของเดือน (1 - 31)</label>
+                  <label for="building-due-date-day" class="text-xs font-bold text-slate-700">วันกำหนดชำระเงินของเดือน (1 - 31)</label>
                   <Input
+                    id="building-due-date-day"
                     type="number"
                     min="1"
                     max="31"
@@ -612,10 +627,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <!-- Option 1: NONE -->
                   <label
+                    for="late-fee-type-none"
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
                     :class="form.lateFeeType === 'NONE' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
+                      id="late-fee-type-none"
                       type="radio"
                       v-model="form.lateFeeType"
                       value="NONE"
@@ -630,10 +647,12 @@
 
                   <!-- Option 2: DAILY -->
                   <label
+                    for="late-fee-type-daily"
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
                     :class="form.lateFeeType === 'DAILY' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
+                      id="late-fee-type-daily"
                       type="radio"
                       v-model="form.lateFeeType"
                       value="DAILY"
@@ -648,10 +667,12 @@
 
                   <!-- Option 3: FLAT -->
                   <label
+                    for="late-fee-type-flat"
                     class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none"
                     :class="form.lateFeeType === 'FLAT' ? 'bg-white border-cyan-500 ring-2 ring-cyan-100 shadow-xs' : 'bg-white/60 border-slate-200 hover:bg-white'"
                   >
                     <input
+                      id="late-fee-type-flat"
                       type="radio"
                       v-model="form.lateFeeType"
                       value="FLAT"
@@ -668,11 +689,12 @@
                 <!-- Parameters (Amount & Grace Period) -->
                 <div v-if="form.lateFeeType !== 'NONE'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200/80 animate-in fade-in duration-200">
                   <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-700">
+                    <label for="building-late-fee-amount" class="text-xs font-bold text-slate-700">
                       {{ form.lateFeeType === 'DAILY' ? 'จำนวนเงินค่าปรับ (บาท / วัน)' : 'จำนวนเงินค่าปรับ (บาท / บิล)' }}
                       <span class="text-rose-500">*</span>
                     </label>
                     <Input
+                      id="building-late-fee-amount"
                       type="number"
                       step="10"
                       min="0"
@@ -684,10 +706,11 @@
                   </div>
 
                   <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-700">
+                    <label for="building-grace-period-days" class="text-xs font-bold text-slate-700">
                       ระยะเวลาผ่อนผัน (Grace Period - วัน)
                     </label>
                     <Input
+                      id="building-grace-period-days"
                       type="number"
                       min="0"
                       v-model="form.gracePeriodDays"
@@ -740,8 +763,9 @@
             <CardContent class="space-y-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">เงินมัดจำ/ประกัน (จำนวนเดือน)</label>
+                  <label for="building-deposit-months" class="text-xs font-bold text-slate-700">เงินมัดจำ/ประกัน (จำนวนเดือน)</label>
                   <Input
+                    id="building-deposit-months"
                     type="number"
                     min="0"
                     v-model="form.depositMonths"
@@ -752,8 +776,9 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700">ค่าเช่าล่วงหน้า (จำนวนเดือน)</label>
+                  <label for="building-advance-months" class="text-xs font-bold text-slate-700">ค่าเช่าล่วงหน้า (จำนวนเดือน)</label>
                   <Input
+                    id="building-advance-months"
                     type="number"
                     min="0"
                     v-model="form.advanceMonths"
@@ -765,8 +790,9 @@
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-700">กฎระเบียบและข้อตกลงสัญญาเช่า (Terms & Conditions)</label>
+                <label for="building-terms-conditions" class="text-xs font-bold text-slate-700">กฎระเบียบและข้อตกลงสัญญาเช่า (Terms & Conditions)</label>
                 <textarea
+                  id="building-terms-conditions"
                   v-model="form.termsAndConditions"
                   :disabled="isReadOnly"
                   rows="6"
@@ -825,11 +851,12 @@
               <!-- General LINE OA Information -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-line-oa-id" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>LINE OA Basic ID / Account Name</span>
                     <span class="text-xs font-normal text-slate-400">เช่น @horspace_a</span>
                   </label>
                   <Input
+                    id="building-line-oa-id"
                     v-model="form.lineOaId"
                     :disabled="isReadOnly"
                     placeholder="เช่น @horspace_building_a"
@@ -843,11 +870,12 @@
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-line-add-friend-url" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>ลิงก์กดเพิ่มเพื่อน (LINE Add Friend URL)</span>
                     <span class="text-xs font-normal text-slate-400">https://lin.ee/...</span>
                   </label>
                   <Input
+                    id="building-line-add-friend-url"
                     v-model="form.lineAddFriendUrl"
                     :disabled="isReadOnly"
                     placeholder="เช่น https://line.me/R/ti/p/@horspace_a หรือ https://lin.ee/xxxxx"
@@ -866,11 +894,12 @@
 
                 <!-- 1. LIFF ID -->
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-line-liff-id" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>LINE LIFF ID ประจำตึก</span>
                     <span class="text-xs font-normal text-slate-400">LIFF App ID</span>
                   </label>
                   <Input
+                    id="building-line-liff-id"
                     v-model="form.lineLiffId"
                     :disabled="isReadOnly"
                     placeholder="เช่น 2011289517-SB8YziXL"
@@ -885,7 +914,7 @@
 
                 <!-- 2. Channel Secret -->
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-line-channel-secret" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>Channel Secret</span>
                     <button
                       type="button"
@@ -896,6 +925,7 @@
                     </button>
                   </label>
                   <Input
+                    id="building-line-channel-secret"
                     :type="showSecret ? 'text' : 'password'"
                     v-model="form.lineChannelSecret"
                     :disabled="isReadOnly"
@@ -911,7 +941,7 @@
 
                 <!-- 3. Channel Access Token (Long-Lived) -->
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <label for="building-line-channel-access-token" class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>Messaging API Channel Access Token (Long-Lived)</span>
                     <button
                       type="button"
@@ -922,6 +952,7 @@
                     </button>
                   </label>
                   <textarea
+                    id="building-line-channel-access-token"
                     v-model="form.lineChannelAccessToken"
                     :disabled="isReadOnly"
                     :rows="showToken ? 3 : 2"

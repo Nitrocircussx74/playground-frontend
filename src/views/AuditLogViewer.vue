@@ -23,8 +23,8 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Filter Action -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">การกระทำ (Action)</label>
-          <Select v-model="filters.action" @change="handleFilterChange">
+          <label for="audit-filter-action" class="block text-xs font-semibold text-slate-500 mb-1">การกระทำ (Action)</label>
+          <Select id="audit-filter-action" v-model="filters.action" @change="handleFilterChange">
             <option value="">ทั้งหมด (All Actions)</option>
             <option value="CREATE">CREATE (เพิ่มข้อมูล)</option>
             <option value="UPDATE">UPDATE (แก้ไขข้อมูล)</option>
@@ -34,8 +34,8 @@
 
         <!-- Filter Entity -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">โมดูล (Module / Entity)</label>
-          <Select v-model="filters.entity" @change="handleFilterChange">
+          <label for="audit-filter-entity" class="block text-xs font-semibold text-slate-500 mb-1">โมดูล (Module / Entity)</label>
+          <Select id="audit-filter-entity" v-model="filters.entity" @change="handleFilterChange">
             <option value="">ทั้งหมด (All Modules)</option>
             <option value="INVOICE">ใบแจ้งหนี้ (INVOICE)</option>
             <option value="ROOM">ห้องพัก (ROOM)</option>
@@ -48,14 +48,14 @@
 
         <!-- Filter Start Date -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">ตั้งแต่วันที่ (Start Date)</label>
-          <Input v-model="filters.startDate" type="date" @change="handleFilterChange" />
+          <label for="audit-filter-start-date" class="block text-xs font-semibold text-slate-500 mb-1">ตั้งแต่วันที่ (Start Date)</label>
+          <Input id="audit-filter-start-date" v-model="filters.startDate" type="date" @change="handleFilterChange" />
         </div>
 
         <!-- Filter End Date -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">ถึงวันที่ (End Date)</label>
-          <Input v-model="filters.endDate" type="date" @change="handleFilterChange" />
+          <label for="audit-filter-end-date" class="block text-xs font-semibold text-slate-500 mb-1">ถึงวันที่ (End Date)</label>
+          <Input id="audit-filter-end-date" v-model="filters.endDate" type="date" @change="handleFilterChange" />
         </div>
       </div>
     </Card>

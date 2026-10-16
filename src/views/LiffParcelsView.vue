@@ -110,7 +110,7 @@
 
           <!-- Parcel Box Image Preview -->
           <div v-if="item.photoUrl" class="w-full h-32 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 relative group/img">
-            <img :src="item.photoUrl" class="w-full h-full object-cover group-hover/img:scale-102 transition-transform duration-300" />
+            <img :src="item.photoUrl" alt="รูปพัสดุ" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover/img:scale-102 transition-transform duration-300" />
             <div class="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-xs text-white rounded-lg text-xs font-medium flex items-center gap-1">
               <Maximize2 class="w-2.5 h-2.5" />
               <span>แตะดูรูป</span>
@@ -164,7 +164,7 @@
                   {{ selectedParcel.status === 'PENDING' ? 'รอรับที่นิติฯ' : 'รับแล้ว' }}
                 </Badge>
 
-                <Button variant="ghost" size="icon" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeParcelDetail">
+                <Button variant="ghost" size="icon" class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeParcelDetail">
                   <X class="w-4 h-4" />
                 </Button>
               </div>
@@ -320,7 +320,7 @@
               <div class="text-xs font-bold">{{ selectedParcel.courier }}</div>
               <div class="text-xs text-white/70 font-mono">{{ selectedParcel.trackingNumber || 'หน้ากล่องพัสดุ' }}</div>
             </div>
-            <Button variant="ghost" size="icon" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white" @click="showLightbox = false">
+            <Button variant="ghost" size="icon" class="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 text-white" @click="showLightbox = false">
               <X class="w-5 h-5" />
             </Button>
           </div>

@@ -103,9 +103,10 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <!-- Search Keyword -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">ค้นหา (Search)</label>
+          <label for="feedback-search" class="block text-xs font-semibold text-slate-500 mb-1">ค้นหา (Search)</label>
           <div class="relative">
             <Input
+              id="feedback-search"
               v-model="filters.search"
               @input="handleSearchInput"
               type="text"
@@ -118,8 +119,8 @@
 
         <!-- Platform Filter -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">ช่องทาง (Platform)</label>
-          <Select v-model="filters.platform" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
+          <label for="feedback-platform" class="block text-xs font-semibold text-slate-500 mb-1">ช่องทาง (Platform)</label>
+          <Select id="feedback-platform" v-model="filters.platform" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกช่องทาง (All Platforms)</option>
             <option value="CMS_ADMIN">Admin Backoffice (CMS)</option>
             <option value="TENANT_LIFF">LINE LIFF Portal</option>
@@ -129,8 +130,8 @@
 
         <!-- Category Filter -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">หมวดหมู่ (Category)</label>
-          <Select v-model="filters.category" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
+          <label for="feedback-category" class="block text-xs font-semibold text-slate-500 mb-1">หมวดหมู่ (Category)</label>
+          <Select id="feedback-category" v-model="filters.category" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกหมวดหมู่ (All Categories)</option>
             <option value="BUG">รายงานบั๊ก / ข้อผิดพลาด (BUG)</option>
             <option value="FEATURE_REQUEST">ขอฟีเจอร์ใหม่ (FEATURE_REQUEST)</option>
@@ -141,8 +142,8 @@
 
         <!-- Status Filter -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">สถานะ (Status)</label>
-          <Select v-model="filters.status" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
+          <label for="feedback-status" class="block text-xs font-semibold text-slate-500 mb-1">สถานะ (Status)</label>
+          <Select id="feedback-status" v-model="filters.status" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกสถานะ (All Status)</option>
             <option value="NEW">NEW (ใหม่ รอตรวจ)</option>
             <option value="IN_REVIEW">IN_REVIEW (กำลังพิจารณา)</option>
@@ -154,8 +155,8 @@
 
         <!-- Rating Filter -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 mb-1">คะแนน (Rating)</label>
-          <Select v-model="filters.rating" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
+          <label for="feedback-rating" class="block text-xs font-semibold text-slate-500 mb-1">คะแนน (Rating)</label>
+          <Select id="feedback-rating" v-model="filters.rating" @change="fetchFeedbacks" class="h-auto py-1.5 font-semibold">
             <option value="">ทุกคะแนน (All Ratings)</option>
             <option value="5">5 ดาว (ดีเยี่ยม)</option>
             <option value="4">4 ดาว (พึงพอใจ)</option>
@@ -417,8 +418,8 @@
         <div class="space-y-3 pt-2 border-t border-slate-100">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ปรับเปลี่ยนสถานะ</label>
-              <Select v-model="modalForm.status" class="font-bold">
+              <label for="feedback-detail-status" class="block text-xs font-bold text-slate-700 mb-1">ปรับเปลี่ยนสถานะ</label>
+              <Select id="feedback-detail-status" v-model="modalForm.status" class="font-bold">
                 <option value="NEW">NEW (ใหม่)</option>
                 <option value="IN_REVIEW">IN_REVIEW (กำลังพิจารณา)</option>
                 <option value="PLANNED">PLANNED (วางแผนพัฒนา)</option>
@@ -429,8 +430,9 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">บันทึกของทีมพัฒนา (Developer Notes)</label>
+            <label for="feedback-detail-notes" class="block text-xs font-bold text-slate-700 mb-1">บันทึกของทีมพัฒนา (Developer Notes)</label>
             <textarea
+              id="feedback-detail-notes"
               v-model="modalForm.developerNotes"
               rows="3"
               placeholder="บันทึกรายละเอียด เช่น Release v1.4, แก้ไขที่ PR #12..."

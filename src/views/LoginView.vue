@@ -1,10 +1,11 @@
 <template>
   <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-900 font-sans selection:bg-cyan-600 selection:text-white">
+    <h1 class="sr-only">Horspace CMS — เข้าสู่ระบบสำหรับผู้ดูแลระบบและเจ้าของหอพัก</h1>
     <!-- Ambient Glow Background Meshes -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
       <div class="absolute -top-40 -left-40 w-96 h-96 bg-cyan-600/30 rounded-full blur-[100px]"></div>
       <div class="absolute top-1/2 -right-40 w-[30rem] h-[30rem] bg-teal-600/25 rounded-full blur-[120px]"></div>
-      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/20 rounded-full blur-[100px]"></div>
+      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-teal-400/15 rounded-full blur-[100px]"></div>
     </div>
 
     <!-- Login Card Container -->
@@ -77,8 +78,8 @@
               <span>{{ errorMessage }}</span>
             </div>
 
-            <!-- Quick Demo Credential Autofill Helper -->
-            <div class="pt-1 flex items-center justify-between gap-2">
+            <!-- Quick Demo Credential Autofill Helper (dev only — never ships to production) -->
+            <div v-if="isDev" class="pt-1 flex items-center justify-between gap-2">
               <span class="text-xs text-slate-400">กรอกข้อมูลทดสอบ:</span>
               <div class="flex items-center gap-3">
                 <button
@@ -102,7 +103,7 @@
             <Button
               type="submit"
               data-testid="login-button"
-              class="w-full bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
+              class="w-full bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-700 hover:from-cyan-800 hover:to-teal-800 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
               :disabled="authStore.loading"
             >
               <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
@@ -154,8 +155,10 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const identifier = ref('owner@dorm.com');
-const password = ref('password123');
+const isDev = import.meta.env.DEV;
+
+const identifier = ref(isDev ? 'owner@dorm.com' : '');
+const password = ref(isDev ? 'password123' : '');
 const errorMessage = ref('');
 
 const fillDemoAccount = (role = 'owner') => {

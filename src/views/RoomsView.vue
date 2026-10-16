@@ -92,8 +92,8 @@
       <form @submit.prevent="handleCreateRoom" class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <!-- 1. Unit Type -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ประเภทพื้นที่เช่า (Unit Type)</label>
-          <Select v-model="form.unitType">
+          <label for="room-unit-type" class="block text-xs font-bold text-slate-700 mb-1">ประเภทพื้นที่เช่า (Unit Type)</label>
+          <Select id="room-unit-type" v-model="form.unitType">
             <option value="residential">ห้องพักอาศัย (Residential)</option>
             <option value="commercial_shop">ร้านค้า / ล็อคหน้าร้าน (Shop / Kiosk)</option>
             <option value="vending_spot">จุดวางตู้เต่าบิน / ตู้บริการ (Vending Spot)</option>
@@ -105,8 +105,9 @@
 
         <!-- 2. Unit / Room Number -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">รหัส/หมายเลขยูนิต (Number/ID)</label>
+          <label for="room-number" class="block text-xs font-bold text-slate-700 mb-1">รหัส/หมายเลขยูนิต (Number/ID)</label>
           <Input
+            id="room-number"
             v-model="form.roomNumber"
             type="text"
             :placeholder="getPlaceholderByUnitType(form.unitType)"
@@ -117,32 +118,32 @@
 
         <!-- 3. Floor -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ชั้น (Floor)</label>
-          <Input v-model.number="form.floor" type="number" min="0" placeholder="เช่น 1, 2" required />
+          <label for="room-floor" class="block text-xs font-bold text-slate-700 mb-1">ชั้น (Floor)</label>
+          <Input id="room-floor" v-model.number="form.floor" type="number" min="0" placeholder="เช่น 1, 2" required />
         </div>
 
         <!-- 4. Area Sq.M. -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ขนาดพื้นที่ (ตร.ม.)</label>
-          <Input v-model.number="form.areaSqm" type="number" step="0.1" placeholder="เช่น 24.5" />
+          <label for="room-area-sqm" class="block text-xs font-bold text-slate-700 mb-1">ขนาดพื้นที่ (ตร.ม.)</label>
+          <Input id="room-area-sqm" v-model.number="form.areaSqm" type="number" step="0.1" placeholder="เช่น 24.5" />
         </div>
 
         <!-- 5. Monthly Price -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ราคาเช่ารายเดือน (บาท)</label>
-          <Input v-model.number="form.price" type="number" step="100" placeholder="เช่น 4500" required />
+          <label for="room-price" class="block text-xs font-bold text-slate-700 mb-1">ราคาเช่ารายเดือน (บาท)</label>
+          <Input id="room-price" v-model.number="form.price" type="number" step="100" placeholder="เช่น 4500" required />
         </div>
 
         <!-- 6. Location Zone -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">โซนที่ตั้ง (Location Zone)</label>
-          <Input v-model="form.locationZone" type="text" placeholder="เช่น ชั้น 1 ริมถนน, ลานจอด A" />
+          <label for="room-location-zone" class="block text-xs font-bold text-slate-700 mb-1">โซนที่ตั้ง (Location Zone)</label>
+          <Input id="room-location-zone" v-model="form.locationZone" type="text" placeholder="เช่น ชั้น 1 ริมถนน, ลานจอด A" />
         </div>
 
         <!-- 7. Billing Model -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">รูปแบบการคิดเงิน (Billing Model)</label>
-          <Select v-model="form.billingModel">
+          <label for="room-billing-model" class="block text-xs font-bold text-slate-700 mb-1">รูปแบบการคิดเงิน (Billing Model)</label>
+          <Select id="room-billing-model" v-model="form.billingModel">
             <option value="fixed">เหมาจ่ายรายเดือนคงที่ (Fixed Rent)</option>
             <option value="revenue_share">ส่วนแบ่งยอดขาย (Revenue Share / GP %)</option>
             <option value="metered_only">คิดตามมิเตอร์จริง (Metered Only)</option>
@@ -151,8 +152,9 @@
 
         <!-- 8. Revenue Share % (If selected) -->
         <div v-if="form.billingModel === 'revenue_share'">
-          <label class="block text-xs font-bold text-amber-700 mb-1">ส่วนแบ่งยอดขาย (% GP)</label>
+          <label for="room-rev-share-percent" class="block text-xs font-bold text-amber-700 mb-1">ส่วนแบ่งยอดขาย (% GP)</label>
           <Input
+            id="room-rev-share-percent"
             v-model.number="form.revSharePercent"
             type="number"
             step="0.5"
@@ -163,8 +165,8 @@
 
         <!-- 9. Initial Status -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">สถานะเริ่มต้น (Status)</label>
-          <Select v-model="form.status">
+          <label for="room-status" class="block text-xs font-bold text-slate-700 mb-1">สถานะเริ่มต้น (Status)</label>
+          <Select id="room-status" v-model="form.status">
             <option value="available">ว่างพร้อมให้เช่า (Available)</option>
             <option value="occupied">มีผู้เช่า (Occupied)</option>
             <option value="maintenance">ปิดปรับปรุง/ซ่อมแซม (Maintenance)</option>
@@ -174,7 +176,7 @@
         <!-- 10. Room Owner (Landlord/Investor) -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <label for="room-owner" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
               <Crown class="w-3.5 h-3.5 text-amber-500" />
               <span>เจ้าของห้อง / นักลงทุน (Room Owner)</span>
             </label>
@@ -187,7 +189,7 @@
               <span>เพิ่มเจ้าของใหม่</span>
             </button>
           </div>
-          <Select v-model="form.ownerId">
+          <Select id="room-owner" v-model="form.ownerId">
             <option :value="null">ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
             <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
               {{ owner.name }} ({{ owner.phone || owner.email }})
@@ -317,23 +319,24 @@
 
         <form @submit.prevent="handleQuickCreateOwner" class="space-y-3 text-xs">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล *</label>
-            <Input v-model="quickOwnerForm.name" type="text" required placeholder="เช่น คุณสมชาย ลงทุนดี" />
+            <label for="owner-name" class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล *</label>
+            <Input id="owner-name" v-model="quickOwnerForm.name" type="text" required placeholder="เช่น คุณสมชาย ลงทุนดี" />
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 mb-1">อีเมล (สำหรับเข้าสู่ระบบ) *</label>
-            <Input v-model="quickOwnerForm.email" type="email" required placeholder="owner@example.com" class="font-mono" />
+            <label for="owner-email" class="block font-bold text-slate-700 mb-1">อีเมล (สำหรับเข้าสู่ระบบ) *</label>
+            <Input id="owner-email" v-model="quickOwnerForm.email" type="email" required placeholder="owner@example.com" class="font-mono" />
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ (ไม่บังคับ)</label>
-            <Input v-model="quickOwnerForm.phone" type="tel" placeholder="081-xxx-xxxx" class="font-mono" />
+            <label for="owner-phone" class="block font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ (ไม่บังคับ)</label>
+            <Input id="owner-phone" v-model="quickOwnerForm.phone" type="tel" placeholder="081-xxx-xxxx" class="font-mono" />
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 mb-1">รหัสผ่านเริ่มต้น *</label>
+            <label for="owner-password" class="block font-bold text-slate-700 mb-1">รหัสผ่านเริ่มต้น *</label>
             <PasswordInput
+              id="owner-password"
               v-model="quickOwnerForm.password"
               required
               minlength="6"

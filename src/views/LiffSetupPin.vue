@@ -57,93 +57,38 @@
 
     <!-- 2. PIN Indicator Dots (6 จุด พร้อม Animation สั่นเมื่อไม่ตรงกัน) -->
     <main class="w-full flex flex-col items-center my-auto py-4 shrink-0">
-      <div
-        class="flex items-center justify-center gap-3.5 py-1"
-        :class="{ 'animate-shake': isShaking }"
+      <PinDotPad
+        v-model="enteredPin"
+        :disabled="isLoading"
+        :shaking="isShaking"
+        :active-dot-class="isResetMode ? 'bg-amber-500 scale-110 shadow-sm shadow-amber-300/40 ring-4 ring-amber-100/70' : 'bg-teal-600 scale-110 shadow-sm shadow-teal-300/40 ring-4 ring-teal-100/70'"
+        dot-gap-class="gap-3.5"
       >
-        <div
-          v-for="index in 6"
-          :key="index"
-          class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-200"
-          :class="[
-            index <= enteredPin.length
-              ? (isResetMode ? 'bg-amber-500 scale-110 shadow-sm shadow-amber-300/40 ring-4 ring-amber-100/70' : 'bg-teal-600 scale-110 shadow-sm shadow-teal-300/40 ring-4 ring-teal-100/70')
-              : 'bg-slate-200/60 border border-slate-200'
-          ]"
-        ></div>
-      </div>
-
-      <!-- Feedback / Error Message -->
-      <transition name="fade">
-        <div v-if="errorMessage" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
-          <span>{{ errorMessage }}</span>
-        </div>
-        <div v-else-if="isLoading" class="text-xs font-medium mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse" :class="isResetMode ? 'text-amber-600' : 'text-teal-600'">
-          <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="isResetMode ? 'bg-amber-600' : 'bg-teal-600'"></span>
-          <span>{{ isResetMode ? 'กำลังรีเซ็ตรหัส PIN...' : 'กำลังบันทึกรหัส PIN...' }}</span>
-        </div>
-        <div v-else class="h-5 mt-2"></div>
-      </transition>
+        <!-- Feedback / Error Message -->
+        <transition name="fade">
+          <div v-if="errorMessage" role="alert" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
+            <span>{{ errorMessage }}</span>
+          </div>
+          <div v-else-if="isLoading" class="text-xs font-medium mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse" :class="isResetMode ? 'text-amber-600' : 'text-teal-600'">
+            <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="isResetMode ? 'bg-amber-600' : 'bg-teal-600'"></span>
+            <span>{{ isResetMode ? 'กำลังรีเซ็ตรหัส PIN...' : 'กำลังบันทึกรหัส PIN...' }}</span>
+          </div>
+          <div v-else class="h-5 mt-2"></div>
+        </transition>
+      </PinDotPad>
     </main>
-
-    <!-- 3. Minimalist iOS-Style Numpad Grid (0-9, Clear, Backspace) -->
-    <footer class="w-full pb-2 shrink-0">
-      <div class="grid grid-cols-3 gap-y-2.5 sm:gap-y-3.5 gap-x-4 sm:gap-x-6 justify-items-center max-w-[260px] sm:max-w-[280px] mx-auto">
-        <!-- แถวที่ 1 ถึง 3: ตัวเลข 1 ถึง 9 -->
-        <button
-          v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
-          :key="num"
-          type="button"
-          :disabled="isLoading"
-          @click="pressKey(num)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-100 text-slate-700 text-xl font-semibold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
-        >
-          {{ num }}
-        </button>
-
-        <!-- แถวที่ 4: ปุ่มล้างค่า (Clear) -->
-        <button
-          type="button"
-          :disabled="isLoading || enteredPin.length === 0"
-          @click="clearCurrentPin"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-xs font-bold text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-0 touch-manipulation"
-        >
-          ล้าง
-        </button>
-
-        <!-- ตัวเลข 0 -->
-        <button
-          type="button"
-          :disabled="isLoading"
-          @click="pressKey(0)"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-100 text-slate-700 text-xl font-semibold shadow-2xs transition-all duration-150 active:scale-95 flex items-center justify-center cursor-pointer disabled:opacity-40 touch-manipulation"
-        >
-          0
-        </button>
-
-        <!-- ปุ่มลบทีละตัว (Backspace) -->
-        <button
-          type="button"
-          :disabled="isLoading || enteredPin.length === 0"
-          @click="deleteLastKey"
-          class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 active:scale-95 transition-all cursor-pointer disabled:opacity-30 touch-manipulation"
-          aria-label="ลบตัวเลข"
-        >
-          <Delete class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
-        </button>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/services/authService';
 import { getLiffIdToken } from '@/utils/liff';
 import { showSuccess, showError } from '@/utils/swal';
-import { ShieldCheck, KeyRound, Delete } from 'lucide-vue-next';
+import { ShieldCheck, KeyRound } from 'lucide-vue-next';
+import PinDotPad from '@/components/PinDotPad.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -171,25 +116,9 @@ const handleCancel = () => {
   router.back();
 };
 
-const pressKey = (num) => {
-  if (isLoading.value || enteredPin.value.length >= 6) return;
+watch(enteredPin, () => {
   errorMessage.value = '';
-  enteredPin.value += String(num);
-  triggerHaptic();
-};
-
-const deleteLastKey = () => {
-  if (isLoading.value || enteredPin.value.length === 0) return;
-  errorMessage.value = '';
-  enteredPin.value = enteredPin.value.slice(0, -1);
-  triggerHaptic();
-};
-
-const clearCurrentPin = () => {
-  if (isLoading.value) return;
-  enteredPin.value = '';
-  errorMessage.value = '';
-};
+});
 
 const triggerHaptic = (pattern = 25) => {
   if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
@@ -281,28 +210,7 @@ const submitSetupPin = async () => {
   }
 };
 
-const handleKeyDown = (e) => {
-  if (isLoading.value) return;
-  if (/^[0-9]$/.test(e.key)) {
-    pressKey(Number(e.key));
-  } else if (e.key === 'Backspace') {
-    deleteLastKey();
-  } else if (e.key === 'Escape') {
-    clearCurrentPin();
-  }
-};
 
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('keydown', handleKeyDown);
-  }
-});
-
-onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('keydown', handleKeyDown);
-  }
-});
 </script>
 
 <style scoped>

@@ -146,6 +146,7 @@
                 v-for="(img, idx) in item.imageUrls.slice(0, 3)"
                 :key="idx"
                 :src="resolveImageUrl(img)"
+                :alt="`รูปประกอบการแจ้งซ่อม ${idx + 1}`"
                 class="w-11 h-11 rounded-xl object-cover border border-slate-200/80 shrink-0 hover:opacity-90 shadow-2xs"
               />
               <span
@@ -246,7 +247,7 @@
               <UserCheck class="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span class="truncate"><strong>ช่าง:</strong> {{ item.technicianName }}</span>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-3 border-l-blue-500 border-y border-r border-slate-100 text-xs text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-4 border-l-blue-500 border-y border-r border-slate-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-blue-700">ตอบแล้ว:</strong> {{ item.adminNote }}
             </div>
 
@@ -350,7 +351,7 @@
                 </Badge>
               </div>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-3 border-l-emerald-500 border-y border-r border-emerald-100 text-xs text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-4 border-l-emerald-500 border-y border-r border-emerald-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ item.adminNote }}
             </div>
 
@@ -442,7 +443,7 @@
               target="_blank"
               class="aspect-square rounded-xl overflow-hidden border border-slate-200 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 shadow-2xs"
             >
-              <img :src="resolveImageUrl(img)" class="w-full h-full object-cover" />
+              <img :src="resolveImageUrl(img)" alt="รูปประกอบการแจ้งซ่อม (ขยาย)" class="w-full h-full object-cover" />
             </a>
           </div>
         </div>
@@ -491,8 +492,9 @@
           <!-- Technician & Cost (Optional for Repairs) -->
           <div class="grid grid-cols-2 gap-3" v-if="selectedTicket.category === 'REPAIR'">
             <div>
-              <label class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
+              <label for="maintenance-technician-name" class="block font-bold text-slate-800 mb-1">ชื่อช่างผู้รับผิดชอบ</label>
               <Input
+                id="maintenance-technician-name"
                 v-model="editForm.technicianName"
                 type="text"
                 placeholder="e.g. ช่างสมชาย"
@@ -500,8 +502,9 @@
               />
             </div>
             <div>
-              <label class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
+              <label for="maintenance-repair-cost" class="block font-bold text-slate-800 mb-1">ค่าซ่อม/อุปกรณ์ (บาท)</label>
               <Input
+                id="maintenance-repair-cost"
                 v-model.number="editForm.repairCost"
                 type="number"
                 min="0"
@@ -532,7 +535,7 @@
                   @click="editForm.payer = 'TENANT'"
                   :disabled="Boolean(selectedTicket.billedInvoiceId)"
                   class="font-bold"
-                  :class="editForm.payer === 'TENANT' ? 'bg-amber-500 border-amber-500 text-white hover:bg-amber-500' : 'bg-slate-50 text-slate-600'"
+                  :class="editForm.payer === 'TENANT' ? 'bg-amber-700 border-amber-700 text-white hover:bg-amber-700' : 'bg-slate-50 text-slate-600'"
                 >
                   ลูกบ้านจ่ายเอง
                 </Button>
@@ -549,7 +552,7 @@
           <!-- Admin Reply Note with Quick Suggestion Chips -->
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <label class="block font-bold text-slate-800">ข้อความตอบกลับลูกบ้าน (LINE LIFF Notification):</label>
+              <label for="maintenance-admin-note" class="block font-bold text-slate-800">ข้อความตอบกลับลูกบ้าน (LINE LIFF Notification):</label>
             </div>
 
             <!-- Quick Template Chips -->
@@ -568,6 +571,7 @@
             </div>
 
             <textarea
+              id="maintenance-admin-note"
               v-model="editForm.adminNote"
               rows="3"
               placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่รับเรื่องแล้ว กำลังส่งช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
@@ -615,8 +619,8 @@
 
         <form @submit.prevent="handleCreateSubmit" class="space-y-4 text-xs text-slate-700">
           <div>
-            <label class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
-            <Select v-model="newForm.roomId" required class="font-bold">
+            <label for="maintenance-new-room" class="block font-bold text-slate-800 mb-1">เลือกห้องพัก <span class="text-rose-500">*</span></label>
+            <Select id="maintenance-new-room" v-model="newForm.roomId" required class="font-bold">
               <option value="" disabled>-- เลือกห้องพัก --</option>
               <option v-for="room in roomStore.rooms" :key="room.id" :value="room.id">
                 ห้อง {{ room.roomNumber }} {{ room.building?.name ? `(${room.building.name})` : '' }}
@@ -625,8 +629,9 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
+            <label for="maintenance-new-title" class="block font-bold text-slate-800 mb-1">หัวข้อเรื่องแจ้งซ่อม <span class="text-rose-500">*</span></label>
             <Input
+              id="maintenance-new-title"
               v-model="newForm.title"
               type="text"
               placeholder="e.g. เครื่องปรับอากาศมีเสียงดัง / หลอดไฟห้องน้ำเสีย"
@@ -636,8 +641,9 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">รายละเอียดเพิ่มเติม <span class="text-rose-500">*</span></label>
+            <label for="maintenance-new-description" class="block font-bold text-slate-800 mb-1">รายละเอียดเพิ่มเติม <span class="text-rose-500">*</span></label>
             <textarea
+              id="maintenance-new-description"
               v-model="newForm.description"
               rows="3"
               placeholder="ระบุอาการชำรุด หรือตำแหน่งที่ต้องการให้ช่างเข้าตรวจสอบ..."
@@ -647,15 +653,16 @@
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">อัปโหลดรูปภาพประกอบ</label>
+            <label for="maintenance-new-image" class="block font-bold text-slate-800 mb-1">อัปโหลดรูปภาพประกอบ</label>
             <input
+              id="maintenance-new-image"
               type="file"
               accept="image/*"
               @change="handleFileChange"
               class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer"
             />
             <div v-if="newForm.imageUrl" class="mt-2">
-              <img :src="resolveImageUrl(newForm.imageUrl)" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
+              <img :src="resolveImageUrl(newForm.imageUrl)" alt="ตัวอย่างรูปประกอบที่อัปโหลด" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
             </div>
           </div>
 

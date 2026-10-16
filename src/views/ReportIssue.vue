@@ -103,7 +103,7 @@
 
         <!-- 3. Image Upload Field -->
         <div class="space-y-2">
-          <label class="block text-xs font-bold text-slate-700">
+          <label for="report-issue-images" class="block text-xs font-bold text-slate-700">
             รูปภาพประกอบ (สูงสุด 5 รูป)
           </label>
 
@@ -156,6 +156,7 @@
 
           <!-- Hidden Native File Input -->
           <input
+            id="report-issue-images"
             ref="fileInputRef"
             type="file"
             accept="image/png, image/jpeg, image/jpg, image/webp"

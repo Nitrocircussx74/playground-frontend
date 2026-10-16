@@ -290,8 +290,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ช่องทางการชำระเงิน (Payment Method)</label>
-              <Select v-model="paymentForm.paymentMethod" required class="font-bold">
+              <label for="invoice-payment-method" class="block text-xs font-bold text-slate-700 mb-1">ช่องทางการชำระเงิน (Payment Method)</label>
+              <Select id="invoice-payment-method" v-model="paymentForm.paymentMethod" required class="font-bold">
                 <option value="CASH">เงินสดผ่านเคาน์เตอร์ (Cash)</option>
                 <option value="PROMPTPAY">พร้อมเพย์ / สแกน QR (PromptPay)</option>
                 <option value="BANK_TRANSFER">โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
@@ -299,8 +299,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุการชำระเงิน (Payment Note - Optional)</label>
+              <label for="invoice-payment-note" class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุการชำระเงิน (Payment Note - Optional)</label>
               <Input
+                id="invoice-payment-note"
                 v-model="paymentForm.note"
                 type="text"
                 placeholder="เช่น รับเงินสดแบงก์ 5,000 บาท ทอน 200 บาท"
