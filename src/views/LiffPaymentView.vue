@@ -109,8 +109,8 @@
                via html2canvas in handleSaveQrCode(), which needs a real DOM element ref, not a
                Vue component instance. Buttons inside are left as native <button> for the same reason. -->
           <div ref="qrCardRef" class="p-5 bg-white rounded-xl border border-slate-100 shadow-xs text-center space-y-3">
-            <div class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-900 text-xs font-bold px-3.5 py-1.5 rounded-full border border-teal-200 shadow-2xs">
-              <QrCode class="w-3.5 h-3.5 text-teal-800" />
+            <div class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3.5 py-1.5 rounded-full border border-primary/20 shadow-2xs">
+              <QrCode class="w-3.5 h-3.5 text-primary" />
               <span>PromptPay QR Code (สแกนชำระเงิน)</span>
             </div>
 
@@ -140,9 +140,9 @@
                 type="button"
                 @click="handleSaveQrCode"
                 :disabled="savingQr"
-                class="w-full sm:w-auto px-5 py-2.5 bg-teal-50 hover:bg-teal-100 active:bg-teal-200 text-teal-700 border border-teal-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                class="w-full sm:w-auto px-5 py-2.5 bg-primary/5 hover:bg-primary/10 active:bg-primary/20 text-primary border border-primary/20 rounded-xl text-xs font-bold transition-all shadow-2xs inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
               >
-                <Download class="w-4 h-4 text-teal-600" />
+                <Download class="w-4 h-4 text-primary" />
                 <span>{{ savingQr ? 'กำลังบันทึกภาพ...' : 'บันทึกรูป QR Code ลงเครื่อง' }}</span>
               </button>
             </div>

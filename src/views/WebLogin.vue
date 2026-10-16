@@ -203,15 +203,17 @@
 
 <script setup>
 import { AlertCircle, Phone, Lock } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/utils/api';
 import { useAuthStore } from '@/stores/auth';
 import { loginLiff } from '@/utils/liff';
+import { useDynamicTheme } from '@/composables/useDynamicTheme';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const { fetchAndApplyBuildingTheme } = useDynamicTheme();
 
 const phoneNumber = ref('');
 const pin = ref('');
@@ -219,6 +221,13 @@ const showPin = ref(false);
 const isLoading = ref(false);
 const isLineLoggingIn = ref(false);
 const errorMessage = ref('');
+
+onMounted(() => {
+  const targetBuilding = route.query.building || route.query.buildingId || (typeof window !== 'undefined' ? localStorage.getItem('liff_target_building') : null);
+  if (targetBuilding) {
+    fetchAndApplyBuildingTheme(targetBuilding);
+  }
+});
 
 const pressPinDigit = (num) => {
   if (pin.value.length < 6) {
