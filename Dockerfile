@@ -5,6 +5,12 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# VITE_API_BASE_URL ไม่ใช่ secret (ฝังอยู่ใน JS bundle ที่ใครก็ดูได้อยู่แล้ว) แต่ .env ถูกกัน
+# ไม่ให้เข้า build context ไว้ (.dockerignore) เลยต้องรับผ่าน build arg แทน ไม่งั้น vite build
+# fallback ไปใช้ localhost:3000 เงียบๆ แล้ว frontend ที่ deploy จริงจะยิง API ผิดที่
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # คัดลอกไฟล์จัดการความสัมพันธ์ Dependencies
 COPY package.json yarn.lock ./
 
