@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <Vote class="w-5 h-5 text-primary" />
           <span>โหวต & แบบสำรวจความเห็น</span>
         </h1>
@@ -15,7 +15,12 @@
       </Button>
     </div>
 
-    <div class="grid grid-cols-1 gap-4">
+    <div v-if="loading" class="p-12 text-center text-slate-500">
+      <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      กำลังโหลดโพล...
+    </div>
+
+    <div v-else class="grid grid-cols-1 gap-4">
       <Card v-for="poll in polls" :key="poll.id" class="p-5 space-y-3">
         <div class="flex items-start justify-between gap-3">
           <div>
@@ -97,7 +102,14 @@
             <label class="block text-xs font-bold text-slate-700 mb-1">ตัวเลือก (อย่างน้อย 2 ตัวเลือก)</label>
             <div v-for="(opt, idx) in form.options" :key="idx" class="flex items-center gap-2 mb-2">
               <Input v-model="form.options[idx]" type="text" required />
-              <button v-if="form.options.length > 2" type="button" @click="form.options.splice(idx, 1)" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer">
+              <button
+                v-if="form.options.length > 2"
+                type="button"
+                @click="form.options.splice(idx, 1)"
+                class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
+                :aria-label="`ลบตัวเลือกที่ ${idx + 1}`"
+                title="ลบตัวเลือกนี้"
+              >
                 <X class="w-4 h-4" />
               </button>
             </div>
@@ -135,14 +147,20 @@ const buildingStore = useBuildingStore();
 
 const polls = ref([]);
 const results = ref({});
+const loading = ref(false);
 const showModal = ref(false);
 const submitting = ref(false);
 const form = reactive({ question: '', options: ['', ''] });
 
-const loadData = () => {
+const loadData = async () => {
   const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
   if (!bId) return;
-  fetchPolls(bId);
+  loading.value = true;
+  try {
+    await fetchPolls(bId);
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(loadData);

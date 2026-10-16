@@ -177,9 +177,8 @@
 
           <form @submit.prevent="handleLinkAndLogin" class="space-y-4">
             <div>
-              <Input
+              <PasswordInput
                 v-model="existingPinInput"
-                type="password"
                 inputmode="numeric"
                 pattern="[0-9]*"
                 maxlength="6"
@@ -346,6 +345,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 
 const router = useRouter();
 const route = useRoute();

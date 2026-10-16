@@ -2,7 +2,7 @@
   <div class="space-y-6 font-sans">
     <!-- Header -->
     <div>
-      <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
         <Car class="w-5 h-5 text-primary" />
         <span>จัดการยานพาหนะ/ผู้มาเยือน</span>
       </h1>
@@ -16,7 +16,11 @@
       </TabsList>
 
       <TabsContent value="vehicles">
-        <Card class="p-0 overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดทะเบียนรถ...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -63,7 +67,11 @@
       </TabsContent>
 
       <TabsContent value="visitors">
-        <Card class="p-0 overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดรายชื่อแขก...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -116,12 +124,17 @@ const buildingStore = useBuildingStore();
 const activeTab = ref('vehicles');
 const vehicles = ref([]);
 const visitors = ref([]);
+const loading = ref(false);
 
-const loadData = () => {
+const loadData = async () => {
   const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
   if (!bId) return;
-  fetchVehicles(bId);
-  fetchVisitors(bId);
+  loading.value = true;
+  try {
+    await Promise.all([fetchVehicles(bId), fetchVisitors(bId)]);
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(loadData);

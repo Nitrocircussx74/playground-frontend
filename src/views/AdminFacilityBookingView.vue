@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <CalendarCheck class="w-5 h-5 text-primary" />
           <span>จองพื้นที่ส่วนกลาง</span>
         </h1>
@@ -22,7 +22,11 @@
       </TabsList>
 
       <TabsContent value="facilities">
-        <Card class="p-0 overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดพื้นที่ส่วนกลาง...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -62,7 +66,11 @@
       </TabsContent>
 
       <TabsContent value="bookings">
-        <Card class="p-0 overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดรายการจอง...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -161,15 +169,20 @@ const buildingStore = useBuildingStore();
 const activeTab = ref('facilities');
 const facilities = ref([]);
 const bookings = ref([]);
+const loading = ref(false);
 const showModal = ref(false);
 const submitting = ref(false);
 const form = reactive({ name: '', description: '' });
 
-const loadData = () => {
+const loadData = async () => {
   const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
   if (!bId) return;
-  fetchFacilities(bId);
-  fetchBookings(bId);
+  loading.value = true;
+  try {
+    await Promise.all([fetchFacilities(bId), fetchBookings(bId)]);
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(loadData);

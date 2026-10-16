@@ -1,5 +1,11 @@
 <template>
   <div class="space-y-6">
+    <!-- Header -->
+    <div>
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">จดมิเตอร์ & ออกบิลค่าน้ำค่าไฟ (Meter Readings & Billing)</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-0.5">คีย์มิเตอร์รายห้อง ตรวจทานบิล Draft ก่อนเผยแพร่ และดูประวัติการจดมิเตอร์</p>
+    </div>
+
     <!-- View Navigation Tabs Header -->
     <div class="flex items-center justify-between border-b border-slate-200 pb-3">
       <div class="flex items-center gap-2">
@@ -92,7 +98,12 @@
           <Button variant="link" size="sm" class="h-auto p-0" @click="meterStore.fetchMeterRecords(buildingStore.activeBuildingId)">Refresh</Button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div v-if="meterStore.isLoading && meterStore.meterRecords.length === 0" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดประวัติการจดมิเตอร์...
+        </div>
+
+        <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
               <tr>

@@ -1,28 +1,18 @@
 <template>
   <div class="space-y-5 font-sans">
     <!-- Header & Action Controls -->
-    <Card class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5 sm:p-6">
-      <div class="space-y-1">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-teal-500/20">
-            <Kanban class="w-5 h-5" />
-          </div>
-          <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <span>ศูนย์รวมแจ้งซ่อม & ร้องเรียน</span>
-              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100/80 hidden sm:inline-block">
-                Unified Service Board
-              </span>
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
-              ติดตามงานแจ้งซ่อม มอบหมายช่าง ตรวจสอบข้อร้องเรียน และส่งคำตอบกลับเข้า LINE ลูกบ้านได้ในที่เดียว
-            </p>
-          </div>
-        </div>
-      </div>
+    <AdminPageHeader
+      :icon="Kanban"
+      description="ติดตามงานแจ้งซ่อม มอบหมายช่าง ตรวจสอบข้อร้องเรียน และส่งคำตอบกลับเข้า LINE ลูกบ้านได้ในที่เดียว"
+    >
+      <template #title>
+        <span>ศูนย์รวมแจ้งซ่อม & ร้องเรียน</span>
+        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-100/80 hidden sm:inline-block">
+          Unified Service Board
+        </span>
+      </template>
 
-      <!-- Action Buttons & Quick Stats -->
-      <div class="flex flex-wrap items-center gap-2.5">
+      <template #actions>
         <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600">
           <span class="font-bold text-slate-900">{{ unifiedTickets.length }}</span> รายการทั้งหมด
           <span class="text-slate-300">|</span>
@@ -40,8 +30,8 @@
           <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรช</span>
         </Button>
-      </div>
-    </Card>
+      </template>
+    </AdminPageHeader>
 
     <!-- Filter Pills & Search Bar -->
     <Card class="p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -81,14 +71,22 @@
           v-if="searchQuery"
           @click="searchQuery = ''"
           class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer p-0.5"
+          aria-label="ล้างคำค้นหา"
+          title="ล้างคำค้นหา"
         >
           <X class="w-3.5 h-3.5" />
         </button>
       </div>
     </Card>
 
+    <!-- Loading State -->
+    <AdminLoadingState
+      v-if="loading && pendingList.length === 0 && inProgressList.length === 0 && resolvedList.length === 0"
+      message="กำลังโหลดรายการแจ้งซ่อม..."
+    />
+
     <!-- Unified Kanban Board Grid (3 Independent Scrollable Columns) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
       <!-- Column 1: Pending (รอดำเนินการ / รอรับเรื่อง) -->
       <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 flex flex-col max-h-[calc(100vh-250px)] min-h-[580px] shadow-xs">
         <!-- Column Header -->
@@ -121,7 +119,7 @@
                 </Badge>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
-                  <DoorClosed class="w-3 h-3 text-teal-600" />
+                  <DoorClosed class="w-3 h-3 text-cyan-600" />
                   <span>ห้อง {{ item.room?.roomNumber || '-' }}</span>
                 </span>
               </div>
@@ -134,7 +132,7 @@
 
             <!-- Title & Description -->
             <div class="space-y-1">
-              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-teal-600 transition-colors line-clamp-1">
+              <h4 class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-cyan-600 transition-colors line-clamp-1">
                 {{ item.title }}
               </h4>
               <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed whitespace-pre-line">
@@ -222,7 +220,7 @@
                 </Badge>
 
                 <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 font-mono flex items-center gap-1">
-                  <DoorClosed class="w-3 h-3 text-teal-600" />
+                  <DoorClosed class="w-3 h-3 text-cyan-600" />
                   <span>ห้อง {{ item.room?.roomNumber || '-' }}</span>
                 </span>
               </div>
@@ -393,8 +391,8 @@
               <component :is="getCategoryIcon(selectedTicket.category)" class="w-3.5 h-3.5" />
               {{ getCategoryLabel(selectedTicket.category) }}
             </Badge>
-            <span class="text-xs text-teal-700 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-100 font-mono font-bold flex items-center gap-1">
-              <DoorClosed class="w-3.5 h-3.5 text-teal-500" />
+            <span class="text-xs text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-xl border border-cyan-100 font-mono font-bold flex items-center gap-1">
+              <DoorClosed class="w-3.5 h-3.5 text-cyan-500" />
               ห้อง {{ selectedTicket.room?.roomNumber || '-' }} {{ selectedTicket.building?.name ? `(${selectedTicket.building.name})` : '' }}
             </span>
           </DialogTitle>
@@ -403,7 +401,7 @@
         <!-- Tenant Information Card -->
         <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs shadow-2xs">
+            <div class="w-9 h-9 rounded-xl bg-cyan-100 text-cyan-700 font-bold flex items-center justify-center text-xs shadow-2xs">
               {{ getTenantAvatarInitial(selectedTicket) }}
             </div>
             <div>
@@ -563,7 +561,7 @@
                 size="sm"
                 variant="outline"
                 @click="editForm.adminNote = chip"
-                class="shrink-0 text-teal-700 border-teal-100 bg-teal-50/70 hover:bg-teal-100"
+                class="shrink-0 text-cyan-700 border-cyan-100 bg-cyan-50/70 hover:bg-cyan-100"
               >
                 + {{ chip }}
               </Button>
@@ -573,7 +571,7 @@
               v-model="editForm.adminNote"
               rows="3"
               placeholder="พิมพ์ข้อความตอบกลับ เช่น 'เจ้าหน้าที่รับเรื่องแล้ว กำลังส่งช่างเข้าตรวจสอบช่วงบ่ายครับ'..."
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden leading-relaxed"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:bg-white focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 focus:outline-hidden leading-relaxed"
             ></textarea>
           </div>
 
@@ -644,7 +642,7 @@
               rows="3"
               placeholder="ระบุอาการชำรุด หรือตำแหน่งที่ต้องการให้ช่างเข้าตรวจสอบ..."
               required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-hidden leading-relaxed"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 focus:outline-hidden leading-relaxed"
             ></textarea>
           </div>
 
@@ -701,6 +699,8 @@ import maintenanceService from '@/services/maintenanceService';
 import api from '@/utils/api';
 import { showSuccess, showError, showToast, showConfirm } from '@/utils/swal';
 import { formatDateTime as formatDate } from '@/utils/formatters';
+import AdminPageHeader from '@/components/common/AdminPageHeader.vue';
+import AdminLoadingState from '@/components/common/AdminLoadingState.vue';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -857,7 +857,7 @@ const categoryFilters = computed(() => {
   const otherCount = unifiedTickets.value.filter((i) => i.category === 'OTHER').length;
 
   return [
-    { value: 'ALL', label: 'ทั้งหมด', count: allCount, icon: Sparkles, iconClass: 'text-teal-400' },
+    { value: 'ALL', label: 'ทั้งหมด', count: allCount, icon: Sparkles, iconClass: 'text-cyan-400' },
     { value: 'REPAIR', label: 'แจ้งซ่อมบำรุง', count: repairCount, icon: Wrench, iconClass: 'text-amber-500' },
     { value: 'COMPLAINT', label: 'ข้อร้องเรียน', count: complaintCount, icon: MessageSquareWarning, iconClass: 'text-rose-500' },
     { value: 'OTHER', label: 'เรื่องอื่นๆ', count: otherCount, icon: HelpCircle, iconClass: 'text-cyan-500' }

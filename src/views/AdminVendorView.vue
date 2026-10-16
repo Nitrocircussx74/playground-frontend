@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
       <div>
-        <h1 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <Briefcase class="w-6 h-6 text-teal-600" />
           <span>รายชื่อช่าง & ผู้รับเหมา (Vendor Directory)</span>
         </h1>

@@ -1,13 +1,13 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6 py-4">
+  <div class="space-y-6">
     <!-- Header -->
-    <Card class="border-slate-200 bg-white shadow-sm p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div class="flex items-center gap-4">
         <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-extrabold text-primary shrink-0">
           {{ userInitials }}
         </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight text-slate-900">{{ meData?.name || authStore.currentUser?.name || 'Admin User' }}</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{{ meData?.name || authStore.currentUser?.name || 'Admin User' }}</h1>
           <div class="flex items-center gap-2 mt-1">
             <Badge>{{ meData?.role || authStore.currentUser?.role || 'ADMIN' }}</Badge>
             <span class="text-xs text-slate-500">{{ meData?.email || authStore.currentUser?.email }}</span>
@@ -18,7 +18,7 @@
       <Button variant="outline" :disabled="loading" @click="fetchProfile">
         <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
       </Button>
-    </Card>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Card 1: Information & Building Access Rights -->
@@ -65,7 +65,7 @@
               <Badge v-if="isOwner" variant="success">เข้าถึงได้ทุกตึก (Owner Level)</Badge>
             </h4>
 
-            <div v-if="isOwner" class="p-3 bg-teal-50/60 border border-teal-100 rounded-xl text-xs text-teal-900 font-medium">
+            <div v-if="isOwner" class="p-3 bg-cyan-50/60 border border-cyan-100 rounded-xl text-xs text-cyan-900 font-medium">
               ในฐานะ <span class="font-bold">OWNER</span> คุณมีสิทธิ์เข้าถึงและจัดการข้อมูลตึกและห้องพักทั้งหมดในระบบโดยปริยาย
             </div>
 
@@ -103,17 +103,17 @@
           <form @submit.prevent="handleChangePassword" class="space-y-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านปัจจุบัน (Current Password)</label>
-              <Input v-model="pwdForm.currentPassword" type="password" required placeholder="••••••••" />
+              <PasswordInput v-model="pwdForm.currentPassword" required placeholder="••••••••" />
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ (New Password)</label>
-              <Input v-model="pwdForm.newPassword" type="password" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" />
+              <PasswordInput v-model="pwdForm.newPassword" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" />
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่ (Confirm Password)</label>
-              <Input v-model="pwdForm.confirmPassword" type="password" required placeholder="••••••••" />
+              <PasswordInput v-model="pwdForm.confirmPassword" required placeholder="••••••••" />
             </div>
 
             <div class="pt-2">
@@ -134,10 +134,10 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import adminService from '@/services/adminService';
 import { showSuccess, showError } from '@/utils/swal';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 
 const authStore = useAuthStore();
 const meData = ref(null);

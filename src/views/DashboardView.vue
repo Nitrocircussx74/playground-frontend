@@ -7,7 +7,7 @@
           <img src="/horspace-app-icon.webp" alt="Horspace Logo" width="48" height="48" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async" />
         </div>
         <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <span>แดชบอร์ดภาพรวม Horspace</span>
             <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-soft-pulse"></span>

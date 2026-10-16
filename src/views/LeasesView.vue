@@ -1,23 +1,17 @@
 <template>
   <div class="space-y-6">
     <!-- Header Toolbar -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <FileText class="w-6 h-6 text-primary" />
-          <span>จัดการสัญญาเช่า & ประวัติการเข้าอยู่ (Leases & Tenancy)</span>
-        </h1>
-        <p class="text-sm text-slate-500">
-          ค้นหา ตรวจสอบสัญญาเช่า ดำเนินการแจ้งย้ายออก และคืนเงินมัดจำสำหรับผู้เช่าทุกห้องพัก
-        </p>
-      </div>
-
-      <div class="flex items-center gap-2">
+    <AdminPageHeader
+      :icon="FileText"
+      title="จัดการสัญญาเช่า & ประวัติการเข้าอยู่ (Leases & Tenancy)"
+      description="ค้นหา ตรวจสอบสัญญาเช่า ดำเนินการแจ้งย้ายออก และคืนเงินมัดจำสำหรับผู้เช่าทุกห้องพัก"
+    >
+      <template #actions>
         <Button variant="outline" @click="fetchLeases">
           <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" /><span>รีเฟรชข้อมูล</span>
         </Button>
-      </div>
-    </div>
+      </template>
+    </AdminPageHeader>
 
     <!-- Filter & Search Bar -->
     <Card class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -51,10 +45,7 @@
     </Card>
 
     <!-- Loading State -->
-    <Card v-if="loading" class="p-12 text-center text-slate-500">
-      <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
-      กำลังโหลดข้อมูลสัญญาเช่า...
-    </Card>
+    <AdminLoadingState v-if="loading" message="กำลังโหลดข้อมูลสัญญาเช่า..." />
 
     <!-- Leases Data List -->
     <div v-else-if="filteredLeases.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -159,7 +150,7 @@
           <Button
             variant="outline"
             size="sm"
-            class="text-teal-700 border-teal-200 hover:bg-teal-50 h-auto py-2"
+            class="text-cyan-700 border-cyan-200 hover:bg-cyan-50 h-auto py-2"
             title="ดูและพิมพ์สัญญาเช่าห้องพักฉบับเต็ม"
             @click="openContractPreview(item)"
           >
@@ -193,11 +184,12 @@
     </div>
 
     <!-- Empty State -->
-    <Card v-else class="p-12 text-center text-slate-400 space-y-2">
-      <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><FileText class="w-6 h-6" /></div>
-      <div class="text-sm font-bold text-slate-700">ไม่พบรายการสัญญาเช่า</div>
-      <p class="text-xs">ลองค้นหาด้วยคำอื่น หรือเลือกตัวกรองสถานะเป็น "ทั้งหมด"</p>
-    </Card>
+    <AdminEmptyState
+      v-else
+      :icon="FileText"
+      title="ไม่พบรายการสัญญาเช่า"
+      description='ลองค้นหาด้วยคำอื่น หรือเลือกตัวกรองสถานะเป็น "ทั้งหมด"'
+    />
 
     <!-- Room Tenancy History Modal -->
     <RoomTenancyHistoryModal
@@ -236,6 +228,9 @@ import { formatDate } from '@/utils/formatters';
 import RoomTenancyHistoryModal from '@/components/RoomTenancyHistoryModal.vue';
 import MoveOutWizardModal from '@/components/MoveOutWizardModal.vue';
 import ContractPrintModal from '@/components/contract/ContractPrintModal.vue';
+import AdminPageHeader from '@/components/common/AdminPageHeader.vue';
+import AdminLoadingState from '@/components/common/AdminLoadingState.vue';
+import AdminEmptyState from '@/components/common/AdminEmptyState.vue';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

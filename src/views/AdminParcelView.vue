@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <Package class="w-5 h-5 text-orange-600" />
           <span>จัดการพัสดุ</span>
         </h1>
@@ -212,6 +212,8 @@
                 type="button"
                 @click="form.photoUrl = ''"
                 class="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold cursor-pointer"
+                aria-label="ลบรูปภาพ"
+                title="ลบรูปภาพ"
               >
                 <X class="w-3 h-3" />
               </button>

@@ -3,7 +3,7 @@
     <!-- Header & Action Buttons -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <span>{{ isRoomOwnerRole ? 'ห้องพักของฉัน (My Owned Rooms)' : 'จัดการห้องพัก & พื้นที่เช่า (Units & Spaces)' }}</span>
           <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 border border-cyan-200">
             {{ filteredRooms.length }} ยูนิต
@@ -333,9 +333,8 @@
 
           <div>
             <label class="block font-bold text-slate-700 mb-1">รหัสผ่านเริ่มต้น *</label>
-            <Input
+            <PasswordInput
               v-model="quickOwnerForm.password"
-              type="password"
               required
               minlength="6"
               placeholder="•••••••• (อย่างน้อย 6 ตัวอักษร)"
@@ -378,6 +377,7 @@ import ManualTenantCheckinModal from '@/components/ManualTenantCheckinModal.vue'
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import {

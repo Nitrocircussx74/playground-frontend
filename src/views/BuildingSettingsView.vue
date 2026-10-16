@@ -1,19 +1,12 @@
 <template>
-  <div class="max-w-5xl mx-auto space-y-6 pb-24">
+  <div class="space-y-6 pb-24">
     <!-- Header Section -->
-    <Card class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <Settings class="w-5 h-5 text-cyan-600" />
-          <span>ตั้งค่าตึกและอาคาร (Building Settings)</span>
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">
-          กำหนดข้อมูลทั่วไป บัญชีรับเงิน อัตราค่าน้ำ-ไฟ และกฎระเบียบประจำตึก
-        </p>
-      </div>
-
-      <!-- RBAC Status Badge -->
-      <div>
+    <AdminPageHeader
+      :icon="Settings"
+      title="ตั้งค่าตึกและอาคาร (Building Settings)"
+      description="กำหนดข้อมูลทั่วไป บัญชีรับเงิน อัตราค่าน้ำ-ไฟ และกฎระเบียบประจำตึก"
+    >
+      <template #actions>
         <Badge v-if="!isReadOnly" variant="success" class="px-3 py-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>สิทธิ์สแกนแก้ไข: OWNER / Super Admin</span>
@@ -22,8 +15,8 @@
           <Lock class="w-3.5 h-3.5" />
           <span>สิทธิ์ดูอย่างเดียว: MANAGER / Admin</span>
         </Badge>
-      </div>
-    </Card>
+      </template>
+    </AdminPageHeader>
 
     <!-- Read-Only Banner Warning for MANAGER -->
     <div
@@ -50,10 +43,7 @@
     </div>
 
     <!-- Loading Skeleton -->
-    <Card v-if="isLoading" class="p-12 text-center text-slate-500">
-      <div class="animate-spin inline-block w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full mb-3"></div>
-      <p class="text-sm font-semibold">กำลังโหลดข้อมูลการตั้งค่าตึก...</p>
-    </Card>
+    <AdminLoadingState v-if="isLoading" message="กำลังโหลดข้อมูลการตั้งค่าตึก..." />
 
     <!-- Main Settings Form & Shadcn Tabs -->
     <div v-else>
@@ -520,7 +510,7 @@
               <!-- Authentic PromptPay QR Code Preview Box -->
               <div class="mt-4 p-6 bg-slate-900 text-white rounded-xl shadow-lg border border-slate-800 text-center space-y-4 max-w-sm mx-auto">
                 <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 text-xs font-bold px-3 py-1 rounded-full border border-cyan-500/30">
-                  <QrCode class="w-4 h-4 text-teal-600 inline mr-1" /><span>PromptPay QR Code ประจำตึก</span>
+                  <QrCode class="w-4 h-4 text-cyan-300 inline mr-1" /><span>PromptPay QR Code ประจำตึก</span>
                 </div>
 
                 <div class="p-3 bg-white rounded-xl border border-slate-200 inline-block shadow-inner">
@@ -986,6 +976,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import AdminPageHeader from '@/components/common/AdminPageHeader.vue';
+import AdminLoadingState from '@/components/common/AdminLoadingState.vue';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import LineQuotaCard from '@/components/LineQuotaCard.vue';
 import DeliveryLogsTab from '@/components/DeliveryLogsTab.vue';

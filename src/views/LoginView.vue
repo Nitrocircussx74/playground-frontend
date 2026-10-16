@@ -61,10 +61,9 @@
                 <Lock class="w-3.5 h-3.5 text-cyan-400" />
                 <span>รหัสผ่าน (Password)</span>
               </label>
-              <Input
+              <PasswordInput
                 id="password"
                 v-model="password"
-                type="password"
                 placeholder="••••••••"
                 required
                 data-testid="password-input"
@@ -140,6 +139,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 import {
   Card,
   CardHeader,

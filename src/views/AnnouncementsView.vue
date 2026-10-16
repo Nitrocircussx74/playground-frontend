@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <Megaphone class="w-5 h-5 text-primary" />
           <span>ประกาศข่าวสาร</span>
         </h1>
@@ -100,6 +100,8 @@
               type="button"
               @click="form.imageUrl = ''"
               class="absolute -top-2 -right-2 bg-slate-900 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center font-bold shadow-md hover:bg-slate-700"
+              aria-label="ลบรูปภาพ"
+              title="ลบรูปภาพ"
             >
               <X class="w-3.5 h-3.5" />
             </button>

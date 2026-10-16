@@ -1,5 +1,11 @@
 <template>
   <div class="space-y-6">
+    <!-- Header -->
+    <div class="no-print">
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">ใบแจ้งหนี้ & การชำระเงิน (Invoices & Payments)</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-0.5">จัดการใบแจ้งหนี้ทั้งหมด ตรวจทานบิลร่างก่อนเผยแพร่ และติดตามสถานะการชำระเงิน</p>
+    </div>
+
     <!-- View Navigation Tabs & Action Bar Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3.5 no-print">
       <!-- Left: Segmented Tabs Control -->
@@ -12,7 +18,7 @@
             ? 'bg-white text-slate-900 shadow-xs font-bold'
             : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'"
         >
-          <Receipt class="w-4 h-4" :class="activeTab === 'all-invoices' ? 'text-teal-600' : 'text-slate-400'" />
+          <Receipt class="w-4 h-4" :class="activeTab === 'all-invoices' ? 'text-cyan-600' : 'text-slate-400'" />
           <span>ใบแจ้งหนี้ทั้งหมด</span>
         </button>
 
@@ -24,7 +30,7 @@
             ? 'bg-white text-slate-900 shadow-xs font-bold'
             : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'"
         >
-          <FileEdit class="w-4 h-4" :class="activeTab === 'draft-review' ? 'text-teal-600' : 'text-slate-400'" />
+          <FileEdit class="w-4 h-4" :class="activeTab === 'draft-review' ? 'text-cyan-600' : 'text-slate-400'" />
           <span>ตรวจทานบิลร่าง (Draft)</span>
         </button>
       </div>
@@ -102,7 +108,7 @@
               ค้างชำระ {{ unpaidCount }} รายการ
             </Badge>
           </div>
-          <Button variant="link" size="sm" @click="invoiceStore.fetchInvoices()" class="text-teal-600">
+          <Button variant="link" size="sm" @click="invoiceStore.fetchInvoices()" class="text-cyan-600">
             <RotateCw class="w-3.5 h-3.5" />
             <span>รีเฟรช</span>
           </Button>
@@ -374,7 +380,14 @@
 
       <!-- Printable Invoice/Receipt Teleport Modal -->
       <teleport to="body">
-        <div v-if="showPrintModal" id="print-modal-root" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div
+          v-if="showPrintModal"
+          id="print-modal-root"
+          class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label="พรีวิวใบแจ้งหนี้และใบเสร็จ"
+        >
           <Card class="w-full max-w-2xl overflow-hidden my-8 p-0 animate-in fade-in zoom-in-95 duration-150">
             <!-- Print Toolbar Bar (Hidden during window.print) -->
             <div class="px-6 py-3 bg-slate-900 text-white flex items-center justify-between no-print">
@@ -388,7 +401,14 @@
                   <Printer class="w-3.5 h-3.5" />
                   <span>สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
                 </Button>
-                <Button @click="showPrintModal = false" variant="ghost" size="icon" class="text-slate-400 hover:text-white hover:bg-transparent h-auto w-auto p-1">
+                <Button
+                  @click="showPrintModal = false"
+                  variant="ghost"
+                  size="icon"
+                  class="text-slate-400 hover:text-white hover:bg-transparent h-auto w-auto p-1"
+                  aria-label="ปิดหน้าตัวอย่าง"
+                  title="ปิด"
+                >
                   <X class="w-5 h-5" />
                 </Button>
               </div>
@@ -519,7 +539,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
 import {
   CheckCircle2,
   Clock,
@@ -668,7 +688,18 @@ const loadData = (buildingId) => {
 
 onMounted(() => {
   loadData(buildingStore.activeBuildingId);
+  window.addEventListener('keydown', handlePrintModalEscape);
 });
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handlePrintModalEscape);
+});
+
+const handlePrintModalEscape = (e) => {
+  if (e.key === 'Escape' && showPrintModal.value) {
+    showPrintModal.value = false;
+  }
+};
 
 watch(
   () => buildingStore.activeBuildingId,
@@ -829,7 +860,7 @@ const handleApproveSlip = async (inv) => {
 };
 </script>
 
-<style scoped>
+<style>
 @media print {
   body > *:not(#print-modal-root) {
     display: none !important;

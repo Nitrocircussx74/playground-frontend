@@ -3,7 +3,7 @@
     <!-- Header Toolbar -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Audit Logs & Activity History</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Audit Logs & Activity History</h1>
         <p class="text-sm text-slate-500">บันทึกประวัติการเข้าใช้งาน การแก้ไข และการลบข้อมูลโดยผู้ดูแลระบบ (Owner Only)</p>
       </div>
 
@@ -66,7 +66,7 @@
         <AlertCircle class="w-4 h-4 text-rose-600" />
         <span>{{ error }}</span>
       </div>
-      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer">
+      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer" aria-label="ปิดข้อความแจ้งเตือน" title="ปิด">
         <X class="w-4 h-4" />
       </button>
     </div>

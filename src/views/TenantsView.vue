@@ -1,18 +1,12 @@
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-12">
+  <div class="space-y-6">
     <!-- Header Toolbar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <Users class="w-6 h-6 text-primary" />
-          <span>ทะเบียนผู้เช่า & ระบบ CRM (Tenant CRM & History)</span>
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-500">
-          ค้นหา ตรวจสอบประวัติ 360 องศา และจัดการบันทึกภายในสำหรับผู้เช่าทุกคน
-        </p>
-      </div>
-
-      <div class="flex items-center gap-2.5">
+    <AdminPageHeader
+      :icon="Users"
+      title="ทะเบียนผู้เช่า & ระบบ CRM (Tenant CRM & History)"
+      description="ค้นหา ตรวจสอบประวัติ 360 องศา และจัดการบันทึกภายในสำหรับผู้เช่าทุกคน"
+    >
+      <template #actions>
         <Button @click="showCheckinModal = true">
           <UserPlus class="w-4 h-4" />
           <span>เพิ่มผู้เช่าใหม่ (Walk-in)</span>
@@ -22,8 +16,8 @@
           <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
           <span>รีเฟรชข้อมูล</span>
         </Button>
-      </div>
-    </div>
+      </template>
+    </AdminPageHeader>
 
     <!-- Summary Stats Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -85,10 +79,7 @@
     </Card>
 
     <!-- Loading State -->
-    <Card v-if="loading" class="p-16 text-center space-y-3">
-      <div class="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <p class="text-xs text-slate-500 font-medium">กำลังโหลดข้อมูลทะเบียนผู้เช่า...</p>
-    </Card>
+    <AdminLoadingState v-if="loading" message="กำลังโหลดข้อมูลทะเบียนผู้เช่า..." />
 
     <!-- Tenants Grid / Cards -->
     <div v-else-if="filteredTenants.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -162,11 +153,12 @@
     </div>
 
     <!-- Empty State -->
-    <Card v-else class="p-12 text-center text-slate-400 space-y-2">
-      <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Users class="w-6 h-6" /></div>
-      <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้เช่า</div>
-      <p class="text-xs">ลองค้นหาด้วยคำค้นอื่น หรือสลับตัวกรองสถานะ</p>
-    </Card>
+    <AdminEmptyState
+      v-else
+      :icon="Users"
+      title="ไม่พบรายชื่อผู้เช่า"
+      description="ลองค้นหาด้วยคำค้นอื่น หรือสลับตัวกรองสถานะ"
+    />
     <!-- Manual Walk-in Check-in Modal -->
     <ManualTenantCheckinModal
       :show="showCheckinModal"
@@ -184,6 +176,9 @@ import tenantService from '@/services/tenantService';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useRoomStore } from '@/stores/useRoomStore';
 import ManualTenantCheckinModal from '@/components/ManualTenantCheckinModal.vue';
+import AdminPageHeader from '@/components/common/AdminPageHeader.vue';
+import AdminLoadingState from '@/components/common/AdminLoadingState.vue';
+import AdminEmptyState from '@/components/common/AdminEmptyState.vue';
 import { UserPlus, RefreshCw } from 'lucide-vue-next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

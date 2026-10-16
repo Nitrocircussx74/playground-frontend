@@ -66,9 +66,8 @@
                 {{ existingUserHasPin ? 'กรอกรหัส PIN 6 หลักเดิมของคุณ' : 'ตั้งรหัส PIN 6 หลักใหม่สำหรับบัญชีนี้' }}
                 <span class="text-rose-500">*</span>
               </label>
-              <Input
+              <PasswordInput
                 v-model="pinInput"
-                type="password"
                 inputmode="numeric"
                 pattern="[0-9]*"
                 maxlength="6"
@@ -220,6 +219,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 
 const route = useRoute();
 const router = useRouter();

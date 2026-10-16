@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
           <ShieldCheck class="w-5 h-5 text-primary" />
           <span>ผู้ดูแลระบบและสิทธิ์การเข้าถึง</span>
         </h1>
@@ -83,6 +83,8 @@
           v-if="searchQuery"
           @click="searchQuery = ''"
           class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+          aria-label="ล้างคำค้นหา"
+          title="ล้างคำค้นหา"
         >
           <X class="w-3.5 h-3.5" />
         </button>
@@ -109,7 +111,7 @@
         <AlertCircle class="w-4 h-4 text-rose-600" />
         <span>{{ error }}</span>
       </span>
-      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer">
+      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer" aria-label="ปิดข้อความแจ้งเตือน" title="ปิด">
         <X class="w-4 h-4" />
       </button>
     </div>
@@ -213,7 +215,7 @@
 
               <!-- Action Buttons -->
               <td class="px-6 py-4 text-right space-x-2">
-                <Button variant="outline" size="sm" class="text-teal-700 border-teal-200 hover:bg-teal-50" @click="openEditModal(user)">
+                <Button variant="outline" size="sm" class="text-cyan-700 border-cyan-200 hover:bg-cyan-50" @click="openEditModal(user)">
                   <Settings class="w-3.5 h-3.5" />
                   <span>แก้ไขสิทธิ์</span>
                 </Button>
@@ -224,6 +226,8 @@
                   size="sm"
                   class="text-rose-700 border-rose-200 hover:bg-rose-50"
                   @click="confirmDeleteUser(user)"
+                  :aria-label="`ลบผู้ใช้ ${user.firstName || user.email}`"
+                  title="ลบผู้ใช้"
                 >
                   <Trash2 class="w-3.5 h-3.5" />
                   <span>ลบ</span>
@@ -278,7 +282,7 @@
               <label class="block text-xs font-bold text-slate-700 mb-1">
                 {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
               </label>
-              <Input v-model="form.password" type="password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
+              <PasswordInput v-model="form.password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
             </div>
           </div>
 
@@ -383,6 +387,7 @@ import { formatDate } from '@/utils/formatters';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -558,7 +563,8 @@ const handleSubmit = async () => {
         name: form.name,
         phone: form.phone,
         role: form.role,
-        buildingIds: form.role === 'MANAGER' ? form.buildingIds : []
+        buildingIds: form.role === 'MANAGER' ? form.buildingIds : [],
+        ...(form.password && { password: form.password })
       });
       await showSuccess('สำเร็จ!', res.message || 'อัปเดตสิทธิ์เรียบร้อยแล้ว');
     } else {

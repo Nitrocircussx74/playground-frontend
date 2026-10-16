@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
       <div>
-        <h1 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
-          <ClipboardCheck class="w-6 h-6 text-teal-600" />
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <ClipboardCheck class="w-6 h-6 text-cyan-600" />
           <span>ตรวจสภาพห้องพัก (Room Inspection Checklist)</span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-500 mt-1">
@@ -25,7 +25,7 @@
         :key="t"
         @click="selectedType = t"
         class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer"
-        :class="selectedType === t ? 'bg-teal-600 text-white shadow-xs font-bold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+        :class="selectedType === t ? 'bg-cyan-600 text-white shadow-xs font-bold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
       >
         {{ t === 'ALL' ? 'ทั้งหมด' : (t === 'MOVE_IN' ? 'ก่อนเข้าอยู่ (Move-in)' : 'ก่อนย้ายออก (Move-out)') }}
       </button>
@@ -45,7 +45,7 @@
       <Card
         v-for="item in filteredInspections"
         :key="item.id"
-        class="p-5 hover:border-teal-300 hover:shadow-md transition-all space-y-3 relative group"
+        class="p-5 hover:border-cyan-300 hover:shadow-md transition-all space-y-3 relative group"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3">
@@ -158,7 +158,7 @@
               <button
                 type="button"
                 @click="addChecklistItem"
-                class="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 cursor-pointer"
+                class="text-xs font-semibold text-cyan-600 hover:text-cyan-700 flex items-center gap-1 cursor-pointer"
               >
                 <Plus class="w-3.5 h-3.5" />
                 <span>เพิ่มรายการ</span>
@@ -190,6 +190,8 @@
                     size="icon"
                     class="h-8 w-8 text-slate-400 hover:text-rose-600 shrink-0"
                     @click="removeChecklistItem(idx)"
+                    :aria-label="`ลบรายการตรวจสอบที่ ${idx + 1}`"
+                    title="ลบรายการนี้"
                   >
                     <Trash2 class="w-3.5 h-3.5" />
                   </Button>
@@ -360,6 +362,10 @@ const fetchActiveLeases = async () => {
 };
 
 const openCreateModal = () => {
+  if (!buildingStore.activeBuildingId) {
+    showError('กรุณาเลือกตึกก่อน', 'เลือกตึกที่ต้องการจากเมนูด้านบน (มุมขวา) ก่อนบันทึกการตรวจสภาพห้อง เนื่องจากรายการห้อง/สัญญาเช่าต้องผูกกับตึกที่เลือกไว้ ไม่สามารถใช้ได้ตอนดู "ภาพรวมทั้งหมด (ทุกหอพัก)"');
+    return;
+  }
   form.leaseId = '';
   form.type = 'MOVE_IN';
   form.items = JSON.parse(JSON.stringify(defaultChecklist));

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2"><Building2 class="w-6 h-6 text-cyan-600" /><span>บริหารจัดการตึก / อาคาร (Building Management)</span></h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2"><Building2 class="w-6 h-6 text-cyan-600" /><span>บริหารจัดการตึก / อาคาร (Building Management)</span></h1>
         <p class="text-sm text-slate-500">จัดการข้อมูลตึก/สาขา ธีมสี โลโก้ LIFF และตั้งค่า PromptPay QR Code ชำระเงินแยกตามตึก</p>
       </div>
 
@@ -12,8 +12,14 @@
       </Button>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="buildingStore.isLoading && buildingStore.buildings.length === 0" class="p-12 text-center text-slate-500">
+      <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+      กำลังโหลดรายการอาคาร...
+    </div>
+
     <!-- Building Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <Card
         v-for="b in buildingStore.buildings"
         :key="b.id"

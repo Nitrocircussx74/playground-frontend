@@ -7,7 +7,7 @@
           <MessageSquareQuote class="w-3.5 h-3.5" />
           <span>Developer & Product Feedback Hub</span>
         </div>
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
           ศูนย์รับความคิดเห็นและข้อเสนอแนะถึงผู้พัฒนา
         </h1>
         <p class="text-xs sm:text-sm text-slate-500">
@@ -170,7 +170,7 @@
     <!-- 4. Feedback Feed / Table -->
     <Card class="p-0 overflow-hidden">
       <div v-if="loading && feedbacks.length === 0" class="p-12 text-center text-slate-500">
-        <div class="animate-spin w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดรายการความคิดเห็น...
       </div>
 
@@ -239,7 +239,7 @@
                 <option value="REJECTED">REJECTED (ปฏิเสธ)</option>
               </Select>
 
-              <Button variant="ghost" size="icon" class="h-8 w-8 text-slate-500 hover:text-teal-600" @click="openDetailModal(item)" title="ดูรายละเอียดเชิงลึก & บันทึกนักพัฒนา">
+              <Button variant="ghost" size="icon" class="h-8 w-8 text-slate-500 hover:text-cyan-600" @click="openDetailModal(item)" title="ดูรายละเอียดเชิงลึก & บันทึกนักพัฒนา">
                 <Eye class="w-4 h-4" />
               </Button>
 
