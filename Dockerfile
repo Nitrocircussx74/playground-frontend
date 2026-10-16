@@ -15,6 +15,9 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # ประกอบโปรเจกต์ (Production Build)
+# ponytail: droplet RAM น้อย (1-2GB) V8 default heap limit ตรวจจาก RAM จริงไม่สนใจ swap เลย OOM ตอน build
+# บังคับ heap สูงขึ้นให้ swap ที่เพิ่มไว้บน droplet มารองรับได้ ถ้าเครื่อง build ใหญ่ขึ้นในอนาคตค่อยถอดได้
+ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN yarn build
 
 # ==========================================
