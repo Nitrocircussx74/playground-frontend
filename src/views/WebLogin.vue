@@ -41,6 +41,7 @@
           <!-- Feedback Alert -->
           <div
             v-if="errorMessage"
+            role="alert"
             class="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-2xl text-xs flex items-center gap-2 animate-shake"
           >
             <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
@@ -110,7 +111,8 @@
               </label>
 
               <!-- PIN Indicator Dots / Boxes -->
-              <div class="flex items-center justify-center gap-2.5 py-1">
+              <span class="sr-only" aria-live="polite">กรอกรหัส PIN แล้ว {{ pin.length }} จาก 6 หลัก</span>
+              <div class="flex items-center justify-center gap-2.5 py-1" role="group" aria-label="รหัส PIN 6 หลัก">
                 <div
                   v-for="index in 6"
                   :key="index"

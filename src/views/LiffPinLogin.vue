@@ -42,9 +42,12 @@
 
     <!-- 2. PIN Indicator Dots (6 จุด) -->
     <main class="w-full flex flex-col items-center my-auto py-4 shrink-0">
+      <span class="sr-only" aria-live="polite">กรอกรหัส PIN แล้ว {{ enteredPin.length }} จาก 6 หลัก</span>
       <div
         class="flex items-center justify-center gap-3.5 py-1"
         :class="{ 'animate-shake': isShaking }"
+        role="group"
+        aria-label="รหัส PIN 6 หลัก"
       >
         <div
           v-for="index in 6"
@@ -60,7 +63,7 @@
 
       <!-- Feedback / Error Message -->
       <transition name="fade">
-        <div v-if="errorMessage" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
+        <div v-if="errorMessage" role="alert" class="text-xs font-semibold text-rose-500 mt-2 text-center h-5 flex items-center justify-center gap-1">
           <span>{{ errorMessage }}</span>
         </div>
         <div v-else-if="isLoading" class="text-xs font-medium text-emerald-600 mt-2 text-center h-5 flex items-center justify-center gap-1.5 animate-pulse">

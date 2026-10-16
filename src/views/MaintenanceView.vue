@@ -146,6 +146,7 @@
                 v-for="(img, idx) in item.imageUrls.slice(0, 3)"
                 :key="idx"
                 :src="resolveImageUrl(img)"
+                :alt="`รูปประกอบการแจ้งซ่อม ${idx + 1}`"
                 class="w-11 h-11 rounded-xl object-cover border border-slate-200/80 shrink-0 hover:opacity-90 shadow-2xs"
               />
               <span
@@ -246,7 +247,7 @@
               <UserCheck class="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span class="truncate"><strong>ช่าง:</strong> {{ item.technicianName }}</span>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-3 border-l-blue-500 border-y border-r border-slate-100 text-xs text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-slate-50 rounded-xl border-l-4 border-l-blue-500 border-y border-r border-slate-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-blue-700">ตอบแล้ว:</strong> {{ item.adminNote }}
             </div>
 
@@ -350,7 +351,7 @@
                 </Badge>
               </div>
             </div>
-            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-3 border-l-emerald-500 border-y border-r border-emerald-100 text-xs text-slate-700 line-clamp-2">
+            <div v-else-if="item.adminNote" class="p-2 bg-emerald-50/50 rounded-xl border-l-4 border-l-emerald-500 border-y border-r border-emerald-100 text-xs text-slate-700 line-clamp-2">
               <strong class="text-emerald-800">คำตอบกลับ:</strong> {{ item.adminNote }}
             </div>
 
@@ -442,7 +443,7 @@
               target="_blank"
               class="aspect-square rounded-xl overflow-hidden border border-slate-200 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 shadow-2xs"
             >
-              <img :src="resolveImageUrl(img)" class="w-full h-full object-cover" />
+              <img :src="resolveImageUrl(img)" alt="รูปประกอบการแจ้งซ่อม (ขยาย)" class="w-full h-full object-cover" />
             </a>
           </div>
         </div>
@@ -661,7 +662,7 @@
               class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer"
             />
             <div v-if="newForm.imageUrl" class="mt-2">
-              <img :src="resolveImageUrl(newForm.imageUrl)" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
+              <img :src="resolveImageUrl(newForm.imageUrl)" alt="ตัวอย่างรูปประกอบที่อัปโหลด" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
             </div>
           </div>
 

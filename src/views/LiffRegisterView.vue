@@ -40,7 +40,7 @@
 
       <!-- Registration Form Card -->
       <Card v-else class="p-5 sm:p-6 space-y-4">
-        <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 text-rose-700 text-xs font-medium rounded-xl flex items-center gap-2">
+        <div v-if="errorMessage" role="alert" class="p-3 bg-rose-50 border border-rose-100 text-rose-700 text-xs font-medium rounded-xl flex items-center gap-2">
           <AlertCircle class="w-4 h-4 shrink-0" />
           <span>{{ errorMessage }}</span>
         </div>
