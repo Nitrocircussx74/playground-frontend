@@ -173,3 +173,13 @@
   pointer-events: auto;
 }
 
+/* ผู้ใช้ตั้ง prefers-reduced-motion ไว้ -> ปิด animation ตกแต่งที่เล่นวนไม่จบ
+   (สถานะ "online" กระพริบ, glow pulse ฯลฯ) แต่ยังคง animate-spin ไว้ เพราะ
+   loading spinner สื่อสถานะ "กำลังทำงานอยู่" จริง ไม่ใช่แค่ของตกแต่ง */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ping,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
