@@ -197,6 +197,9 @@
       <div
         v-if="previewModalImage"
         class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+        role="dialog"
+        aria-modal="true"
+        aria-label="ดูรูปภาพขยาย"
         @click.self="previewModalImage = null"
       >
         <div class="relative max-w-lg w-full">
@@ -219,7 +222,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import {
   Plus,
   RotateCw,
@@ -243,6 +246,20 @@ const issues = ref([]);
 const lineUserId = ref('');
 const activeTab = ref('ALL');
 const previewModalImage = ref(null);
+
+const handlePreviewEscapeKey = (e) => {
+  if (e.key === 'Escape' && previewModalImage.value) {
+    previewModalImage.value = null;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handlePreviewEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handlePreviewEscapeKey);
+});
 
 const filterTabs = computed(() => {
   const allCount = issues.value.length;

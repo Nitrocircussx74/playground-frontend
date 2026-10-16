@@ -3,6 +3,9 @@
     <div
       v-if="isOpen"
       class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 select-none overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="ส่งข้อเสนอแนะ"
       @click.self="closeModal"
     >
       <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-2xl border border-slate-100 space-y-5 my-8 relative animate-scale-up">
@@ -193,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   X,
@@ -279,6 +282,20 @@ const deviceSummary = computed(() => {
 const closeModal = () => {
   isOpen.value = false;
 };
+
+const handleEscapeKey = (e) => {
+  if (e.key === 'Escape' && isOpen.value) {
+    closeModal();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const resolveImageUrl = (path) => {
   if (!path) return '';
