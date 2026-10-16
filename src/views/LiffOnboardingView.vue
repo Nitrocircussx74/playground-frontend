@@ -92,7 +92,7 @@
             </div>
 
             <!-- Alert Error Message -->
-            <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium space-y-1.5">
+            <div v-if="errorMessage" role="alert" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium space-y-1.5">
               <div class="flex items-center gap-2">
                 <AlertCircle class="w-4 h-4 shrink-0" />
                 <span>{{ errorMessage }}</span>
@@ -137,7 +137,7 @@
             </div>
 
             <!-- Alert Error Message -->
-            <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2">
+            <div v-if="errorMessage" role="alert" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2">
               <AlertCircle class="w-4 h-4 shrink-0" />
               <span>{{ errorMessage }}</span>
             </div>
@@ -183,7 +183,7 @@
           </div>
 
           <!-- Alert Error Message -->
-          <div v-if="errorMessage" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2">
+          <div v-if="errorMessage" role="alert" class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2">
             <AlertCircle class="w-4 h-4 shrink-0" />
             <span>{{ errorMessage }}</span>
           </div>

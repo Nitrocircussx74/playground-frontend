@@ -90,7 +90,7 @@
             <tr v-for="item in filteredParcels" :key="item.id" class="hover:bg-slate-50/60 transition-colors align-top">
               <td class="p-3.5">
                 <a v-if="item.photoUrl" :href="item.photoUrl" target="_blank">
-                  <img :src="item.photoUrl" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-105 transition-transform" />
+                  <img :src="item.photoUrl" alt="รูปพัสดุ" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-2xs hover:scale-105 transition-transform" />
                 </a>
                 <div v-else class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold text-center px-1">
                   ไม่มีรูป
@@ -207,7 +207,7 @@
             <div v-if="uploading" class="text-xs text-orange-600 font-semibold animate-pulse mt-1">กำลังอัปโหลดรูปภาพ...</div>
 
             <div v-if="form.photoUrl" class="mt-2 relative inline-block">
-              <img :src="form.photoUrl" class="h-24 rounded-xl object-cover border border-slate-200 shadow-xs" />
+              <img :src="form.photoUrl" alt="ตัวอย่างรูปพัสดุที่อัปโหลด" class="h-24 rounded-xl object-cover border border-slate-200 shadow-xs" />
               <button
                 type="button"
                 @click="form.photoUrl = ''"

@@ -95,7 +95,7 @@
 
           <!-- Image Preview -->
           <div v-if="form.imageUrl" class="mt-2 relative inline-block">
-            <img :src="form.imageUrl" class="h-28 rounded-xl object-cover border border-slate-200 shadow-xs" />
+            <img :src="form.imageUrl" alt="ตัวอย่างรูปประกาศที่อัปโหลด" class="h-28 rounded-xl object-cover border border-slate-200 shadow-xs" />
             <button
               type="button"
               @click="form.imageUrl = ''"
@@ -178,7 +178,7 @@
 
           <!-- Cover Image Thumbnail -->
           <div v-if="item.imageUrl" class="max-w-md">
-            <img :src="item.imageUrl" class="h-36 rounded-xl object-cover border border-slate-200 shadow-2xs" />
+            <img :src="item.imageUrl" :alt="`รูปปกประกาศ: ${item.title}`" class="h-36 rounded-xl object-cover border border-slate-200 shadow-2xs" />
           </div>
 
           <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">{{ item.content }}</p>
