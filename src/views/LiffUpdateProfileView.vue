@@ -90,7 +90,7 @@
       <!-- Section 2: Contact Info (Editable) -->
       <Card class="p-4 sm:p-5 space-y-3.5">
         <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-          <Phone class="w-4 h-4 text-teal-500" />
+          <Phone class="w-4 h-4 text-primary" />
           <h3 class="text-xs font-bold text-slate-800">ข้อมูลติดต่อ</h3>
         </div>
 
@@ -121,7 +121,7 @@
       >
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <div class="flex items-center gap-2">
-            <Car class="w-4 h-4 text-teal-500" />
+            <Car class="w-4 h-4 text-primary" />
             <h3 class="text-xs font-bold text-slate-800">จัดการยานพาหนะ</h3>
           </div>
           <Button type="button" variant="link" size="sm" class="h-auto p-0" @click="showAddVehicleModal = true">

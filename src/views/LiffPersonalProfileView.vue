@@ -114,7 +114,7 @@
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-slate-50 text-slate-600 group-hover:bg-teal-50 group-hover:text-teal-600"
+                class="w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 bg-slate-50 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary"
               >
                 <component :is="menu.icon" class="w-4 h-4" />
               </div>
