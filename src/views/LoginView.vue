@@ -77,8 +77,8 @@
               <span>{{ errorMessage }}</span>
             </div>
 
-            <!-- Quick Demo Credential Autofill Helper -->
-            <div class="pt-1 flex items-center justify-between gap-2">
+            <!-- Quick Demo Credential Autofill Helper (dev only — never ships to production) -->
+            <div v-if="isDev" class="pt-1 flex items-center justify-between gap-2">
               <span class="text-[11px] text-slate-400">กรอกข้อมูลทดสอบ:</span>
               <div class="flex items-center gap-3">
                 <button
@@ -154,8 +154,10 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const identifier = ref('owner@dorm.com');
-const password = ref('password123');
+const isDev = import.meta.env.DEV;
+
+const identifier = ref(isDev ? 'owner@dorm.com' : '');
+const password = ref(isDev ? 'password123' : '');
 const errorMessage = ref('');
 
 const fillDemoAccount = (role = 'owner') => {
