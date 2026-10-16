@@ -10,8 +10,8 @@
           <Building2 class="w-3.5 h-3.5" />
           <span>{{ buildingName }}</span>
         </Badge>
-        <h1 class="text-xl font-bold text-slate-900 tracking-tight">ลงทะเบียนผู้เช่าใหม่</h1>
-        <p class="text-xs text-slate-500">กรอกรหัสเชิญและข้อมูลส่วนตัวเพื่อผูกบัญชีกับห้องพัก</p>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">{{ registerHeading }}</h1>
+        <p class="text-xs text-slate-500">{{ registerSubheading }}</p>
       </div>
 
       <!-- Success Card -->
@@ -49,7 +49,7 @@
         <div v-if="verifiedRoom" class="p-3.5 bg-primary/5 border border-primary/20 rounded-xl space-y-1">
           <div class="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
             <CheckCircle2 class="w-3.5 h-3.5 text-primary" />
-            <span>รหัสถูกต้อง: <strong class="text-primary font-bold">ห้อง {{ verifiedRoom.roomNumber }} (ชั้น {{ verifiedRoom.floor }})</strong></span>
+            <span>รหัสถูกต้อง: <strong class="text-primary font-bold">{{ verifiedRoomRoleLabel }} ห้อง {{ verifiedRoom.roomNumber }} (ชั้น {{ verifiedRoom.floor }})</strong></span>
           </div>
           <div class="text-xs text-slate-600 pl-5">
             ค่าเช่า: <span class="font-semibold font-mono">฿{{ Number(verifiedRoom.price).toLocaleString() }}</span> / เดือน
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   Building2,
@@ -146,6 +146,17 @@ const verifying = ref(false);
 const errorMessage = ref('');
 const successData = ref(null);
 const verifiedRoom = ref(null);
+
+const isCoResidentInvite = computed(() => verifiedRoom.value?.role === 'CO_RESIDENT');
+const verifiedRoomRoleLabel = computed(() => (isCoResidentInvite.value ? 'ผู้อยู่อาศัยร่วม' : 'ผู้เช่าหลัก'));
+const registerHeading = computed(() =>
+  isCoResidentInvite.value ? 'ลงทะเบียนผู้อยู่อาศัยร่วม' : 'ลงทะเบียนผู้เช่าใหม่'
+);
+const registerSubheading = computed(() =>
+  isCoResidentInvite.value
+    ? 'กรอกรหัสเชิญและข้อมูลส่วนตัวเพื่อเข้าร่วมห้องพักกับผู้เช่าหลัก'
+    : 'กรอกรหัสเชิญและข้อมูลส่วนตัวเพื่อผูกบัญชีกับห้องพัก'
+);
 
 const form = reactive({
   inviteCode: '',
