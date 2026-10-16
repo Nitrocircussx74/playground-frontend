@@ -302,3 +302,17 @@
 ### ⏭️ งานที่เหลือ:
 - ผู้ใช้ล้าง Site Data / รีเฟรชหน้า LIFF แล้วยืนยันว่า `pinia.js?v=` เหลือค่าเดียวและ Error หาย
 - ลบบล็อก `Clear-Site-Data` ใน `vite.config.js` หลังทุกเครื่องโหลดใหม่ครบ (เก็บ Plugin `no-store` ไว้)
+
+---
+
+### Phase 25 (2026-10-16): Production Deployment บน DigitalOcean — Dockerfile Fixes, VITE_API_BASE_URL Build Arg
+
+- **บริบท**: ร่วม deploy production จริงครั้งแรกคู่กับ `playground-api` (ดูภาพรวม infra เต็มใน `playground-api/docs/ACTIVITY_LOG.md` Phase 24) — Droplet เดี่ยว, Docker Compose, Caddy reverse proxy, ไม่ใช้ K8s
+- **Bug ที่เจอจากรัน `docker compose up` จริงเท่านั้น**:
+  - `nopt` (dependency ของ vite) ต้องการ Node `>=22` แต่ Dockerfile builder stage ใช้ `node:20-alpine` — `yarn install` fail ทันที แก้เป็น `node:22-alpine`
+  - `vite build` OOM บน droplet RAM 1GB (`FATAL ERROR: Ineffective mark-compacts near heap limit`) — V8 default heap limit (~487MB) ตรวจจาก RAM จริงที่ detect ได้ตอน build ไม่สนใจ swap ที่เพิ่มเข้ามาทีหลังเลย ต้องบังคับ heap สูงขึ้นตรงๆ ให้ swap มารองรับได้ แก้ด้วย `ENV NODE_OPTIONS=--max-old-space-size=2048` ก่อน `RUN yarn build`
+  - **`VITE_API_BASE_URL` หายเงียบๆ ตอน build บน droplet**: `.dockerignore` กัน `.env` ไม่ให้เข้า Docker build context (ถูกต้องสำหรับ secret ทั่วไป) แต่ `VITE_API_BASE_URL` ไม่ใช่ secret จริง (ค่าถูกฝังอยู่ใน JS bundle ที่ดู source ได้อยู่แล้ว) — ผลคือ `vite build` fallback ไปใช้ `http://localhost:3000` (ค่า default ใน `src/utils/api.js`) โดยไม่มี error ใดๆ frontend ที่ build เสร็จแล้ว deploy ขึ้นจริงเลยยิง API ไปที่ `localhost:3000` ของ**เครื่อง client เอง** ไม่ใช่ `api.horspace.com` — อาการที่สังเกตได้คือ **login แล้ว refresh หน้าทีไรหลุดกลับไปหน้า login ทุกครั้ง** เพราะ `stores/auth.js: silentRefresh()` เรียก `POST /auth/refresh` ไป `localhost:3000` ซึ่งไม่มีอะไรฟังอยู่บนเครื่อง browser ของ user จริง (เจอ root cause จากดู Network tab เห็น request จริงไปที่ `localhost:3000`) — **แก้**: ส่ง `VITE_API_BASE_URL` ผ่าน Docker **build arg** แทน (`ARG VITE_API_BASE_URL` + `ENV VITE_API_BASE_URL=$VITE_API_BASE_URL` ก่อน `COPY`/`yarn build` ใน Dockerfile, คู่กับ `docker-compose.yml`: `build.args.VITE_API_BASE_URL: ${VITE_API_BASE_URL}` อ่านจาก `.env`) — vite build-time var (`import.meta.env.VITE_*`) อ่านจาก `process.env` ได้โดยตรงอยู่แล้ว ไม่ต้องพึ่งไฟล์ `.env` เลย
+- **พบ `main` ตามหลัง branch ที่มีงานจริง 21 commits ไม่มี PR เปิดอยู่เลย**: `fix/auth-phase-3` มีงาน redesign Admin/LIFF ทั้งหมด + Dockerfile fix ข้างต้น แต่ไม่เคย merge เข้า `main` — เปิด PR `#12` merge เข้า main แล้ว (ไม่มี merge conflict)
+- **Dev Tunnel hostname ชนกับ production**: `scripts/dev-tunnel.js` + `~/.cloudflared/config.yml` เดิมใช้ `app.horspace.com`/`api.horspace.com` ชี้เข้า Cloudflare Named Tunnel สำหรับทดสอบ LINE LIFF ตอน dev — ตอนนี้ `api.horspace.com` ถูกใช้เป็น A record ของ production droplet ไปแล้ว ชนกันเต็มๆ แก้โดยเปลี่ยนชื่อ dev tunnel เป็น `dev.horspace.com`/`dev-api.horspace.com` ทั้งใน `config.yml` และรัน `cloudflared tunnel route dns horspace-dev <hostname>` สร้าง CNAME ใหม่ให้ครบ — `app.horspace.com` เดิมอาจมี DNS record ค้างอยู่ใน Cloudflare dashboard ที่ไม่ได้ใช้แล้ว ยังไม่ได้ลบ
+- **Status**: 🟢 Live ที่ `https://horspace.com`, login + silent refresh ทำงานถูกต้องแล้วหลังแก้ build arg
+- **ยังไม่เสร็จ**: ลบ DNS record เก่า (`app.horspace.com` CNAME) ใน Cloudflare dashboard ถ้ายังค้างอยู่ ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 24 สำหรับงานค้างฝั่ง infra ที่เหลือ (UFW, backup cron, monitoring)

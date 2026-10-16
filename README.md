@@ -188,3 +188,11 @@ yarn dev:tunnel
 # 5. ตรวจสอบการ Build สำหรับ Production
 yarn build
 ```
+
+## 🌐 Production Deployment
+
+Live ที่ `https://horspace.com` — รันบน DigitalOcean Droplet เดี่ยวคู่กับ `playground-api` ผ่าน Docker Compose ไฟล์เดียว (ไม่ใช่ repo นี้ อยู่ที่ root ของโปรเจกต์คู่) + Caddy reverse proxy
+
+**สำคัญ**: `VITE_API_BASE_URL` ต้องส่งผ่าน Docker build arg เสมอ (ดู `Dockerfile` + `docker-compose.yml build.args`) ห้ามพึ่งไฟล์ `.env` เพราะ `.dockerignore` กันไฟล์นี้ไม่ให้เข้า build context — ลืมตั้งจะ fallback เป็น `localhost:3000` เงียบๆ โดยไม่มี error ทำให้ frontend ที่ deploy จริงยิง API ผิดที่
+
+รายละเอียดเต็ม ดู `docs/ACTIVITY_LOG.md` Phase 25
