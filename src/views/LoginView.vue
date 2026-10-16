@@ -102,7 +102,7 @@
             <Button
               type="submit"
               data-testid="login-button"
-              class="w-full bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
+              class="w-full bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-700 hover:from-cyan-800 hover:to-teal-800 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 h-11 transition-all duration-200 cursor-pointer active:scale-[0.99]"
               :disabled="authStore.loading"
             >
               <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
