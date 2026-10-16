@@ -164,7 +164,7 @@
                   {{ selectedParcel.status === 'PENDING' ? 'รอรับที่นิติฯ' : 'รับแล้ว' }}
                 </Badge>
 
-                <Button variant="ghost" size="icon" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeParcelDetail">
+                <Button variant="ghost" size="icon" class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600" @click="closeParcelDetail">
                   <X class="w-4 h-4" />
                 </Button>
               </div>
@@ -320,7 +320,7 @@
               <div class="text-xs font-bold">{{ selectedParcel.courier }}</div>
               <div class="text-xs text-white/70 font-mono">{{ selectedParcel.trackingNumber || 'หน้ากล่องพัสดุ' }}</div>
             </div>
-            <Button variant="ghost" size="icon" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white" @click="showLightbox = false">
+            <Button variant="ghost" size="icon" class="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 text-white" @click="showLightbox = false">
               <X class="w-5 h-5" />
             </Button>
           </div>
