@@ -165,3 +165,11 @@
   animation: shimmer 1.6s ease-in-out infinite;
 }
 
+/* Radix Dialog sets document.body.style.pointerEvents = 'none' while open so clicks
+   outside the dialog's own portal don't leak through. SweetAlert2 renders its popup as
+   a plain sibling of body (not inside Radix's layer), so it inherits pointer-events: none
+   and becomes unclickable whenever a swal fires while a Dialog is still open. */
+.swal2-container {
+  pointer-events: auto;
+}
+
