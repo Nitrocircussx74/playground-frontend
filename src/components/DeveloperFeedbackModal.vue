@@ -19,7 +19,7 @@
 
         <!-- Header -->
         <div class="space-y-1">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 border border-purple-200/80 rounded-full text-purple-700 text-xs font-bold">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-bold">
             <MessageSquareQuote class="w-3.5 h-3.5" />
             <span>Developer & Product Feedback</span>
           </div>
@@ -44,7 +44,7 @@
                 @click="form.category = cat.value"
                 class="p-2.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer"
                 :class="form.category === cat.value
-                  ? 'bg-purple-600 text-white border-purple-600 shadow-xs font-bold'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-xs font-bold'
                   : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/80 font-medium'"
               >
                 <component :is="cat.icon" class="w-4 h-4" />
@@ -57,7 +57,7 @@
           <div class="space-y-1.5">
             <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
               <span>ความพึงพอใจโดยรวม</span>
-              <span v-if="form.rating > 0" class="text-xs text-purple-600 font-extrabold">
+              <span v-if="form.rating > 0" class="text-xs text-primary font-extrabold">
                 {{ ratingLabels[form.rating] }}
               </span>
             </label>
@@ -85,7 +85,7 @@
               v-model="form.title"
               type="text"
               placeholder="เช่น ขอเพิ่มปุ่มดาวน์โหลดรายงานแบบ Excel..."
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all placeholder:text-slate-400"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-slate-400"
             />
           </div>
 
@@ -101,7 +101,7 @@
               rows="4"
               required
               placeholder="กรุณาอธิบายปัญหาหรือข้อเสนอแนะของคุณ..."
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all placeholder:text-slate-400 leading-relaxed"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-slate-400 leading-relaxed"
             ></textarea>
           </div>
 
@@ -179,7 +179,7 @@
             <button
               type="submit"
               :disabled="submitting || !form.content.trim()"
-              class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-600/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              class="flex-1 py-3 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Send class="w-4 h-4" />
               <span>{{ submitting ? 'กำลังส่งข้อมูล...' : 'ส่งความคิดเห็น' }}</span>
