@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="ประวัติการเข้าอยู่และสัญญาเช่า">
     <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
@@ -268,7 +268,7 @@
         </div>
 
         <!-- Terminate Lease Dialog Modal -->
-        <div v-if="showTerminateModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div v-if="showTerminateModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="แจ้งย้ายออกและสิ้นสุดสัญญา">
           <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div class="px-6 py-4 bg-gradient-to-r from-rose-700 to-red-800 text-white flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -341,7 +341,7 @@
         />
 
         <!-- Add Resident Modal -->
-        <div v-if="showAddResidentModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div v-if="showAddResidentModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="เพิ่มผู้อยู่อาศัยร่วม">
           <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div class="flex items-center justify-between">
               <h3 class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
@@ -425,7 +425,7 @@
 
 <script setup>
 import { LogOut, Save, Users, Crown, Plus, Edit3, Key, FileText, X, User, Trash2 } from 'lucide-vue-next';
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
 import { formatDate } from '@/utils/formatters';
@@ -437,6 +437,23 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'updated']);
+
+const handleEscapeKey = (e) => {
+  if (e.key !== 'Escape') return;
+  if (showAddResidentModal.value) {
+    showAddResidentModal.value = false;
+  } else if (props.show) {
+    emit('close');
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const activeTab = ref('current');
 const loading = ref(false);

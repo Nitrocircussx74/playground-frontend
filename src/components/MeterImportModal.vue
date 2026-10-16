@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div v-if="show" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="นำเข้าข้อมูลมิเตอร์">
     <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-4xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-slate-900 text-white flex items-center justify-between">
@@ -184,7 +184,7 @@
 
 <script setup>
 import { X, CheckCircle2, FileSpreadsheet, Download, AlertCircle, Zap, Upload } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';
@@ -196,6 +196,20 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'imported']);
 const buildingStore = useBuildingStore();
+
+const handleEscapeKey = (e) => {
+  if (e.key === 'Escape' && props.show) {
+    emit('close');
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscapeKey);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscapeKey);
+});
 
 const downloading = ref(false);
 const uploading = ref(false);
