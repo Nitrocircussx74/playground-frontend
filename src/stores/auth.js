@@ -15,7 +15,16 @@ export const useAuthStore = defineStore('auth', {
     isLiffReady: false,
     liffProfile: null,
     isWebTenant: false,
-    loading: false
+    loading: false,
+
+    // ห้อง/ตึกที่ลูกบ้านเลือกอยู่ใน LIFF (Mirror ลง localStorage ให้ api.js แนบเป็น X-Room-Id / X-Building-Id)
+    // Backend ตรวจสิทธิ์ซ้ำเสมอ (scopeTenantRooms) ค่านี้เป็นแค่ "ห้องที่อยากดู" ไม่ใช่สิทธิ์
+    activeRoomId: null,
+    activeBuildingId: null,
+
+    // Role Management for Dual-Role / Owner Support
+    activeRole: null, // 'owner' | 'tenant'
+    availableRoles: [] // Array of available roles e.g. ['owner', 'tenant']
   }),
 
   getters: {
@@ -23,10 +32,47 @@ export const useAuthStore = defineStore('auth', {
     currentUser: (state) => state.user,
     currentTenant: (state) => state.tenant,
     isTenantAuthenticated: (state) => !!state.liffToken,
-    ready: (state) => state.isLiffReady
+    ready: (state) => state.isLiffReady,
+    isOwner: (state) => {
+      const userRole = (state.user?.role || state.tenant?.role || '').toLowerCase();
+      const hasOwnerRole = ['owner', 'admin', 'super_admin', 'superadmin', 'manager'].includes(userRole);
+      return (
+        hasOwnerRole ||
+        state.availableRoles.includes('owner') ||
+        state.availableRoles.includes('admin') ||
+        Boolean(state.tenant?.isOwner)
+      );
+    },
+    isDualRole: (state) => {
+      return state.availableRoles.length > 1;
+    },
+    currentRole: (state) => {
+      if (state.activeRole) return state.activeRole;
+      const userRole = (state.user?.role || state.tenant?.role || '').toLowerCase();
+      if (['owner', 'admin', 'super_admin', 'superadmin', 'manager'].includes(userRole)) {
+        return 'owner';
+      }
+      return 'tenant';
+    }
   },
 
   actions: {
+    // Role Switching
+    setActiveRole(role) {
+      this.activeRole = role;
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem('horspace_active_role', role);
+      }
+    },
+
+    switchRole(role) {
+      this.setActiveRole(role);
+    },
+
+    setAvailableRoles(roles) {
+      this.availableRoles = Array.isArray(roles) ? roles : [];
+    },
+
     // 🏢 CMS Admin Actions
     setAccessToken(token) {
       this.accessToken = token;
@@ -46,6 +92,14 @@ export const useAuthStore = defineStore('auth', {
       this.liffToken = token;
       if (tenantData) {
         this.tenant = tenantData;
+        if (tenantData.availableRoles) {
+          this.setAvailableRoles(tenantData.availableRoles);
+        } else if (tenantData.role === 'owner' || tenantData.isOwner) {
+          this.setAvailableRoles(['tenant', 'owner']);
+        }
+        if (this.isOwner && !this.activeRole) {
+          this.activeRole = 'owner';
+        }
       }
     },
 
@@ -56,9 +110,9 @@ export const useAuthStore = defineStore('auth', {
         this.tenant = tenantData;
       }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('horhub_tenant_token', token);
+        localStorage.setItem('horspace_tenant_token', token);
         if (tenantData) {
-          localStorage.setItem('horhub_tenant_data', JSON.stringify(tenantData));
+          localStorage.setItem('horspace_tenant_data', JSON.stringify(tenantData));
         }
       }
     },
@@ -71,11 +125,28 @@ export const useAuthStore = defineStore('auth', {
       this.tenant = null;
       this.liffToken = null;
       this.isWebTenant = false;
+      this.setActiveRoom(null);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('liff_token');
-        localStorage.removeItem('horhub_tenant_token');
-        localStorage.removeItem('horhub_tenant_data');
+        localStorage.removeItem('horspace_tenant_token');
+        localStorage.removeItem('horspace_tenant_data');
       }
+    },
+
+    /**
+     * ตั้งห้องที่กำลังดูอยู่ (จุดเดียวที่เขียน active_tenant_room_id / active_tenant_building_id)
+     * @param {{ id?: string, buildingId?: string } | null} room ห้องจาก /liff/profile, null = ล้าง (Logout)
+     */
+    setActiveRoom(room) {
+      const buildingId = room?.buildingId || room?.building_id || room?.building?.id || null;
+      this.activeRoomId = room?.id || null;
+      this.activeBuildingId = buildingId;
+      if (typeof window === 'undefined') return;
+      const write = (key, value) => (value ? localStorage.setItem(key, value) : localStorage.removeItem(key));
+      write('active_tenant_room_id', this.activeRoomId);
+      write('active_tenant_building_id', buildingId);
+      // liff_target_building ใช้ตอน Onboarding ด้วย (ลิงก์ ?building=) จึงเขียนทับเฉพาะตอนมีตึกจริง ไม่ลบทิ้ง
+      if (buildingId) localStorage.setItem('liff_target_building', buildingId);
     },
 
     /**
@@ -87,8 +158,8 @@ export const useAuthStore = defineStore('auth', {
 
       // 1. ตรวจสอบ Web Tenant Session ใน LocalStorage ก่อน
       if (typeof window !== 'undefined') {
-        const storedTenantToken = localStorage.getItem('horhub_tenant_token');
-        const storedTenantData = localStorage.getItem('horhub_tenant_data');
+        const storedTenantToken = localStorage.getItem('horspace_tenant_token');
+        const storedTenantData = localStorage.getItem('horspace_tenant_data');
         if (storedTenantToken) {
           this.liffToken = storedTenantToken;
           this.isWebTenant = true;

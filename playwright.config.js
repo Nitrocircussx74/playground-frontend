@@ -13,8 +13,8 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    /* Base URL สำหรับการทดสอบ (Dev Server บน Vite port 5173) */
-    baseURL: process.env.BASE_URL || 'http://localhost:5173',
+    /* Base URL สำหรับการทดสอบ (Dev Server บน Vite port 7070) */
+    baseURL: process.env.BASE_URL || 'http://localhost:7070',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'
@@ -39,8 +39,8 @@ export default defineConfig({
 
   /* รัน Vite Dev Server โดยอัตโนมัติหากยังไม่ได้เปิดไว้ */
   webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:5173',
+    command: 'vite --port 7070',
+    url: 'http://localhost:7070',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000
   }

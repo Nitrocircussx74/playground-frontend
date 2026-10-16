@@ -1,20 +1,18 @@
 <template>
   <div class="space-y-6 font-sans">
-    <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-indigo-600 via-blue-600 to-slate-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-black tracking-tight text-white">📅 จองพื้นที่ส่วนกลาง (Facility Booking)</h1>
-        <p class="text-xs text-indigo-100/80 mt-1 max-w-xl">
-          จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด
-        </p>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <CalendarCheck class="w-5 h-5 text-primary" />
+          <span>จองพื้นที่ส่วนกลาง</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">จัดการพื้นที่ส่วนกลางที่เปิดให้จอง และดูรายการจองของลูกบ้านทั้งหมด</p>
       </div>
-      <button
-        v-if="activeTab === 'facilities'"
-        @click="openCreateFacilityModal"
-        class="px-5 py-2.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer"
-      >
-        ➕ เพิ่มพื้นที่ส่วนกลาง
-      </button>
+      <Button v-if="activeTab === 'facilities'" class="shrink-0" @click="openCreateFacilityModal">
+        <Plus class="w-4 h-4" />
+        <span>เพิ่มพื้นที่ส่วนกลาง</span>
+      </Button>
     </div>
 
     <Tabs v-model="activeTab">
@@ -24,7 +22,11 @@
       </TabsList>
 
       <TabsContent value="facilities">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดพื้นที่ส่วนกลาง...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -40,26 +42,18 @@
                   <td class="p-3.5 font-bold text-slate-900">{{ f.name }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ f.description || '-' }}</td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="f.isActive ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-slate-100 border-slate-300 text-slate-500'"
-                    >
+                    <Badge :variant="f.isActive ? 'success' : 'neutral'">
                       {{ f.isActive ? 'เปิดให้จอง' : 'ปิดใช้งาน' }}
-                    </span>
+                    </Badge>
                   </td>
                   <td class="p-3.5 text-right space-x-1.5">
-                    <button
-                      @click="toggleFacilityActive(f)"
-                      class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 cursor-pointer"
-                    >
+                    <Button variant="outline" size="sm" @click="toggleFacilityActive(f)">
                       {{ f.isActive ? 'ปิดใช้งาน' : 'เปิดใช้งาน' }}
-                    </button>
-                    <button
-                      @click="handleDeleteFacility(f.id)"
-                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer"
-                    >
-                      🗑️ ลบ
-                    </button>
+                    </Button>
+                    <Button variant="outline" size="sm" class="text-rose-700 border-rose-200 hover:bg-rose-50" @click="handleDeleteFacility(f.id)">
+                      <Trash2 class="w-3.5 h-3.5" />
+                      <span>ลบ</span>
+                    </Button>
                   </td>
                 </tr>
                 <tr v-if="facilities.length === 0">
@@ -68,11 +62,15 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
 
       <TabsContent value="bookings">
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-xs overflow-hidden">
+        <Card v-if="loading" class="p-12 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+          กำลังโหลดรายการจอง...
+        </Card>
+        <Card v-else class="p-0 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-700">
               <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
@@ -88,23 +86,24 @@
                 <tr v-for="b in bookings" :key="b.id" class="hover:bg-slate-50/60 transition-colors">
                   <td class="p-3.5 font-bold text-slate-900">{{ b.facility?.name }}</td>
                   <td class="p-3.5 text-xs text-slate-600">{{ b.tenant ? `${b.tenant.firstName} ${b.tenant.lastName}` : '-' }}</td>
-                  <td class="p-3.5 text-xs text-slate-500 font-mono">{{ formatDate(b.startTime) }} - {{ formatTime(b.endTime) }}</td>
+                  <td class="p-3.5 text-xs text-slate-500 font-mono">
+                    {{ formatShortDate(b.startTime) }} · {{ formatTimeRange(b.startTime, b.endTime) }} น.
+                  </td>
                   <td class="p-3.5">
-                    <span
-                      class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border"
-                      :class="b.status === 'CONFIRMED' ? 'bg-indigo-100 border-indigo-300 text-indigo-800' : 'bg-slate-100 border-slate-300 text-slate-500'"
-                    >
+                    <Badge :variant="b.status === 'CONFIRMED' ? 'success' : 'neutral'">
                       {{ b.status === 'CONFIRMED' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว' }}
-                    </span>
+                    </Badge>
                   </td>
                   <td class="p-3.5 text-right">
-                    <button
+                    <Button
                       v-if="b.status === 'CONFIRMED'"
+                      variant="outline"
+                      size="sm"
+                      class="text-rose-700 border-rose-200 hover:bg-rose-50"
                       @click="handleCancelBooking(b.id)"
-                      class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200 cursor-pointer"
                     >
                       ยกเลิกการจอง
-                    </button>
+                    </Button>
                   </td>
                 </tr>
                 <tr v-if="bookings.length === 0">
@@ -113,47 +112,41 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </TabsContent>
     </Tabs>
 
     <!-- Create Facility Modal -->
-    <div v-if="showModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
-        <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-between">
-          <h3 class="font-bold text-base text-white">เพิ่มพื้นที่ส่วนกลาง</h3>
-          <button @click="showModal = false" class="text-indigo-100 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+    <Dialog :open="showModal" @update:open="showModal = $event">
+      <DialogContent class="max-w-md p-0 overflow-hidden">
+        <div class="px-6 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white">
+          <DialogHeader class="pr-6">
+            <DialogTitle class="text-white">เพิ่มพื้นที่ส่วนกลาง</DialogTitle>
+          </DialogHeader>
         </div>
         <form @submit.prevent="handleCreateFacility" class="p-6 space-y-4">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อพื้นที่</label>
-            <input
-              v-model="form.name"
-              required
-              type="text"
-              placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-            />
+            <Input v-model="form.name" required type="text" placeholder="เช่น สระว่ายน้ำ, ห้องฟิตเนส" class="font-bold" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">รายละเอียด (Optional)</label>
             <textarea
               v-model="form.description"
               rows="2"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              class="flex w-full rounded-md border border-input bg-background px-3.5 py-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring"
             ></textarea>
           </div>
-          <div class="pt-3 flex gap-3">
-            <button type="button" @click="showModal = false" class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold cursor-pointer">
-              ยกเลิก
-            </button>
-            <button type="submit" :disabled="submitting" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer">
-              {{ submitting ? 'กำลังบันทึก...' : '✅ บันทึก' }}
-            </button>
-          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="showModal = false">ยกเลิก</Button>
+            <Button type="submit" :disabled="submitting">
+              <CheckCircle2 class="w-4 h-4" />
+              <span>{{ submitting ? 'กำลังบันทึก...' : 'บันทึก' }}</span>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -162,22 +155,34 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { formatDate, formatShortDate } from '@/utils/formatters';
 import api from '@/utils/api';
+import { CalendarCheck, Plus, Trash2, CheckCircle2 } from 'lucide-vue-next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const buildingStore = useBuildingStore();
 
 const activeTab = ref('facilities');
 const facilities = ref([]);
 const bookings = ref([]);
+const loading = ref(false);
 const showModal = ref(false);
 const submitting = ref(false);
 const form = reactive({ name: '', description: '' });
 
-const loadData = () => {
+const loadData = async () => {
   const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
   if (!bId) return;
-  fetchFacilities(bId);
-  fetchBookings(bId);
+  loading.value = true;
+  try {
+    await Promise.all([fetchFacilities(bId), fetchBookings(bId)]);
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(loadData);
@@ -212,7 +217,7 @@ const handleCreateFacility = async () => {
   try {
     const bId = buildingStore.activeBuildingId || buildingStore.buildings[0]?.id;
     const res = await api.post(`/api/admin/buildings/${bId}/facilities`, form);
-    await showSuccess('สำเร็จ!', res.data.message);
+    await showSuccess('สำเร็จ', res.data.message);
     showModal.value = false;
     loadData();
   } catch (error) {
@@ -253,6 +258,6 @@ const handleCancelBooking = async (id) => {
   }
 };
 
-const formatDate = (d) => new Date(d).toLocaleString('th-TH');
-const formatTime = (d) => new Date(d).toLocaleTimeString('th-TH');
+const timeOptions = { hour: '2-digit', minute: '2-digit' };
+const formatTimeRange = (start, end) => `${formatDate(start, timeOptions)}-${formatDate(end, timeOptions)}`;
 </script>

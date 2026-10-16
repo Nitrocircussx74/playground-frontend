@@ -1,42 +1,29 @@
 <template>
-  <div class="max-w-5xl mx-auto space-y-6 pb-24">
+  <div class="space-y-6 pb-24">
     <!-- Header Section -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <span>⚙️</span>
-          <span>ตั้งค่าตึกและอาคาร (Building Settings)</span>
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">
-          กำหนดข้อมูลทั่วไป บัญชีรับเงิน อัตราค่าน้ำ-ไฟ และกฎระเบียบประจำตึก
-        </p>
-      </div>
-
-      <!-- RBAC Status Badge -->
-      <div>
-        <span
-          v-if="!isReadOnly"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
-        >
+    <AdminPageHeader
+      :icon="Settings"
+      title="ตั้งค่าตึกและอาคาร (Building Settings)"
+      description="กำหนดข้อมูลทั่วไป บัญชีรับเงิน อัตราค่าน้ำ-ไฟ และกฎระเบียบประจำตึก"
+    >
+      <template #actions>
+        <Badge v-if="!isReadOnly" variant="success" class="px-3 py-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>สิทธิ์สแกนแก้ไข: OWNER / Super Admin</span>
-        </span>
-        <span
-          v-else
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"
-        >
-          <span>🔒</span>
+        </Badge>
+        <Badge v-else variant="warning" class="px-3 py-1.5">
+          <Lock class="w-3.5 h-3.5" />
           <span>สิทธิ์ดูอย่างเดียว: MANAGER / Admin</span>
-        </span>
-      </div>
-    </div>
+        </Badge>
+      </template>
+    </AdminPageHeader>
 
     <!-- Read-Only Banner Warning for MANAGER -->
     <div
       v-if="isReadOnly"
-      class="p-4 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-start gap-3 text-amber-800 text-xs sm:text-sm shadow-2xs"
+      class="p-4 bg-amber-50 border border-amber-200/80 rounded-xl flex items-start gap-3 text-amber-800 text-xs sm:text-sm shadow-2xs"
     >
-      <span class="text-lg">🔒</span>
+      <Lock class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
       <div>
         <h4 class="font-bold">โหมดดูได้อย่างเดียว (View-only Mode)</h4>
         <p class="mt-0.5 text-amber-700">
@@ -46,54 +33,51 @@
     </div>
 
     <!-- Feedback Alerts -->
-    <div v-if="successMessage" class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2">
-      <span>✅</span>
+    <div v-if="successMessage" class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2">
+      <CheckCircle2 class="w-4 h-4 text-emerald-600" />
       <span>{{ successMessage }}</span>
     </div>
-    <div v-if="errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2">
-      <span>❌</span>
+    <div v-if="errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2">
+      <AlertCircle class="w-4 h-4 text-rose-600" />
       <span>{{ errorMessage }}</span>
     </div>
 
     <!-- Loading Skeleton -->
-    <div v-if="isLoading" class="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-xs">
-      <div class="animate-spin inline-block w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full mb-3"></div>
-      <p class="text-sm font-semibold">กำลังโหลดข้อมูลการตั้งค่าตึก...</p>
-    </div>
+    <AdminLoadingState v-if="isLoading" message="กำลังโหลดข้อมูลการตั้งค่าตึก..." />
 
     <!-- Main Settings Form & Shadcn Tabs -->
     <div v-else>
       <Tabs v-model="activeTab" class="w-full">
         <!-- Tab List Headers -->
-        <TabsList class="w-full justify-start overflow-x-auto bg-slate-200/60 p-1.5 rounded-2xl">
+        <TabsList class="w-full justify-start overflow-x-auto bg-slate-200/60 p-1.5 rounded-xl">
           <TabsTrigger value="general" class="flex items-center gap-2">
-            <span>🏢</span>
+            <Building2 class="w-4 h-4" />
             <span>ข้อมูลทั่วไป</span>
           </TabsTrigger>
           <TabsTrigger value="payment" class="flex items-center gap-2">
-            <span>💰</span>
+            <CreditCard class="w-4 h-4" />
             <span>การชำระเงิน & QR Code</span>
           </TabsTrigger>
           <TabsTrigger value="billing" class="flex items-center gap-2">
-            <span>⚡</span>
+            <Zap class="w-4 h-4" />
             <span>ค่าบริการและรอบบิล</span>
           </TabsTrigger>
           <TabsTrigger value="rules" class="flex items-center gap-2">
-            <span>📝</span>
+            <FileText class="w-4 h-4" />
             <span>กฎระเบียบ</span>
           </TabsTrigger>
           <TabsTrigger value="line" class="flex items-center gap-2">
-            <span class="text-emerald-500">💬</span>
+            <MessageSquare class="w-4 h-4 text-emerald-500" />
             <span>LINE Official Account</span>
           </TabsTrigger>
         </TabsList>
 
-        <!-- 🏢 Tab 1: ข้อมูลทั่วไป (General Info) -->
+        <!-- Tab 1: ข้อมูลทั่วไป (General Info) -->
         <TabsContent value="general">
-          <Card class="border-slate-200 shadow-xs rounded-2xl">
+          <Card class="border-slate-200 shadow-xs rounded-xl">
             <CardHeader>
               <CardTitle class="text-base sm:text-lg flex items-center gap-2">
-                <span>🏢</span>
+                <Building2 class="w-5 h-5 text-cyan-600" />
                 <span>ข้อมูลทั่วไปของตึก (General Information)</span>
               </CardTitle>
               <CardDescription>
@@ -120,7 +104,7 @@
                     placeholder="เช่น 02-123-4567 หรือ 081-234-5678"
                     class="bg-white font-mono"
                   />
-                  <div v-if="phoneValidation.message" class="text-[11px] font-medium flex items-center gap-1" :class="phoneValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
+                  <div v-if="phoneValidation.message" class="text-xs font-medium flex items-center gap-1" :class="phoneValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
                     <span>{{ phoneValidation.icon }}</span>
                     <span>{{ phoneValidation.message }}</span>
                   </div>
@@ -137,14 +121,14 @@
                 />
               </div>
 
-              <!-- 🎨 LIFF App Dynamic Theming & Branding Section -->
+              <!-- LIFF App Dynamic Theming & Branding Section -->
               <div class="pt-4 border-t border-slate-100 space-y-4">
                 <div>
                   <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <span>🎨</span>
+                    <Palette class="w-4 h-4 text-cyan-600" />
                     <span>ธีมสีและโลโก้ประจำตึก (LIFF App Dynamic Branding)</span>
                   </h4>
-                  <p class="text-[11px] text-slate-500 mt-0.5">
+                  <p class="text-xs text-slate-500 mt-0.5">
                     กำหนดธีมสีและโลโก้ที่ลูกบ้านในตึกนี้จะเห็นเมื่อเปิด LINE LIFF App
                   </p>
                 </div>
@@ -176,7 +160,7 @@
                         type="button"
                         @click="form.themeColor = color.hex"
                         :disabled="isReadOnly"
-                        class="px-2 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer"
+                        class="px-2 py-1 rounded-lg text-xs font-bold border transition-all flex items-center gap-1 cursor-pointer"
                         :class="form.themeColor?.toLowerCase() === color.hex.toLowerCase() ? 'ring-2 ring-cyan-600 border-transparent shadow-xs bg-cyan-50 text-cyan-800' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'"
                       >
                         <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: color.hex }"></span>
@@ -191,23 +175,24 @@
                     <div class="flex items-start gap-4">
                       <!-- Logo preview box / avatar -->
                       <div class="relative group shrink-0">
-                        <div class="w-16 h-16 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shadow-2xs">
+                        <div class="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shadow-2xs">
                           <img
                             v-if="form.logoUrl"
                             :src="form.logoUrl"
                             alt="Building Logo"
                             class="w-full h-full object-contain p-1"
+                            @error="form.logoUrl = ''"
                           />
-                          <span v-else class="text-2xl text-slate-400">🏢</span>
+                          <Building2 v-else class="w-8 h-8 text-slate-400" />
                         </div>
                         <button
                           v-if="form.logoUrl && !isReadOnly"
                           type="button"
                           @click="form.logoUrl = ''"
-                          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow-xs cursor-pointer"
+                          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-xs shadow-xs cursor-pointer"
                           title="ลบรูปโลโก้"
                         >
-                          ✕
+                          
                         </button>
                       </div>
 
@@ -219,7 +204,7 @@
                             :class="{ 'opacity-50 pointer-events-none': isUploadingLogo }"
                           >
                             <span v-if="isUploadingLogo" class="animate-spin w-3.5 h-3.5 border-2 border-cyan-600 border-t-transparent rounded-full"></span>
-                            <span v-else>📷</span>
+                            <Camera v-else class="w-4 h-4" />
                             <span>{{ isUploadingLogo ? 'กำลังอัปโหลด...' : (form.logoUrl ? 'เปลี่ยนรูปโลโก้' : 'อัปโหลดรูปโลโก้') }}</span>
                             <input
                               type="file"
@@ -239,20 +224,20 @@
                             ลบรูป
                           </button>
                         </div>
-                        <p class="text-[11px] text-slate-400 leading-tight">รองรับไฟล์ JPG, PNG, WebP (ขนาดไม่เกิน 5MB) จะแสดงบนแถบหัว LIFF</p>
+                        <p class="text-xs text-slate-400 leading-tight">รองรับไฟล์ JPG, PNG, WebP (ขนาดไม่เกิน 5MB) จะแสดงบนแถบหัว LIFF</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <!-- Live LIFF App Header Preview -->
-                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/80 space-y-2">
-                  <div class="text-[11px] font-bold text-slate-600 flex items-center gap-1">
-                    <span>📱</span>
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/80 space-y-2">
+                  <div class="text-xs font-bold text-slate-600 flex items-center gap-1">
+                    <Smartphone class="w-4 h-4" />
                     <span>ตัวอย่างการแสดงผลบน LINE LIFF App ของลูกบ้านตึกนี้ (Live Preview):</span>
                   </div>
                   <div
-                    class="p-4 rounded-2xl text-white shadow-md relative overflow-hidden transition-all duration-300"
+                    class="p-4 rounded-xl text-white shadow-md relative overflow-hidden transition-all duration-300"
                     :style="{
                       background: `linear-gradient(135deg, ${form.themeColor || '#0E7490'}, ${adjustBrightness(form.themeColor || '#0E7490', -25)})`,
                       boxShadow: `0 10px 15px -3px ${form.themeColor || '#0E7490'}40`
@@ -265,16 +250,17 @@
                           :src="form.logoUrl"
                           alt="Logo Preview"
                           class="w-10 h-10 rounded-xl object-contain bg-white p-0.5 border border-white/40 shadow-xs"
+                          @error="form.logoUrl = ''"
                         />
                         <div v-else class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg">
-                          🏢
+                          <Building2 class="w-4 h-4" />
                         </div>
                         <div>
                           <div class="font-extrabold text-sm">{{ form.name || 'ชื่ออาคาร/ตึก' }}</div>
-                          <div class="text-[10px] opacity-80">ธีมสีที่ลูกบ้านจะมองเห็นบนหน้าแรกและบิลค่าเช่า</div>
+                          <div class="text-xs opacity-80">ธีมสีที่ลูกบ้านจะมองเห็นบนหน้าแรกและบิลค่าเช่า</div>
                         </div>
                       </div>
-                      <span class="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-bold border border-white/30">
+                      <span class="px-2.5 py-1 rounded-full bg-white/20 text-xs font-bold border border-white/30">
                         ห้อง 101
                       </span>
                     </div>
@@ -286,7 +272,7 @@
               <div class="space-y-2 pt-2 border-t border-slate-100">
                 <label class="text-xs font-bold text-slate-700 block">รูปภาพหน้าปกตึก (Building Cover Image)</label>
                 
-                <div v-if="form.coverImageUrl" class="relative group rounded-2xl overflow-hidden border border-slate-200 shadow-xs">
+                <div v-if="form.coverImageUrl" class="relative group rounded-xl overflow-hidden border border-slate-200 shadow-xs">
                   <img
                     :src="form.coverImageUrl"
                     alt="Building Cover Preview"
@@ -300,7 +286,7 @@
                       :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
                     >
                       <span v-if="isUploadingCover" class="animate-spin w-3 h-3 border-2 border-cyan-600 border-t-transparent rounded-full"></span>
-                      <span v-else>📷</span>
+                      <Camera v-else class="w-4 h-4" />
                       <span>{{ isUploadingCover ? 'กำลังอัปโหลด...' : 'เปลี่ยนรูปหน้าปก' }}</span>
                       <input
                         type="file"
@@ -325,15 +311,15 @@
                 <!-- Dropzone / Empty State for Cover Image -->
                 <div
                   v-else
-                  class="p-6 border-2 border-dashed border-slate-200 hover:border-cyan-300 rounded-2xl bg-slate-50/50 hover:bg-cyan-50/20 text-center transition-all"
+                  class="p-6 border-2 border-dashed border-slate-200 hover:border-cyan-300 rounded-xl bg-slate-50/50 hover:bg-cyan-50/20 text-center transition-all"
                 >
                   <div class="max-w-xs mx-auto space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-xl mx-auto shadow-2xs">
-                      🖼️
+                    <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-xl mx-auto shadow-2xs">
+                      
                     </div>
                     <div>
                       <p class="text-xs font-bold text-slate-700">อัปโหลดรูปภาพหน้าปกตึก</p>
-                      <p class="text-[11px] text-slate-400 mt-0.5">ไฟล์ JPG, PNG หรือ WebP ขนาดไม่เกิน 5MB</p>
+                      <p class="text-xs text-slate-400 mt-0.5">ไฟล์ JPG, PNG หรือ WebP ขนาดไม่เกิน 5MB</p>
                     </div>
                     <label
                       v-if="!isReadOnly"
@@ -341,7 +327,7 @@
                       :class="{ 'opacity-50 pointer-events-none': isUploadingCover }"
                     >
                       <span v-if="isUploadingCover" class="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>
-                      <span v-else>📷</span>
+                      <Camera v-else class="w-4 h-4" />
                       <span>{{ isUploadingCover ? 'กำลังอัปโหลด...' : 'เลือกรูปภาพหน้าปก' }}</span>
                       <input
                         type="file"
@@ -356,14 +342,39 @@
               </div>
             </CardContent>
           </Card>
+
+          <!-- Danger Zone Card -->
+          <Card v-if="!isReadOnly && buildingStore.activeBuilding" class="border-rose-200 bg-rose-50/20 shadow-xs rounded-xl">
+            <CardHeader>
+              <CardTitle class="text-base text-rose-700 flex items-center gap-2">
+                <Trash2 class="w-4 h-4 text-rose-600" />
+                <span>โซนอันตราย (Danger Zone)</span>
+              </CardTitle>
+              <CardDescription class="text-xs text-slate-500">
+                ลบอาคาร/ตึกนี้ออกจากระบบอย่างถาวร (เฉพาะกรณีที่ไม่มีห้องพักคงค้างอยู่)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-bold text-slate-800">ลบอาคาร {{ buildingStore.activeBuilding?.name }}</div>
+                  <div class="text-xs text-slate-500">การลบจะนำข้อมูลการตั้งค่าและรายการที่เกี่ยวข้องของอาคารนี้ออก และไม่สามารถกู้คืนได้</div>
+                </div>
+                <Button type="button" variant="destructive" class="shrink-0" @click="handleDeleteCurrentBuilding">
+                  <Trash2 class="w-3.5 h-3.5" />
+                  <span>ลบอาคารนี้</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <!-- 💰 Tab 2: การชำระเงิน (Payment Options & Real QR Code) -->
+        <!-- Tab 2: การชำระเงิน (Payment Options & Real QR Code) -->
         <TabsContent value="payment">
-          <Card class="border-slate-200 shadow-xs rounded-2xl">
+          <Card class="border-slate-200 shadow-xs rounded-xl">
             <CardHeader>
               <CardTitle class="text-base sm:text-lg flex items-center gap-2">
-                <span>💰</span>
+                <CreditCard class="w-4 h-4" />
                 <span>ช่องทางชำระเงินและพร้อมเพย์ (Payment Options)</span>
               </CardTitle>
               <CardDescription>
@@ -381,7 +392,7 @@
                     class="bg-white font-mono font-semibold"
                   />
                   <!-- Real-time PromptPay Validation Badge -->
-                  <div v-if="promptPayValidation.message" class="text-[11px] font-medium flex items-center gap-1.5" :class="promptPayValidation.isValid ? 'text-emerald-600' : 'text-rose-500'">
+                  <div v-if="promptPayValidation.message" class="text-xs font-medium flex items-center gap-1.5" :class="promptPayValidation.isValid ? 'text-emerald-600' : 'text-rose-500'">
                     <span>{{ promptPayValidation.icon }}</span>
                     <span>{{ promptPayValidation.message }}</span>
                     <span v-if="promptPayValidation.formatted" class="text-slate-500 font-mono font-semibold">({{ promptPayValidation.formatted }})</span>
@@ -391,16 +402,12 @@
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>ชื่อธนาคารผู้รับโอน</span>
-                    <span v-if="activeBankObj" class="text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1" :style="{ backgroundColor: activeBankObj.bgColor, color: activeBankObj.textColor }">
+                    <span v-if="activeBankObj" class="text-xs font-bold px-2 py-0.5 rounded-md flex items-center gap-1" :style="{ backgroundColor: activeBankObj.bgColor, color: activeBankObj.textColor }">
                       <span>{{ activeBankObj.icon }}</span>
                       <span>{{ activeBankObj.code }}</span>
                     </span>
                   </label>
-                  <select
-                    v-model="selectedBankCode"
-                    :disabled="isReadOnly"
-                    class="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500 font-sans cursor-pointer transition-all"
-                  >
+                  <Select v-model="selectedBankCode" :disabled="isReadOnly">
                     <option value="" disabled>-- เลือกธนาคารผู้รับโอน (Official Thai Banks) --</option>
                     <option
                       v-for="bank in THAI_BANKS"
@@ -409,7 +416,7 @@
                     >
                       {{ bank.icon }} {{ bank.officialName }}
                     </option>
-                  </select>
+                  </Select>
                   
                   <!-- Custom Bank Input if 'OTHER' selected -->
                   <div v-if="selectedBankCode === 'OTHER'" class="pt-1.5">
@@ -433,7 +440,7 @@
                     placeholder="เช่น บริษัท หอพักสุขสบาย จำกัด หรือ นายสมชาย ใจดี"
                     class="bg-white"
                   />
-                  <p class="text-[11px] text-slate-400">ชื่อเจ้าของบัญชีสำหรับให้ผู้เช่าตรวจสอบชื่อก่อนกดยืนยันโอนเงิน</p>
+                  <p class="text-xs text-slate-400">ชื่อเจ้าของบัญชีสำหรับให้ผู้เช่าตรวจสอบชื่อก่อนกดยืนยันโอนเงิน</p>
                 </div>
 
                 <div class="space-y-1.5">
@@ -444,7 +451,7 @@
                     placeholder="เช่น 123-4-56789-0 (10-12 หลัก)"
                     class="bg-white font-mono"
                   />
-                  <div v-if="bankAccountValidation.message" class="text-[11px] font-medium flex items-center gap-1" :class="bankAccountValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
+                  <div v-if="bankAccountValidation.message" class="text-xs font-medium flex items-center gap-1" :class="bankAccountValidation.isValid ? 'text-emerald-600' : 'text-amber-600'">
                     <span>{{ bankAccountValidation.icon }}</span>
                     <span>{{ bankAccountValidation.message }}</span>
                   </div>
@@ -452,10 +459,10 @@
               </div>
 
               <!-- PromptPay QR Code Control Bar -->
-              <div class="space-y-2 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+              <div class="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
-                  <span>📱 รูปภาพ PromptPay QR Code ประจำตึก</span>
-                  <span class="text-[11px] text-cyan-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
+                  <span>รูปภาพ PromptPay QR Code ประจำตึก</span>
+                  <span class="text-xs text-cyan-700 font-semibold">อัปโหลดรูปภาพ หรือสร้าง QR Code อัตโนมัติ</span>
                 </label>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -470,7 +477,7 @@
                     v-if="!isReadOnly"
                     class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-200 hover:bg-slate-300 border border-slate-300 text-slate-800 text-xs font-bold rounded-xl shrink-0 transition-colors"
                   >
-                    <span>📷</span>
+                    <Camera class="w-4 h-4" />
                     <span>{{ isUploadingQr ? 'กำลังอัปโหลด...' : 'อัปโหลดรูป QR' }}</span>
                     <input type="file" accept="image/png, image/jpeg, image/jpg" class="hidden" @change="handleQrUpload" :disabled="isUploadingQr" />
                   </label>
@@ -483,7 +490,7 @@
                     variant="outline"
                     class="text-xs font-bold border-cyan-300 text-cyan-700 hover:bg-cyan-100 shrink-0 shadow-2xs"
                   >
-                    <span>⚡</span>
+                    <Zap class="w-4 h-4" />
                     <span>{{ isGeneratingQr ? 'กำลังสร้าง...' : 'สร้าง QR อัตโนมัติ' }}</span>
                   </Button>
                 </div>
@@ -500,13 +507,13 @@
                 ></textarea>
               </div>
 
-              <!-- 📲 Authentic PromptPay QR Code Preview Box -->
-              <div class="mt-4 p-6 bg-slate-900 text-white rounded-3xl shadow-lg border border-slate-800 text-center space-y-4 max-w-sm mx-auto">
+              <!-- Authentic PromptPay QR Code Preview Box -->
+              <div class="mt-4 p-6 bg-slate-900 text-white rounded-xl shadow-lg border border-slate-800 text-center space-y-4 max-w-sm mx-auto">
                 <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 text-xs font-bold px-3 py-1 rounded-full border border-cyan-500/30">
-                  <span>📲 PromptPay QR Code ประจำตึก</span>
+                  <QrCode class="w-4 h-4 text-cyan-300 inline mr-1" /><span>PromptPay QR Code ประจำตึก</span>
                 </div>
 
-                <div class="p-3 bg-white rounded-2xl border border-slate-200 inline-block shadow-inner">
+                <div class="p-3 bg-white rounded-xl border border-slate-200 inline-block shadow-inner">
                   <img
                     :src="displayQrUrl"
                     alt="PromptPay QR Code Preview"
@@ -516,20 +523,20 @@
 
                 <div class="text-xs space-y-1 text-slate-300">
                   <div>หมายเลขพร้อมเพย์: <span class="font-bold text-emerald-400 font-mono text-sm">{{ form.promptpayNum || 'ยังไม่ได้ระบุ' }}</span></div>
-                  <div v-if="form.bankAccountName" class="text-[11px] text-slate-400">ชื่อบัญชี: {{ form.bankAccountName }}</div>
-                  <div v-if="form.bankName" class="text-[11px] text-slate-400">ธนาคาร: {{ form.bankName }} ({{ form.bankAccountNo }})</div>
+                  <div v-if="form.bankAccountName" class="text-xs text-slate-400">ชื่อบัญชี: {{ form.bankAccountName }}</div>
+                  <div v-if="form.bankName" class="text-xs text-slate-400">ธนาคาร: {{ form.bankName }} ({{ form.bankAccountNo }})</div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <!-- ⚡ Tab 3: ค่าบริการและรอบบิล (Billing & Utilities) -->
+        <!-- Tab 3: ค่าบริการและรอบบิล (Billing & Utilities) -->
         <TabsContent value="billing">
-          <Card class="border-slate-200 shadow-xs rounded-2xl">
+          <Card class="border-slate-200 shadow-xs rounded-xl">
             <CardHeader>
               <CardTitle class="text-base sm:text-lg flex items-center gap-2">
-                <span>⚡</span>
+                <Zap class="w-4 h-4" />
                 <span>อัตราค่าบริการและรอบบิล (Billing & Utility Rates)</span>
               </CardTitle>
               <CardDescription>
@@ -574,7 +581,7 @@
                     placeholder="5"
                     class="bg-white font-mono"
                   />
-                  <div class="text-[11px] font-medium flex items-center gap-1" :class="dueDateValidation.isValid ? 'text-slate-500' : 'text-rose-500'">
+                  <div class="text-xs font-medium flex items-center gap-1" :class="dueDateValidation.isValid ? 'text-slate-500' : 'text-rose-500'">
                     <span>{{ dueDateValidation.icon }}</span>
                     <span>{{ dueDateValidation.message }}</span>
                   </div>
@@ -582,27 +589,20 @@
               </div>
 
               <!-- 2. Late Fee Policy Section (นโยบายค่าปรับชำระล่าช้า) -->
-              <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+              <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                 <div class="flex items-center justify-between">
                   <div class="space-y-0.5">
                     <h3 class="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
-                      <span>⚖️</span>
+                      <Scale class="w-4 h-4" />
                       <span>นโยบายค่าปรับชำระล่าช้า (Late Fee Policy)</span>
                     </h3>
-                    <p class="text-[11px] text-slate-500">
+                    <p class="text-xs text-slate-500">
                       ระบบจะประมวลผลคำนวณค่าปรับอัตโนมัติทุกวันเวลาเที่ยงคืน (00:00 น.) เข้าสู่บิลของลูกบ้าน
                     </p>
                   </div>
-                  <span
-                    class="text-[10px] font-bold px-2.5 py-1 rounded-full border"
-                    :class="{
-                      'bg-emerald-100 text-emerald-800 border-emerald-300': form.lateFeeType === 'NONE',
-                      'bg-teal-100 text-teal-800 border-teal-300': form.lateFeeType === 'DAILY',
-                      'bg-amber-100 text-amber-800 border-amber-300': form.lateFeeType === 'FLAT'
-                    }"
-                  >
+                  <Badge :variant="form.lateFeeType === 'NONE' ? 'success' : (form.lateFeeType === 'DAILY' ? 'neutral' : 'warning')">
                     {{ form.lateFeeType === 'NONE' ? 'ไม่มีค่าปรับ' : (form.lateFeeType === 'DAILY' ? 'คิดปรับรายวัน' : 'เหมาจ่ายครั้งเดียว') }}
-                  </span>
+                  </Badge>
                 </div>
 
                 <!-- Radio Group: Late Fee Type Selection -->
@@ -621,7 +621,7 @@
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">ไม่มีค่าปรับ (None)</div>
-                      <div class="text-[11px] text-slate-400 mt-0.5">ไม่คิดค่าปรับเพิ่มเมื่อชำระเกินกำหนด</div>
+                      <div class="text-xs text-slate-400 mt-0.5">ไม่คิดค่าปรับเพิ่มเมื่อชำระเกินกำหนด</div>
                     </div>
                   </label>
 
@@ -639,7 +639,7 @@
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">คิดรายวัน (Daily Fee)</div>
-                      <div class="text-[11px] text-slate-400 mt-0.5">คำนวณตามจำนวนวันที่เกินกำหนด x ยอดปรับ</div>
+                      <div class="text-xs text-slate-400 mt-0.5">คำนวณตามจำนวนวันที่เกินกำหนด x ยอดปรับ</div>
                     </div>
                   </label>
 
@@ -657,7 +657,7 @@
                     />
                     <div>
                       <div class="text-xs font-bold text-slate-800">เหมาจ่ายครั้งเดียว (Flat Fee)</div>
-                      <div class="text-[11px] text-slate-400 mt-0.5">คิดค่าปรับก้อนเดียวคงที่เมื่อเกินกำหนด</div>
+                      <div class="text-xs text-slate-400 mt-0.5">คิดค่าปรับก้อนเดียวคงที่เมื่อเกินกำหนด</div>
                     </div>
                   </label>
                 </div>
@@ -692,7 +692,7 @@
                       placeholder="0"
                       class="bg-white font-mono"
                     />
-                    <span class="text-[11px] text-slate-500">
+                    <span class="text-xs text-slate-500">
                       ใส่ 0 หากต้องการเริ่มคิดทันทีหลังวันครบกำหนด หรือใส่ 3 เพื่อผ่อนผันให้ 3 วัน
                     </span>
                   </div>
@@ -701,14 +701,14 @@
                 <!-- Live Simulation Preview Box -->
                 <div v-if="form.lateFeeType !== 'NONE'" class="p-3.5 bg-cyan-50/70 border border-cyan-100 rounded-xl text-xs text-cyan-900 space-y-1">
                   <div class="font-bold flex items-center gap-1.5">
-                    <span>💡 ตัวอย่างการคำนวณจริง:</span>
+                    <span class="font-bold flex items-center gap-1"><HelpCircle class="w-3.5 h-3.5 text-amber-600" /> ตัวอย่างการคำนวณจริง:</span>
                   </div>
-                  <div class="text-[11px] text-cyan-800 leading-relaxed">
+                  <div class="text-xs text-cyan-800 leading-relaxed">
                     หากบิลครบกำหนดชำระวันที่ <strong>{{ form.dueDateDay || 5 }}</strong>
                     <span v-if="Number(form.gracePeriodDays) > 0"> (ผ่อนผันให้ <strong>{{ form.gracePeriodDays }}</strong> วัน ถึงวันที่ <strong>{{ (Number(form.dueDateDay) || 5) + Number(form.gracePeriodDays) }}</strong>)</span>
                     และลูกบ้านมาชำระช้ากว่ากำหนด <strong>5 วัน</strong>:
                     <br />
-                    ➔ บิลจะถูกคิดค่าปรับอัตโนมัติเท่ากับ
+                    → บิลจะถูกคิดค่าปรับอัตโนมัติเท่ากับ
                     <strong class="text-rose-600 font-mono text-xs">
                       ฿{{ form.lateFeeType === 'FLAT' 
                         ? Number(form.lateFeeAmount || 0).toLocaleString() 
@@ -722,12 +722,12 @@
           </Card>
         </TabsContent>
 
-        <!-- 📝 Tab 4: กฎระเบียบ (Rules & Contracts) -->
+        <!-- Tab 4: กฎระเบียบ (Rules & Contracts) -->
         <TabsContent value="rules">
-          <Card class="border-slate-200 shadow-xs rounded-2xl">
+          <Card class="border-slate-200 shadow-xs rounded-xl">
             <CardHeader>
               <CardTitle class="text-base sm:text-lg flex items-center gap-2">
-                <span>📝</span>
+                <FileText class="w-4 h-4" />
                 <span>กฎระเบียบและสัญญาเช่า (Rules & Contracts)</span>
               </CardTitle>
               <CardDescription>
@@ -775,18 +775,18 @@
           </Card>
         </TabsContent>
 
-        <!-- 💬 Tab 5: LINE Official Account & LIFF (การตั้งค่า LINE OA ประจำตึก) -->
-        <!-- 💬 Tab 5: LINE Official Account & LIFF -->
+        <!-- Tab 5: LINE Official Account & LIFF (การตั้งค่า LINE OA ประจำตึก) -->
+        <!-- Tab 5: LINE Official Account & LIFF -->
         <TabsContent value="line" class="space-y-6">
           <!-- LINE Messaging Quota Monitor Card -->
           <LineQuotaCard ref="lineQuotaCardRef" :building-id="buildingStore.activeBuildingId" />
 
-          <Card class="border-slate-200 shadow-xs rounded-2xl">
+          <Card class="border-slate-200 shadow-xs rounded-xl">
             <CardHeader class="border-b border-slate-100 bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-white">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <CardTitle class="text-base sm:text-lg flex items-center gap-2 text-slate-900">
-                    <span class="text-emerald-600">💬</span>
+                    <MessageSquare class="w-5 h-5 text-emerald-600" />
                     <span>การตั้งค่า LINE Official Account & LIFF ประจำตึก</span>
                   </CardTitle>
                   <CardDescription>
@@ -794,28 +794,22 @@
                   </CardDescription>
                 </div>
                 <div class="shrink-0">
-                  <span
-                    v-if="form.lineChannelAccessToken || form.lineOaId"
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300"
-                  >
+                  <Badge v-if="form.lineChannelAccessToken || form.lineOaId" variant="success">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>ใช้งาน LINE OA ประจำตึกนี้</span>
-                  </span>
-                  <span
-                    v-else
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200"
-                  >
-                    <span>🌐</span>
+                  </Badge>
+                  <Badge v-else variant="neutral">
+                    <Globe class="w-4 h-4" />
                     <span>ใช้การตั้งค่าส่วนกลาง (.env)</span>
-                  </span>
+                  </Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent class="space-y-6 pt-6">
               <!-- Info Callout Banner -->
-              <div class="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl text-xs text-emerald-950 space-y-2">
+              <div class="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-xl text-xs text-emerald-950 space-y-2">
                 <div class="font-bold flex items-center gap-2 text-emerald-800 text-sm">
-                  <span>💡</span>
+                  <HelpCircle class="w-4 h-4" />
                   <span>คำแนะนำการเชื่อมต่อ LINE Official Account แบบแยกรายตึก</span>
                 </div>
                 <p class="leading-relaxed text-emerald-900/90 text-xs">
@@ -830,40 +824,40 @@
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>LINE OA Basic ID / Account Name</span>
-                    <span class="text-[10px] font-normal text-slate-400">เช่น @horhub_a</span>
+                    <span class="text-xs font-normal text-slate-400">เช่น @horspace_a</span>
                   </label>
                   <Input
                     v-model="form.lineOaId"
                     :disabled="isReadOnly"
-                    placeholder="เช่น @horhub_building_a"
+                    placeholder="เช่น @horspace_building_a"
                     class="bg-white font-mono text-xs"
                   />
-                  <div v-if="lineSettingsValidation.oaError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
-                    <span>⚠️</span>
+                  <div v-if="lineSettingsValidation.oaError" class="text-xs font-medium text-amber-600 flex items-center gap-1">
+                    <AlertCircle class="w-4 h-4" />
                     <span>{{ lineSettingsValidation.oaError }}</span>
                   </div>
-                  <p v-else class="text-[11px] text-slate-400">ID บัญชี LINE OA สำหรับแสดงและค้นหา</p>
+                  <p v-else class="text-xs text-slate-400">ID บัญชี LINE OA สำหรับแสดงและค้นหา</p>
                 </div>
 
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>ลิงก์กดเพิ่มเพื่อน (LINE Add Friend URL)</span>
-                    <span class="text-[10px] font-normal text-slate-400">https://lin.ee/...</span>
+                    <span class="text-xs font-normal text-slate-400">https://lin.ee/...</span>
                   </label>
                   <Input
                     v-model="form.lineAddFriendUrl"
                     :disabled="isReadOnly"
-                    placeholder="เช่น https://line.me/R/ti/p/@horhub_a หรือ https://lin.ee/xxxxx"
+                    placeholder="เช่น https://line.me/R/ti/p/@horspace_a หรือ https://lin.ee/xxxxx"
                     class="bg-white text-xs"
                   />
-                  <p class="text-[11px] text-slate-400">สำหรับสร้างปุ่มกดเพิ่มเพื่อนในหน้าต้อนรับลูกบ้านใหม่</p>
+                  <p class="text-xs text-slate-400">สำหรับสร้างปุ่มกดเพิ่มเพื่อนในหน้าต้อนรับลูกบ้านใหม่</p>
                 </div>
               </div>
 
               <!-- Messaging API & Security Credentials Section -->
-              <div class="p-5 bg-slate-50/80 rounded-2xl border border-slate-200/90 space-y-4">
+              <div class="p-5 bg-slate-50/80 rounded-xl border border-slate-200/90 space-y-4">
                 <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>🔐</span>
+                  <Key class="w-4 h-4" />
                   <span>ข้อมูลความปลอดภัยและการเชื่อมต่อ (Messaging API & LIFF)</span>
                 </h4>
 
@@ -871,7 +865,7 @@
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
                     <span>LINE LIFF ID ประจำตึก</span>
-                    <span class="text-[10px] font-normal text-slate-400">LIFF App ID</span>
+                    <span class="text-xs font-normal text-slate-400">LIFF App ID</span>
                   </label>
                   <Input
                     v-model="form.lineLiffId"
@@ -879,11 +873,11 @@
                     placeholder="เช่น 2011289517-SB8YziXL"
                     class="bg-white font-mono text-xs"
                   />
-                  <div v-if="lineSettingsValidation.liffError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
-                    <span>⚠️</span>
+                  <div v-if="lineSettingsValidation.liffError" class="text-xs font-medium text-amber-600 flex items-center gap-1">
+                    <AlertCircle class="w-4 h-4" />
                     <span>{{ lineSettingsValidation.liffError }}</span>
                   </div>
-                  <p v-else class="text-[11px] text-slate-400">รหัส LIFF ID สำหรับเปิด Web App ของตึกนี้ผ่านห้องแชต LINE</p>
+                  <p v-else class="text-xs text-slate-400">รหัส LIFF ID สำหรับเปิด Web App ของตึกนี้ผ่านห้องแชต LINE</p>
                 </div>
 
                 <!-- 2. Channel Secret -->
@@ -893,7 +887,7 @@
                     <button
                       type="button"
                       @click="showSecret = !showSecret"
-                      class="text-[11px] text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
+                      class="text-xs text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
                     >
                       {{ showSecret ? 'ซ่อน' : 'แสดง' }}
                     </button>
@@ -905,11 +899,11 @@
                     placeholder="กรอก Channel Secret (32 ตัวอักษร)"
                     class="bg-white font-mono text-xs"
                   />
-                  <div v-if="lineSettingsValidation.secretError" class="text-[11px] font-medium text-amber-600 flex items-center gap-1">
-                    <span>⚠️</span>
+                  <div v-if="lineSettingsValidation.secretError" class="text-xs font-medium text-amber-600 flex items-center gap-1">
+                    <AlertCircle class="w-4 h-4" />
                     <span>{{ lineSettingsValidation.secretError }}</span>
                   </div>
-                  <p v-else class="text-[11px] text-slate-400">ใช้สำหรับตรวจสอบ Signature ความปลอดภัยของ Webhook</p>
+                  <p v-else class="text-xs text-slate-400">ใช้สำหรับตรวจสอบ Signature ความปลอดภัยของ Webhook</p>
                 </div>
 
                 <!-- 3. Channel Access Token (Long-Lived) -->
@@ -919,7 +913,7 @@
                     <button
                       type="button"
                       @click="showToken = !showToken"
-                      class="text-[11px] text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
+                      class="text-xs text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
                     >
                       {{ showToken ? 'ซ่อน' : 'แสดง' }}
                     </button>
@@ -932,7 +926,7 @@
                     placeholder="กรอก Channel Access Token (v2.1) ที่ออกให้จาก LINE Developers Console..."
                     class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-600 disabled:bg-slate-100 disabled:text-slate-500 font-mono transition-all"
                   ></textarea>
-                  <p class="text-[11px] text-slate-400">ใช้สำหรับสั่ง Push Flex Message แจ้งเตือนค่าน้ำ-ไฟ บิลชำระเงิน และพัสดุเข้าห้องพัก</p>
+                  <p class="text-xs text-slate-400">ใช้สำหรับสั่ง Push Flex Message แจ้งเตือนค่าน้ำ-ไฟ บิลชำระเงิน และพัสดุเข้าห้องพัก</p>
                 </div>
               </div>
             </CardContent>
@@ -960,7 +954,7 @@
           class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md shadow-cyan-600/30 flex items-center justify-center gap-2 cursor-pointer"
         >
           <span v-if="isSaving" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-          <span v-else>💾</span>
+          <Save v-else class="w-4 h-4" />
           <span>{{ isSaving ? 'กำลังบันทึกข้อมูล...' : 'บันทึกการตั้งค่า (Save Changes)' }}</span>
         </Button>
       </div>
@@ -980,10 +974,16 @@ import api from '@/utils/api';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import AdminPageHeader from '@/components/common/AdminPageHeader.vue';
+import AdminLoadingState from '@/components/common/AdminLoadingState.vue';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import LineQuotaCard from '@/components/LineQuotaCard.vue';
 import DeliveryLogsTab from '@/components/DeliveryLogsTab.vue';
 import { THAI_BANKS, findBank } from '@/constants/thaiBanks';
+import { Trash2 } from 'lucide-vue-next';
+import { showSuccess, showError, showConfirm } from '@/utils/swal';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
@@ -1004,7 +1004,7 @@ const customBankName = ref('');
 
 // Preset Palette for LIFF Dynamic Theming
 const presetColors = [
-  { name: 'HorHub Teal', hex: '#0E7490' },
+  { name: 'Horspace Teal', hex: '#0E7490' },
   { name: 'น้ำเงิน (Blue)', hex: '#3B82F6' },
   { name: 'แดง (Ruby)', hex: '#EF4444' },
   { name: 'เขียว (Emerald)', hex: '#10B981' },
@@ -1086,24 +1086,24 @@ const onCustomBankInput = (e) => {
 const promptPayValidation = computed(() => {
   const raw = (form.value.promptpayNum || '').trim();
   if (!raw) {
-    return { isValid: false, message: 'กรุณาระบุหมายเลข PromptPay (จำเป็นสำหรับการสร้าง QR Code และรับชำระเงิน)', icon: '⚠️', type: 'empty' };
+    return { isValid: false, message: 'กรุณาระบุหมายเลข PromptPay (จำเป็นสำหรับการสร้าง QR Code และรับชำระเงิน)', icon: 'AlertCircle', type: 'empty' };
   }
   const clean = raw.replace(/[^0-9]/g, '');
   if (clean.length === 10) {
     if (/^(06|08|09)/.test(clean)) {
       const formatted = `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6)}`;
-      return { isValid: true, message: 'เบอร์โทรศัพท์มือถือ (10 หลัก)', formatted, icon: '📱', type: 'mobile' };
+      return { isValid: true, message: 'เบอร์โทรศัพท์มือถือ (10 หลัก)', formatted, icon: 'Smartphone', type: 'mobile' };
     }
-    return { isValid: false, message: 'เบอร์มือถือต้องขึ้นต้นด้วย 06, 08 หรือ 09', icon: '⚠️', type: 'invalid' };
+    return { isValid: false, message: 'เบอร์มือถือต้องขึ้นต้นด้วย 06, 08 หรือ 09', icon: 'AlertCircle', type: 'invalid' };
   }
   if (clean.length === 13) {
     const formatted = `${clean.slice(0, 1)}-${clean.slice(1, 5)}-${clean.slice(5, 10)}-${clean.slice(10, 12)}-${clean.slice(12)}`;
-    return { isValid: true, message: 'เลขประจำตัวประชาชน / ผู้เสียภาษี (13 หลัก)', formatted, icon: '🪪', type: 'id' };
+    return { isValid: true, message: 'เลขประจำตัวประชาชน / ผู้เสียภาษี (13 หลัก)', formatted, icon: 'CreditCard', type: 'id' };
   }
   if (clean.length === 15) {
-    return { isValid: true, message: 'e-Wallet ID (15 หลัก)', formatted: clean, icon: '💳', type: 'wallet' };
+    return { isValid: true, message: 'e-Wallet ID (15 หลัก)', formatted: clean, icon: 'CreditCard', type: 'wallet' };
   }
-  return { isValid: false, message: 'หมายเลข PromptPay ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน/ผู้เสียภาษี 13 หลัก', icon: '⚠️', type: 'invalid' };
+  return { isValid: false, message: 'หมายเลข PromptPay ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน/ผู้เสียภาษี 13 หลัก', icon: 'AlertCircle', type: 'invalid' };
 });
 
 const bankAccountValidation = computed(() => {
@@ -1111,9 +1111,9 @@ const bankAccountValidation = computed(() => {
   if (!raw) return { isValid: true, message: '' };
   const clean = raw.replace(/[^0-9]/g, '');
   if (clean.length >= 10 && clean.length <= 12) {
-    return { isValid: true, message: `เลขที่บัญชีถูกต้อง (${clean.length} หลัก)`, icon: '✅' };
+    return { isValid: true, message: `เลขที่บัญชีถูกต้อง (${clean.length} หลัก)`, icon: 'CheckCircle2' };
   }
-  return { isValid: false, message: `เลขที่บัญชีธนาคารมาตรฐานควรมี 10 - 12 หลัก (ปัจจุบันมี ${clean.length} หลัก)`, icon: '⚠️' };
+  return { isValid: false, message: `เลขที่บัญชีธนาคารมาตรฐานควรมี 10 - 12 หลัก (ปัจจุบันมี ${clean.length} หลัก)`, icon: 'AlertCircle' };
 });
 
 const phoneValidation = computed(() => {
@@ -1121,17 +1121,17 @@ const phoneValidation = computed(() => {
   if (!raw) return { isValid: true, message: '' };
   const clean = raw.replace(/[^0-9]/g, '');
   if (clean.length === 9 || clean.length === 10) {
-    return { isValid: true, message: 'รูปแบบเบอร์โทรศัพท์ถูกต้อง', icon: '✅' };
+    return { isValid: true, message: 'รูปแบบเบอร์โทรศัพท์ถูกต้อง', icon: 'CheckCircle2' };
   }
-  return { isValid: false, message: 'เบอร์โทรศัพท์ติดต่อควรมี 9 - 10 หลัก (เช่น 02-xxx-xxxx หรือ 08x-xxx-xxxx)', icon: '⚠️' };
+  return { isValid: false, message: 'เบอร์โทรศัพท์ติดต่อควรมี 9 - 10 หลัก (เช่น 02-xxx-xxxx หรือ 08x-xxx-xxxx)', icon: 'AlertCircle' };
 });
 
 const dueDateValidation = computed(() => {
   const day = Number(form.value.dueDateDay);
   if (!day || isNaN(day) || day < 1 || day > 31) {
-    return { isValid: false, message: 'วันกำหนดชำระต้องอยู่ระหว่างวันที่ 1 ถึง 31 ของเดือน', icon: '⚠️' };
+    return { isValid: false, message: 'วันกำหนดชำระต้องอยู่ระหว่างวันที่ 1 ถึง 31 ของเดือน', icon: 'AlertCircle' };
   }
-  return { isValid: true, message: `กำหนดชำระทุกวันที่ ${day} ของทุกเดือน`, icon: '📅' };
+  return { isValid: true, message: `กำหนดชำระทุกวันที่ ${day} ของทุกเดือน`, icon: 'Calendar' };
 });
 
 const lineSettingsValidation = computed(() => {
@@ -1139,9 +1139,9 @@ const lineSettingsValidation = computed(() => {
   const liffId = (form.value.lineLiffId || '').trim();
   const secret = (form.value.lineChannelSecret || '').trim();
 
-  const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horhub)' : null;
+  const oaError = oaId && !oaId.startsWith('@') ? 'LINE OA ID ควรขึ้นต้นด้วยเครื่องหมาย @ (เช่น @horspace)' : null;
   const liffError = liffId && !/^\d{10}-[A-Za-z0-9_-]{6,}$/.test(liffId) ? 'รูปแบบ LIFF ID ควรเป็นตัวเลข 10 หลักตามด้วยขีด (เช่น 2011289517-SB8YziXL)' : null;
-  const secretError = secret && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
+  const secretError = secret && secret !== '********' && secret.length !== 32 ? `Channel Secret ควรมีความยาว 32 ตัวอักษร (ปัจจุบัน ${secret.length} ตัวอักษร)` : null;
 
   return { oaError, liffError, secretError };
 });
@@ -1374,6 +1374,49 @@ const saveSettings = async () => {
     errorMessage.value = err.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
   } finally {
     isSaving.value = false;
+  }
+};
+
+const handleDeleteCurrentBuilding = async () => {
+  const currentBuilding = buildingStore.activeBuilding;
+  if (!currentBuilding) return;
+
+  if (currentBuilding._count?.rooms > 0) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      `อาคาร "${currentBuilding.name}" ยังมีห้องพักผูกอยู่ ${currentBuilding._count.rooms} ห้อง กรุณาย้ายหรือลบห้องพักทั้งหมดออกก่อนทำการลบอาคาร`
+    );
+    return;
+  }
+
+  if (buildingStore.buildings.length <= 1) {
+    showError(
+      'ไม่สามารถลบอาคารได้',
+      'ระบบต้องมีอาคารอย่างน้อย 1 อาคาร ไม่สามารถลบอาคารสุดท้ายได้'
+    );
+    return;
+  }
+
+  const confirmed = await showConfirm(
+    `ยืนยันการลบ ${currentBuilding.name}?`,
+    'การดำเนินการนี้จะลบข้อมูลอาคารและการตั้งค่าที่เกี่ยวข้องทั้งหมดออกจากระบบ และไม่สามารถย้อนกลับได้',
+    'ลบอาคาร',
+    'ยกเลิก'
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const res = await buildingStore.deleteBuilding(currentBuilding.id);
+    await showSuccess('สำเร็จ!', res?.message || `ลบอาคาร ${currentBuilding.name} เรียบร้อยแล้ว`);
+    if (buildingStore.buildings.length > 0) {
+      buildingStore.setActiveBuildingId(buildingStore.buildings[0].id);
+    }
+  } catch (error) {
+    showError(
+      'เกิดข้อผิดพลาดในการลบอาคาร',
+      error.response?.data?.message || 'ไม่สามารถลบอาคารได้ กรุณาลองใหม่อีกครั้ง'
+    );
   }
 };
 

@@ -1,138 +1,132 @@
 <template>
   <div class="space-y-6">
-    <!-- Top Hero Banner & Actions -->
-    <div class="bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-cyan-800/40">
-      <div class="space-y-1">
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase bg-cyan-500/30 text-cyan-200 border border-cyan-400/40">
-            System Administration
-          </span>
-          <span class="text-xs text-cyan-300 font-medium">RBAC Security Center</span>
-        </div>
-        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
-          <span>👑 Admin User & Role Management</span>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <ShieldCheck class="w-5 h-5 text-primary" />
+          <span>ผู้ดูแลระบบและสิทธิ์การเข้าถึง</span>
         </h1>
-        <p class="text-xs text-cyan-200 max-w-xl">
-          ศูนย์กลางบริหารจัดการผู้ใช้งานระบบหลังบ้าน กำหนดระดับสิทธิ์ (OWNER / MANAGER) และควบคุมสิทธิ์การเข้าถึงตึก
+        <p class="text-xs text-slate-500 mt-0.5">
+          บริหารจัดการผู้ใช้งานระบบหลังบ้าน กำหนดระดับสิทธิ์ (OWNER / MANAGER) และควบคุมสิทธิ์การเข้าถึงตึก
         </p>
       </div>
 
-      <div class="flex items-center gap-3 shrink-0">
-        <button
-          @click="openCreateModal"
-          class="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-cyan-950/50 hover:shadow-cyan-500/30 flex items-center gap-2 border border-cyan-400/30 active:scale-98 cursor-pointer"
-        >
-          <span class="text-base">➕</span>
-          <span>เพิ่มแอดมินใหม่ (Add User)</span>
-        </button>
-
-        <button
-          @click="fetchUsers"
-          :disabled="loading"
-          class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-md border border-white/15 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-        >
-          <span :class="{ 'animate-spin': loading }">🔄</span>
+      <div class="flex items-center gap-2 shrink-0">
+        <Button variant="outline" :disabled="loading" @click="fetchUsers">
+          <RefreshCw :class="['w-4 h-4', loading ? 'animate-spin' : '']" />
           <span class="hidden sm:inline">รีเฟรช</span>
-        </button>
+        </Button>
+        <Button @click="openCreateModal">
+          <Plus class="w-4 h-4" />
+          <span>เพิ่มแอดมินใหม่</span>
+        </Button>
       </div>
     </div>
 
-    <!-- 📊 KPI Summary Stats Bar -->
+    <!-- KPI Summary Stats Bar -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Stat 1: Total Admins -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">แอดมินทั้งหมด (Total Admins)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">แอดมินทั้งหมด (Total Admins)</div>
           <div class="text-2xl font-black text-slate-900 mt-1 font-mono">{{ users.length }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 text-cyan-600 flex items-center justify-center text-xl font-bold">
-          👥
+        <div class="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-600 flex items-center justify-center">
+          <Users class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 2: Owners / Executive Admins -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้บริหาร (Owners / Super)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ผู้บริหาร (Owners / Super)</div>
           <div class="text-2xl font-black text-rose-600 mt-1 font-mono">{{ ownerCount }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center text-xl font-bold">
-          👑
+        <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center">
+          <Crown class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 3: Managers -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ผู้จัดการประจำตึก (Managers)</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">ผู้จัดการประจำตึก (Managers)</div>
           <div class="text-2xl font-black text-teal-600 mt-1 font-mono">{{ managerCount }} <span class="text-xs font-semibold text-slate-400">คน</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center text-xl font-bold">
-          👔
+        <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center">
+          <UserCheck class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
 
       <!-- Stat 4: Buildings Count -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      <Card class="p-4 flex items-center justify-between">
         <div>
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">จำนวนหอพักในระบบ</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">จำนวนหอพักในระบบ</div>
           <div class="text-2xl font-black text-emerald-600 mt-1 font-mono">{{ buildings.length }} <span class="text-xs font-semibold text-slate-400">ตึก</span></div>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
-          🏢
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
+          <Building2 class="w-6 h-6" />
         </div>
-      </div>
+      </Card>
     </div>
 
-    <!-- 🔍 Search & Filter Toolbar -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <!-- Search & Filter Toolbar -->
+    <Card class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="relative flex-1 max-w-md">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm">🔍</span>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="ค้นหาตามชื่อ หรืออีเมล..."
-          class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
-        />
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground z-10">
+          <Search class="w-4 h-4" />
+        </span>
+        <Input v-model="searchQuery" type="text" placeholder="ค้นหาตามชื่อ หรืออีเมล..." class="pl-9 pr-8" />
         <button
           v-if="searchQuery"
           @click="searchQuery = ''"
-          class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 text-xs"
+          class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+          aria-label="ล้างคำค้นหา"
+          title="ล้างคำค้นหา"
         >
-          ✕
+          <X class="w-3.5 h-3.5" />
         </button>
       </div>
 
       <!-- Role Filter Buttons -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-        <button
+        <Button
           v-for="filterOption in roleFilterOptions"
           :key="filterOption.value"
+          :variant="selectedRoleFilter === filterOption.value ? 'default' : 'secondary'"
+          size="sm"
+          class="shrink-0"
           @click="selectedRoleFilter = filterOption.value"
-          class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer"
-          :class="selectedRoleFilter === filterOption.value ? 'bg-cyan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
         >
           {{ filterOption.label }}
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
 
     <!-- Error Alert -->
-    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs font-medium flex items-center justify-between shadow-2xs">
-      <span class="flex items-center gap-2">⚠️ {{ error }}</span>
-      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold">✕</button>
+    <div v-if="error" class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center justify-between shadow-2xs">
+      <span class="flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 text-rose-600" />
+        <span>{{ error }}</span>
+      </span>
+      <button @click="error = ''" class="text-rose-500 hover:text-rose-700 font-bold cursor-pointer" aria-label="ปิดข้อความแจ้งเตือน" title="ปิด">
+        <X class="w-4 h-4" />
+      </button>
     </div>
 
     <!-- User Management Table Panel -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+    <Card class="p-0 overflow-hidden">
       <div v-if="loading && users.length === 0" class="p-12 text-center text-slate-500">
         <div class="animate-spin w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full mx-auto mb-3"></div>
         กำลังโหลดรายการผู้ใช้งานระบบหลังบ้าน...
       </div>
 
       <div v-else-if="filteredUsers.length === 0" class="p-12 text-center text-slate-400">
-        <div class="text-4xl mb-2">🔍</div>
+        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 mb-2">
+          <Search class="w-6 h-6" />
+        </div>
         <div class="text-sm font-bold text-slate-700">ไม่พบรายชื่อผู้ใช้งานตามเงื่อนไข</div>
         <p class="text-xs text-slate-400 mt-1">ลองเปลี่ยนคำค้นหาหรือเลือกสิทธิ์ในตัวกรองใหม่</p>
       </div>
@@ -154,7 +148,7 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-white shadow-sm shrink-0 ring-2 ring-white"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-sm shrink-0 ring-2 ring-white"
                     :class="getUserRoleBadgeClass(user.role).bgGradient"
                   >
                     {{ user.name?.slice(0, 2).toUpperCase() || 'AD' }}
@@ -162,9 +156,12 @@
                   <div>
                     <div class="font-bold text-slate-900 text-sm group-hover:text-cyan-700 transition-colors flex items-center gap-1.5">
                       <span>{{ user.name }}</span>
-                      <span v-if="user.id === authStore.currentUser?.id" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-extrabold">คุณ</span>
+                      <span v-if="user.id === authStore.currentUser?.id" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-md text-xs font-extrabold">คุณ</span>
                     </div>
-                    <div class="text-slate-500 text-[11px] font-mono">{{ user.email }}</div>
+                    <div class="text-slate-500 text-xs font-mono flex items-center gap-1.5 flex-wrap">
+                      <span>{{ user.email }}</span>
+                      <span v-if="user.phone" class="text-slate-400 font-semibold">• {{ user.phone }}</span>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -172,23 +169,25 @@
               <!-- Role Badge -->
               <td class="px-6 py-4">
                 <span
-                  class="px-3 py-1 rounded-full text-[11px] font-black uppercase border shadow-2xs inline-flex items-center gap-1.5"
+                  class="px-3 py-1 rounded-full text-xs font-black uppercase border shadow-2xs inline-flex items-center gap-1.5"
                   :class="getUserRoleBadgeClass(user.role).badge"
                 >
-                  <span>{{ isOwnerRole(user.role) ? '👑' : (isRoomOwnerRole(user.role) ? '🔑' : '👔') }}</span>
+                  <Crown v-if="isOwnerRole(user.role)" class="w-3.5 h-3.5" />
+                  <Key v-else-if="isRoomOwnerRole(user.role)" class="w-3.5 h-3.5" />
+                  <UserCheck v-else class="w-3.5 h-3.5" />
                   <span>{{ user.role }}</span>
                 </span>
               </td>
 
               <!-- Assigned Buildings Tags -->
               <td class="px-6 py-4">
-                <div v-if="isOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-cyan-50 to-teal-50 text-cyan-800 border border-cyan-200 rounded-xl text-[11px] font-bold shadow-2xs">
-                  <span>🌐</span>
+                <div v-if="isOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-cyan-50 to-teal-50 text-cyan-800 border border-cyan-200 rounded-xl text-xs font-bold shadow-2xs">
+                  <Globe class="w-3.5 h-3.5 text-cyan-600" />
                   <span>ทุกตึกในระบบ (Full System Access)</span>
                 </div>
 
-                <div v-else-if="isRoomOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-[11px] font-bold shadow-2xs">
-                  <span>🔑</span>
+                <div v-else-if="isRoomOwnerRole(user.role)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-xs font-bold shadow-2xs">
+                  <Key class="w-3.5 h-3.5 text-amber-600" />
                   <span>เฉพาะห้องที่ครอบครองกรรมสิทธิ์ (Room-Scoped Access)</span>
                 </div>
 
@@ -196,59 +195,62 @@
                   <span
                     v-for="p in user.buildingPermissions"
                     :key="p.id"
-                    class="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-[11px] font-bold shadow-2xs flex items-center gap-1"
+                    class="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1"
                   >
-                    <span>🏢</span>
+                    <Building2 class="w-3 h-3 text-slate-500" />
                     <span>{{ p.building?.name || 'Building' }}</span>
                   </span>
                 </div>
 
-                <div v-else class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-[11px] font-semibold">
-                  <span>⚠️</span>
+                <div v-else class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold">
+                  <AlertCircle class="w-3 h-3 text-amber-600" />
                   <span>ยังไม่ได้เลือกตึก</span>
                 </div>
               </td>
 
               <!-- Created At -->
-              <td class="px-6 py-4 text-slate-500 font-mono text-[11px]">
+              <td class="px-6 py-4 text-slate-500 font-mono text-xs">
                 {{ formatDate(user.createdAt) }}
               </td>
 
               <!-- Action Buttons -->
               <td class="px-6 py-4 text-right space-x-2">
-                <button
-                  @click="openEditModal(user)"
-                  class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
-                >
-                  ⚙️ แก้ไขสิทธิ์
-                </button>
+                <Button variant="outline" size="sm" class="text-cyan-700 border-cyan-200 hover:bg-cyan-50" @click="openEditModal(user)">
+                  <Settings class="w-3.5 h-3.5" />
+                  <span>แก้ไขสิทธิ์</span>
+                </Button>
 
-                <button
+                <Button
                   v-if="user.id !== authStore.currentUser?.id"
+                  variant="outline"
+                  size="sm"
+                  class="text-rose-700 border-rose-200 hover:bg-rose-50"
                   @click="confirmDeleteUser(user)"
-                  class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  :aria-label="`ลบผู้ใช้ ${user.firstName || user.email}`"
+                  title="ลบผู้ใช้"
                 >
-                  🗑️ ลบ
-                </button>
+                  <Trash2 class="w-3.5 h-3.5" />
+                  <span>ลบ</span>
+                </Button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
 
     <!-- Add / Edit User Modal Dialog -->
-    <div v-if="showModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+    <Dialog :open="showModal" @update:open="showModal = $event">
+      <DialogContent class="max-w-xl p-0 flex flex-col max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
-        <div class="px-6 py-4 bg-gradient-to-r from-cyan-900 via-teal-900 to-slate-900 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">{{ isEditing ? '⚙️' : '➕' }}</span>
-            <h3 class="font-bold text-base text-white">
-              {{ isEditing ? `แก้ไขสิทธิ์ผู้ใช้งาน: ${form.name}` : 'เพิ่มผู้ดูแลระบบใหม่ (Add Admin User)' }}
-            </h3>
-          </div>
-          <button @click="showModal = false" class="text-cyan-300 hover:text-white p-1.5 rounded-lg transition-colors cursor-pointer">✕</button>
+        <div class="px-6 py-4 bg-primary text-primary-foreground">
+          <DialogHeader class="pr-6">
+            <DialogTitle class="text-primary-foreground flex items-center gap-2">
+              <Settings v-if="isEditing" class="w-5 h-5" />
+              <UserPlus v-else class="w-5 h-5" />
+              <span>{{ isEditing ? `แก้ไขสิทธิ์ผู้ใช้งาน: ${form.name}` : 'เพิ่มผู้ดูแลระบบใหม่ (Add Admin User)' }}</span>
+            </DialogTitle>
+          </DialogHeader>
         </div>
 
         <!-- Modal Body -->
@@ -257,69 +259,57 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-นามสกุล (Name)</label>
-              <input
-                v-model="form.name"
-                type="text"
-                required
-                placeholder="e.g. สมชาย ใจดี"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-              />
+              <Input v-model="form.name" type="text" required placeholder="e.g. สมชาย ใจดี" />
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">อีเมลเข้าใช้งาน (Email)</label>
-              <input
-                v-model="form.email"
-                type="email"
-                required
-                :disabled="isEditing"
-                placeholder="manager@dorm.com"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 disabled:opacity-60 font-mono"
-              />
+              <Input v-model="form.email" type="email" required :disabled="isEditing" placeholder="manager@dorm.com" class="font-mono" />
             </div>
           </div>
 
-          <!-- Password (Required on Create, Optional on Edit) -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">
-              {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
-            </label>
-            <input
-              v-model="form.password"
-              type="password"
-              :required="!isEditing"
-              minlength="6"
-              placeholder="••••••••"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
-            />
+          <!-- Phone & Password -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                เบอร์โทรศัพท์ (สำหรับผูก LINE / SMS)
+              </label>
+              <Input v-model="form.phone" type="tel" placeholder="0812345678" class="font-mono" />
+              <span class="text-xs text-slate-400 mt-0.5 block">ระบุเบอร์เดียวกับที่ผูก LINE เพื่อรับสิทธิ์อัตโนมัติ</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                {{ isEditing ? 'รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)' : 'รหัสผ่านเข้าสู่ระบบ (Password)' }}
+              </label>
+              <PasswordInput v-model="form.password" :required="!isEditing" minlength="6" placeholder="••••••••" class="font-mono" />
+            </div>
           </div>
 
           <!-- Role Select -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">เลือกระดับสิทธิ์ (Role)</label>
-            <select
-              v-model="form.role"
-              required
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-extrabold focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
-            >
-              <option value="MANAGER">👔 MANAGER (ผู้จัดการหอพักประจำตึก)</option>
-              <option value="ROOM_OWNER">🔑 ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
-              <option value="OWNER">👑 OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์สูงสุดดูได้ทุกตึก)</option>
-            </select>
+            <Select v-model="form.role" required class="font-extrabold">
+              <option value="SUPER_ADMIN">SUPER_ADMIN (ผู้ดูแลระบบสูงสุด - Full System Access)</option>
+              <option value="OWNER">OWNER (เจ้าของหอพัก/โครงการ - สิทธิ์ระดับเจ้าของดูได้ทุกตึก)</option>
+              <option value="ROOM_OWNER">ROOM_OWNER (เจ้าของห้อง/นักลงทุน - ดูเฉพาะห้องที่ตนเองครอบครอง)</option>
+              <option value="MANAGER">MANAGER (ผู้จัดการหอพักประจำตึก)</option>
+            </Select>
           </div>
 
-          <!-- 📌 CONDITIONAL LOGIC: Building Access Selector for MANAGER -->
+          <!-- CONDITIONAL LOGIC: Building Access Selector for MANAGER -->
           <div v-if="form.role === 'MANAGER'" class="space-y-2 pt-2 border-t border-slate-100">
             <label class="block text-xs font-bold text-slate-900 flex items-center justify-between">
-              <span>🏢 มอบหมายตึกที่ดูแล (Multi-Select Building Access)</span>
-              <span class="text-[11px] text-cyan-600 font-bold">เลือกได้หลายตึก</span>
+              <span>มอบหมายตึกที่ดูแล (Multi-Select Building Access)</span>
+              <span class="text-xs text-cyan-600 font-bold">เลือกได้หลายตึก</span>
             </label>
 
-            <div v-if="buildings.length === 0" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-              ⚠️ ไม่พบข้อมูลตึกในระบบ กรุณาเพิ่มตึกก่อนมอบหมายสิทธิ์
+            <div v-if="buildings.length === 0" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-1.5">
+              <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+              <span>ไม่พบข้อมูลตึกในระบบ กรุณาเพิ่มตึกก่อนมอบหมายสิทธิ์</span>
             </div>
 
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
               <label
                 v-for="b in buildings"
                 :key="b.id"
@@ -332,52 +322,74 @@
                   v-model="form.buildingIds"
                   class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer"
                 />
-                <span class="text-xs font-semibold">🏢 {{ b.name }}</span>
+                <Building2 class="w-3.5 h-3.5 text-slate-500" />
+                <span class="text-xs font-semibold">{{ b.name }}</span>
               </label>
             </div>
           </div>
 
-          <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 font-semibold flex items-center gap-2">
-            <span>🔑</span>
+          <div v-else-if="isSuperAdminRole(form.role)" class="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 font-semibold flex items-center gap-2">
+            <ShieldCheck class="w-4 h-4 text-slate-700 shrink-0" />
+            <span>ระดับสิทธิ์ <span class="font-black text-slate-900">SUPER_ADMIN</span> คือผู้ดูแลระบบสูงสุด สามารถจัดการผู้ใช้งานและเข้าถึงทุกส่วนของระบบ</span>
+          </div>
+
+          <div v-else-if="form.role === 'OWNER'" class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-950 font-semibold flex items-center gap-2">
+            <Crown class="w-4 h-4 text-rose-600 shrink-0" />
+            <span>ระดับสิทธิ์ <span class="font-black text-rose-700">OWNER</span> สามารถเข้าถึงแดชบอร์ดเจ้าของตึก รายได้ และข้อมูลทุกตึกในระบบ</span>
+          </div>
+
+          <div v-else-if="form.role === 'ROOM_OWNER'" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950 font-semibold flex items-center gap-2">
+            <Key class="w-4 h-4 text-amber-600 shrink-0" />
             <span>ระดับสิทธิ์ <span class="font-black text-amber-700">ROOM_OWNER</span> สามารถเข้าดูและจัดการเฉพาะห้องพักที่ตนเองมีกรรมสิทธิ์ในระบบเท่านั้น</span>
           </div>
 
-          <div v-else-if="isOwnerRole(form.role)" class="p-3 bg-cyan-50 border border-cyan-200 rounded-2xl text-xs text-cyan-950 font-semibold flex items-center gap-2">
-            <span>🌐</span>
-            <span>ระดับสิทธิ์ <span class="font-black text-cyan-700">{{ form.role }}</span> สามารถเข้าถึงและจัดการข้อมูลทุกตึกในระบบได้โดยอัตโนมัติ</span>
-          </div>
-
           <!-- Modal Footer -->
-          <div class="pt-4 flex justify-end gap-3 border-t border-slate-100">
-            <button
-              type="button"
-              @click="showModal = false"
-              class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
-            >
-              ยกเลิก
-            </button>
+          <DialogFooter class="pt-4 border-t border-slate-100">
+            <Button type="button" variant="outline" @click="showModal = false">ยกเลิก</Button>
 
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="px-6 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-cyan-600/20 disabled:opacity-50 transition-all cursor-pointer"
-            >
-              <span>{{ submitting ? 'กำลังบันทึก...' : (isEditing ? '💾 บันทึกการแก้ไข' : '🚀 สร้างผู้ใช้งานใหม่') }}</span>
-            </button>
-          </div>
+            <Button type="submit" :disabled="submitting">
+              <Save v-if="isEditing" class="w-3.5 h-3.5" />
+              <UserPlus v-else class="w-3.5 h-3.5" />
+              <span>{{ submitting ? 'กำลังบันทึก...' : (isEditing ? 'บันทึกการแก้ไข' : 'สร้างผู้ใช้งานใหม่') }}</span>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
+import {
+  ShieldCheck,
+  Plus,
+  RefreshCw,
+  Users,
+  Crown,
+  UserCheck,
+  Building2,
+  Search,
+  X,
+  AlertCircle,
+  Key,
+  Globe,
+  Settings,
+  Trash2,
+  UserPlus,
+  Save
+} from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import adminService from '@/services/adminService';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';
 import { formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import PasswordInput from '@/components/common/PasswordInput.vue';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const authStore = useAuthStore();
 const buildingStore = useBuildingStore();
@@ -395,14 +407,16 @@ const selectedRoleFilter = ref('ALL');
 
 const roleFilterOptions = [
   { label: 'ทั้งหมด', value: 'ALL' },
-  { label: '👑 เจ้าของตึก (Owners)', value: 'OWNER' },
-  { label: '🔑 เจ้าของห้อง (Room Owners)', value: 'ROOM_OWNER' },
-  { label: '👔 ผู้จัดการตึก (Managers)', value: 'MANAGER' }
+  { label: 'ผู้ดูแลสูงสุด (Super Admin)', value: 'SUPER_ADMIN' },
+  { label: 'เจ้าของตึก (Owners)', value: 'OWNER' },
+  { label: 'เจ้าของห้อง (Room Owners)', value: 'ROOM_OWNER' },
+  { label: 'ผู้จัดการตึก (Managers)', value: 'MANAGER' }
 ];
 
 const form = reactive({
   name: '',
   email: '',
+  phone: '',
   password: '',
   role: 'MANAGER',
   buildingIds: []
@@ -435,12 +449,20 @@ const fetchBuildingsList = async () => {
   }
 };
 
+const isSuperAdminRole = (role) => {
+  return ['SUPERADMIN', 'SUPER_ADMIN', 'super_admin', 'superadmin'].includes((role || '').toUpperCase());
+};
+
+const isOwnerOnlyRole = (role) => {
+  return ['OWNER', 'owner'].includes((role || '').toUpperCase());
+};
+
 const isOwnerRole = (role) => {
   return ['OWNER', 'SUPERADMIN', 'SUPER_ADMIN', 'owner', 'super_admin', 'superadmin'].includes((role || '').toUpperCase());
 };
 
 const isRoomOwnerRole = (role) => {
-  return ['ROOM_OWNER', 'INVESTOR', 'room_owner', 'investor'].includes((role || '').toUpperCase());
+  return ['ROOM_OWNER', 'room_owner', 'INVESTOR', 'investor'].includes((role || '').toUpperCase());
 };
 
 const ownerCount = computed(() => {
@@ -458,7 +480,8 @@ const roomOwnerCount = computed(() => {
 const filteredUsers = computed(() => {
   return users.value.filter((u) => {
     // 1. Role Filter
-    if (selectedRoleFilter.value === 'OWNER' && !isOwnerRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'SUPER_ADMIN' && !isSuperAdminRole(u.role)) return false;
+    if (selectedRoleFilter.value === 'OWNER' && !isOwnerOnlyRole(u.role)) return false;
     if (selectedRoleFilter.value === 'ROOM_OWNER' && !isRoomOwnerRole(u.role)) return false;
     if (selectedRoleFilter.value === 'MANAGER' && (isOwnerRole(u.role) || isRoomOwnerRole(u.role))) return false;
 
@@ -467,7 +490,8 @@ const filteredUsers = computed(() => {
       const q = searchQuery.value.trim().toLowerCase();
       const matchName = u.name?.toLowerCase().includes(q);
       const matchEmail = u.email?.toLowerCase().includes(q);
-      return matchName || matchEmail;
+      const matchPhone = u.phone?.toLowerCase().includes(q);
+      return matchName || matchEmail || matchPhone;
     }
 
     return true;
@@ -475,7 +499,13 @@ const filteredUsers = computed(() => {
 });
 
 const getUserRoleBadgeClass = (role) => {
-  if (isOwnerRole(role)) {
+  if (isSuperAdminRole(role)) {
+    return {
+      badge: 'bg-slate-200 text-slate-900 border-slate-300',
+      bgGradient: 'bg-gradient-to-tr from-slate-800 to-slate-950'
+    };
+  }
+  if (isOwnerOnlyRole(role)) {
     return {
       badge: 'bg-rose-100 text-rose-800 border-rose-200',
       bgGradient: 'bg-gradient-to-tr from-rose-600 to-amber-600'
@@ -498,6 +528,7 @@ const openCreateModal = () => {
   editingUserId.value = null;
   form.name = '';
   form.email = '';
+  form.phone = '';
   form.password = '';
   form.role = 'MANAGER';
   form.buildingIds = [];
@@ -509,8 +540,11 @@ const openEditModal = (user) => {
   editingUserId.value = user.id;
   form.name = user.name;
   form.email = user.email;
+  form.phone = user.phone || '';
   form.password = '';
-  if (isOwnerRole(user.role)) {
+  if (isSuperAdminRole(user.role)) {
+    form.role = 'SUPER_ADMIN';
+  } else if (isOwnerOnlyRole(user.role)) {
     form.role = 'OWNER';
   } else if (isRoomOwnerRole(user.role)) {
     form.role = 'ROOM_OWNER';
@@ -527,14 +561,17 @@ const handleSubmit = async () => {
     if (isEditing.value) {
       const res = await adminService.updateUserPermissions(editingUserId.value, {
         name: form.name,
+        phone: form.phone,
         role: form.role,
-        buildingIds: form.role === 'MANAGER' ? form.buildingIds : []
+        buildingIds: form.role === 'MANAGER' ? form.buildingIds : [],
+        ...(form.password && { password: form.password })
       });
       await showSuccess('สำเร็จ!', res.message || 'อัปเดตสิทธิ์เรียบร้อยแล้ว');
     } else {
       const res = await adminService.createAdminUser({
         name: form.name,
         email: form.email,
+        phone: form.phone,
         password: form.password,
         role: form.role,
         buildingIds: form.role === 'MANAGER' ? form.buildingIds : []

@@ -5,7 +5,7 @@
       <div class="px-6 py-4 bg-gradient-to-r from-teal-900 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-teal-600/40 flex items-center justify-center text-lg">
-            📥
+            
           </div>
           <div>
             <h3 class="font-bold text-base text-white">Import Rooms (นำเข้าห้องพักจำนวนมาก)</h3>
@@ -13,7 +13,7 @@
           </div>
         </div>
         <button @click="close" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
-          ✕
+          
         </button>
       </div>
 
@@ -24,14 +24,14 @@
           class="px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2"
           :class="activeTab === 'csv' ? 'bg-white border-teal-600 text-teal-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
-          📄 อัปโหลดไฟล์ CSV
+          อัปโหลดไฟล์ CSV
         </button>
         <button
           @click="activeTab = 'generator'"
           class="px-4 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2"
           :class="activeTab === 'generator' ? 'bg-white border-teal-600 text-teal-600 shadow-2xs' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
-          ⚡ Quick Batch Generator (สร้างตามช่วงชั้น)
+          Quick Batch Generator (สร้างตามช่วงชั้น)
         </button>
       </div>
 
@@ -41,13 +41,13 @@
         <div v-if="activeTab === 'csv'" class="space-y-4">
           <div class="flex items-center justify-between bg-teal-50 border border-teal-100 p-3 rounded-xl">
             <span class="text-xs text-teal-900 font-medium">
-              💡 ต้องการไฟล์ตัวอย่างสำหรับเตรียมข้อมูล?
+              ต้องการไฟล์ตัวอย่างสำหรับเตรียมข้อมูล?
             </span>
             <button
               @click="downloadTemplate"
               class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition-all shadow-xs"
             >
-              📥 ดาวน์โหลด CSV Template
+              ดาวน์โหลด CSV Template
             </button>
           </div>
 
@@ -65,7 +65,7 @@
               class="hidden"
               @change="handleFileSelect"
             />
-            <div class="text-3xl mb-2">📁</div>
+            <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center mx-auto text-cyan-600 mb-2"><FileText class="w-6 h-6" /></div>
             <div class="text-xs font-bold text-slate-800">คลิกที่นี่ หรือ ลากไฟล์ .CSV มาวาง</div>
             <div class="text-[11px] text-slate-400 mt-1">รองรับ Header: roomNumber, floor, price, status</div>
           </div>
@@ -115,7 +115,7 @@
               @click="generateBatchRooms"
               class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
             >
-              <span>⚡ สร้างรายการพรีวิว</span>
+              <span>สร้างรายการพรีวิว</span>
             </button>
           </div>
         </div>
@@ -124,7 +124,7 @@
         <div v-if="parsedRooms.length > 0" class="space-y-3">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <span>📋 รายการพรีวิวห้องพักที่จะนำเข้า</span>
+              <span>รายการพรีวิวห้องพักที่จะนำเข้า</span>
               <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded-full text-[10px]">
                 {{ parsedRooms.length }} รายการ
               </span>
@@ -173,7 +173,7 @@
           :disabled="parsedRooms.length === 0 || submitting"
           class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all flex items-center gap-1.5"
         >
-          <span>{{ submitting ? 'กำลังนำเข้า...' : '🚀 กดยืนยันนำเข้าข้อมูล' }}</span>
+          <span>{{ submitting ? 'กำลังนำเข้า...' : 'กดยืนยันนำเข้าข้อมูล' }}</span>
         </button>
       </div>
     </div>
@@ -181,6 +181,7 @@
 </template>
 
 <script setup>
+import { X, CheckCircle2, FileText, AlertCircle, Zap, Upload } from 'lucide-vue-next';
 import { ref, reactive } from 'vue';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';

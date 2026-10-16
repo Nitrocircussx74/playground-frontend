@@ -5,7 +5,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <span>📝</span>
+            <FileText class="w-5 h-5 text-teal-600" />
             <span>ตรวจสอบและยืนยันออกบิลร่าง (Draft Invoice Review)</span>
           </h2>
           <p class="text-xs sm:text-sm text-slate-500 mt-1">
@@ -19,7 +19,7 @@
             :disabled="loading"
             class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all border border-slate-200 flex items-center gap-1.5"
           >
-            <span>🔄</span>
+            <RefreshCw :class="['w-3.5 h-3.5', loading ? 'animate-spin' : '']" />
             <span>ดึงข้อมูลล่าสุด</span>
           </button>
 
@@ -28,7 +28,7 @@
             :disabled="publishing || draftInvoices.length === 0"
             class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/30 transition-all disabled:opacity-50 flex items-center gap-2"
           >
-            <span>📢</span>
+            <Send class="w-4 h-4" />
             <span>{{ publishing ? 'กำลังส่งแจ้งเตือน...' : 'ยืนยันและส่งแจ้งเตือน (Publish & Notify)' }}</span>
           </button>
         </div>
@@ -66,7 +66,9 @@
 
     <!-- Empty State -->
     <div v-else-if="draftInvoices.length === 0" class="p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2">
-      <div class="text-3xl">🎉</div>
+      <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto text-emerald-600 mb-2">
+        <CheckCircle2 class="w-7 h-7" />
+      </div>
       <p class="font-semibold text-slate-700">ไม่พบบิลสถานะ Draft ค้างอยู่</p>
       <p class="text-xs text-slate-500">บิลทั้งหมดได้รับการยืนยัน Publish และส่งหาผู้เช่าเรียบร้อยแล้ว</p>
     </div>
@@ -125,6 +127,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { FileText, RefreshCw, Send, CheckCircle2 } from 'lucide-vue-next';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import api from '@/utils/api';
 import { showSuccess, showError, showConfirm } from '@/utils/swal';

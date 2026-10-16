@@ -11,11 +11,6 @@ export default {
     return response.data;
   },
 
-  async uploadPaymentSlip(invoiceId, payload) {
-    const response = await api.post(`/api/v1/invoices/${invoiceId}/payment-slips`, payload);
-    return response.data;
-  },
-
   async updateInvoiceStatus(invoiceId, payload) {
     const response = await api.patch(`/api/v1/invoices/${invoiceId}/status`, payload);
     return response.data;

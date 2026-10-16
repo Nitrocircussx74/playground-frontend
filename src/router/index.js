@@ -28,134 +28,153 @@ const routes = [
     path: '/403',
     name: 'Forbidden',
     component: () => import('@/views/ForbiddenView.vue'),
-    meta: { isCms: true }
+    meta: { isCms: true, title: 'ไม่มีสิทธิ์เข้าถึง' }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/DashboardView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'แดชบอร์ดภาพรวม' }
   },
   {
     path: '/rooms',
     name: 'Rooms',
     component: () => import('@/views/RoomsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการห้องพัก' }
   },
   {
     path: '/leases',
     name: 'Leases',
     component: () => import('@/views/LeasesView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'สัญญาเช่า' }
   },
   {
     path: '/tenants',
     name: 'Tenants',
     component: () => import('@/views/TenantsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ข้อมูลผู้เช่า' }
   },
   {
     path: '/tenants/:id',
     name: 'TenantDetail',
     component: () => import('@/views/TenantDetail.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายละเอียดผู้เช่า' }
   },
   {
     path: '/admin/tenants/:id',
     name: 'TenantDetailAdmin',
     component: () => import('@/views/TenantDetail.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายละเอียดผู้เช่า' }
   },
   {
     path: '/buildings',
     name: 'Buildings',
     component: () => import('@/views/BuildingManagementView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการข้อมูลอาคาร' }
   },
   {
     path: '/building-settings',
     name: 'BuildingSettings',
     component: () => import('@/views/BuildingSettingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตั้งค่าอาคาร' }
   },
   {
     path: '/meter-readings',
     name: 'MeterReadings',
     component: () => import('@/views/MeterReadingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จดบันทึกมิเตอร์' }
   },
   {
     path: '/invoices',
     name: 'Invoices',
     component: () => import('@/views/InvoicesView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการบิลค่าเช่า' }
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: () => import('@/views/MaintenanceView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการรายการแจ้งซ่อม' }
   },
   {
     path: '/announcements',
     name: 'Announcements',
     component: () => import('@/views/AnnouncementsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ข่าวสารและประกาศ' }
   },
   {
     path: '/parcels',
     name: 'AdminParcels',
     component: () => import('@/views/AdminParcelView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการพัสดุ' }
   },
   {
     path: '/admin/parcels',
     name: 'AdminParcelsDirect',
     component: () => import('@/views/AdminParcelView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการพัสดุ' }
   },
   {
     path: '/facility-bookings',
     name: 'AdminFacilityBookings',
     component: () => import('@/views/AdminFacilityBookingView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จองพื้นที่ส่วนกลาง' }
   },
   {
     path: '/vehicles',
     name: 'AdminVehicles',
     component: () => import('@/views/AdminVehicleView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'จัดการยานพาหนะ' }
   },
   {
     path: '/polls',
     name: 'AdminPolls',
     component: () => import('@/views/AdminPollView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'แบบสำรวจและโหวต' }
+  },
+  {
+    path: '/vendors',
+    name: 'AdminVendors',
+    component: () => import('@/views/AdminVendorView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'รายชื่อช่างและผู้รับเหมา' }
+  },
+  {
+    path: '/inspections',
+    name: 'AdminInspections',
+    component: () => import('@/views/AdminInspectionView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตรวจสภาพห้องพัก' }
   },
   {
     path: '/features',
     name: 'FeatureSettings',
     component: () => import('@/views/FeatureSettingsView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['admin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['admin'], title: 'ตั้งค่าฟีเจอร์' }
   },
   {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
-    meta: { isCms: true, requiresAuth: true }
+    meta: { isCms: true, requiresAuth: true, title: 'โปรไฟล์ผู้ดูแล' }
   },
   {
     path: '/admin/users',
     name: 'AdminUserManagement',
     component: () => import('@/views/AdminUserManagementView.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'], title: 'จัดการผู้ใช้งาน' }
   },
   {
     path: '/admin/audit-logs',
     name: 'AuditLogViewer',
     component: () => import('@/views/AuditLogViewer.vue'),
-    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'] }
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin'], title: 'ประวัติการทำงานระบบ' }
   },
+  {
+    path: '/admin/feedback',
+    name: 'AdminFeedback',
+    component: () => import('@/views/AdminFeedbackView.vue'),
+    meta: { isCms: true, requiresAuth: true, roles: ['owner', 'super_admin', 'superadmin', 'admin'], title: 'ข้อเสนอแนะ' }
+  },
+
 
   // 📱 2. LINE / LIFF Tenant Portal Routes (แยก Guard ทำงานอิสระเฉพาะของฝั่ง LINE)
   {
@@ -167,7 +186,7 @@ const routes = [
         path: '',
         name: 'LiffEntry',
         component: () => import('@/views/LiffEntryView.vue'),
-        meta: { isLiff: true, title: 'HorHub (หอฮับ)' }
+        meta: { isLiff: true, title: 'Horspace (ฮอร์สเปซ)' }
       },
       {
         path: 'pin-login',
@@ -191,7 +210,13 @@ const routes = [
         path: 'profile',
         name: 'LiffProfile',
         component: () => import('@/views/LiffProfileView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'HorHub (หอฮับ)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'Horspace (ฮอร์สเปซ)' }
+      },
+      {
+        path: 'owner-dashboard',
+        name: 'LiffOwnerDashboard',
+        component: () => import('@/views/LiffOwnerDashboardView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แดชบอร์ดเจ้าของตึก' }
       },
       {
         path: 'settings',
@@ -217,19 +242,19 @@ const routes = [
         path: 'invoices',
         name: 'LiffInvoiceList',
         component: () => import('@/views/LiffInvoiceListView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'บิลค่าเช่าทั้งหมด' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'บิลค่าเช่าทั้งหมด', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'invoices/:id',
         name: 'LiffInvoiceDetail',
         component: () => import('@/views/LiffInvoiceDetailView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'รายละเอียดบิล & ชำระเงิน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'รายละเอียดบิล & ชำระเงิน', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'pay/:invoiceId',
         name: 'LiffPayment',
         component: () => import('@/views/LiffPaymentView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ชำระเงินบิลค่าเช่า' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ชำระเงินบิลค่าเช่า', feature: 'ENABLE_LINE_PAYMENT' }
       },
       {
         path: 'register',
@@ -247,7 +272,7 @@ const routes = [
         path: 'announcements',
         name: 'LiffAnnouncements',
         component: () => import('@/views/LiffAnnouncementsView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ข่าวสาร & ประกาศหอพัก' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ข่าวสาร & ประกาศหอพัก', feature: 'ENABLE_ANNOUNCEMENTS' }
       },
       {
         // เดิมเป็นระบบแจ้งซ่อมแยกต่างหาก (LiffMaintenanceView) - ถูก unify รวมกับระบบ issues แล้ว
@@ -259,37 +284,37 @@ const routes = [
         path: 'parcels',
         name: 'LiffParcels',
         component: () => import('@/views/LiffParcelsView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการพัสดุของฉัน (My Parcels)', feature: 'ENABLE_PARCEL_NOTIFY' }
       },
       {
         path: 'facility-bookings',
         name: 'LiffFacilityBookings',
         component: () => import('@/views/LiffFacilityBookingView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จองพื้นที่ส่วนกลาง' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จองพื้นที่ส่วนกลาง', feature: 'ENABLE_FACILITY_BOOKING' }
       },
       {
         path: 'vehicles',
         name: 'LiffVehicles',
         component: () => import('@/views/LiffVehicleView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการยานพาหนะ/ผู้มาเยือน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'จัดการยานพาหนะ/ผู้มาเยือน', feature: 'ENABLE_VEHICLE_MANAGEMENT' }
       },
       {
         path: 'polls',
         name: 'LiffPolls',
         component: () => import('@/views/LiffPollView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'โหวต/แบบสำรวจ' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'โหวต/แบบสำรวจ', feature: 'ENABLE_VOTING' }
       },
       {
         path: 'issues',
         name: 'LiffIssueHistory',
         component: () => import('@/views/IssueHistory.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติการแจ้งซ่อมและร้องเรียน', feature: 'ENABLE_MAINTENANCE_REQUEST' }
       },
       {
         path: 'issues/report',
         name: 'LiffReportIssue',
         component: () => import('@/views/ReportIssue.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'แจ้งซ่อมและร้องเรียน' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'แจ้งซ่อมและร้องเรียน', feature: 'ENABLE_MAINTENANCE_REQUEST' }
       },
       {
         path: 'report-issue',
@@ -303,7 +328,13 @@ const routes = [
         path: 'receipts',
         name: 'LiffReceiptHistory',
         component: () => import('@/views/LiffReceiptHistoryView.vue'),
-        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt' }
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'ประวัติบิล & ใบเสร็จ E-Receipt', feature: 'ENABLE_RECEIPT_HISTORY' }
+      },
+      {
+        path: 'contract',
+        name: 'LiffContract',
+        component: () => import('@/views/LiffContractView.vue'),
+        meta: { isLiff: true, requiresLiffAuth: true, title: 'สัญญาเช่าห้องพัก (E-Contract)', feature: 'ENABLE_E_CONTRACT' }
       }
     ]
   },
@@ -353,12 +384,27 @@ async function cmsNavigationGuard(to, from, next) {
   next();
 }
 
+/**
+ * true = Route นี้เป็นของ Web Tenant (ลูกบ้านที่ไม่ใช้ LINE เลย) ต้องข้าม Guard ที่บังคับเปิด LINE App
+ * เดิมเช็คแค่ to.path === '/web/login' — พอ Login สำเร็จแล้ว redirect ไป /liff/invoices ซึ่งไม่มี
+ * meta.isTenantWeb เลย ทำให้โดน Guard ด้านล่างเด้งไปเปิด LINE ทันทีหลัง Login (ทั้งที่ตั้งใจให้ไม่ต้องใช้ LINE)
+ * จึงต้องเช็คด้วยว่ามี Session แบบ Web Tenant อยู่แล้วหรือไม่ (In-memory หรือ localStorage ตอน Refresh หน้าตรงๆ)
+ * แยกเป็นฟังก์ชันเพื่อเทสต์ได้โดยไม่ต้อง Mock LINE SDK ทั้งก้อน
+ */
+export function isWebTenantNavigation(to, authStore) {
+  if (to.path === '/web/login' || to.meta?.isTenantWeb) return true;
+  if (authStore?.isWebTenant) return true;
+  return typeof window !== 'undefined' && Boolean(window.localStorage?.getItem('horspace_tenant_token'));
+}
+
 async function liffNavigationGuard(to, from, next) {
+  const authStore = useAuthStore();
+
   // 📱 0. หากเปิดผ่าน Browser ธรรมดา (ไม่ใช่ LINE App จริง) ให้เด้งไปเปิดผ่าน LINE แทนทันที
   // กัน User สับสน/ติดปัญหา LINE ID Token verify ไม่ได้แบบที่เจอกันมา (LIFF ต้องพึ่ง Session จริงของ LINE
   // เสมอ Browser ธรรมดาไม่มีทางได้ Token จริง) — ข้ามใน Dev Mode ไว้ให้ยังทดสอบผ่าน Browser ด้วย
-  // ?devLineUserId= ได้ตามปกติ, ข้าม /web/login เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
-  const isWebLoginRoute = to.path === '/web/login' || to.meta?.isTenantWeb;
+  // ?devLineUserId= ได้ตามปกติ, ข้าม Web Tenant ทุกหน้า (ไม่ใช่แค่ /web/login) เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
+  const isWebLoginRoute = isWebTenantNavigation(to, authStore);
   if (!import.meta.env.DEV && !isWebLoginRoute && typeof window !== 'undefined') {
     await initLiff();
     if (!isInLiffClient()) {
@@ -421,11 +467,9 @@ async function liffNavigationGuard(to, from, next) {
         return next({ path: targetPath, query: cleanQuery });
       }
     } catch (err) {
-      console.warn('⚠️ ไม่สามารถ parse liff.state ได้:', err);
+      console.warn('ไม่สามารถ parse liff.state ได้:', err);
     }
   }
-
-  const authStore = useAuthStore();
 
   // 🌐 หากเป็นหน้า Web Login สำหรับลูกบ้าน
   if (to.path === '/web/login' || to.meta.isTenantWeb) {
@@ -441,6 +485,9 @@ async function liffNavigationGuard(to, from, next) {
   if (to.path === '/liff' || to.path === '/liff/') {
     const hasSession = authStore.liffToken || (await authStore.restoreLiffSession());
     if (hasSession) {
+      if (authStore.isOwner && authStore.currentRole === 'owner') {
+        return next({ path: '/liff/owner-dashboard', query: to.query });
+      }
       return next({ path: '/liff/profile', query: to.query });
     }
     return next();
@@ -467,4 +514,19 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
+router.afterEach((to) => {
+  if (typeof document !== 'undefined') {
+    const pageTitle = to.meta?.title;
+    if (pageTitle) {
+      document.title = `${pageTitle} | Horspace`;
+    } else if (to.meta?.isCms) {
+      document.title = 'Horspace CMS - ระบบจัดการหอพักและอพาร์ตเมนต์';
+    } else {
+      document.title = 'Horspace - ระบบจัดการหอพักและอพาร์ตเมนต์อัจฉริยะ';
+    }
+  }
+});
+
 export default router;
+
+

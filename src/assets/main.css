@@ -13,10 +13,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
+    /* อิงจากสีแบรนด์ teal #0E7490 (เดิมเป็นสีน้ำเงินค้างจากรอบรีดีไซน์ purple-indigo ที่ยกเลิกไปแล้ว) */
+    --primary: 192.9 82.3% 31%;
     --primary-foreground: 210 40% 98%;
 
-    /* HorHub Brand Teal (สีเดียวกับโลโก้ HorHub) — ใช้เป็นค่า Default ก่อนโหลด Theme สีเฉพาะของแต่ละตึก */
+    /* Horspace Brand Teal (สีเดียวกับโลโก้ Horspace) — ใช้เป็นค่า Default ก่อนโหลด Theme สีเฉพาะของแต่ละตึก */
     --theme-primary: #0E7490;
     --theme-primary-rgb: 14 116 144;
     --theme-primary-light: #22D3EE;
@@ -36,7 +37,8 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 263.4 70% 50.4%;
+    /* อิงจากสีแบรนด์ teal เหมือน --primary (เดิมเป็นสีม่วงค้างจากรอบรีดีไซน์ purple-indigo ที่ยกเลิกไปแล้ว) */
+    --ring: 192.9 82.3% 31%;
 
     --radius: 0.875rem;
   }
@@ -161,5 +163,13 @@
   );
   background-size: 400% 100%;
   animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Radix Dialog sets document.body.style.pointerEvents = 'none' while open so clicks
+   outside the dialog's own portal don't leak through. SweetAlert2 renders its popup as
+   a plain sibling of body (not inside Radix's layer), so it inherits pointer-events: none
+   and becomes unclickable whenever a swal fires while a Dialog is still open. */
+.swal2-container {
+  pointer-events: auto;
 }
 

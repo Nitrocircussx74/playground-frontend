@@ -3,7 +3,7 @@ import api from '@/utils/api';
 import { initLiff } from '@/utils/liff';
 
 // Global singleton state so all components and layouts share the exact same active theme
-const currentThemeColor = ref('#0E7490'); // HorHub Brand Teal (สีเดียวกับโลโก้)
+const currentThemeColor = ref('#0E7490'); // Horspace Brand Teal (สีเดียวกับโลโก้)
 const currentLogoUrl = ref(null);
 const currentBuildingName = ref('หอพัก');
 const currentBuildingId = ref(null);

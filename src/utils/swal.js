@@ -81,4 +81,24 @@ export const showConfirm = async (title, text = '', confirmText = 'ยืนย�
   return result.isConfirmed;
 };
 
+/**
+ * Prompt Input Dialog (returns Promise<string|null>)
+ */
+export const showPrompt = async (title, text = '', inputPlaceholder = '', confirmText = 'ยืนยัน', cancelText = 'ยกเลิก') => {
+  const result = await customSwal.fire({
+    icon: 'question',
+    title,
+    text,
+    input: 'text',
+    inputPlaceholder,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    reverseButtons: true
+  });
+
+  return result.isConfirmed ? (result.value || '') : null;
+};
+
 export default customSwal;
+

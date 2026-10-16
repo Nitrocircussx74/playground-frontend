@@ -7,7 +7,7 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>🛡️</span>
+            <Shield class="w-5 h-5 text-indigo-600" />
             <span>สถานะช่องทางการเข้าใช้งานและความปลอดภัย (Access Channels & Security Status)</span>
           </h3>
           <p class="text-xs text-slate-500">
@@ -25,7 +25,7 @@
         >
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-              <span>💬</span>
+              <MessageSquare class="w-4 h-4 text-emerald-600" />
               <span>ช่องทาง LINE LIFF</span>
             </span>
             <span
@@ -82,7 +82,7 @@
         >
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-              <span>🌐</span>
+              <Globe class="w-4 h-4 text-cyan-600" />
               <span>ช่องทาง Web Portal</span>
             </span>
             <span
@@ -115,7 +115,7 @@
         <div class="p-4 rounded-2xl border bg-slate-50 border-slate-200/90 space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-              <span>🕒</span>
+              <Clock class="w-4 h-4 text-slate-500" />
               <span>กิจกรรมและการเข้าถึงล่าสุด</span>
             </span>
             <span
@@ -149,7 +149,7 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>⚙️</span>
+            <Settings class="w-4 h-4 text-slate-600" />
             <span>การจัดการความปลอดภัย (Security Actions & Assistance)</span>
           </h3>
           <p class="text-xs text-slate-500">
@@ -164,9 +164,7 @@
         <div class="p-5 rounded-2xl border border-amber-200/80 bg-amber-50/40 flex flex-col justify-between space-y-4">
           <div class="space-y-2">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg shadow-2xs">
-                🔑
-              </div>
+              <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg shadow-2xs"><Key class="w-5 h-5" /></div>
               <div>
                 <h4 class="text-xs font-bold text-slate-900">รีเซ็ตรหัส PIN</h4>
                 <span class="text-[10px] text-amber-700 font-medium">กรณีลูกบ้านลืมรหัส 6 หลัก</span>
@@ -192,9 +190,7 @@
         <div class="p-5 rounded-2xl border border-rose-200/80 bg-rose-50/40 flex flex-col justify-between space-y-4">
           <div class="space-y-2">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg shadow-2xs">
-                🚫
-              </div>
+              <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg shadow-2xs"><ShieldOff class="w-5 h-5" /></div>
               <div>
                 <h4 class="text-xs font-bold text-slate-900">ยกเลิกการผูกบัญชี LINE</h4>
                 <span class="text-[10px] text-rose-600 font-medium">กรณีโทรศัพท์หาย / ถูกขโมย</span>
@@ -220,9 +216,7 @@
         <div class="p-5 rounded-2xl border border-sky-200/80 bg-sky-50/40 flex flex-col justify-between space-y-4">
           <div class="space-y-2">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg shadow-2xs">
-                📲
-              </div>
+              <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg shadow-2xs"><Smartphone class="w-5 h-5" /></div>
               <div>
                 <h4 class="text-xs font-bold text-slate-900">สร้างรหัสเชิญใหม่</h4>
                 <span class="text-[10px] text-sky-700 font-medium">สำหรับผูกบัญชี LINE ใหม่อีกครั้ง</span>
@@ -262,9 +256,7 @@
         </button>
 
         <div class="space-y-1.5 pt-2">
-          <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto text-2xl font-bold shadow-2xs">
-            🔑
-          </div>
+          <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto text-2xl font-bold shadow-2xs"><Key class="w-7 h-7" /></div>
           <h3 class="text-lg font-black text-slate-900 tracking-tight">รหัสเชิญเชื่อมต่อ LINE</h3>
           <p class="text-xs text-slate-500">
             ผู้เช่า: <span class="font-bold text-slate-800">{{ localTenant.firstName }} {{ localTenant.lastName }}</span>
@@ -298,7 +290,7 @@
             class="flex-1 py-3 bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-sky-600/30 flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Copy class="w-4 h-4" />
-            <span>{{ isCopied ? 'คัดลอกสำเร็จ! ✓' : 'คัดลอกรหัส' }}</span>
+            <span>{{ isCopied ? 'คัดลอกสำเร็จ!' : 'คัดลอกรหัส' }}</span>
           </button>
           <button
             type="button"
@@ -319,7 +311,7 @@ import tenantService from '@/services/tenantService';
 import { showSuccess, showError } from '@/utils/swal';
 import Swal from 'sweetalert2';
 import QRCode from 'qrcode';
-import { KeyRound, Unlink, QrCode, Copy, X } from 'lucide-vue-next';
+import { X, MessageSquare, Key, RefreshCw, Check, Clock, Copy, Shield, Globe, ShieldOff, QrCode, Settings, Smartphone, Save, Unlink, KeyRound } from 'lucide-vue-next';
 
 const props = defineProps({
   tenant: {
@@ -404,7 +396,7 @@ const handleUnlinkLine = async () => {
   if (!isLineLinked.value) return;
 
   const result = await Swal.fire({
-    title: '⚠️ ยืนยันยกเลิกการผูกบัญชี LINE?',
+    title: 'ยืนยันยกเลิกการผูกบัญชี LINE?',
     html: `
       <div class="text-left text-xs text-slate-600 space-y-2">
         <p class="text-rose-600 font-bold">คำเตือน: การดำเนินการนี้จะตัดสิทธิ์การเข้าใช้งาน LINE LIFF ของผู้เช่าทันที และล้างรหัส PIN ทั้งหมด</p>

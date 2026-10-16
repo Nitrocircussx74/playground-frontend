@@ -4,7 +4,7 @@
       <!-- Modal Header -->
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="text-xl">📜</span>
+          <FileText class="w-5 h-5 text-cyan-400" />
           <div>
             <h3 class="font-bold text-base text-white leading-tight">
               ประวัติการเข้าอยู่และสัญญาเช่า (ห้อง {{ room?.roomNumber }})
@@ -14,7 +14,7 @@
             </p>
           </div>
         </div>
-        <button @click="emit('close')" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+        <button @click="emit('close')" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"><X class="w-4 h-4" /></button>
       </div>
 
       <!-- Tab Navigation -->
@@ -24,14 +24,14 @@
           class="py-3 border-b-2 transition-all cursor-pointer"
           :class="activeTab === 'current' ? 'border-cyan-600 text-cyan-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
         >
-          👤 ผู้เช่าปัจจุบัน & การย้ายออก
+          ผู้เช่าปัจจุบัน & การย้ายออก
         </button>
         <button
           @click="activeTab = 'history'"
           class="py-3 border-b-2 transition-all cursor-pointer"
           :class="activeTab === 'history' ? 'border-cyan-600 text-cyan-700 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
         >
-          📜 ประวัติสัญญาเช่าทั้งหมด ({{ leases.length }})
+          ประวัติสัญญาเช่าทั้งหมด ({{ leases.length }})
         </button>
       </div>
 
@@ -42,7 +42,7 @@
           <div class="bg-teal-50/60 border border-teal-100 p-4 rounded-2xl text-xs space-y-2">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2.5">
-                <span class="text-base">👑</span>
+                <Crown class="w-4 h-4 text-amber-500" />
                 <div>
                   <div class="font-bold text-slate-800">
                     เจ้าของห้อง (Owner): {{ currentRoomOwnerName }}
@@ -62,7 +62,7 @@
                   @click="openEditOwner"
                   class="px-2 py-1 bg-white hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-lg text-[11px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1"
                 >
-                  <span>✏️ เปลี่ยน</span>
+                  <Edit3 class="w-3.5 h-3.5 inline mr-1" /><span>เปลี่ยน</span>
                 </button>
               </div>
             </div>
@@ -73,9 +73,9 @@
                 v-model="selectedOwnerId"
                 class="w-full sm:flex-1 bg-white border border-teal-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
               >
-                <option :value="null">🏢 ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
+                <option :value="null">ไม่มี (หอพัก/โครงการเป็นเจ้าของเอง)</option>
                 <option v-for="owner in roomOwners" :key="owner.id" :value="owner.id">
-                  👑 {{ owner.name }} ({{ owner.phone || owner.email }})
+                  {{ owner.name }} ({{ owner.phone || owner.email }})
                 </option>
               </select>
               <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
@@ -92,7 +92,7 @@
                   @click="handleSaveOwner"
                   class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
                 >
-                  {{ savingOwner ? 'กำลังบันทึก...' : '💾 บันทึก' }}
+                  {{ savingOwner ? 'กำลังบันทึก...' : 'บันทึก' }}
                 </button>
               </div>
             </div>
@@ -103,7 +103,7 @@
             <div class="flex items-center justify-between border-b border-emerald-200/60 pb-3">
               <div>
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  🟢 สัญญาปัจจุบัน (Active Lease)
+                  สัญญาปัจจุบัน (Active Lease)
                 </span>
                 <div class="text-lg font-black text-slate-900 mt-1">
                   {{ activeLease.tenant ? `${activeLease.tenant.firstName} ${activeLease.tenant.lastName}` : 'ผู้เช่าปัจจุบัน' }}
@@ -129,7 +129,7 @@
             </div>
 
             <div v-if="activeLease.adminNote" class="bg-white p-3 rounded-xl border border-emerald-200 text-xs text-slate-600">
-              <span class="font-bold text-emerald-800">💡 หมายเหตุสัญญา:</span> {{ activeLease.adminNote }}
+              <span class="font-bold text-emerald-800">หมายเหตุสัญญา:</span> {{ activeLease.adminNote }}
             </div>
 
             <!-- Terminate Lease Button -->
@@ -138,7 +138,7 @@
                 @click="openTerminateModal(activeLease)"
                 class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 flex items-center gap-1.5 cursor-pointer"
               >
-                <span>🚨 แจ้งย้ายออก / สิ้นสุดสัญญา (Terminate Lease)</span>
+                <LogOut class="w-3.5 h-3.5 inline mr-1" /><span>แจ้งย้ายออก / สิ้นสุดสัญญา (Terminate Lease)</span>
               </button>
             </div>
           </div>
@@ -147,14 +147,14 @@
           <div v-if="room?.status === 'occupied' || residents.length > 0" class="bg-white border border-slate-200 p-4 rounded-2xl space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-base">👥</span>
+                <Users class="w-4 h-4 text-cyan-600" />
                 <span class="text-xs font-bold text-slate-800">สมาชิกผู้อยู่อาศัยในห้อง ({{ residents.length }} คน)</span>
               </div>
               <button
                 @click="showAddResidentModal = true"
                 class="px-2.5 py-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
               >
-                <span>➕ เพิ่มรูมเมท</span>
+                <Plus class="w-3.5 h-3.5 inline mr-1" /><span>เพิ่มรูมเมท</span>
               </button>
             </div>
 
@@ -180,7 +180,7 @@
                     class="px-2 py-0.5 rounded-full text-[10px] font-bold"
                     :class="res.role === 'PRIMARY' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-sky-100 text-sky-800 border border-sky-200'"
                   >
-                    {{ res.role === 'PRIMARY' ? '👑 ผู้เช่าหลัก' : '👥 ผู้อยู่อาศัยร่วม' }}
+                    {{ res.role === 'PRIMARY' ? 'ผู้เช่าหลัก' : 'ผู้อยู่อาศัยร่วม' }}
                   </span>
                   <button
                     v-if="res.role !== 'PRIMARY'"
@@ -188,7 +188,7 @@
                     class="text-rose-500 hover:text-rose-700 p-1 text-xs cursor-pointer"
                     title="นำออกจากห้อง"
                   >
-                    🗑️
+                    <Trash2 class="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -199,7 +199,7 @@
           </div>
 
           <div v-else class="p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 space-y-2">
-            <div class="text-3xl">🔑</div>
+            <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-2"><Key class="w-6 h-6" /></div>
             <div class="text-sm font-bold text-slate-700">ห้องนี้เป็นห้องว่าง (Vacant Room)</div>
             <p class="text-xs text-slate-400">ยังไม่มีผู้เช่าในปัจจุบัน หรือสัญญาล่าสุดย้ายออกแล้ว</p>
           </div>
@@ -228,7 +228,7 @@
                       'bg-rose-100 border-rose-300 text-rose-800': item.status === 'CANCELLED'
                     }"
                   >
-                    <span>{{ item.status === 'ACTIVE' ? '🟢 กำลังเช่าอยู่' : (item.status === 'ENDED' ? '⚪ ย้ายออกแล้ว' : '🔴 ยกเลิกสัญญา') }}</span>
+                    <span>{{ item.status === 'ACTIVE' ? 'กำลังเช่าอยู่' : (item.status === 'ENDED' ? 'ย้ายออกแล้ว' : 'ยกเลิกสัญญา') }}</span>
                   </span>
 
                   <h4 class="font-bold text-slate-900 text-sm mt-1">
@@ -244,19 +244,19 @@
               </div>
 
               <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-600 pt-1">
-                <div>📅 วันเริ่มสัญญา: {{ formatDate(item.startDate) }}</div>
+                <div>วันเริ่มสัญญา: {{ formatDate(item.startDate) }}</div>
                 <div class="text-right">
-                  📅 วันย้ายออกจริง: <span class="font-bold text-slate-900">{{ item.actualEndDate ? formatDate(item.actualEndDate) : formatDate(item.expectedEndDate) }}</span>
+                  วันย้ายออกจริง: <span class="font-bold text-slate-900">{{ item.actualEndDate ? formatDate(item.actualEndDate) : formatDate(item.expectedEndDate) }}</span>
                 </div>
               </div>
 
               <!-- Notes & Move-out reason -->
               <div v-if="item.moveOutReason || item.adminNote" class="mt-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1 text-slate-600">
                 <div v-if="item.moveOutReason" class="flex items-center gap-1 text-slate-700">
-                  <span class="font-bold text-slate-800">📌 เหตุผลย้ายออก:</span> {{ item.moveOutReason }}
+                  <span class="font-bold text-slate-800">เหตุผลย้ายออก:</span> {{ item.moveOutReason }}
                 </div>
                 <div v-if="item.adminNote" class="text-slate-500 italic">
-                  <span class="font-semibold text-slate-700">📝 หมายเหตุแอดมิน:</span> {{ item.adminNote }}
+                  <span class="font-semibold text-slate-700">หมายเหตุแอดมิน:</span> {{ item.adminNote }}
                 </div>
               </div>
             </div>
@@ -272,10 +272,10 @@
           <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div class="px-6 py-4 bg-gradient-to-r from-rose-700 to-red-800 text-white flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-xl">🚨</span>
+                <LogOut class="w-5 h-5 text-rose-300" />
                 <h3 class="font-bold text-base text-white">แจ้งย้ายออก & สิ้นสุดสัญญา</h3>
               </div>
-              <button @click="showTerminateModal = false" class="text-rose-200 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+              <button @click="showTerminateModal = false" class="text-rose-200 hover:text-white p-1 rounded-lg cursor-pointer"><X class="w-4 h-4" /></button>
             </div>
 
             <form @submit.prevent="handleTerminateSubmit" class="p-6 space-y-4">
@@ -322,7 +322,7 @@
                   :disabled="terminating"
                   class="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 cursor-pointer"
                 >
-                  {{ terminating ? 'กำลังแจ้งย้ายออก...' : '🚨 ยืนยันย้ายออก' }}
+                  {{ terminating ? 'กำลังแจ้งย้ายออก...' : 'ยืนยันย้ายออก' }}
                 </button>
               </div>
             </form>
@@ -342,10 +342,10 @@
           <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div class="flex items-center justify-between">
               <h3 class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
-                <span>👥</span>
+                <Users class="w-4 h-4 text-cyan-600" />
                 <span>เพิ่มผู้อยู่อาศัยร่วม (ห้อง {{ room?.roomNumber }})</span>
               </h3>
-              <button @click="showAddResidentModal = false" class="text-slate-400 hover:text-slate-700 text-sm">✕</button>
+              <button @click="showAddResidentModal = false" class="text-slate-400 hover:text-slate-700 text-sm"></button>
             </div>
 
             <form @submit.prevent="handleAddResident" class="space-y-3">
@@ -417,6 +417,7 @@
 </template>
 
 <script setup>
+import { LogOut, Save, Users, Crown, Plus, Edit3, Key, FileText, X, User, Trash2 } from 'lucide-vue-next';
 import { ref, reactive, computed, watch } from 'vue';
 import { showSuccess, showError } from '@/utils/swal';
 import api from '@/utils/api';

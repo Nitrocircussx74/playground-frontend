@@ -100,7 +100,7 @@
               >
                 <option value="" disabled>-- กรุณาเลือกห้องพักที่ว่าง --</option>
                 <option v-for="r in availableRooms" :key="r.id" :value="r.id">
-                  {{ getUnitIcon(r.unitType) }} {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[📍 ${r.locationZone}]` : '' }}
+                  {{ formatUnitType(r.unitType) }} {{ r.roomNumber }} {{ r.building?.name ? `(${r.building.name})` : '' }} (ชั้น {{ r.floor }}) — ฿{{ Number(r.price).toLocaleString() }}/เดือน {{ r.locationZone ? `[${r.locationZone}]` : '' }}
                 </option>
               </select>
             </div>
@@ -143,6 +143,32 @@
                 placeholder="เช่น 5000"
                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
               />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์น้ำวันเข้าพัก</label>
+                <input
+                  v-model="form.initialWaterReading"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="ไม่บังคับ"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">เลขมิเตอร์ไฟวันเข้าพัก</label>
+                <input
+                  v-model="form.initialElectricReading"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="ไม่บังคับ"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 font-mono"
+                />
+              </div>
+              <p class="col-span-2 text-[11px] text-slate-500">บิลรอบแรกจะคิดหน่วยจากเลขนี้ (มิเตอร์จริงไม่รีเซ็ตเมื่อเปลี่ยนผู้เช่า) ถ้าไม่กรอกจะใช้เลขล่าสุดที่บันทึกไว้</p>
             </div>
 
             <div>
@@ -216,6 +242,8 @@ const form = reactive({
   startDate: new Date().toISOString().split('T')[0],
   expectedEndDate: '',
   depositAmount: 0,
+  initialWaterReading: '',
+  initialElectricReading: '',
   adminNote: ''
 });
 
@@ -250,14 +278,14 @@ const handleRoomSelect = () => {
   }
 };
 
-const getUnitIcon = (type) => {
+const formatUnitType = (type) => {
   switch (type) {
-    case 'commercial_shop': return '🏪';
-    case 'vending_spot': return '☕';
-    case 'parking': return '🚗';
-    case 'storage': return '📦';
-    case 'billboard_rooftop': return '📡';
-    default: return '🚪';
+    case 'commercial_shop': return '[ร้านค้า]';
+    case 'vending_spot': return '[ตู้หยอดเหรียญ]';
+    case 'parking': return '[ที่จอดรถ]';
+    case 'storage': return '[ห้องเก็บของ]';
+    case 'billboard_rooftop': return '[ป้ายโฆษณา/ดาดฟ้า]';
+    default: return 'ห้อง';
   }
 };
 
@@ -279,6 +307,8 @@ const handleSubmit = async () => {
     form.idCard = '';
     form.roomId = '';
     form.depositAmount = 0;
+    form.initialWaterReading = '';
+    form.initialElectricReading = '';
     form.adminNote = '';
   } catch (error) {
     showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to onboard tenant');

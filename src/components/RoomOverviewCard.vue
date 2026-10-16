@@ -47,7 +47,7 @@
             {{ getUnitPrefix(room.unitType) }} {{ room.roomNumber }}
           </div>
           <span v-if="room.areaSqm" class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80">
-            📐 {{ Number(room.areaSqm) }} ตร.ม.
+            {{ Number(room.areaSqm) }} ตร.ม.
           </span>
         </div>
 
@@ -56,7 +56,7 @@
             ชั้น {{ room.floor }}
           </span>
           <span v-if="room.locationZone" class="truncate text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
-            📍 {{ room.locationZone }}
+            {{ room.locationZone }}
           </span>
         </div>
       </div>
@@ -84,7 +84,7 @@
     <!-- Tenant & Room Owner Details Info Bar -->
     <div class="pt-3 border-t border-slate-200/80 space-y-1 text-xs text-slate-600">
       <div v-if="room.owner" class="flex items-center justify-between">
-        <span class="text-slate-400 flex items-center gap-1"><span>👑</span> เจ้าของ:</span>
+        <span class="text-slate-400 flex items-center gap-1">เจ้าของ:</span>
         <span class="font-bold text-teal-700 truncate max-w-[150px]">
           {{ room.owner.name }}
         </span>
@@ -100,6 +100,7 @@
 </template>
 
 <script setup>
+import { Maximize2, MapPin, Crown } from 'lucide-vue-next';
 defineProps({
   room: {
     type: Object,
@@ -120,12 +121,12 @@ const getUnitPrefix = (type) => {
 
 const getUnitTypeIcon = (type) => {
   switch (type) {
-    case 'commercial_shop': return '🏪';
-    case 'vending_spot': return '☕';
-    case 'parking': return '🚗';
-    case 'storage': return '📦';
-    case 'billboard_rooftop': return '📡';
-    default: return '🚪';
+    case 'commercial_shop': return 'ร้านค้า';
+    case 'vending_spot': return 'ตู้บริการ';
+    case 'parking': return 'ที่จอดรถ';
+    case 'storage': return 'ห้องเก็บของ';
+    case 'billboard_rooftop': return 'ดาดฟ้า/ป้าย';
+    default: return 'ห้องพัก';
   }
 };
 

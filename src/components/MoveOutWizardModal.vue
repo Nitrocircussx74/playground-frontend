@@ -5,7 +5,7 @@
         <!-- Modal Header (Hidden on Print) -->
         <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between print:hidden">
           <div class="flex items-center gap-2">
-            <span class="text-2xl">💵</span>
+            <DollarSign class="w-6 h-6 text-teal-300" />
             <div>
               <h3 class="font-bold text-base text-white leading-tight">
                 ระบบแจ้งย้ายออก & คำนวณคืนเงินมัดจำ (ห้อง {{ room?.roomNumber }})
@@ -15,7 +15,7 @@
               </p>
             </div>
           </div>
-          <button @click="emit('close')" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+          <button @click="emit('close')" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"><X class="w-4 h-4" /></button>
         </div>
 
         <!-- Stepper Progress Bar (Hidden on Print) -->
@@ -59,7 +59,7 @@
           <div v-if="step === 1" class="space-y-4 animate-in fade-in duration-150">
             <div class="bg-teal-50 border border-teal-200 p-4 rounded-2xl flex items-center justify-between text-xs">
               <div>
-                <span class="font-bold text-teal-900">📅 วันที่แจ้งย้ายออกจริง:</span>
+                <span class="font-bold text-teal-900">วันที่แจ้งย้ายออกจริง:</span>
                 <input
                   v-model="form.moveOutDate"
                   type="date"
@@ -75,7 +75,7 @@
               <!-- Water Meter -->
               <div class="p-4 bg-blue-50/60 border border-blue-200 rounded-2xl space-y-3">
                 <div class="flex items-center justify-between border-b border-blue-200 pb-2">
-                  <span class="font-bold text-xs text-blue-900 flex items-center gap-1">💧 มิเตอร์น้ำวันย้ายออก</span>
+                  <span class="font-bold text-xs text-blue-900 flex items-center gap-1">มิเตอร์น้ำวันย้ายออก</span>
                   <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">อัตรา ฿{{ waterRate }}/ยูนิต</span>
                 </div>
 
@@ -99,7 +99,7 @@
               <!-- Electric Meter -->
               <div class="p-4 bg-amber-50/60 border border-amber-200 rounded-2xl space-y-3">
                 <div class="flex items-center justify-between border-b border-amber-200 pb-2">
-                  <span class="font-bold text-xs text-amber-900 flex items-center gap-1">⚡ มิเตอร์ไฟวันย้ายออก</span>
+                  <span class="font-bold text-xs text-amber-900 flex items-center gap-1">มิเตอร์ไฟวันย้ายออก</span>
                   <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">อัตรา ฿{{ electricRate }}/ยูนิต</span>
                 </div>
 
@@ -126,7 +126,7 @@
                 @click="step = 2"
                 class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1"
               >
-                <span>ถัดไป: รายการหักเงิน ➔</span>
+                <span>ถัดไป: รายการหักเงิน →</span>
               </button>
             </div>
           </div>
@@ -135,14 +135,14 @@
           <div v-else-if="step === 2" class="space-y-4 animate-in fade-in duration-150">
             <div class="flex items-center justify-between">
               <div>
-                <h4 class="font-bold text-sm text-slate-900">🛠️ รายการหักเงิน / ค่าทำความสะอาด / ค่าซ่อมแซม</h4>
+                <h4 class="font-bold text-sm text-slate-900">รายการหักเงิน / ค่าทำความสะอาด / ค่าซ่อมแซม</h4>
                 <p class="text-xs text-slate-500">ระบุรายการค่าปรับ หรือค่าทำความสะอาดที่ต้องหักออกจากเงินมัดจำ</p>
               </div>
               <button
                 @click="addDamageItem"
                 class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
               >
-                <span>➕ เพิ่มรายการหักเงิน</span>
+                <Plus class="w-3.5 h-3.5 inline mr-1" /><span>เพิ่มรายการหักเงิน</span>
               </button>
             </div>
 
@@ -168,7 +168,7 @@
                     class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-mono font-bold text-slate-900 focus:outline-none"
                   />
                 </div>
-                <button @click="removeDamageItem(idx)" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg cursor-pointer">✕</button>
+                <button @click="removeDamageItem(idx)" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg cursor-pointer"></button>
               </div>
             </div>
 
@@ -186,7 +186,7 @@
                 ⬅ ย้อนกลับ
               </button>
               <button @click="step = 3" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1">
-                <span>ถัดไป: สรุปยอดเงินคืนมัดจำ ➔</span>
+                <span>ถัดไป: สรุปยอดเงินคืนมัดจำ →</span>
               </button>
             </div>
           </div>
@@ -202,28 +202,28 @@
 
               <!-- Deposit -->
               <div class="px-4 py-2.5 flex justify-between font-bold text-emerald-800 bg-emerald-50/50">
-                <span>➕ เงินประกัน/มัดจำ ( Deposit Amount )</span>
+                <span>เงินประกัน/มัดจำ ( Deposit Amount )</span>
                 <span class="font-mono">+ {{ formatCurrency(depositAmount) }}</span>
               </div>
 
               <!-- Deductions -->
               <div class="px-4 py-2 flex justify-between text-slate-700">
-                <span>➖ ค่าน้ำรอบสุดท้าย ({{ waterUsage }} หน่วย × ฿{{ waterRate }})</span>
+                <span>ค่าน้ำรอบสุดท้าย ({{ waterUsage }} หน่วย × ฿{{ waterRate }})</span>
                 <span class="font-mono text-rose-600">- {{ formatCurrency(finalWaterTotal) }}</span>
               </div>
 
               <div class="px-4 py-2 flex justify-between text-slate-700">
-                <span>➖ ค่าไฟรอบสุดท้าย ({{ electricUsage }} หน่วย × ฿{{ electricRate }})</span>
+                <span>ค่าไฟรอบสุดท้าย ({{ electricUsage }} หน่วย × ฿{{ electricRate }})</span>
                 <span class="font-mono text-rose-600">- {{ formatCurrency(finalElectricTotal) }}</span>
               </div>
 
               <div v-if="unpaidInvoicesTotal > 0" class="px-4 py-2 flex justify-between text-slate-700">
-                <span>➖ บิลค้างชำระเดิมก่อนหน้า (Unpaid Invoices)</span>
+                <span>บิลค้างชำระเดิมก่อนหน้า (Unpaid Invoices)</span>
                 <span class="font-mono text-rose-600">- {{ formatCurrency(unpaidInvoicesTotal) }}</span>
               </div>
 
               <div v-for="(item, idx) in form.damageCharges" :key="idx" class="px-4 py-2 flex justify-between text-slate-700">
-                <span>➖ {{ item.item || 'รายการหักเงิน' }}</span>
+                <span>{{ item.item || 'รายการหักเงิน' }}</span>
                 <span class="font-mono text-rose-600">- {{ formatCurrency(item.amount) }}</span>
               </div>
 
@@ -231,7 +231,7 @@
               <div class="p-4 flex items-center justify-between" :class="netRefund >= 0 ? 'bg-emerald-100/80 text-emerald-950' : 'bg-rose-100/80 text-rose-950'">
                 <div>
                   <div class="text-xs font-bold uppercase">
-                    {{ netRefund >= 0 ? '🟢 ยอดเงินมัดจำคงเหลือที่ต้องคืนลูกบ้าน (Net Refund)' : '🔴 ยอดเงินที่ลูกบ้านต้องชำระเพิ่มเติม (Amount Due)' }}
+                    {{ netRefund >= 0 ? 'ยอดเงินมัดจำคงเหลือที่ต้องคืนลูกบ้าน (Net Refund)' : 'ยอดเงินที่ลูกบ้านต้องชำระเพิ่มเติม (Amount Due)' }}
                   </div>
                   <div class="text-[10px] text-slate-600 mt-0.5">
                     {{ netRefund >= 0 ? 'โอนคืนให้ลูกบ้านหลังจากหักลบกลบหนี้เรียบร้อยแล้ว' : 'ลูกบ้านต้องชำระยอดส่วนต่างเพิ่มเติมก่อนส่งมอบห้อง' }}
@@ -255,7 +255,7 @@
                   @click="triggerPrint"
                   class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 cursor-pointer"
                 >
-                  <span>🖨️ พิมพ์ใบสรุปคืนเงิน (Refund Voucher)</span>
+                  <Printer class="w-4 h-4 inline mr-1.5" /><span>พิมพ์ใบสรุปคืนเงิน (Refund Voucher)</span>
                 </button>
 
                 <button
@@ -263,7 +263,7 @@
                   :disabled="processing"
                   class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 cursor-pointer disabled:opacity-50 flex items-center gap-1"
                 >
-                  <span>{{ processing ? 'กำลังประมวลผล...' : '✅ ยืนยันการย้ายออก (Confirm)' }}</span>
+                  <span>{{ processing ? 'กำลังประมวลผล...' : 'ยืนยันการย้ายออก (Confirm)' }}</span>
                 </button>
               </div>
             </div>
@@ -304,11 +304,11 @@
                 <td class="border border-slate-900 px-3 py-1.5 text-right font-mono font-bold">+ {{ formatCurrency(depositAmount) }}</td>
               </tr>
               <tr>
-                <td class="border border-slate-900 px-3 py-1.5">ค่าน้ำรอบสุดท้าย (มิเตอร์ {{ oldWater }} ➔ {{ form.finalWaterMeter }} = {{ waterUsage }} หน่วย)</td>
+                <td class="border border-slate-900 px-3 py-1.5">ค่าน้ำรอบสุดท้าย (มิเตอร์ {{ oldWater }} → {{ form.finalWaterMeter }} = {{ waterUsage }} หน่วย)</td>
                 <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(finalWaterTotal) }}</td>
               </tr>
               <tr>
-                <td class="border border-slate-900 px-3 py-1.5">ค่าไฟรอบสุดท้าย (มิเตอร์ {{ oldElectric }} ➔ {{ form.finalElectricMeter }} = {{ electricUsage }} หน่วย)</td>
+                <td class="border border-slate-900 px-3 py-1.5">ค่าไฟรอบสุดท้าย (มิเตอร์ {{ oldElectric }} → {{ form.finalElectricMeter }} = {{ electricUsage }} หน่วย)</td>
                 <td class="border border-slate-900 px-3 py-1.5 text-right font-mono text-rose-700">- {{ formatCurrency(finalElectricTotal) }}</td>
               </tr>
               <tr v-if="unpaidInvoicesTotal > 0">
@@ -353,6 +353,7 @@
 </template>
 
 <script setup>
+import { CheckCircle2, LogOut, Droplet, Plus, AlertCircle, Printer, Zap, DollarSign, X } from 'lucide-vue-next';
 import { ref, reactive, computed, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { showSuccess, showError } from '@/utils/swal';
@@ -455,14 +456,14 @@ const handleConfirmMoveOut = async () => {
     html: `
       <div class="text-xs text-slate-600 text-left space-y-2">
         <p><b>ห้องพัก:</b> ${props.room?.roomNumber || ''} | <b>ผู้เช่า:</b> ${tenantName.value}</p>
-        <p class="text-rose-600 font-bold">⚠️ การกระทำนี้จะเปลี่ยนสถานะห้องเป็น "ซ่อมบำรุง", สิ้นสุดสัญญาเช่า, และตัดสิทธิ์การใช้งาน LIFF ของลูกบ้านทันที</p>
+        <p class="text-rose-600 font-bold">การกระทำนี้จะเปลี่ยนสถานะห้องเป็น "ซ่อมบำรุง", สิ้นสุดสัญญาเช่า, และตัดสิทธิ์การใช้งาน LIFF ของลูกบ้านทันที</p>
       </div>
     `,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#e11d48',
     cancelButtonColor: '#64748b',
-    confirmButtonText: '🚨 ยืนยันย้ายออกและคืนมัดจำ',
+    confirmButtonText: 'ยืนยันย้ายออกและคืนมัดจำ',
     cancelButtonText: 'ยกเลิก'
   });
 

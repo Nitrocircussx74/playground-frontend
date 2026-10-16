@@ -62,16 +62,16 @@ api.interceptors.request.use(
     const isLiff = url.includes('/api/v1/liff') || url.includes('/api/liff') || url.includes('/liff');
 
     if (isLiff) {
-      // 1. LIFF Tenant Token (Isolated from CMS Admin, Memory-only ผ่าน Pinia - ไม่มี LocalStorage แล้ว)
+      // 1. LIFF Tenant Token (Isolated from CMS Admin, Memory-only ผ่าน Pinia)
       const liffToken = authStore.liffToken;
       if (liffToken) {
         config.headers.Authorization = `Bearer ${liffToken}`;
       }
     } else {
-      // 2. CMS Admin Token (Memory-only from Pinia)
-      const adminToken = authStore.accessToken;
-      if (adminToken) {
-        config.headers.Authorization = `Bearer ${adminToken}`;
+      // 2. CMS Admin Token (Memory-only from Pinia), หรือ Fallback เป็น LIFF Token ถ้าเรียกจากฝั่ง Owner Mobile
+      const token = authStore.accessToken || authStore.liffToken;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
@@ -82,12 +82,24 @@ api.interceptors.request.use(
 // 3.2 Attach LINE ID Token for LIFF Endpoints
 api.interceptors.request.use(
   async (config) => {
-    const isLiff = config.url && (config.url.includes('/api/v1/liff') || config.url.includes('/api/liff'));
+    const isLiff = config.url && (config.url.includes('/api/v1/liff') || config.url.includes('/api/liff') || config.url.includes('/features'));
     if (isLiff) {
       try {
         const idToken = getLiffIdToken();
         if (idToken) {
           config.headers['X-Line-Id-Token'] = idToken;
+        }
+
+        // แนบ buildingId และ roomId ที่ผู้เช่ากำลังเลือกอยู่ เพื่อให้ Endpoint ฝั่ง LIFF ดึงข้อมูลเฉพาะตึก/ห้องนั้น
+        if (typeof window !== 'undefined') {
+          const activeBuildingId = localStorage.getItem('active_tenant_building_id') || localStorage.getItem('liff_target_building');
+          if (activeBuildingId && !config.headers['X-Building-Id']) {
+            config.headers['X-Building-Id'] = activeBuildingId;
+          }
+          const activeRoomId = localStorage.getItem('active_tenant_room_id');
+          if (activeRoomId && !config.headers['X-Room-Id']) {
+            config.headers['X-Room-Id'] = activeRoomId;
+          }
         }
 
         // Attach lineUserId fallback สำหรับ Standalone Dev Mode เท่านั้น
@@ -173,7 +185,23 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isLiffRefreshing = true;
 
+      // ผู้เช่าเว็บ (เข้าด้วยเบอร์+PIN ไม่ผ่าน LINE) ไม่มี LINE ID Token ให้ Silent Login — ต่ออายุด้วย Refresh Token Cookie แทน
+      const wasWebTenant = useAuthStore().isWebTenant;
+
       try {
+        if (wasWebTenant) {
+          const refreshRes = await axios.post(`${cleanBaseUrl}/auth/refresh`, {}, { withCredentials: true });
+          const refreshedToken = refreshRes.data?.accessToken;
+          if (!refreshedToken) {
+            throw new Error('ไม่ได้รับ Access Token ใหม่จากการต่ออายุเซสชัน');
+          }
+
+          useAuthStore().setTenantWebAuth(refreshedToken);
+          originalRequest.headers.Authorization = `Bearer ${refreshedToken}`;
+          processLiffQueue(null, refreshedToken);
+          return api(originalRequest);
+        }
+
         await initLiff();
         const idToken = getLiffIdToken();
 
@@ -220,6 +248,11 @@ api.interceptors.response.use(
         const authStore = useAuthStore();
         authStore.clearLiffAuth();
         localStorage.removeItem('dev_line_user_id');
+
+        // ผู้เช่าเว็บที่ต่ออายุไม่ได้ (Refresh Token หมดอายุ/ถูกเพิกถอน) ให้กลับไปหน้าเข้าสู่ระบบ
+        if (wasWebTenant && typeof window !== 'undefined' && window.location.pathname !== '/web/login') {
+          router.push({ path: '/web/login', query: { redirect: window.location.pathname + window.location.search } });
+        }
 
         return Promise.reject(refreshError);
       } finally {

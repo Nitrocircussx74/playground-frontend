@@ -5,7 +5,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>📜</span>
+            <History class="w-5 h-5 text-cyan-600" />
             <span>ประวัติการส่งข้อความ LINE (LINE Delivery Logs)</span>
             <span class="text-xs font-normal text-slate-500">
               ({{ pagination.total }} รายการ)
@@ -53,8 +53,8 @@
             class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"
           >
             <option value="ALL">ทั้งหมด (All Status)</option>
-            <option value="SUCCESS">✅ ส่งสำเร็จ (Success)</option>
-            <option value="FAILED">❌ ส่งล้มเหลว (Failed)</option>
+            <option value="SUCCESS">ส่งสำเร็จ (Success)</option>
+            <option value="FAILED">ส่งล้มเหลว (Failed)</option>
           </select>
         </div>
 
@@ -67,10 +67,10 @@
             class="w-full px-2.5 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-cyan-600 cursor-pointer"
           >
             <option value="ALL">ทั้งหมด (All Types)</option>
-            <option value="INVOICE">🧾 บิลค่าเช่า (Invoice)</option>
-            <option value="PARCEL">📦 พัสดุ (Parcel)</option>
-            <option value="MAINTENANCE">🔧 แจ้งซ่อม (Maintenance)</option>
-            <option value="GENERAL">💬 ทั่วไป (General)</option>
+            <option value="INVOICE">บิลค่าเช่า (Invoice)</option>
+            <option value="PARCEL">พัสดุ (Parcel)</option>
+            <option value="MAINTENANCE">แจ้งซ่อม (Maintenance)</option>
+            <option value="GENERAL">ทั่วไป (General)</option>
           </select>
         </div>
       </div>
@@ -87,7 +87,7 @@
       <!-- Empty State -->
       <div v-else-if="logs.length === 0" class="p-12 text-center text-slate-500 space-y-2">
         <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-xl">
-          📭
+          
         </div>
         <h4 class="text-sm font-bold text-slate-700">ไม่พบประวัติการส่งข้อความ</h4>
         <p class="text-xs text-slate-400 max-w-sm mx-auto">
@@ -125,7 +125,7 @@
               <td class="py-3 px-4">
                 <div class="space-y-0.5">
                   <div class="font-bold text-slate-900 flex items-center gap-1">
-                    <span>🏢</span>
+                    <Building2 class="w-3 h-3 text-slate-400" />
                     <span>{{ log.room ? `ห้อง ${log.room.roomNumber}` : 'ระบบส่วนกลาง' }}</span>
                   </div>
                   <div class="text-[11px] text-slate-500 truncate max-w-[160px]">
@@ -226,14 +226,14 @@
       <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl border border-slate-200 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <h4 class="text-sm font-bold text-rose-900 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs">⚠️</span>
+            <span class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs"></span>
             <span>สาเหตุที่ส่งข้อความ LINE ล้มเหลว</span>
           </h4>
           <button
             @click="selectedErrorLog = null"
             class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
           >
-            ✕
+            
           </button>
         </div>
 
@@ -261,7 +261,7 @@
           </div>
 
           <p class="text-[11px] text-slate-400 leading-relaxed">
-            💡 <strong>สาเหตุที่พบบ่อย:</strong> ลูกบ้านยังไม่ได้กดเพิ่มเพื่อน LINE OA หรือกดบล็อกบอทไว้, LINE Token ประจำตึกหมดอายุ, หรือไม่มีสิทธิ์ส่งข้อความ Push
+            <strong>สาเหตุที่พบบ่อย:</strong> ลูกบ้านยังไม่ได้กดเพิ่มเพื่อน LINE OA หรือกดบล็อกบอทไว้, LINE Token ประจำตึกหมดอายุ, หรือไม่มีสิทธิ์ส่งข้อความ Push
           </p>
         </div>
 
@@ -282,14 +282,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import api from '@/utils/api';
 import { useBuildingStore } from '@/stores/useBuildingStore';
-import {
-  Clock,
-  Search,
-  RefreshCw,
-  Info,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-vue-next';
+import { Clock, CheckCircle2, ChevronRight, Info, RefreshCw, ChevronLeft, XCircle, AlertCircle, Bell, Inbox, Package, History, FileText, Building2, Search, Wrench, MessageSquare, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps({
   buildingId: {
@@ -344,7 +337,7 @@ const fetchLogs = async (page = 1) => {
       }
     }
   } catch (error) {
-    console.warn('⚠️ ไม่สามารถดึงประวัติการส่งแจ้งเตือนได้:', error.message);
+    console.warn('ไม่สามารถดึงประวัติการส่งแจ้งเตือนได้:', error.message);
   } finally {
     isLoading.value = false;
   }
@@ -402,13 +395,13 @@ const getTypeLabel = (type) => {
 const getTypeIcon = (type) => {
   switch (type) {
     case 'INVOICE':
-      return '🧾';
+      return 'FileText';
     case 'PARCEL':
-      return '📦';
+      return 'Package';
     case 'MAINTENANCE':
-      return '🔧';
+      return 'Wrench';
     default:
-      return '💬';
+      return 'MessageSquare';
   }
 };
 

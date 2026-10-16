@@ -1,61 +1,95 @@
 <template>
   <div class="space-y-6">
-    <!-- View Navigation Tabs Header -->
-    <div class="flex items-center justify-between border-b border-slate-200 pb-3 no-print">
-      <div class="flex items-center gap-2">
+    <!-- Header -->
+    <div class="no-print">
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">ใบแจ้งหนี้ & การชำระเงิน (Invoices & Payments)</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-0.5">จัดการใบแจ้งหนี้ทั้งหมด ตรวจทานบิลร่างก่อนเผยแพร่ และติดตามสถานะการชำระเงิน</p>
+    </div>
+
+    <!-- View Navigation Tabs & Action Bar Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3.5 no-print">
+      <!-- Left: Segmented Tabs Control -->
+      <div class="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shrink-0 self-start sm:self-auto shadow-2xs">
         <button
+          type="button"
           @click="activeTab = 'all-invoices'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'all-invoices' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer"
+          :class="activeTab === 'all-invoices'
+            ? 'bg-white text-slate-900 shadow-xs font-bold'
+            : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'"
         >
-          <span>🧾</span>
-          <span>ใบแจ้งหนี้ทั้งหมด (All Invoices)</span>
+          <Receipt class="w-4 h-4" :class="activeTab === 'all-invoices' ? 'text-cyan-600' : 'text-slate-400'" />
+          <span>ใบแจ้งหนี้ทั้งหมด</span>
         </button>
 
         <button
+          type="button"
           @click="activeTab = 'draft-review'"
-          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer"
-          :class="activeTab === 'draft-review' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer"
+          :class="activeTab === 'draft-review'
+            ? 'bg-white text-slate-900 shadow-xs font-bold'
+            : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'"
         >
-          <span>📝</span>
-          <span>ตรวจทานบิล Draft (Review & Publish)</span>
+          <FileEdit class="w-4 h-4" :class="activeTab === 'draft-review' ? 'text-cyan-600' : 'text-slate-400'" />
+          <span>ตรวจทานบิลร่าง (Draft)</span>
         </button>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button
-          v-if="activeTab === 'all-invoices'"
-          @click="handleRunLateFees"
-          :disabled="runningLateFees"
-          class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-          title="สั่งคำนวณและอัปเดตค่าปรับบิลค้างชำระอัตโนมัติตามนโยบายแต่ละตึก"
-        >
-          <span v-if="runningLateFees" class="animate-spin w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full"></span>
-          <span v-else>⚡</span>
-          <span>{{ runningLateFees ? 'กำลังคำนวณ...' : 'คำนวณค่าปรับ' }}</span>
-        </button>
+      <!-- Right: Action Buttons Group -->
+      <div v-if="activeTab === 'all-invoices'" class="flex items-center gap-2 flex-wrap shrink-0">
+        <!-- Secondary Utility Actions (neutral, equal weight) -->
+        <div class="inline-flex items-center gap-1 p-1 bg-slate-100/70 rounded-xl border border-slate-200/70">
+          <Button
+            @click="handleRunLateFees"
+            :disabled="runningLateFees"
+            variant="ghost"
+            size="sm"
+            class="text-slate-600 hover:bg-white hover:shadow-2xs whitespace-nowrap text-xs"
+            title="สั่งคำนวณและอัปเดตค่าปรับบิลค้างชำระอัตโนมัติตามนโยบายแต่ละตึก"
+          >
+            <span v-if="runningLateFees" class="animate-spin w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full"></span>
+            <Zap v-else class="w-3.5 h-3.5 text-rose-500" />
+            <span>{{ runningLateFees ? 'กำลังคำนวณ...' : 'คำนวณค่าปรับ' }}</span>
+          </Button>
 
-        <button
-          v-if="activeTab === 'all-invoices'"
-          @click="handleRemindBulk"
-          :disabled="unpaidCount === 0 || sendingBulkReminder"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
-          title="ส่ง LINE Flex Message แจ้งเตือนไปยังลูกบ้านที่ค้างชำระทั้งหมด"
-        >
-          <span>💬</span>
-          <span>ส่ง LINE เตือนยอดค้างทั้งหมด</span>
-          <span v-if="unpaidCount > 0" class="px-1.5 py-0.2 bg-emerald-800 text-white text-[11px] rounded-full font-bold ml-0.5">
-            {{ unpaidCount }}
-          </span>
-        </button>
+          <Button
+            @click="handleExportCsv"
+            :disabled="exportingCsv"
+            variant="ghost"
+            size="sm"
+            class="text-slate-600 hover:bg-white hover:shadow-2xs whitespace-nowrap text-xs"
+            title="Export รายงานบิลรายเดือนเป็น CSV (รองรับ Excel)"
+          >
+            <Download v-if="!exportingCsv" class="w-3.5 h-3.5 text-slate-500" />
+            <span v-if="exportingCsv" class="animate-spin w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full"></span>
+            <span>Export CSV</span>
+          </Button>
 
-        <button
-          v-if="activeTab === 'all-invoices'"
+          <Button
+            @click="handleRemindBulk"
+            :disabled="unpaidCount === 0 || sendingBulkReminder"
+            variant="ghost"
+            size="sm"
+            class="text-slate-600 hover:bg-white hover:shadow-2xs whitespace-nowrap text-xs"
+            title="ส่ง LINE Flex Message แจ้งเตือนไปยังลูกบ้านที่ค้างชำระทั้งหมด"
+          >
+            <Send class="w-3.5 h-3.5 text-emerald-600" />
+            <span>เตือนยอดค้าง LINE</span>
+            <Badge v-if="unpaidCount > 0" class="bg-emerald-600 text-white font-mono ml-0.5">
+              {{ unpaidCount }}
+            </Badge>
+          </Button>
+        </div>
+
+        <!-- Create Custom Invoice Button (sole primary action) -->
+        <Button
           @click="openCreateModal"
-          class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm shadow-teal-600/20 flex items-center gap-1.5 cursor-pointer"
+          size="sm"
+          class="whitespace-nowrap text-xs font-bold"
         >
-          <span>+ ออกบิลปรับแต่ง (Custom Invoice)</span>
-        </button>
+          <Plus class="w-4 h-4" />
+          <span>ออกบิลใหม่</span>
+        </Button>
       </div>
     </div>
 
@@ -66,151 +100,162 @@
 
     <!-- Tab 1: Invoices Table -->
     <div v-else class="space-y-6">
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+      <Card class="overflow-hidden">
         <div class="p-4 border-b border-slate-200 flex items-center justify-between no-print">
           <div class="flex items-center gap-3">
             <h3 class="font-bold text-slate-900 text-sm">All Invoices & Payments</h3>
-            <span v-if="unpaidCount > 0" class="px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+            <Badge v-if="unpaidCount > 0" variant="warning">
               ค้างชำระ {{ unpaidCount }} รายการ
-            </span>
+            </Badge>
           </div>
-          <button @click="invoiceStore.fetchInvoices()" class="text-xs text-teal-600 hover:underline font-semibold cursor-pointer">🔄 Refresh</button>
+          <Button variant="link" size="sm" @click="invoiceStore.fetchInvoices()" class="text-cyan-600">
+            <RotateCw class="w-3.5 h-3.5" />
+            <span>รีเฟรช</span>
+          </Button>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 font-bold">
               <tr>
-                <th class="p-3.5">Invoice #</th>
-                <th class="p-3.5">Room</th>
-                <th class="p-3.5">Tenant</th>
-                <th class="p-3.5">Cycle</th>
-                <th class="p-3.5">Rent</th>
-                <th class="p-3.5">Water</th>
-                <th class="p-3.5">Electric</th>
-                <th class="p-3.5">Common</th>
-                <th class="p-3.5">Other</th>
-                <th class="p-3.5">Late Fee</th>
-                <th class="p-3.5">Total</th>
-                <th class="p-3.5">Slip</th>
-                <th class="p-3.5">Status</th>
-                <th class="p-3.5 text-right">Actions</th>
+                <th class="p-3.5">สถานะ</th>
+                <th class="p-3.5">ห้อง / ผู้เช่า</th>
+                <th class="p-3.5">รอบบิล</th>
+                <th class="p-3.5">ยอดรวม</th>
+                <th class="p-3.5">รายละเอียด</th>
+                <th class="p-3.5">สลิป</th>
+                <th class="p-3.5 text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              <tr v-for="inv in invoiceStore.invoices" :key="inv.id" class="hover:bg-slate-50/60 transition-colors">
-                <td class="p-3.5 font-mono text-xs font-bold text-cyan-700">{{ inv.invoiceNumber }}</td>
-                <td class="p-3.5 font-bold text-slate-900">ห้อง {{ inv.room?.roomNumber }} {{ inv.room?.building?.name ? `(${inv.room.building.name})` : '' }}</td>
-                <td class="p-3.5 text-xs text-slate-600 font-medium">
-                  <div class="flex items-center gap-1">
-                    <span>{{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}</span>
-                    <span v-if="inv.tenant?.lineUserId" class="text-[10px] text-emerald-600 bg-emerald-50 px-1 rounded border border-emerald-200" title="ผูกบัญชี LINE แล้ว">LINE</span>
-                  </div>
-                </td>
-                <td class="p-3.5 font-mono text-xs text-slate-600">{{ inv.billingCycle }}</td>
-                <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.roomPrice).toLocaleString() }}</td>
-                <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.waterTotal).toLocaleString() }}</td>
-                <td class="p-3.5 font-mono text-xs">฿{{ Number(inv.electricTotal).toLocaleString() }}</td>
-                <td class="p-3.5 font-mono text-xs">
-                  <span v-if="Number(inv.commonFee) === 0" class="text-emerald-600 font-semibold px-2 py-0.5 bg-emerald-50 rounded-md text-[11px]">
-                    ฿0 (ฟรี)
-                  </span>
-                  <span v-else>฿{{ Number(inv.commonFee).toLocaleString() }}</span>
-                </td>
-                <td class="p-3.5 text-xs">
-                  <div v-if="Number(inv.otherFee) > 0">
-                    <span class="font-mono font-semibold text-teal-700">฿{{ Number(inv.otherFee).toLocaleString() }}</span>
-                    <div v-if="inv.otherFeeNote" class="text-[10px] text-slate-400 truncate max-w-28">{{ inv.otherFeeNote }}</div>
-                  </div>
-                  <span v-else class="text-slate-300">-</span>
-                </td>
-                <td class="p-3.5 font-mono text-xs">
-                  <span v-if="Number(inv.lateFeeCharge) > 0" class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
-                    +฿{{ Number(inv.lateFeeCharge).toLocaleString() }}
-                  </span>
-                  <span v-else class="text-slate-300">-</span>
-                </td>
-                <td class="p-3.5 font-mono font-black text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</td>
-                <td class="p-3.5">
-                  <div v-if="inv.slipUrl" class="flex items-center gap-1.5">
-                    <a :href="inv.slipUrl" target="_blank" class="text-xs text-teal-600 font-semibold hover:underline">View Slip</a>
-                  </div>
-                  <div v-else-if="inv.status !== 'paid'" class="flex items-center">
-                    <label class="cursor-pointer text-xs text-slate-500 hover:text-teal-600 font-medium">
-                      <span>+ Upload Slip</span>
-                      <input type="file" class="hidden" accept="image/*" @change="(e) => handleUploadSlip(inv.id, e)" />
-                    </label>
-                  </div>
-                  <span v-else class="text-xs text-slate-400">-</span>
-                </td>
-                <td class="p-3.5">
-                  <span
-                    class="text-[11px] font-extrabold px-2.5 py-1 rounded-full border shadow-2xs inline-flex items-center gap-1"
-                    :class="{
-                      'bg-emerald-100 border-emerald-300 text-emerald-800': inv.status === 'paid',
-                      'bg-amber-100 border-amber-300 text-amber-800': inv.status === 'pending',
-                      'bg-blue-100 border-blue-300 text-blue-800': inv.status === 'reviewing',
-                      'bg-rose-100 border-rose-300 text-rose-800': inv.status === 'overdue'
-                    }"
-                  >
-                    <span>{{ inv.status === 'paid' ? '✅' : '⏳' }}</span>
-                    <span>{{ inv.status.toUpperCase() }}</span>
-                  </span>
-                </td>
-                <td class="p-3.5 text-right space-x-1.5">
-                  <!-- LINE Reminder Button (For Non-Paid Invoices) -->
-                  <button
-                    v-if="inv.status !== 'paid'"
-                    @click="handleRemindSingle(inv)"
-                    :disabled="sendingReminderId === inv.id"
-                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50"
-                    :title="inv.tenant?.lineUserId ? 'ส่ง LINE แจ้งเตือนบิลค้างชำระ' : 'ลูกบ้านยังไม่ผูก LINE'"
-                  >
-                    <span>{{ sendingReminderId === inv.id ? '⏳ กำลังส่ง...' : '💬 เตือน LINE' }}</span>
-                  </button>
+              <template v-for="inv in invoiceStore.invoices" :key="inv.id">
+                <tr class="hover:bg-slate-50/60 transition-colors align-top">
+                  <td class="p-3.5">
+                    <Badge :variant="statusBadgeVariant(inv.status)" class="font-extrabold">
+                      <component :is="inv.status === 'paid' ? CheckCircle2 : Clock" class="w-3 h-3" />
+                      <span>{{ inv.status.toUpperCase() }}</span>
+                    </Badge>
+                  </td>
+                  <td class="p-3.5">
+                    <div class="font-bold text-slate-900">
+                      ห้อง {{ inv.room?.roomNumber }} {{ inv.room?.building?.name ? `(${inv.room.building.name})` : '' }}
+                    </div>
+                    <div class="flex items-center gap-1 text-xs text-slate-600 font-medium mt-0.5">
+                      <span>{{ inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'N/A' }}</span>
+                      <Badge v-if="inv.tenant?.lineUserId" variant="success" title="ผูกบัญชี LINE แล้ว">LINE</Badge>
+                    </div>
+                    <div class="text-xs font-mono text-slate-400 mt-0.5">{{ inv.invoiceNumber }}</div>
+                  </td>
+                  <td class="p-3.5 font-mono text-xs text-slate-600">{{ inv.billingCycle }}</td>
+                  <td class="p-3.5">
+                    <div class="font-mono font-black text-emerald-700 text-sm">฿{{ Number(inv.grandTotal).toLocaleString() }}</div>
+                    <div v-if="Number(inv.lateFeeCharge) > 0" class="text-xs font-mono font-semibold text-rose-600 mt-0.5">
+                      รวมค่าปรับ +฿{{ Number(inv.lateFeeCharge).toLocaleString() }}
+                    </div>
+                  </td>
+                  <td class="p-3.5">
+                    <Button variant="link" size="sm" class="h-auto p-0 text-xs" @click="toggleDetail(inv.id)">
+                      <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="expandedIds.has(inv.id) ? 'rotate-180' : ''" />
+                      <span>{{ expandedIds.has(inv.id) ? 'ซ่อนรายการ' : 'ดูรายการ' }}</span>
+                    </Button>
+                  </td>
+                  <td class="p-3.5">
+                    <Button v-if="inv.slipUrl" variant="link" size="sm" class="h-auto p-0" @click="openSlipModal(inv)">ดูสลิป</Button>
+                    <span v-else class="text-xs text-slate-400">-</span>
+                  </td>
+                  <td class="p-3.5 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <Button
+                        v-if="inv.status !== 'paid'"
+                        @click="openPaymentModal(inv)"
+                        size="sm"
+                      >
+                        <Banknote class="w-3.5 h-3.5" />
+                        <span>รับเงิน</span>
+                      </Button>
 
-                  <!-- Manual Record Payment Button (For Non-Paid Invoices) -->
-                  <button
-                    v-if="inv.status !== 'paid'"
-                    @click="openPaymentModal(inv)"
-                    class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    💵 รับเงินสด
-                  </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <Button variant="outline" size="sm" class="w-8 px-0" title="ตัวเลือกเพิ่มเติม">
+                            <MoreVertical class="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem
+                            v-if="inv.status === 'reviewing'"
+                            :disabled="rejectingSlipId === inv.id"
+                            class="text-rose-700 hover:bg-rose-50 focus:bg-rose-50"
+                            @select="handleRejectSlip(inv)"
+                          >
+                            <Ban class="w-3.5 h-3.5" />
+                            <span>{{ rejectingSlipId === inv.id ? 'กำลังปฏิเสธ...' : 'ปฏิเสธสลิป' }}</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            v-if="inv.status !== 'paid'"
+                            :disabled="sendingReminderId === inv.id"
+                            @select="handleRemindSingle(inv)"
+                          >
+                            <Send class="w-3.5 h-3.5 text-emerald-600" />
+                            <span>{{ sendingReminderId === inv.id ? 'กำลังส่ง...' : 'เตือน LINE' }}</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem @select="openPrintModal(inv)">
+                            <Printer class="w-3.5 h-3.5 text-slate-500" />
+                            <span>พิมพ์บิล</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem v-if="inv.status !== 'paid'" @select="openEditModal(inv)">
+                            <Edit3 class="w-3.5 h-3.5 text-slate-500" />
+                            <span>แก้ไข</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem @select="invoiceStore.exportPdf(inv.id, inv.invoiceNumber)">
+                            <FileText class="w-3.5 h-3.5 text-slate-500" />
+                            <span>PDF</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </td>
+                </tr>
 
-                  <!-- Print Invoice / Receipt Button -->
-                  <button
-                    @click="openPrintModal(inv)"
-                    class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
-                  >
-                    🖨️ พิมพ์บิล
-                  </button>
-
-                  <!-- Edit Invoice Button -->
-                  <button
-                    v-if="inv.status !== 'paid'"
-                    @click="openEditModal(inv)"
-                    class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer"
-                  >
-                    ✏️ แก้ไข
-                  </button>
-
-                  <!-- PDF Export Button -->
-                  <button
-                    @click="invoiceStore.exportPdf(inv.id, inv.invoiceNumber)"
-                    class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold shadow-2xs cursor-pointer"
-                  >
-                    📄 PDF
-                  </button>
-                </td>
-              </tr>
+                <!-- Fee Breakdown Detail Row -->
+                <tr v-if="expandedIds.has(inv.id)" class="bg-slate-50/60">
+                  <td colspan="7" class="p-3.5">
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                      <div>
+                        <div class="text-slate-400 font-bold uppercase">ค่าเช่า</div>
+                        <div class="font-mono font-semibold text-slate-700 mt-0.5">฿{{ Number(inv.roomPrice).toLocaleString() }}</div>
+                      </div>
+                      <div>
+                        <div class="text-slate-400 font-bold uppercase">ค่าน้ำ</div>
+                        <div class="font-mono font-semibold text-slate-700 mt-0.5">฿{{ Number(inv.waterTotal).toLocaleString() }}</div>
+                      </div>
+                      <div>
+                        <div class="text-slate-400 font-bold uppercase">ค่าไฟ</div>
+                        <div class="font-mono font-semibold text-slate-700 mt-0.5">฿{{ Number(inv.electricTotal).toLocaleString() }}</div>
+                      </div>
+                      <div>
+                        <div class="text-slate-400 font-bold uppercase">ส่วนกลาง</div>
+                        <Badge v-if="Number(inv.commonFee) === 0" variant="success" class="mt-0.5">฿0 (ฟรี)</Badge>
+                        <div v-else class="font-mono font-semibold text-slate-700 mt-0.5">฿{{ Number(inv.commonFee).toLocaleString() }}</div>
+                      </div>
+                      <div>
+                        <div class="text-slate-400 font-bold uppercase">อื่นๆ</div>
+                        <template v-if="Number(inv.otherFee) > 0">
+                          <div class="font-mono font-semibold text-teal-700 mt-0.5">฿{{ Number(inv.otherFee).toLocaleString() }}</div>
+                          <div v-if="inv.otherFeeNote" class="text-slate-400 truncate">{{ inv.otherFeeNote }}</div>
+                        </template>
+                        <div v-else class="font-mono text-slate-300 mt-0.5">-</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
               <tr v-if="invoiceStore.invoices.length === 0">
-                <td colspan="13" class="p-6 text-center text-slate-400">ยังไม่มีรายการใบแจ้งหนี้</td>
+                <td colspan="7" class="p-6 text-center text-slate-400">ยังไม่มีรายการใบแจ้งหนี้</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       <!-- Edit / Create Custom Invoice Modal -->
       <EditInvoiceModal
@@ -221,19 +266,20 @@
         @saved="invoiceStore.fetchInvoices()"
       />
 
-      <!-- 💵 Record Manual Payment Dialog Modal -->
-      <div v-if="showPaymentModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-          <div class="px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-800 text-white flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-xl">💵</span>
-              <h3 class="font-bold text-base text-white">บันทึกรับชำระเงิน (Record Payment)</h3>
-            </div>
-            <button @click="showPaymentModal = false" class="text-emerald-200 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+      <!-- Record Manual Payment Dialog Modal -->
+      <Dialog :open="showPaymentModal" @update:open="showPaymentModal = $event">
+        <DialogContent class="max-w-md p-0 overflow-hidden no-print">
+          <div class="px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-800 text-white">
+            <DialogHeader class="pr-6">
+              <DialogTitle class="text-white flex items-center gap-2">
+                <Banknote class="w-5 h-5" />
+                <span>บันทึกรับชำระเงิน (Record Payment)</span>
+              </DialogTitle>
+            </DialogHeader>
           </div>
 
           <form @submit.prevent="handleRecordPayment" class="p-6 space-y-4">
-            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center space-y-1">
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center space-y-1">
               <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">ยอดเงินที่ต้องรับชำระ (Total Payable)</div>
               <div class="text-3xl font-black text-emerald-700 font-mono">
                 ฿{{ Number(payingInvoice?.grandTotal || 0).toLocaleString() }}
@@ -245,73 +291,133 @@
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">ช่องทางการชำระเงิน (Payment Method)</label>
-              <select
-                v-model="paymentForm.paymentMethod"
-                required
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              >
-                <option value="CASH">💵 เงินสดผ่านเคาน์เตอร์ (Cash)</option>
-                <option value="PROMPTPAY">📱 พร้อมเพย์ / สแกน QR (PromptPay)</option>
-                <option value="BANK_TRANSFER">🏦 โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
-              </select>
+              <Select v-model="paymentForm.paymentMethod" required class="font-bold">
+                <option value="CASH">เงินสดผ่านเคาน์เตอร์ (Cash)</option>
+                <option value="PROMPTPAY">พร้อมเพย์ / สแกน QR (PromptPay)</option>
+                <option value="BANK_TRANSFER">โอนเงินผ่านบัญชีธนาคาร (Bank Transfer)</option>
+              </Select>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">หมายเหตุการชำระเงิน (Payment Note - Optional)</label>
-              <input
+              <Input
                 v-model="paymentForm.note"
                 type="text"
                 placeholder="เช่น รับเงินสดแบงก์ 5,000 บาท ทอน 200 บาท"
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
 
-            <div class="pt-3 flex gap-3">
-              <button
+            <DialogFooter class="pt-3">
+              <Button
                 type="button"
+                variant="outline"
+                class="flex-1"
                 @click="showPaymentModal = false"
-                class="w-1/2 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
                 ยกเลิก
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 :disabled="recordingPayment"
-                class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer"
+                class="flex-1 bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20"
               >
-                {{ recordingPayment ? 'กำลังบันทึก...' : '✅ บันทึกรับเงิน' }}
-              </button>
-            </div>
+                <CheckCircle2 class="w-4 h-4" />
+                <span>{{ recordingPayment ? 'กำลังบันทึก...' : 'บันทึกรับเงิน' }}</span>
+              </Button>
+            </DialogFooter>
           </form>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
 
-      <!-- 🖨️ Printable Invoice/Receipt Teleport Modal -->
+      <!-- Slip Review Modal: ดูสลิปแล้วตัดสินใจอนุมัติ/ปฏิเสธในที่เดียว -->
+      <Dialog :open="showSlipModal" @update:open="showSlipModal = $event">
+        <DialogContent class="max-w-md p-0 overflow-hidden">
+          <div class="px-6 py-4 bg-slate-900 text-white">
+            <DialogHeader class="pr-6">
+              <DialogTitle class="text-white">
+                สลิปโอนเงิน ห้อง {{ slipModalInvoice?.room?.roomNumber }}
+              </DialogTitle>
+              <DialogDescription class="text-slate-300">
+                ยอดตามบิล ฿{{ Number(slipModalInvoice?.grandTotal || 0).toLocaleString() }} · รอบบิล {{ slipModalInvoice?.billingCycle }}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <img
+              v-if="slipModalInvoice?.slipUrl"
+              :src="slipModalInvoice.slipUrl"
+              alt="สลิปโอนเงิน"
+              class="w-full max-h-[60vh] object-contain rounded-xl border border-slate-200 bg-slate-50"
+            />
+
+            <template v-if="slipModalInvoice?.status === 'reviewing'">
+              <p class="text-xs text-slate-500 text-center">ตรวจสอบยอดเงินให้ตรงกับบิลก่อนอนุมัติ</p>
+              <div class="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  class="border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700"
+                  :disabled="rejectingSlipId === slipModalInvoice.id"
+                  @click="handleRejectSlip(slipModalInvoice)"
+                >
+                  <Ban class="w-3.5 h-3.5" />
+                  <span>ปฏิเสธ</span>
+                </Button>
+                <Button
+                  class="bg-emerald-600 hover:bg-emerald-700"
+                  :disabled="approvingSlipId === slipModalInvoice.id"
+                  @click="handleApproveSlip(slipModalInvoice)"
+                >
+                  <CheckCircle2 class="w-3.5 h-3.5" />
+                  <span>{{ approvingSlipId === slipModalInvoice.id ? 'กำลังอนุมัติ...' : 'อนุมัติ' }}</span>
+                </Button>
+              </div>
+            </template>
+            <Button v-else variant="outline" class="w-full" @click="showSlipModal = false">ปิด</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <!-- Printable Invoice/Receipt Teleport Modal -->
       <teleport to="body">
-        <div v-if="showPrintModal" id="print-modal-root" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          v-if="showPrintModal"
+          id="print-modal-root"
+          class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label="พรีวิวใบแจ้งหนี้และใบเสร็จ"
+        >
+          <Card class="w-full max-w-2xl overflow-hidden my-8 p-0 animate-in fade-in zoom-in-95 duration-150">
             <!-- Print Toolbar Bar (Hidden during window.print) -->
             <div class="px-6 py-3 bg-slate-900 text-white flex items-center justify-between no-print">
               <div class="flex items-center gap-2">
-                <span class="text-lg">🖨️</span>
+                <Printer class="w-4 h-4 text-cyan-300" />
                 <span class="font-bold text-xs">พรีวิวใบแจ้งหนี้/ใบเสร็จ (Print Preview)</span>
               </div>
 
               <div class="flex items-center gap-2">
-                <button
-                  @click="triggerPrint"
-                  class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                <Button @click="triggerPrint" size="sm" class="bg-cyan-600 hover:bg-cyan-700">
+                  <Printer class="w-3.5 h-3.5" />
+                  <span>สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
+                </Button>
+                <Button
+                  @click="showPrintModal = false"
+                  variant="ghost"
+                  size="icon"
+                  class="text-slate-400 hover:text-white hover:bg-transparent h-auto w-auto p-1"
+                  aria-label="ปิดหน้าตัวอย่าง"
+                  title="ปิด"
                 >
-                  <span>🖨️ สั่งพิมพ์ออกเครื่องพิมพ์ (Print)</span>
-                </button>
-                <button @click="showPrintModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">✕</button>
+                  <X class="w-5 h-5" />
+                </Button>
               </div>
             </div>
 
-            <!-- 📄 Print Content Paper Box -->
+            <!-- Print Content Paper Box -->
             <div id="printable-receipt" class="p-8 bg-white text-slate-900 font-sans space-y-6 relative border-t-4 border-cyan-600">
               <!-- Watermark Stamp for PAID -->
-              <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-2xl font-black text-3xl uppercase tracking-widest text-center select-none">
+              <div v-if="printingInvoice?.status === 'paid'" class="absolute top-20 right-8 pointer-events-none opacity-20 transform rotate-[-15deg] border-4 border-emerald-600 text-emerald-700 px-6 py-2 rounded-xl font-black text-3xl uppercase tracking-widest text-center select-none">
                 ชำระเงินแล้ว<br/><span class="text-lg font-bold">PAID OFFICIAL</span>
               </div>
 
@@ -328,16 +434,16 @@
                 </div>
 
                 <div class="text-right">
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">เลขที่เอกสาร / No.</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">เลขที่เอกสาร / No.</div>
                   <div class="text-base font-black font-mono text-cyan-900">{{ printingInvoice?.invoiceNumber }}</div>
                   <div class="text-xs text-slate-500 font-mono mt-1">วันที่ออกบิล: {{ formatDate(printingInvoice?.createdAt) }}</div>
                 </div>
               </div>
 
               <!-- Tenant & Room Info -->
-              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
                 <div>
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">ข้อมูลผู้เช่า / Tenant Information</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">ข้อมูลผู้เช่า / Tenant Information</div>
                   <div class="font-bold text-slate-900 text-sm mt-0.5">
                     {{ printingInvoice?.tenant ? `${printingInvoice.tenant.firstName} ${printingInvoice.tenant.lastName}` : 'ผู้เช่าห้องพัก' }}
                   </div>
@@ -345,7 +451,7 @@
                 </div>
 
                 <div class="text-right">
-                  <div class="text-[10px] font-bold text-slate-400 uppercase">ห้องพัก & รอบบิล / Room & Cycle</div>
+                  <div class="text-xs font-bold text-slate-400 uppercase">ห้องพัก & รอบบิล / Room & Cycle</div>
                   <div class="font-extrabold text-slate-900 text-sm mt-0.5">ห้อง {{ printingInvoice?.room?.roomNumber }}</div>
                   <div class="text-cyan-700 font-bold font-mono mt-0.5">ประจำรอบบิล: {{ printingInvoice?.billingCycle }}</div>
                 </div>
@@ -401,29 +507,31 @@
               <!-- Payment Status Footer -->
               <div class="pt-4 border-t border-slate-200 flex justify-between items-end text-xs">
                 <div>
-                  <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">สถานะการชำระเงิน</div>
+                  <div class="text-xs text-slate-400 font-bold uppercase mb-1">สถานะการชำระเงิน</div>
                   <div v-if="printingInvoice?.status === 'paid'" class="text-emerald-700 font-bold flex items-center gap-1.5">
-                    <span>✅ ชำระเงินเรียบร้อยแล้ว</span>
-                    <span class="px-2 py-0.5 bg-emerald-100 rounded-md text-[10px] font-extrabold uppercase font-mono border border-emerald-200">
+                    <CheckCircle2 class="w-4 h-4 text-emerald-600 inline-block" />
+                    <span>ชำระเงินเรียบร้อยแล้ว</span>
+                    <Badge variant="success" class="font-extrabold font-mono">
                       {{ printingInvoice.paymentMethod || 'CASH' }}
-                    </span>
-                    <span v-if="printingInvoice.paidAt" class="text-slate-500 font-mono text-[10px]">({{ formatDate(printingInvoice.paidAt) }})</span>
+                    </Badge>
+                    <span v-if="printingInvoice.paidAt" class="text-slate-500 font-mono text-xs">({{ formatDate(printingInvoice.paidAt) }})</span>
                   </div>
-                  <div v-else class="text-amber-700 font-bold flex items-center gap-1">
-                    <span>⏳ รอชำระเงิน (กำหนดชำระ: {{ formatDate(printingInvoice?.dueDate) }})</span>
+                  <div v-else class="text-amber-700 font-bold flex items-center gap-1.5">
+                    <Clock class="w-4 h-4 text-amber-600 inline-block" />
+                    <span>รอชำระเงิน (กำหนดชำระ: {{ formatDate(printingInvoice?.dueDate) }})</span>
                   </div>
-                  <div v-if="printingInvoice?.paymentNote" class="text-slate-500 italic mt-1 text-[11px]">
+                  <div v-if="printingInvoice?.paymentNote" class="text-slate-500 italic mt-1 text-xs">
                     หมายเหตุ: {{ printingInvoice.paymentNote }}
                   </div>
                 </div>
 
                 <div class="text-center w-44 pt-4">
                   <div class="border-b border-dashed border-slate-400 mb-1"></div>
-                  <div class="text-[10px] text-slate-500 font-semibold">ผู้รับเงิน / Authorized Signature</div>
+                  <div class="text-xs text-slate-500 font-semibold">ผู้รับเงิน / Authorized Signature</div>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </teleport>
     </div>
@@ -431,19 +539,45 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
+import {
+  CheckCircle2,
+  Clock,
+  Receipt,
+  FileEdit,
+  Zap,
+  Download,
+  Send,
+  Plus,
+  RotateCw,
+  Banknote,
+  Printer,
+  Edit3,
+  FileText,
+  ChevronDown,
+  MoreVertical,
+  Ban,
+  X
+} from 'lucide-vue-next';
 import { useRoomStore } from '@/stores/useRoomStore';
 import { useInvoiceStore } from '@/stores/useInvoiceStore';
 import { useBuildingStore } from '@/stores/useBuildingStore';
-import uploadService from '@/services/uploadService';
 import api from '@/utils/api';
 import EditInvoiceModal from '@/components/EditInvoiceModal.vue';
 import InvoiceReview from '@/components/invoice/InvoiceReview.vue';
-import { showSuccess, showError, showConfirm } from '@/utils/swal';
+import { showSuccess, showError, showConfirm, showPrompt } from '@/utils/swal';
 import { formatDate } from '@/utils/formatters';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
 const activeTab = ref('all-invoices');
 const runningLateFees = ref(false);
+const exportingCsv = ref(false);
 
 const handleRunLateFees = async () => {
   const confirmed = await showConfirm(
@@ -467,6 +601,34 @@ const handleRunLateFees = async () => {
     runningLateFees.value = false;
   }
 };
+
+const handleExportCsv = async () => {
+  const buildingId = buildingStore.activeBuildingId;
+  if (!buildingId) return showError('ข้อผิดพลาด', 'กรุณาเลือกตึกก่อน');
+
+  const now = new Date();
+  const defaultCycle = `${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+  const cycle = window.prompt('ระบุรอบบิล (เช่น 09-2026):', defaultCycle);
+  if (!cycle) return;
+
+  exportingCsv.value = true;
+  try {
+    const res = await api.get(`/api/v1/buildings/${buildingId}/reports/monthly-csv`, {
+      params: { cycle },
+      responseType: 'blob'
+    });
+    const url = URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report-${cycle}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถ export CSV ได้');
+  } finally {
+    exportingCsv.value = false;
+  }
+};
 const roomStore = useRoomStore();
 const invoiceStore = useInvoiceStore();
 const buildingStore = useBuildingStore();
@@ -483,10 +645,36 @@ const printingInvoice = ref(null);
 
 const sendingReminderId = ref(null);
 const sendingBulkReminder = ref(false);
+const rejectingSlipId = ref(null);
+const approvingSlipId = ref(null);
+
+const showSlipModal = ref(false);
+const slipModalInvoice = ref(null);
+
+const openSlipModal = (inv) => {
+  slipModalInvoice.value = inv;
+  showSlipModal.value = true;
+};
 
 const unpaidCount = computed(() => {
   return invoiceStore.invoices.filter((i) => i.status !== 'paid').length;
 });
+
+const expandedIds = ref(new Set());
+const toggleDetail = (id) => {
+  if (expandedIds.value.has(id)) {
+    expandedIds.value.delete(id);
+  } else {
+    expandedIds.value.add(id);
+  }
+};
+
+const statusBadgeVariant = (status) => {
+  if (status === 'paid') return 'success';
+  if (status === 'pending' || status === 'draft' || status === 'reviewing') return 'warning';
+  if (status === 'overdue' || status === 'void' || status === 'rejected') return 'danger';
+  return 'neutral';
+};
 
 const paymentForm = reactive({
   paymentMethod: 'CASH',
@@ -500,7 +688,18 @@ const loadData = (buildingId) => {
 
 onMounted(() => {
   loadData(buildingStore.activeBuildingId);
+  window.addEventListener('keydown', handlePrintModalEscape);
 });
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handlePrintModalEscape);
+});
+
+const handlePrintModalEscape = (e) => {
+  if (e.key === 'Escape' && showPrintModal.value) {
+    showPrintModal.value = false;
+  }
+};
 
 watch(
   () => buildingStore.activeBuildingId,
@@ -552,19 +751,6 @@ const handleRecordPayment = async () => {
   }
 };
 
-const handleUploadSlip = async (invoiceId, event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  try {
-    const uploadRes = await uploadService.uploadFile(file);
-    await invoiceStore.uploadSlip(invoiceId, uploadRes.data.url);
-    await showSuccess('สำเร็จ!', 'อัปโหลดสลิปโอนเงินเรียบร้อยแล้ว');
-  } catch (error) {
-    showError('เกิดข้อผิดพลาด', error.response?.data?.message || 'Failed to upload slip');
-  }
-};
-
 const handleRemindSingle = async (inv) => {
   const roomNum = inv.room?.roomNumber || 'N/A';
   const tenantName = inv.tenant ? `${inv.tenant.firstName} ${inv.tenant.lastName}` : 'ผู้เช่า';
@@ -581,7 +767,7 @@ const handleRemindSingle = async (inv) => {
   const confirmed = await showConfirm(
     'ส่ง LINE แจ้งเตือนบิลค้างชำระ?',
     `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนยอดค้างชำระบิล ${inv.invoiceNumber} (ยอด ฿${amountStr}) ไปยังห้อง ${roomNum} (${tenantName}) ใช่หรือไม่?`,
-    '💬 ส่ง LINE แจ้งเตือน',
+    'ส่ง LINE แจ้งเตือน',
     'ยกเลิก'
   );
 
@@ -608,7 +794,7 @@ const handleRemindBulk = async () => {
   const confirmed = await showConfirm(
     'ส่ง LINE เตือนยอดค้างทั้งหมด?',
     `ต้องการส่งข้อความ LINE Flex Message แจ้งเตือนไปยังห้องที่ค้างชำระทั้งหมด ${currentUnpaidCount} รายการ ใช่หรือไม่?`,
-    '💬 ส่ง LINE เตือนทั้งหมด',
+    'ส่ง LINE เตือนทั้งหมด',
     'ยกเลิก'
   );
 
@@ -626,9 +812,55 @@ const handleRemindBulk = async () => {
     sendingBulkReminder.value = false;
   }
 };
+
+const handleRejectSlip = async (inv) => {
+  // ต้องปิด Dialog (Radix) ก่อนเปิด SweetAlert เสมอ — ถ้าเปิดซ้อนกัน focus-trap ของ Dialog
+  // จะแย่ง focus กับปุ่มใน SweetAlert ทำให้กดยืนยัน/ยกเลิกใน prompt ไม่ติด
+  showSlipModal.value = false;
+
+  const reason = await showPrompt(
+    'ปฏิเสธสลิป',
+    `ปฏิเสธสลิปของห้อง ${inv.room?.roomNumber || ''} (ยอด ฿${Number(inv.grandTotal).toLocaleString()}) และแจ้งเตือนลูกบ้านให้ส่งใหม่`,
+    'ระบุเหตุผล (เช่น ยอดเงินไม่ตรง, สลิปไม่ชัดเจน)'
+  );
+  if (reason === null) return;
+
+  rejectingSlipId.value = inv.id;
+  try {
+    await invoiceStore.updateStatus(inv.id, 'pending', { rejectionReason: reason.trim() || undefined });
+    showSuccess('ปฏิเสธสลิปเรียบร้อย', 'ระบบแจ้งเตือนลูกบ้านให้ส่งสลิปใหม่ทาง LINE แล้ว');
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถปฏิเสธสลิปได้');
+  } finally {
+    rejectingSlipId.value = null;
+  }
+};
+
+const handleApproveSlip = async (inv) => {
+  // เหตุผลเดียวกับ handleRejectSlip: ปิด Dialog ก่อนเปิด SweetAlert เสมอ
+  showSlipModal.value = false;
+
+  const confirmed = await showConfirm(
+    'ยืนยันการอนุมัติสลิป?',
+    `ยืนยันยอดเงิน ฿${Number(inv.grandTotal).toLocaleString()} ของห้อง ${inv.room?.roomNumber || ''}`,
+    'อนุมัติ',
+    'ยกเลิก'
+  );
+  if (!confirmed) return;
+
+  approvingSlipId.value = inv.id;
+  try {
+    await invoiceStore.updateStatus(inv.id, 'paid');
+    showSuccess('อนุมัติสลิปเรียบร้อยแล้ว', `บันทึกบิลห้อง ${inv.room?.roomNumber || ''} เป็นชำระแล้ว`);
+  } catch (err) {
+    showError('เกิดข้อผิดพลาด', err.response?.data?.message || 'ไม่สามารถอนุมัติสลิปได้');
+  } finally {
+    approvingSlipId.value = null;
+  }
+};
 </script>
 
-<style scoped>
+<style>
 @media print {
   body > *:not(#print-modal-root) {
     display: none !important;

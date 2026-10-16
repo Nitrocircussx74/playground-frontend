@@ -162,18 +162,18 @@
 1. **Debug Session ทดสอบ Onboarding จริง**: ไล่ตาม User ทดสอบ Flow "ผูกบัญชี → ตั้ง PIN" ผ่าน Browser/Tunnel จนพบว่าระบบมี **Invite Code 2 ชุดซ้อนกัน** ที่หน้าตาคล้ายกันจนสับสนได้ง่าย: `/liff/onboarding` (LiffOnboardingView.vue, ใช้ `Tenant.inviteCode` — สำหรับผู้เช่า**เดิม**ที่มีข้อมูลอยู่แล้ว) กับ `/liff/register` (LiffRegisterView.vue, ใช้ `RoomInvite.code` — สำหรับผู้เช่า**ใหม่**เอี่ยม) ปุ่ม "ลงทะเบียนด้วยรหัสเชิญ" ที่ [LiffEntryView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffEntryView.vue) พาไปแค่หน้าเดียว (`/liff/register`) ทำให้ผู้เช่าเดิมที่มีรหัสเชิญแบบแรกเข้าผิดหน้าแล้วเจอ "ไม่พบรหัสเชิญ" — **ยังไม่ได้แก้ในรอบนี้** (เป็น Backend Design Issue ข้ามระบบ ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 14 ข้อ 4) บันทึกไว้เป็น Follow-up
 2. **LIFF Client Redirect Guard** ([router/index.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/router/index.js)): เพิ่ม Check ต้นทาง `liffNavigationGuard` — ถ้าเปิดหน้า `/liff/*` ผ่าน Browser ธรรมดา (ไม่ใช่แอป LINE จริง, เช็คด้วย `liff.isInClient()`) จะ `window.location.href` เด้งไปเปิดผ่าน `https://liff.line.me/<LIFF_ID><path เดิม>` ให้อัตโนมัติ (LINE จัดการเปิดแอป LINE ต่อเองถ้ามีติดตั้ง) กันปัญหา LINE ID Token Verify ไม่ผ่านเพราะไม่มี Session LINE จริงที่เจอกันมาทั้ง Session — **ปิดกลไกนี้ใน `import.meta.env.DEV`** (ไม่งั้นจะไปรบกวนการทดสอบผ่าน Browser ด้วย `?devLineUserId=`) และเว้น `/web/login`/`isTenantWeb` ไว้เพราะตั้งใจออกแบบให้ใช้นอก LINE ได้อยู่แล้ว
 3. **Dev Testing Convenience** ([main.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/main.js)): พบว่าโค้ดเดิมมีแค่ "อ่าน"/"ลบ" `localStorage.dev_line_user_id` (`utils/liff.js`, `utils/api.js`) แต่ไม่เคยมีจุด "ตั้งค่า" เลยสักที่ — เพิ่ม Dev-only Bootstrap อ่าน Query Param `?devLineUserId=xxx` แล้ว Persist ลง localStorage ให้ครั้งเดียว ใช้ร่วมกับ `LINE_AUTH_MOCK_MODE=true` ฝั่ง Backend เพื่อทดสอบผ่าน Browser ธรรมดาได้แบบไม่ต้องพึ่งมือถือจริง (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 15 เรื่อง Mock Mode)
-4. **Brand Color Rebrand — HorHub Teal**: Sample สีจากไฟล์โลโก้จริง (`public/horhub-app-icon.png` ฯลฯ) ด้วยสคริปต์อ่าน Pixel ได้ค่าเฉลี่ยใกล้เคียง Tailwind `cyan-700` (`#0E7490`) มากที่สุด — สีเดิมของทั้งระบบ (Purple/Indigo ฝั่ง CMS, Blue-500 Default ฝั่ง Theme) ไม่ตรงกับโลโก้เลย:
+4. **Brand Color Rebrand — Horspace Teal**: Sample สีจากไฟล์โลโก้จริง (`public/horspace-app-icon.png` ฯลฯ) ด้วยสคริปต์อ่าน Pixel ได้ค่าเฉลี่ยใกล้เคียง Tailwind `cyan-700` (`#0E7490`) มากที่สุด — สีเดิมของทั้งระบบ (Purple/Indigo ฝั่ง CMS, Blue-500 Default ฝั่ง Theme) ไม่ตรงกับโลโก้เลย:
    - Sed ทั่ว `src/` แทนที่ Tailwind Class `purple-*` → `cyan-*` และ `indigo-*` → `teal-*` (คงเฉดเดิมทุกจุด 50-950) ครอบคลุม 55 ไฟล์ทั่วทั้ง CMS Admin
    - `tailwind.config.js`, `assets/main.css`, `composables/useDynamicTheme.js`: เปลี่ยน Default `--theme-primary`/Fallback จาก Blue (`#3B82F6` / `59 130 246`) เป็น Teal (`#0E7490` / `14 116 144`)
    - `components/common/CycleDatePicker.vue`: `--dp-primary-color` จาก Purple (`#9333ea`) เป็น Cyan (`#0891b2`)
-   - `views/BuildingSettingsView.vue`: เพิ่ม Preset สี **"HorHub Teal"** เป็นตัวเลือกแรกในรายการสีให้แอดมินเลือกได้ (นอกเหนือจาก Blue/Ruby/Emerald/Indigo/Amber/Sky/Rose/Slate เดิม) และเปลี่ยน Default ฟอร์มสร้าง/แก้ตึกให้เป็น HorHub Teal
+   - `views/BuildingSettingsView.vue`: เพิ่ม Preset สี **"Horspace Teal"** เป็นตัวเลือกแรกในรายการสีให้แอดมินเลือกได้ (นอกเหนือจาก Blue/Ruby/Emerald/Indigo/Amber/Sky/Rose/Slate เดิม) และเปลี่ยน Default ฟอร์มสร้าง/แก้ตึกให้เป็น Horspace Teal
    - **ตั้งใจไม่แตะ**: Preset สีอื่นๆ ที่ให้แอดมินเลือกเอง (เป็น Theme เฉพาะของแต่ละตึก ไม่ใช่ของแอป), สี Categorical ใน Chart ของ `DashboardView.vue` (Indigo/Emerald แยกแยะ Data Series คนละเรื่องกับ Brand), สี Emerald ในหน้า LIFF (`LiffOnboardingView.vue` ฯลฯ) ที่ยังไม่ชัดว่าเป็น Brand หรือ Semantic Success Color ปนกัน — รอ Confirm ก่อนแก้เพิ่ม
 5. **ไอคอนห้องพักตามประเภท + โลโก้ตึก** ([LiffProfileView.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/views/LiffProfileView.vue)): Multi-Room Selector เดิมใช้ไอคอนประตู (`DoorClosed`) เดียวกันทุกห้องไม่ว่าจะเป็นห้องพักจริงหรือ Unit ประเภทอื่น (เช่น `vending_spot` ตู้เต่าบิน) — เพิ่ม `getRoomIcon(unitType)` reuse Mapping เดียวกับ `getUnitTypeIcon` ใน `RoomOverviewCard.vue` ฝั่ง CMS Admin (🏪 ร้านค้า, ☕ ตู้บริการ, 🚗 ที่จอดรถ, 📦 ห้องเก็บของ, 📡 ป้าย/ดาดฟ้า, 🚪 ห้องพักปกติ) และถ้าตึกนั้นตั้งโลโก้ไว้ (`room.logoUrl`) ให้แสดงโลโก้ตึกแทนไอคอนเลย ช่วยแยกห้องข้ามหลายตึกของผู้เช่าคนเดียวได้ง่ายขึ้น
 6. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน (ระหว่างทางเจอ Duplicate Import `Package` ของตัวเองทำ Build พังชั่วคราว แก้แล้ว)
 
 ### ⏭️ งานที่เหลือ (Follow-up Items):
 - แก้ปุ่ม "ลงทะเบียนด้วยรหัสเชิญ" ใน `LiffEntryView.vue` ให้ฉลาดขึ้น (เช็คเบอร์โทร/สถานะก่อนแล้วพาไปหน้าที่ถูกต้องอัตโนมัติ แทนที่จะพาไปหน้าเดียวตายตัว) — หรือรวม 2 ระบบ Invite Code เป็นระบบเดียวฝั่ง Backend
-- ตัดสินใจว่าสี Emerald ในหน้า LIFF ควรเปลี่ยนเป็น HorHub Teal ด้วยหรือไม่ (บาง Component ใช้เป็น Brand บาง Component ใช้เป็น Success Semantic ปนกัน ต้องแยกทีละจุด)
+- ตัดสินใจว่าสี Emerald ในหน้า LIFF ควรเปลี่ยนเป็น Horspace Teal ด้วยหรือไม่ (บาง Component ใช้เป็น Brand บาง Component ใช้เป็น Success Semantic ปนกัน ต้องแยกทีละจุด)
 
 ---
 
@@ -195,3 +195,110 @@
 4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors) ทุกครั้งหลังแก้แต่ละส่วน
 
 ### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 16)
+
+---
+
+## 📅 [2026-09-11] - In-App Notification Bell (Admin CMS + Tenant LIFF)
+
+### 📌 รายการกิจกรรมที่ดำเนินการ:
+1. **`src/services/notificationService.js` (ใหม่)**: ครอบ `@/utils/api` เรียก Endpoint กระดิ่งทั้งฝั่ง Admin (`/api/admin/buildings/:id/notifications`) และฝั่ง Tenant (`/api/v1/liff/notifications`) — Interceptor เดิมใน `utils/api.js` แนบ Header/Token ให้อัตโนมัติอยู่แล้วทั้งสองฝั่ง ไม่ต้องตั้งค่าเพิ่ม
+2. **`src/components/NotificationBell.vue` (ใหม่)**: กระดิ่งเดียวใช้ได้ 2 โหมดผ่าน Prop `mode` (`admin` ต้องมี `buildingId`, `tenant` ใช้ตัวตนจาก LIFF Token) — Badge นับ Unread, Dropdown List กด Mark Read + Deep Link ไปหน้าที่เกี่ยวข้องตาม `notificationType`, Poll ทุก 45s (`setInterval`), ปิดเมื่อคลิกนอกกล่องด้วย `document.addEventListener('mousedown', ...)` (ไม่มี Dropdown/Popover Primitive ใน `components/ui/` ให้ใช้ เลยเขียน Outside-Click เองแบบ Native)
+3. **ติดตั้งใน 2 Layout**:
+   - [App.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/App.vue): Header Admin CMS ข้าง Building Switcher — แสดงเฉพาะตอนเลือกตึกแล้ว (`buildingStore.activeBuildingId`) เพราะ Endpoint ฝั่ง Admin สโคปตามตึกเสมอ
+   - [LiffLayout.vue](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/layouts/LiffLayout.vue): Header Tenant หลังป้าย "LIFF"/"Web Portal" (ผู้ใช้ขอย้ายจากก่อนป้ายมาไว้หลังป้าย) — Reuse `showBottomNav` เดิมเป็นตัวเช็คว่าอยู่ในหน้าที่ Login แล้วหรือยัง (True = ไม่ใช่หน้า Entry/Register/Onboarding/PIN)
+4. **Build Verification**: รัน `yarn build` ผ่าน 100% (0 Errors)
+5. **🐛 พบบั๊ก Pre-existing ระหว่างรัน `yarn test`**: [LiffLayout.test.js](file:///Users/user/Desktop/playgroud/playground/playground-frontend/src/layouts/LiffLayout.test.js) 4 เทส Fail เพราะ `mount()` ไม่ได้ใส่ Pinia Plugin เลย (`global: { plugins: [router] }` ขาด Pinia) — `useAuthStore()`/`useFeatureStore()` ที่ถูกเรียกไม่มีเงื่อนไขใน `<script setup>` เลยโยน Error ทันทีตอน Mount ไม่เกี่ยวกับโค้ดที่แก้ใน Phase นี้เลย (Component อื่นอีก 2 ไฟล์ Test ผ่านปกติ) — บันทึกไว้เป็น Follow-up ยังไม่ได้แก้
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17)
+
+### ⏭️ งานที่เหลือ (Follow-up Items):
+- แก้ `LiffLayout.test.js` ให้ใส่ `createTestingPinia()` เข้า `global.plugins` (Pre-existing Bug ไม่เกี่ยวกับ Phase นี้) — **แก้แล้วใน Phase ถัดไป (ยืนยันผ่าน `yarn vitest run` 7/7 ณ วันที่ทำ Phase 20 ด้านล่าง)**
+- ประกาศข่าวสาร (Announcement Broadcast) ยังไม่ขึ้นกระดิ่ง Tenant — รอ Backend แก้ `sendAnnouncementBroadcast` ให้ Log ก่อน (ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 17) — **แก้แล้วฝั่ง Backend ใน Phase 19 (ดู `playground-api/docs/ACTIVITY_LOG.md`)**
+
+---
+
+> **หมายเหตุ**: Log ฉบับนี้ขาดบันทึกของ Phase 18 (LIFF Building Owner Dashboard) และ Phase 19 (Rebranding/Announcement Gap) ที่ทำไปแล้วจริงในโค้ด (ดู Commit `3bae5b6`, `a936737` และ `playground-api/docs/ACTIVITY_LOG.md` Phase 18-19 ที่มีรายละเอียดฝั่ง Frontend ระบุไว้คู่กัน) — ไม่ได้ Backfill ในรอบนี้ เพราะนอกขอบเขตงานที่ขอ (Audit + Fix บั๊ก) บันทึกไว้เผื่อ Sync ภายหลัง
+
+---
+
+### Phase 20 (2026-09-23): Full Flow & Bug Audit (API + CMS) — แก้ทุกจุดที่ยืนยันเป็นบั๊กจริง
+
+- **บริบท**: ผู้ใช้ขอให้ไล่ตรวจ Flow และบั๊กทั้งหมดของทั้ง `playground-api` และ `playground-frontend` แล้ววางแผน — ส่ง Sub-Agent 2 ตัวไล่อ่านโค้ดจริงคู่ขนานกัน แล้วแก้ทุกข้อที่ยืนยันว่าเป็นบั๊กจริงตามคำขอ (รายละเอียดฝั่ง Backend ดู `playground-api/docs/ACTIVITY_LOG.md` Phase 20)
+- **🐛 Dual-Role Token ทำให้ Feature Toggle ผิดตึก**: หลายหน้า LIFF (`LiffReceiptHistoryView`, `LiffUpdateProfileView`, `LiffFacilityBookingView`, `LiffAnnouncementsView`, `IssueHistory`, `LiffParcelsView`, `ReportIssue`, `LiffVehicleView`, `LiffPollView` — รวม 9 หน้า) เรียก `featureStore.fetchFeatures()` โดยไม่ส่ง `buildingId` เลย ไปแข่ง Race กับ `LiffLayout.vue` ที่ Fetch ถูกตึกอยู่แล้วตอน Mount — สำหรับผู้ใช้ Dual-Role (Owner+Tenant, Login ทั้ง CMS Admin Token และ LIFF Tenant Token พร้อมกัน) Backend อาจถอด Feature Map จาก Admin Token แทน Tenant Token แล้วได้ตึกผิด — แก้ที่จุดเดียวใน `stores/useFeatureStore.js`: `fetchFeatures()` ถ้าไม่ระบุ `buildingId` มา จะ Derive จาก `authStore.tenant` เองก่อนยิง API เสมอ (ไม่ต้องแก้ทีละ 9 หน้า)
+- **🐛 Race Condition สลับตึกเร็วๆ ใน `FeatureSettingsView.vue`**: ไม่มีการ Cancel/Sequence Request เดิม คลิกสลับตึกเร็วๆ อาจโชว์ Feature Map ผิดตึกถ้า Response เก่ามาถึงทีหลัง Response ใหม่ — เพิ่ม Request-Sequence Guard ใน `fetchFeatures()` ตัวเดียวกับข้อบน (จุดเดียวคุมทุกหน้าที่เรียก Store นี้)
+- **🐛 Invite Code 2 ระบบซ้อนกัน (ค้างมาตั้งแต่ 2026-09-10)**: `LiffRegisterView.vue` เดิมพิมพ์รหัสของระบบ `Tenant.inviteCode` (สำหรับผู้เช่าเดิม) แล้วเจอแค่ "รหัสเชิญไม่ถูกต้อง" เฉยๆ — Backend เพิ่ม Error Code `TENANT_LINK_CODE` ตอนเจอ Code ประเภทนี้ (ดู `playground-api` Phase 20), ฝั่งนี้เจอ Code ดังกล่าวแล้ว Auto-Redirect ไป `/liff/onboarding?code=...` ให้เอง (พรีฟิลรหัสไว้ให้ เหลือแค่กรอกเบอร์โทร 4 ตัวท้าย)
+- **สี Icon ชนกัน**: `ENABLE_E_CONTRACT` ใน `FeatureSettingsView.vue` ชนกับ `ENABLE_DIGITAL_ID` (Emerald ซ้ำกัน ตกหล่นตอนเพิ่ม E-Contract) — เปลี่ยนเป็น Rose
+- **✅ ตรวจแล้วพบว่า "ไม่ใช่บั๊กจริง"**: Feature Toggle ไม่ครอบ Endpoint เขียนฝั่ง LIFF ที่ Audit รอบแรกสงสัย — Backend เช็คแบบ Inline อยู่แล้วทุกจุด (ดู `playground-api` Phase 20)
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **22/22** (5 Test Files) — ระหว่างทางพบว่า Follow-up เดิม "`LiffLayout.test.js` ขาด Pinia Plugin" ถูกแก้ไปแล้วในบาง Phase ก่อนหน้าที่ไม่ได้ลง Log (7/7 ผ่านแล้วตอนนี้)
+
+#### Follow-up จากการทดสอบจริงของผู้ใช้หลัง Phase 20 (วันเดียวกัน): 2 บั๊กเพิ่มเติมที่เจอตอน Live Test
+
+- **🐛 Feature Card ผีในหน้า Feature Settings**: ผู้ใช้ส่ง Screenshot เจอการ์ด `ENABLE_TENANT_POLLS`/`ENABLE_VISITOR_PASS` ไม่มี Title/คำอธิบายจริง (โชว์ Raw Key) — ต้นเหตุเป็น Row เก่าค้างในตาราง `FeatureToggle` ของ Backend จากการ Rename Key (`ENABLE_VOTING`/`ENABLE_VEHICLE_MANAGEMENT` เป็น Key ปัจจุบันแล้ว) แก้ที่ `featureController.getFeatures()` ให้กรอง Key ที่ไม่รู้จักทิ้งก่อน Merge (ดูรายละเอียดฝั่ง Backend `playground-api/docs/ACTIVITY_LOG.md` Phase 20) — ฝั่งนี้ไม่ต้องแก้อะไร แค่รีเฟรชก็หายไป
+- **🐛 Owner Preview Mode ไม่ผูกตึก ทำให้เห็นฟีเจอร์เปิดหมดทั้งที่ปิดไว้เฉพาะตึกแล้ว**: ผู้ใช้ Report "ปิดฟีเจอร์ใน CMS ครบทุกตัวสำหรับอาคาร B แล้วแต่หน้า 'เมนูด่วน' ใน LIFF ไม่ซ่อนตามสักอัน" — ไล่ตรวจ Backend ด้วยการจำลอง Fetch จากฐานข้อมูลจริงตรงๆ (ใช้ Tenant จริงในอาคาร B) ได้ผลถูกต้อง 100% (Toggle ที่ปิดไว้คืน `false` ครบ) สรุปว่าเป็นบั๊กฝั่งนี้ — ถามผู้ใช้ยืนยันว่า Login เข้า LIFF ด้วยบัญชีแอดมิน/เจ้าของอาคาร (ไม่มี Tenant Record ผูกอยู่) ทำให้เข้า **"โหมดจำลอง (Preview Mode)"** ใน `LiffProfileView.vue` ซึ่งเดิมเรียก `featureStore.fetchFeatures(null)` เสมอ (Global Default ที่ไม่เคยถูกปิด เพราะการปิดทุกครั้งเป็น Override เฉพาะอาคาร B เท่านั้น) — แก้เพิ่มฟังก์ชัน `resolvePreviewBuildingId()`: ใช้ตึกที่เจ้าของเลือกล่าสุดใน Owner Dashboard (`localStorage.horspace_selected_building_id`) ก่อน แล้ว Fallback ไปตึกที่กำลังเปิดอยู่ฝั่ง CMS Admin ในเบราว์เซอร์เดียวกัน (`localStorage.activeBuildingId`) แทน Global เสมอ — พ่วงแก้อีกจุด: เดิมถ้าโหลดโปรไฟล์ Error (Catch Branch) จะไม่เรียก `fetchFeatures()` เลยแม้แต่ครั้งเดียว ทำให้ `isEnabled()` Default คืน `true` ทุก Key เหมือนไม่ได้ปิดอะไร — เพิ่มให้เรียกด้วย Building เดียวกัน
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **22/22** ไม่มี Regression
+
+### STATUS: 🟢 COMPLETE & VERIFIED (Backend ส่วนที่เกี่ยวข้องดู `playground-api/docs/ACTIVITY_LOG.md` Phase 20)
+
+### ⏭️ งานที่เหลือ (Deferred ตาม YAGNI ไม่ใช่บั๊ก):
+- Facility Booking ยังไม่มี Workflow อนุมัติ, Poll ยังไม่รองรับ AGM/Quorum ถ่วงน้ำหนักตามกรรมสิทธิ์ (ดูรายละเอียดฝั่ง Backend)
+- ฟีเจอร์เก่าอื่นๆ (แจ้งซ่อม/บิล/พัสดุ/ข่าวสาร/ใบเสร็จ/Digital ID) Toggle ยังบังคับแค่ฝั่ง Frontend (ซ่อน UI) ไม่มีการเช็คฝั่ง Backend เหมือน `ENABLE_E_CONTRACT`/Facility/Vehicle/Poll — Known Limitation ตั้งใจ ไม่ใช่บั๊ก
+
+---
+
+### Phase 21 (2026-09-23): Delete Building UI & Store Action
+
+- **บริบท**: เพิ่มความสามารถในการลบอาคาร/ตึกที่ไม่ใช้งานออกจากระบบ พร้อมระบบยืนยัน (Confirmation) และตรวจสอบความปลอดภัย
+- **Store Action (`useBuildingStore.deleteBuilding`)**: ยิง `DELETE /api/v1/buildings/${id}` และหากตึกที่ถูกลบตรงกับ `activeBuildingId` จะทำการ Reset เป็นค่าว่างทันที พร้อมดึงรายการตึกใหม่
+- **Building Management View (`BuildingManagementView.vue`)**:
+  - เพิ่มปุ่มลบ (Trash Icon) บนการ์ดของแต่ละตึก
+  - เชื่อมต่อ `showConfirm` จาก SweetAlert2 เพื่อยืนยันการลบก่อนส่งคำขอ
+  - มี Guard ฝั่ง Client ป้องกันการกดลบหากยังมีห้องพักผูกอยู่ (`b._count.rooms > 0`) หรือเหลือตึกเดียวในระบบ
+  - จัดการ Error Alert อย่างชัดเจนหาก Backend ปฏิเสธ
+- **Build & Test Verification**: `yarn build` ผ่าน 100%, `yarn vitest run` ผ่าน **24/24** (6 Test Files เพิ่ม `useBuildingStore.test.js` 2 เทส)
+
+---
+
+### Phase 22 (2026-09-24): Room Invite Modal Availability Guard & Endpoint Alignment
+
+- **บริบท**: ตรวจสอบและแก้ไขข้อผิดพลาด `ไม่พบ Endpoint นี้ - /api/v1/invites` (404) เมื่อเปิดหน้าต่างจัดการรหัสเชิญห้องพัก
+- **UI Enhancement (`RoomInviteModal.vue`)**:
+  - เพิ่มการตรวจสอบสถานะห้องพัก: หากห้องไม่อยู่ในสถานะ `available` (เช่น `occupied` หรือมีผู้เช่าอยู่แล้ว) จะแสดงข้อความแจ้งเตือนสีเหลืองอำพัน และซ่อน/ปิดการสร้างรหัสเชิญใหม่ ป้องกันการสร้างรหัสซ้ำซ้อน
+  - แสดงเฉพาะประวัติรหัสเชิญเดิมด้านล่างกรณีห้องมีผู้เช่าแล้ว
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **24/24**
+
+---
+
+### Phase 23 (2026-09-24): Multi-Room Switching — เชื่อมโยงฟีเจอร์/ข้อมูลตามห้องที่เลือกทั้งหมด + Security Hardening
+
+- **บริบท**: ผู้ใช้ Report ว่าสลับห้องข้ามตึกใน `/liff/profile` แล้ว "เมนูด่วน"/Feature Toggle ไม่เปลี่ยนตามตึก ขอให้ไล่ตรวจและทำให้ทุกอย่างที่เกี่ยวข้องกับห้อง (ฟีเจอร์, ข้อมูล, ความปลอดภัย, UX ระหว่างโหลด) เชื่อมโยงกันทั้งหมด — ระหว่างทางเจอว่า Backend ที่รันอยู่จริงเป็น Nodemon ตัวเก่าที่ไม่ยอมรีโหลดโค้ดใหม่ (Restart แล้วแก้หาย) และ CORS ไม่ได้อนุญาต Header `X-Building-Id`/`X-Room-Id` ที่ Frontend แนบไปอยู่แล้ว
+- **รวมจุดเขียน Active Room เป็นที่เดียว (`stores/auth.js`)**: เพิ่ม `setActiveRoom(room)` เขียน `active_tenant_room_id`/`active_tenant_building_id`/`liff_target_building` ที่เดียว (เดิมกระจายเขียนซ้ำ 3 จุดใน `LiffProfileView.vue`) เรียกจาก `selectRoom()` และตอนโหลดโปรไฟล์ครั้งแรก, ล้างค่าตอน `clearLiffAuth()` (Logout)
+- **`selectRoom()` เคลียร์ State ห้องเก่าก่อนเสมอ (`LiffProfileView.vue`)**: ล้าง `unpaidInvoices`/`pendingParcels`/`activeMaintenance`/`meterHistory` ก่อนสลับ กันเห็นข้อมูลห้องเก่าค้างแวบหนึ่งระหว่างรอ Fetch ห้องใหม่ — เพิ่ม `switchingRoom` Skeleton ครอบเฉพาะส่วนที่ผูกกับห้อง (แจ้งเตือน/เมนู/ข่าว/รูมเมท/มิเตอร์) ไม่ใช้ Overlay เต็มจอ (Header + รายการห้องยังกดสลับต่อได้ระหว่างโหลด)
+- **Race-Guard กันข้อมูลห้องเก่าทับห้องใหม่**: `fetchLiveActionMetrics()`, `fetchMeterHistory()` เทียบ `selectedRoomId` ก่อน Apply Response, `useAnnouncements.js` เพิ่ม Request-Sequence Guard แบบเดียวกับ `useFeatureStore.js` เดิม (กดสลับห้องรัวๆ Response เก่ามาถึงทีหลัง Response ใหม่จะถูกทิ้ง)
+- **`LiffLayout.vue` Refetch Feature Toggle อัตโนมัติ**: เดิม Fetch ครั้งเดียวตอน Mount เท่านั้น เพิ่ม Refetch ทุกครั้งที่เปลี่ยนหน้า (`watch route.path`) และตอนกลับเข้าแอป (`document.visibilitychange`) ให้แอดมินปิดฟีเจอร์ใน CMS แล้วมีผลกับ LIFF ที่เปิดค้างไว้โดยไม่ต้องปิดแอป (ponytail: Poll ตอนเปลี่ยนหน้า ไม่ใช่ Realtime, ถ้าต้องการทันทีค่อยต่อ SSE/WebSocket)
+- **`route.meta.feature` Guard กัน Deep Link เข้าหน้าที่ปิดฟีเจอร์**: เพิ่ม `meta.feature` ให้ 12 Route ใน `router/index.js` ที่ผูกกับ Feature Toggle (บิล, ประกาศ, พัสดุ, จองพื้นที่, ยานพาหนะ, โหวต, แจ้งซ่อม, ใบเสร็จ, สัญญาเช่า) — `LiffLayout.vue` เช็คก่อน Render `<router-view>` ถ้าปิดอยู่ขึ้นข้อความ "ฟีเจอร์นี้ถูกปิดใช้งานสำหรับอาคารนี้" แทนหน้านั้นเลย (เดิมเข้าผ่านลิงก์ตรง/หน้าที่เปิดค้างไว้ยังใช้งานได้แม้ปิดฟีเจอร์แล้ว)
+- **Backend Companion (`playground-api`, สรุปย่อ — ไม่ได้ลง Log ฝั่งนั้นในรอบนี้)**: ระหว่างไล่ตรวจพบช่องโหว่ IDOR/Account-Takeover หลายจุดที่ไม่เกี่ยวกับ Ticket เดิมแต่แก้ไปพร้อมกัน — เพิ่ม `scopeTenantRooms` Middleware ตรวจว่า `X-Room-Id`/`X-Building-Id` ที่ Client ส่งมาเป็นห้องที่ผู้เช่าคนนั้นมีสิทธิ์จริง (ถือครอง/ผู้อยู่ร่วม ACTIVE/สัญญา ACTIVE) ก่อนใช้ ไม่งั้น Fallback เป็นห้องแรกของตัวเอง, เพิ่ม `requireOwnInvoice` Guard ปิดช่องเปิดบิล/QR/แนบสลิป/PDF ของคนอื่นได้ (เดิม QR ไม่เช็คเลย), ปิดช่องยึดบัญชีคนอื่นผ่าน `sync-profile`/`check-status` ที่ไม่ผ่านการยืนยัน PIN/Invite, เพิ่ม `isFeatureEnabled()` กลางให้ Endpoint ที่เขียนข้อมูล (แจ้งซ่อม/สลิป/โหวต) เช็ค Feature Toggle ระดับ Global ด้วยไม่ใช่แค่ระดับตึก
+- **Dev Environment**: พบว่า `nodemon` ที่รันค้างไม่ยอมรีโหลดโค้ดใหม่ ต้อง Restart `yarn dev:tunnel` ตรงๆ ถึงจะเห็นผล, เพิ่ม `X-Building-Id`/`X-Room-Id`/`X-Line-User-Id` ใน `allowedHeaders` ของ CORS (`playground-api/src/app.js`) ที่ขาดไปตั้งแต่แรกทำให้ Browser Block Request เงียบๆ (ไม่ขึ้น Error ชัดเจนใน UI)
+- **Build & Test Verification**: `yarn build` ผ่าน 100% (0 Errors), `yarn vitest run` ผ่าน **24/24** (ไม่มี Regression, Logic หลักที่เพิ่ม Test ใหม่อยู่ฝั่ง Backend), ทดสอบจริงผ่าน Playwright (`headless chrome`) จำลองสลับห้องข้ามตึก ยืนยัน Skeleton ขึ้น/หาย, ข้อมูลห้องเก่าไม่ค้าง, และปิดฟีเจอร์ระดับตึกมีผลกับเมนูจริง
+
+### STATUS: 🟢 COMPLETE & VERIFIED
+
+### ⏭️ งานที่เหลือ (Deferred ตาม YAGNI ไม่ใช่บั๊ก):
+- Fetch ห้องใหม่ล้มเหลว (Network Error) ยังไม่มีปุ่ม Retry แค่ Fail เงียบๆ เหมือน Pattern เดิมของหน้านี้ก่อน Phase นี้
+- Feature Toggle Refetch เป็น Poll ตอนเปลี่ยนหน้า/กลับเข้าแอป ไม่ใช่ Realtime (ตั้งใจ ดู `ponytail:` Comment ใน `LiffLayout.vue`)
+
+---
+
+### Phase 24 (2026-09-24): แก้ Pinia "no active Pinia" / "Failed to fetch dynamically imported module" ผ่าน Cloudflare Tunnel
+
+- **อาการ**: กดสลับเมนูใน LIFF แล้ว `getActivePinia()` was called but there was no active Pinia (`LiffOwnerDashboardView.vue:707`, `LiffLayout.vue:214`) และ `Failed to fetch dynamically imported module .../LiffProfileView.vue` — Store ตัวแรกใน `setup` ผ่าน ตัวที่สองพังเสมอ
+- **Root Cause**: Cloudflare Tunnel ทับ `Cache-Control` ของไฟล์ `.js` ใต้ `/src` (เดิม Vite ส่ง `no-cache`) เป็น `max-age=14400` (4 ชม.) ส่วนไฟล์ `.vue` ไม่โดน — Browser จึงค้าง `main.js`/`auth.js` เก่าที่ Import `pinia.js?v=<hash เก่า>` ปนกับโมดูลที่โหลดใหม่ (`useFeatureStore.js`, `useDashboardStore.js`) ที่ได้ `pinia.js?v=<hash ใหม่>` — Browser มองเป็นคนละโมดูล ได้ Pinia 2 สำเนา, Server ตอบ 200 กับทุกค่า `?v=` จึงไม่เห็นความผิดปกติฝั่ง Server
+- **สมมติฐานที่ตัดทิ้ง**: Vite Optimize Deps re-optimize กลางทาง (แค่ทำให้ Hash เปลี่ยนบ่อยขึ้น ไม่ใช่ต้นเหตุ), Duplicate Package ใน `node_modules` (มีสำเนาเดียว), `main.js` เรียก `app.use(pinia)` ผิด (ถูกต้อง)
+- **แก้ไข (`vite.config.js`)**: เพิ่ม Plugin `dev-src-no-store` (`apply: 'serve'`) บังคับ `Cache-Control: no-store` ให้ทุก Response ใต้ `/src/` — ทดสอบผ่านโดเมนจริงแล้ว `cf-cache-status: BYPASS`; เพิ่ม `optimizeDeps.include` ครบทุก Dependency กัน re-optimize; เพิ่ม `Clear-Site-Data: "cache"` ชั่วคราวบน Response HTML ให้ Browser ทิ้ง `.js` เก่าที่ค้าง (`ponytail:` ลบได้เมื่อทุกเครื่องโหลดใหม่แล้ว, Safari/iOS ไม่รองรับ)
+- **บทเรียน**: ห้ามลบ `node_modules/.vite/deps` ตอน Dev Server ยังรันอยู่ (ทำให้ `deps_temp` ค้างและ `504 Outdated Optimize Dep`), และเจออาการ Module ซ้ำผ่าน Tunnel ให้เทียบ Response Header ระหว่าง `localhost` กับโดเมนจริงก่อน
+- **Build & Test Verification**: `yarn build` ผ่าน (Plugin ใช้เฉพาะ `serve` ไม่กระทบ Production); ยังไม่ได้รัน `yarn vitest run` รอบนี้; **ยังไม่ได้ยืนยันใน Browser/LINE จริงว่า Error หาย** (ทดสอบได้เฉพาะ Header ผ่านโดเมนด้วย curl)
+
+### STATUS: 🟡 FIX APPLIED — รอผู้ใช้ยืนยันใน Browser จริง
+
+### ⏭️ งานที่เหลือ:
+- ผู้ใช้ล้าง Site Data / รีเฟรชหน้า LIFF แล้วยืนยันว่า `pinia.js?v=` เหลือค่าเดียวและ Error หาย
+- ลบบล็อก `Clear-Site-Data` ใน `vite.config.js` หลังทุกเครื่องโหลดใหม่ครบ (เก็บ Plugin `no-store` ไว้)

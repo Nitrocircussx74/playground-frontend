@@ -86,7 +86,7 @@
         class="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3 text-rose-800"
       >
         <div class="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center text-rose-600 shrink-0 font-bold">
-          ⚠️
+          
         </div>
         <div class="space-y-1 text-xs">
           <p class="font-bold text-rose-950">LINE Channel Access Token ไม่ถูกต้องหรือหมดอายุ</p>
@@ -101,7 +101,7 @@
         v-else-if="quotaData?.error"
         class="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3 text-amber-800 text-xs"
       >
-        <span class="text-lg">⚠️</span>
+        <span class="text-lg"></span>
         <div>
           <p class="font-bold">เกิดข้อผิดพลาดในการตรวจสอบโควต้า</p>
           <p class="mt-0.5 text-amber-700">{{ quotaData.message || 'ไม่สามารถติดต่อ LINE API ได้ในขณะนี้' }}</p>
@@ -176,13 +176,13 @@
           </div>
         </div>
 
-        <!-- ⚠️ Danger Alert Callout (Usage > 90%) -->
+        <!--  Danger Alert Callout (Usage > 90%) -->
         <div
           v-if="!quotaData.isUnlimited && quotaData.percentage >= 90"
           class="p-4 bg-rose-50 border border-rose-300 rounded-xl flex items-start gap-3 shadow-2xs animate-pulse-subtle"
         >
           <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center shrink-0 text-base shadow-sm">
-            🚨
+            
           </div>
           <div class="space-y-1 text-xs text-rose-950">
             <h4 class="font-bold text-rose-900">
@@ -195,12 +195,12 @@
           </div>
         </div>
 
-        <!-- ⚠️ Warning Alert Callout (Usage 70% - 89%) -->
+        <!--  Warning Alert Callout (Usage 70% - 89%) -->
         <div
           v-else-if="!quotaData.isUnlimited && quotaData.percentage >= 70"
           class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-900"
         >
-          <span class="text-base text-amber-600">⚡</span>
+          <Zap class="w-4 h-4 text-amber-600" />
           <div>
             <span class="font-bold">เริ่มมีการใช้งานโควต้าเกิน 70%: </span>
             <span>เหลือส่งได้อีก {{ quotaData.remaining?.toLocaleString() }} ข้อความในรอบเดือนนี้</span>
@@ -212,6 +212,7 @@
 </template>
 
 <script setup>
+import { AlertTriangle, AlertCircle, Zap } from 'lucide-vue-next';
 import { ref, computed, onMounted, watch } from 'vue';
 import api from '@/utils/api';
 import { useBuildingStore } from '@/stores/useBuildingStore';

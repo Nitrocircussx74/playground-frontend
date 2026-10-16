@@ -12,7 +12,7 @@ export const THAI_BANKS = [
     color: '#137f44',
     bgColor: '#e8f5e9',
     textColor: '#137f44',
-    icon: '🏦'
+    icon: ''
   },
   {
     code: 'SCB',
@@ -23,7 +23,7 @@ export const THAI_BANKS = [
     color: '#4e2e7f',
     bgColor: '#f3e8ff',
     textColor: '#4e2e7f',
-    icon: '🟣'
+    icon: ''
   },
   {
     code: 'BBL',
@@ -34,7 +34,7 @@ export const THAI_BANKS = [
     color: '#1e3f8a',
     bgColor: '#e0e7ff',
     textColor: '#1e3f8a',
-    icon: '🔷'
+    icon: ''
   },
   {
     code: 'KTB',
@@ -45,7 +45,7 @@ export const THAI_BANKS = [
     color: '#00a5e5',
     bgColor: '#e0f2fe',
     textColor: '#0284c7',
-    icon: '🐦'
+    icon: ''
   },
   {
     code: 'TTB',
@@ -56,7 +56,7 @@ export const THAI_BANKS = [
     color: '#002d63',
     bgColor: '#e2e8f0',
     textColor: '#002d63',
-    icon: '🔵'
+    icon: ''
   },
   {
     code: 'BAY',
@@ -67,7 +67,7 @@ export const THAI_BANKS = [
     color: '#fec43b',
     bgColor: '#fef3c7',
     textColor: '#b45309',
-    icon: '🟡'
+    icon: ''
   },
   {
     code: 'GSB',
@@ -78,7 +78,7 @@ export const THAI_BANKS = [
     color: '#eb198d',
     bgColor: '#fce7f3',
     textColor: '#be185d',
-    icon: '🌸'
+    icon: ''
   },
   {
     code: 'BAAC',
@@ -89,7 +89,7 @@ export const THAI_BANKS = [
     color: '#43833b',
     bgColor: '#dcfce7',
     textColor: '#15803d',
-    icon: '🌾'
+    icon: ''
   },
   {
     code: 'GHB',
@@ -100,7 +100,7 @@ export const THAI_BANKS = [
     color: '#f57f20',
     bgColor: '#ffedd5',
     textColor: '#c2410c',
-    icon: '🏠'
+    icon: ''
   },
   {
     code: 'UOB',
@@ -111,7 +111,7 @@ export const THAI_BANKS = [
     color: '#0b397b',
     bgColor: '#e0e7ff',
     textColor: '#1e3a8a',
-    icon: '🏢'
+    icon: ''
   },
   {
     code: 'CIMBT',
@@ -122,7 +122,7 @@ export const THAI_BANKS = [
     color: '#7e0000',
     bgColor: '#fee2e2',
     textColor: '#991b1b',
-    icon: '🔴'
+    icon: ''
   },
   {
     code: 'KKP',
@@ -133,7 +133,7 @@ export const THAI_BANKS = [
     color: '#19437d',
     bgColor: '#f1f5f9',
     textColor: '#1e293b',
-    icon: '💎'
+    icon: ''
   },
   {
     code: 'TISCO',
@@ -144,7 +144,7 @@ export const THAI_BANKS = [
     color: '#1455a4',
     bgColor: '#e0f2fe',
     textColor: '#0369a1',
-    icon: '🔷'
+    icon: ''
   },
   {
     code: 'LHBANK',
@@ -155,7 +155,7 @@ export const THAI_BANKS = [
     color: '#6d6e71',
     bgColor: '#f3f4f6',
     textColor: '#374151',
-    icon: '🏡'
+    icon: ''
   },
   {
     code: 'ICBCT',
@@ -166,7 +166,7 @@ export const THAI_BANKS = [
     color: '#c7161e',
     bgColor: '#fee2e2',
     textColor: '#b91c1c',
-    icon: '🚩'
+    icon: ''
   },
   {
     code: 'TCRB',
@@ -177,7 +177,7 @@ export const THAI_BANKS = [
     color: '#00295b',
     bgColor: '#e0f2fe',
     textColor: '#075985',
-    icon: '🪙'
+    icon: ''
   },
   {
     code: 'EXIM',
@@ -188,7 +188,7 @@ export const THAI_BANKS = [
     color: '#005086',
     bgColor: '#e0f2fe',
     textColor: '#0369a1',
-    icon: '🚢'
+    icon: ''
   },
   {
     code: 'PROMPTPAY',
@@ -199,7 +199,7 @@ export const THAI_BANKS = [
     color: '#003d6b',
     bgColor: '#e0e7ff',
     textColor: '#003d6b',
-    icon: '⚡'
+    icon: ''
   },
   {
     code: 'OTHER',
@@ -210,7 +210,7 @@ export const THAI_BANKS = [
     color: '#64748b',
     bgColor: '#f1f5f9',
     textColor: '#475569',
-    icon: '✏️'
+    icon: ''
   }
 ];
 

@@ -18,7 +18,7 @@ export async function initLiff() {
   const liffId = import.meta.env.VITE_LINE_LIFF_ID || import.meta.env.VITE_LIFF_ID || '';
 
   if (!liffId) {
-    console.warn('⚠️ ไม่พบ VITE_LINE_LIFF_ID ใน Environment Variables (ทำงานใน Standalone Dev Mode)');
+    console.warn('ไม่พบ VITE_LINE_LIFF_ID ใน Environment Variables (ทำงานใน Standalone Dev Mode)');
     isInitialized = true;
     return liff;
   }
@@ -29,7 +29,7 @@ export async function initLiff() {
       isInitialized = true;
       return liff;
     } catch (error) {
-      console.warn('⚠️ LIFF initialization failed or running in external browser:', error.message);
+      console.warn('LIFF initialization failed or running in external browser:', error.message);
       isInitialized = true;
       return liff;
     }
@@ -97,7 +97,7 @@ export async function loginLiff(redirectUri, botPrompt = null) {
         return true;
       } catch (loginErr) {
         if (loginErr?.code === 40007 || String(loginErr?.message || '').includes('no login bot')) {
-          console.warn('⚠️ No bot linked to LINE Login channel in LINE Developers Console. Falling back to standard login.');
+          console.warn('No bot linked to LINE Login channel in LINE Developers Console. Falling back to standard login.');
           liff.login({ redirectUri: uri });
           return true;
         }
@@ -122,7 +122,7 @@ export async function getLiffFriendship() {
       return friendship; // { friendFlag: boolean }
     }
   } catch (err) {
-    console.warn('⚠️ getLiffFriendship warning:', err?.message || err);
+    console.warn('getLiffFriendship warning:', err?.message || err);
     // Error 40007: LINE Login Channel ยังไม่ได้ผูก Linked OA ใน LINE Developers Console
     if (err?.code === 40007 || String(err?.message || '').includes('no login bot')) {
       return { friendFlag: false, noBotLinked: true };
