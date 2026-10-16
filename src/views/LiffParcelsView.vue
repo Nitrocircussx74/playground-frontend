@@ -110,7 +110,7 @@
 
           <!-- Parcel Box Image Preview -->
           <div v-if="item.photoUrl" class="w-full h-32 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 relative group/img">
-            <img :src="item.photoUrl" class="w-full h-full object-cover group-hover/img:scale-102 transition-transform duration-300" />
+            <img :src="item.photoUrl" alt="รูปพัสดุ" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover/img:scale-102 transition-transform duration-300" />
             <div class="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-xs text-white rounded-lg text-xs font-medium flex items-center gap-1">
               <Maximize2 class="w-2.5 h-2.5" />
               <span>แตะดูรูป</span>
