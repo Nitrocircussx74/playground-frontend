@@ -4,7 +4,7 @@
     <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
       <div class="absolute -top-40 -left-40 w-96 h-96 bg-cyan-600/30 rounded-full blur-[100px]"></div>
       <div class="absolute top-1/2 -right-40 w-[30rem] h-[30rem] bg-teal-600/25 rounded-full blur-[120px]"></div>
-      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/20 rounded-full blur-[100px]"></div>
+      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-teal-400/15 rounded-full blur-[100px]"></div>
     </div>
 
     <!-- Login Card Container -->
